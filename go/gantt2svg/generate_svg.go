@@ -90,8 +90,12 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 	//
 	// creates a tick lane
 	laneHeight := 100.0
+	barHeigth := laneHeight * 0.8
 	YTopMargin := 10.0
 	yTimeLine := laneHeight*float64(len(stage.Lanes)) + YTopMargin
+
+	XLeftText := 10.0
+	TextHeight := 16.0
 
 	XLeftLanes := 150.0
 	XRightMargin := 800.0
@@ -136,13 +140,16 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		yearText.FillOpacity = 1.0
 		svg.Texts = append(svg.Texts, yearText)
 
-		log.Printf("year %d", year)
+		// log.Printf("year %d", year)
 	}
 
 	//
 	// Lanes
 	//
 	currentY := YTopMargin
+
+	mapLaneHeight := make(map[*gonggantt_models.Lane]float64, 0)
+
 	for _, lane := range ganttToRender.Lanes {
 
 		laneSVG := new(gongsvg_models.Rect).Stage()
@@ -159,13 +166,12 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		laneSVG.Color = "black"
 		laneSVG.StrokeWidth = 1.5
 
-		XLeftText := 10.0
-		TextHeight := 16.0
 		laneText := new(gongsvg_models.Text).Stage()
 		laneText.Name = lane.Name
 		laneText.Content = laneText.Name
 		laneText.X = XLeftText
 		laneText.Y = currentY + laneHeight/2.0 + TextHeight/2.0
+		mapLaneHeight[lane] = laneText.Y
 		laneText.Color = "black"
 		laneText.FillOpacity = 1.0
 		svg.Texts = append(svg.Texts, laneText)
@@ -173,7 +179,6 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		//
 		// Bar
 		//
-		barHeigth := laneHeight * 0.8
 		for _, bar := range lane.Bars {
 			barSVG := new(gongsvg_models.Rect).Stage()
 			svg.Rects = append(svg.Rects, barSVG)
@@ -212,6 +217,58 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 
 		currentY = currentY + laneHeight
 
+	}
+
+	//
+	// Milestones
+	//
+	for _, milestone := range ganttToRender.Milestones {
+
+		durationBetweenMilestoneAndGanttStart := milestone.Date.Sub(ganttToRender.Start)
+		durationBetweenMilestoneAndGanttStartRelativeToGanttDuration :=
+			float64(durationBetweenMilestoneAndGanttStart) / float64(ganttToRender.End.Sub(ganttToRender.Start))
+
+		//
+		// draw the line
+		//
+		line := new(gongsvg_models.Line).Stage()
+		line.Name = milestone.Name
+		svg.Lines = append(svg.Lines, line)
+		line.X1 = XLeftLanes + (XRightMargin-XLeftLanes)*durationBetweenMilestoneAndGanttStartRelativeToGanttDuration
+		line.X2 = line.X1
+		line.Y1 = YTopMargin
+		line.Y2 = yTimeLine
+		line.Stroke = "black"
+		line.StrokeWidth = 0.5
+		line.StrokeDashArray = "2 2"
+
+		//
+		// draw diamond
+		//
+		diamondWidth := 24.0
+		for _, diamondAndTextAnchor := range milestone.DiamonfAndTextAnchors {
+
+			diamond := new(gongsvg_models.Rect).Stage()
+			svg.Rects = append(svg.Rects, diamond)
+			diamond.Name = milestone.Name
+			diamond.X = line.X1
+			diamond.Y = mapLaneHeight[diamondAndTextAnchor] - diamondWidth/2.0 + barHeigth/2.0
+			diamond.Width = diamondWidth
+			diamond.Height = diamondWidth
+			diamond.Color = "red"
+			diamond.FillOpacity = 0.4
+			diamond.Transform = fmt.Sprintf("rotate(%d %f %f)", 45, diamond.X, diamond.Y)
+
+			// bar text
+			milestoneText := new(gongsvg_models.Text).Stage()
+			milestoneText.Name = milestone.Name
+			milestoneText.Content = milestoneText.Name
+			milestoneText.X = diamond.X + XLeftText
+			milestoneText.Y = diamond.Y + TextHeight
+			milestoneText.Color = "black"
+			milestoneText.FillOpacity = 1.0
+			svg.Texts = append(svg.Texts, milestoneText)
+		}
 	}
 
 	gongsvg_models.Stage.Commit()

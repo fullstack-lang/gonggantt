@@ -14,6 +14,10 @@ import { LanesTableComponent } from './lanes-table/lanes-table.component'
 import { LaneDetailComponent } from './lane-detail/lane-detail.component'
 import { LanePresentationComponent } from './lane-presentation/lane-presentation.component'
 
+import { MilestonesTableComponent } from './milestones-table/milestones-table.component'
+import { MilestoneDetailComponent } from './milestone-detail/milestone-detail.component'
+import { MilestonePresentationComponent } from './milestone-presentation/milestone-presentation.component'
+
 
 const routes: Routes = [ // insertion point for routes declarations
 	{ path: 'bars', component: BarsTableComponent, outlet: 'table' },
@@ -36,6 +40,13 @@ const routes: Routes = [ // insertion point for routes declarations
 	{ path: 'lane-detail/:id', component: LaneDetailComponent, outlet: 'editor' },
 	{ path: 'lane-presentation/:id', component: LanePresentationComponent, outlet: 'presentation' },
 	{ path: 'lane-presentation-special/:id', component: LanePresentationComponent, outlet: 'lanepres' },
+
+	{ path: 'milestones', component: MilestonesTableComponent, outlet: 'table' },
+	{ path: 'milestone-adder', component: MilestoneDetailComponent, outlet: 'editor' },
+	{ path: 'milestone-adder/:id/:association', component: MilestoneDetailComponent, outlet: 'editor' },
+	{ path: 'milestone-detail/:id', component: MilestoneDetailComponent, outlet: 'editor' },
+	{ path: 'milestone-presentation/:id', component: MilestonePresentationComponent, outlet: 'presentation' },
+	{ path: 'milestone-presentation-special/:id', component: MilestonePresentationComponent, outlet: 'milestonepres' },
 
 ];
 

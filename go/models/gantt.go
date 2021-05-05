@@ -9,6 +9,9 @@ type Gantt struct {
 
 	// List of Lanes
 	Lanes []*Lane
+
+	// list of Milestones
+	Milestones []*Milestone
 }
 
 func (gantt *Gantt) ComputeStartAndEndDate() {

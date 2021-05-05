@@ -43,6 +43,10 @@ import { LanesTableComponent } from './lanes-table/lanes-table.component'
 import { LaneDetailComponent } from './lane-detail/lane-detail.component'
 import { LanePresentationComponent } from './lane-presentation/lane-presentation.component'
 
+import { MilestonesTableComponent } from './milestones-table/milestones-table.component'
+import { MilestoneDetailComponent } from './milestone-detail/milestone-detail.component'
+import { MilestonePresentationComponent } from './milestone-presentation/milestone-presentation.component'
+
 
 @NgModule({
 	declarations: [
@@ -58,6 +62,10 @@ import { LanePresentationComponent } from './lane-presentation/lane-presentation
 		LanesTableComponent,
 		LaneDetailComponent,
 		LanePresentationComponent,
+
+		MilestonesTableComponent,
+		MilestoneDetailComponent,
+		MilestonePresentationComponent,
 
 
 		SplitterComponent,
@@ -104,6 +112,10 @@ import { LanePresentationComponent } from './lane-presentation/lane-presentation
 		LanesTableComponent,
 		LaneDetailComponent,
 		LanePresentationComponent,
+
+		MilestonesTableComponent,
+		MilestoneDetailComponent,
+		MilestonePresentationComponent,
 
 
 		SplitterComponent,

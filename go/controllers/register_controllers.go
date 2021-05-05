@@ -65,6 +65,13 @@ func RegisterControllers(r *gin.Engine) {
 		v1.PUT("/v1/lanes/:id", UpdateLane)
 		v1.DELETE("/v1/lanes/:id", DeleteLane)
 
+		v1.GET("/v1/milestones", GetMilestones)
+		v1.GET("/v1/milestones/:id", GetMilestone)
+		v1.POST("/v1/milestones", PostMilestone)
+		v1.PATCH("/v1/milestones/:id", UpdateMilestone)
+		v1.PUT("/v1/milestones/:id", UpdateMilestone)
+		v1.DELETE("/v1/milestones/:id", DeleteMilestone)
+
 
 		v1.GET("/commitnb", GetLastCommitNb)
 	}

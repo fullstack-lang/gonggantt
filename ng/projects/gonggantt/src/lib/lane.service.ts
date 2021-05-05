@@ -59,11 +59,14 @@ export class LaneService {
     lanedb.Bars = []
     let _Gantt_Lanes_reverse = lanedb.Gantt_Lanes_reverse
     lanedb.Gantt_Lanes_reverse = {}
+    let _Milestone_DiamonfAndTextAnchors_reverse = lanedb.Milestone_DiamonfAndTextAnchors_reverse
+    lanedb.Milestone_DiamonfAndTextAnchors_reverse = {}
 
 		return this.http.post<LaneDB>(this.lanesUrl, lanedb, this.httpOptions).pipe(
 			tap(_ => {
 				// insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
+        lanedb.Milestone_DiamonfAndTextAnchors_reverse = _Milestone_DiamonfAndTextAnchors_reverse
 				this.log(`posted lanedb id=${lanedb.ID}`)
 			}),
 			catchError(this.handleError<LaneDB>('postLane'))
@@ -90,11 +93,14 @@ export class LaneService {
     lanedb.Bars = []
     let _Gantt_Lanes_reverse = lanedb.Gantt_Lanes_reverse
     lanedb.Gantt_Lanes_reverse = {}
+    let _Milestone_DiamonfAndTextAnchors_reverse = lanedb.Milestone_DiamonfAndTextAnchors_reverse
+    lanedb.Milestone_DiamonfAndTextAnchors_reverse = {}
 
     return this.http.put(url, lanedb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
+        lanedb.Milestone_DiamonfAndTextAnchors_reverse = _Milestone_DiamonfAndTextAnchors_reverse
         this.log(`updated lanedb id=${lanedb.ID}`)
       }),
       catchError(this.handleError<LaneDB>('updateLane'))
