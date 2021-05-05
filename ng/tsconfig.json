@@ -9,9 +9,13 @@
     "paths": {
       "gonggantt": [
         "projects/gonggantt/src/public-api.ts",
-        "dist/gonggantt/gonggantt",
-        "dist/gonggantt"
-      ]
+      ],
+      "gongsvg": [
+        "../../gongsvg/ng/projects/gongsvg/src/public-api.ts"
+      ],
+      "gongsvgspecific": [
+        "../../gongsvg/ng/projects/gongsvgspecific/src/public-api.ts"
+      ],
     },
     "downlevelIteration": true,
     "experimentalDecorators": true,

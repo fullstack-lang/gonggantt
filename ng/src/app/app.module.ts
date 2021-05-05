@@ -6,6 +6,11 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { GongganttModule } from 'gonggantt'
 
+import { AngularSplitModule } from 'angular-split';
+
+import { GongsvgspecificModule } from 'gongsvgspecific'
+import { GongsvgModule } from 'gongsvg'
+
 // mandatory
 import { HttpClientModule } from '@angular/common/http';
 
@@ -16,6 +21,11 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+
+    AngularSplitModule,
+
+    GongsvgspecificModule,
+    GongsvgModule,
 
     HttpClientModule,
     GongganttModule
