@@ -1,0 +1,41 @@
+<div *ngIf="lane" class="details">
+    <h1 class="details__title">lane</h1>
+    <!-- insertion point for fields specific code -->
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="lane.Name">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>Order</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="lane.Order">
+            </mat-form-field>
+        </form>
+    </div>
+    <div class="details__item">
+        <button mat-raised-button (click)="openReverseSelection('Bar', 'Lane_BarsDBID')">Bars</button>
+    </div>
+    <div class="details__item">
+    <mat-form-field>
+        <mat-label><- Lanes</mat-label>
+        <mat-select [(ngModel)]="lane.Gantt_Lanes_reverse">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let gantt of frontRepo.Gantts_array" [value]="gantt">
+                {{gantt.Name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+    <div class="details__save">
+        <button mat-raised-button color="primary" (click)="save()">
+			Save lane
+		</button>
+    </div>
+</div>

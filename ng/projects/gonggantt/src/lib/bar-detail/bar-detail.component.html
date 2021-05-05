@@ -1,0 +1,47 @@
+<div *ngIf="bar" class="details">
+    <h1 class="details__title">bar</h1>
+    <!-- insertion point for fields specific code -->
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.Name">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>Start</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.Start">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>End</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.End">
+            </mat-form-field>
+        </form>
+    </div>
+    <div class="details__item">
+    <mat-form-field>
+        <mat-label><- Bars</mat-label>
+        <mat-select [(ngModel)]="bar.Lane_Bars_reverse">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let lane of frontRepo.Lanes_array" [value]="lane">
+                {{lane.Name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+    <div class="details__save">
+        <button mat-raised-button color="primary" (click)="save()">
+			Save bar
+		</button>
+    </div>
+</div>
