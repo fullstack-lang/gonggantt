@@ -1,34 +1,38 @@
 package main
 
 import (
-	"flag"
-	"log"
-	"os"
-	"fmt"
 	"embed"
+	"flag"
+	"fmt"
 	"io/fs"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 
-	"github.com/fullstack-lang/gonggantt/go/controllers"
-	"github.com/fullstack-lang/gonggantt/go/orm"
+	gonggantt_controllers "github.com/fullstack-lang/gonggantt/go/controllers"
+	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
+	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
+
+	gongsvg_controllers "github.com/fullstack-lang/gongsvg/go/controllers"
+	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
+	gongsvg_orm "github.com/fullstack-lang/gongsvg/go/orm"
 )
 
 var (
-	logDBFlag = flag.Bool("logDB", false, "log mode for db")
+	logDBFlag  = flag.Bool("logDB", false, "log mode for db")
 	logGINFlag = flag.Bool("logGIN", false, "log mode for gin")
-	apiFlag   = flag.Bool("api", false, "it true, use api controllers instead of default controllers")
+	apiFlag    = flag.Bool("api", false, "it true, use api controllers instead of default controllers")
 )
 
 func main() {
 
-	
 	log.SetPrefix("gonggantt: ")
 	log.SetFlags(0)
-	
+
 	// parse program arguments
 	flag.Parse()
 
@@ -41,9 +45,12 @@ func main() {
 	r.Use(cors.Default())
 
 	// setup GORM
-	db := orm.SetupModels(*logDBFlag, "./test.db")
+	db := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
 	// mandatory, otherwise, bizarre errors occurs
 	db.DB().SetMaxOpenConns(1)
+
+	// add gongsvg database
+	gongsvg_orm.AutoMigrate(db)
 
 	// Provide db variable to controllers
 	r.Use(func(c *gin.Context) {
@@ -51,7 +58,16 @@ func main() {
 		c.Next()
 	})
 
-	controllers.RegisterControllers(r)
+	gonggantt_controllers.RegisterControllers(r)
+	gongsvg_controllers.RegisterControllers(r)
+
+	// init all back repositories
+	gonggantt_orm.BackRepo.Init(db)
+	gongsvg_orm.BackRepo.Init(db)
+
+	// put all to database
+	gonggantt_models.Stage.Commit()
+	gongsvg_models.Stage.Commit()
 
 	// provide the static route for the angular pages
 	r.Use(static.Serve("/", EmbedFolder(ng, "ng/dist/ng")))
