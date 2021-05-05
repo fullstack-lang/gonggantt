@@ -35,6 +35,8 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 	timeLine.X2 = 200
 	timeLine.Y2 = 10
 	timeLine.FillOpacity = 1.0
+	timeLine.Stroke = "black"
+	timeLine.StrokeWidth = 1
 
 	svg.Lines = append(svg.Lines, timeLine)
 
