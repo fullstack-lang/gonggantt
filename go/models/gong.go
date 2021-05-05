@@ -23,6 +23,13 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	AllModelsStructDeleteCallback AllModelsStructDeleteInterface
 
 	BackRepo BackRepoInterface
+
+	// if set will be called before each commit to the back repo
+	OnInitCommitCallback OnInitCommitInterface
+}
+
+type OnInitCommitInterface interface {
+	BeforeCommit(stage *StageStruct)
 }
 
 type BackRepoInterface interface {
@@ -45,10 +52,12 @@ var Stage StageStruct = StageStruct{ // insertion point for array initiatialisat
 	Gantts: make(map[*Gantt]struct{}, 0),
 
 	Lanes: make(map[*Lane]struct{}, 0),
-
 }
 
 func (stage *StageStruct) Commit() {
+	if stage.OnInitCommitCallback != nil {
+		stage.OnInitCommitCallback.BeforeCommit(stage)
+	}
 	if stage.BackRepo != nil {
 		stage.BackRepo.Commit(stage)
 	}

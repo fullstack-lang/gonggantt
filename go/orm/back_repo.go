@@ -2,8 +2,8 @@
 package orm
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/fullstack-lang/gonggantt/go/models"
+	"github.com/jinzhu/gorm"
 )
 
 // BackRepoStruct supports callback functions
@@ -23,6 +23,9 @@ func (backRepo *BackRepoStruct) GetLastCommitNb() uint {
 }
 
 func (backRepo *BackRepoStruct) IncrementCommitNb() uint {
+	if models.Stage.OnInitCommitCallback != nil {
+		models.Stage.OnInitCommitCallback.BeforeCommit(&models.Stage)
+	}
 	backRepo.CommitNb = backRepo.CommitNb + 1
 	return backRepo.CommitNb
 }

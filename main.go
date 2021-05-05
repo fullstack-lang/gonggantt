@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	gonggantt_controllers "github.com/fullstack-lang/gonggantt/go/controllers"
+	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
 
@@ -64,6 +65,9 @@ func main() {
 	// init all back repositories
 	gonggantt_orm.BackRepo.Init(db)
 	gongsvg_orm.BackRepo.Init(db)
+
+	// plug the svg generator on the OnInitCommit callback
+	gonggantt_models.Stage.OnInitCommitCallback = &gantt2svg.GanttToSVGTranformerSingloton
 
 	// put all to database
 	gonggantt_models.Stage.Commit()
