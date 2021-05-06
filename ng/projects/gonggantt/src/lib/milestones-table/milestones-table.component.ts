@@ -13,29 +13,29 @@ import { SelectionModel } from '@angular/cdk/collections';
 const allowMultiSelect = true;
 
 import { Router, RouterState } from '@angular/router';
-import { LaneDB } from '../lane-db'
-import { LaneService } from '../lane.service'
+import { MilestoneDB } from '../milestone-db'
+import { MilestoneService } from '../milestone.service'
 
 import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 // generated table component
 @Component({
-  selector: 'app-lanes-table',
-  templateUrl: './lanes-table.component.html',
-  styleUrls: ['./lanes-table.component.css'],
+  selector: 'app-milestones-table',
+  templateUrl: './milestones-table.component.html',
+  styleUrls: ['./milestones-table.component.css'],
 })
-export class LanesTableComponent implements OnInit {
+export class MilestonesTableComponent implements OnInit {
 
-  // used if the component is called as a selection component of Lane instances
-  selection: SelectionModel<LaneDB>;
-  initialSelection = new Array<LaneDB>();
+  // used if the component is called as a selection component of Milestone instances
+  selection: SelectionModel<MilestoneDB>;
+  initialSelection = new Array<MilestoneDB>();
 
   // the data source for the table
-  lanes: LaneDB[];
-  matTableDataSource: MatTableDataSource<LaneDB>
+  milestones: MilestoneDB[];
+  matTableDataSource: MatTableDataSource<MilestoneDB>
 
 
-  // front repo, that will be referenced by this.lanes
+  // front repo, that will be referenced by this.milestones
   frontRepo: FrontRepo
 
   // displayedColumns is referenced by the MatTable component for specify what columns
@@ -57,11 +57,11 @@ export class LanesTableComponent implements OnInit {
   }
 
   constructor(
-    private laneService: LaneService,
+    private milestoneService: MilestoneService,
     private frontRepoService: FrontRepoService,
 
-    // not null if the component is called as a selection component of lane instances
-    public dialogRef: MatDialogRef<LanesTableComponent>,
+    // not null if the component is called as a selection component of milestone instances
+    public dialogRef: MatDialogRef<MilestonesTableComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public dialogData: DialogData,
 
     private router: Router,
@@ -73,108 +73,106 @@ export class LanesTableComponent implements OnInit {
     };
 
     // observable for changes in structs
-    this.laneService.LaneServiceChanged.subscribe(
+    this.milestoneService.MilestoneServiceChanged.subscribe(
       message => {
         if (message == "post" || message == "update" || message == "delete") {
-          this.getLanes()
+          this.getMilestones()
         }
       }
     )
     if (dialogData == undefined) {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
-        "Order",
-        "Lanes",
-        "DiamonfAndTextAnchors",
+        "Date",
+        "Milestones",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
-        "Order",
-        "Lanes",
-        "DiamonfAndTextAnchors",
+        "Date",
+        "Milestones",
       ]
-      this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
+      this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);
     }
 
   }
 
   ngOnInit(): void {
-    this.getLanes()
-    this.matTableDataSource = new MatTableDataSource(this.lanes)
+    this.getMilestones()
+    this.matTableDataSource = new MatTableDataSource(this.milestones)
   }
 
-  getLanes(): void {
+  getMilestones(): void {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
         console.log("front repo pull returned")
 
-        this.lanes = this.frontRepo.Lanes_array;
+        this.milestones = this.frontRepo.Milestones_array;
 
         // insertion point for variables Recoveries
 
         // in case the component is called as a selection component
         if (this.dialogData != undefined) {
-          this.lanes.forEach(
-            lane => {
+          this.milestones.forEach(
+            milestone => {
               let ID = this.dialogData.ID
-              let revPointer = lane[this.dialogData.ReversePointer]
+              let revPointer = milestone[this.dialogData.ReversePointer]
               if (revPointer.Int64 == ID) {
-                this.initialSelection.push(lane)
+                this.initialSelection.push(milestone)
               }
             }
           )
-          this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
+          this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);
         }
 
         // update the mat table data source
-        this.matTableDataSource.data = this.lanes
+        this.matTableDataSource.data = this.milestones
       }
     )
   }
 
-  // newLane initiate a new lane
-  // create a new Lane objet
-  newLane() {
+  // newMilestone initiate a new milestone
+  // create a new Milestone objet
+  newMilestone() {
   }
 
-  deleteLane(laneID: number, lane: LaneDB) {
-    // list of lanes is truncated of lane before the delete
-    this.lanes = this.lanes.filter(h => h !== lane);
+  deleteMilestone(milestoneID: number, milestone: MilestoneDB) {
+    // list of milestones is truncated of milestone before the delete
+    this.milestones = this.milestones.filter(h => h !== milestone);
 
-    this.laneService.deleteLane(laneID).subscribe(
-      lane => {
-        this.laneService.LaneServiceChanged.next("delete")
+    this.milestoneService.deleteMilestone(milestoneID).subscribe(
+      milestone => {
+        this.milestoneService.MilestoneServiceChanged.next("delete")
 
-        console.log("lane deleted")
+        console.log("milestone deleted")
       }
     );
   }
 
-  editLane(laneID: number, lane: LaneDB) {
+  editMilestone(milestoneID: number, milestone: MilestoneDB) {
 
   }
 
-  // display lane in router
-  displayLaneInRouter(laneID: number) {
-    this.router.navigate(["lane-display", laneID])
+  // display milestone in router
+  displayMilestoneInRouter(milestoneID: number) {
+    this.router.navigate(["milestone-display", milestoneID])
   }
 
   // set editor outlet
-  setEditorRouterOutlet(laneID: number) {
+  setEditorRouterOutlet(milestoneID: number) {
     this.router.navigate([{
       outlets: {
-        editor: ["lane-detail", laneID]
+        editor: ["milestone-detail", milestoneID]
       }
     }]);
   }
 
   // set presentation outlet
-  setPresentationRouterOutlet(laneID: number) {
+  setPresentationRouterOutlet(milestoneID: number) {
     this.router.navigate([{
       outlets: {
-        presentation: ["lane-presentation", laneID]
+        presentation: ["milestone-presentation", milestoneID]
       }
     }]);
   }
@@ -182,7 +180,7 @@ export class LanesTableComponent implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.lanes.length;
+    const numRows = this.milestones.length;
     return numSelected === numRows;
   }
 
@@ -190,40 +188,40 @@ export class LanesTableComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.lanes.forEach(row => this.selection.select(row));
+      this.milestones.forEach(row => this.selection.select(row));
   }
 
   save() {
 
-    let toUpdate = new Set<LaneDB>()
+    let toUpdate = new Set<MilestoneDB>()
 
-    // reset all initial selection of lane that belong to lane through Anarrayofb
+    // reset all initial selection of milestone that belong to milestone through Anarrayofb
     this.initialSelection.forEach(
-      lane => {
-        lane[this.dialogData.ReversePointer].Int64 = 0
-        lane[this.dialogData.ReversePointer].Valid = true
-        toUpdate.add(lane)
+      milestone => {
+        milestone[this.dialogData.ReversePointer].Int64 = 0
+        milestone[this.dialogData.ReversePointer].Valid = true
+        toUpdate.add(milestone)
       }
     )
 
-    // from selection, set lane that belong to lane through Anarrayofb
+    // from selection, set milestone that belong to milestone through Anarrayofb
     this.selection.selected.forEach(
-      lane => {
-        console.log("selection ID " + lane.ID)
+      milestone => {
+        console.log("selection ID " + milestone.ID)
         let ID = +this.dialogData.ID
-        lane[this.dialogData.ReversePointer].Int64 = ID
-        lane[this.dialogData.ReversePointer].Valid = true
-        toUpdate.add(lane)
+        milestone[this.dialogData.ReversePointer].Int64 = ID
+        milestone[this.dialogData.ReversePointer].Valid = true
+        toUpdate.add(milestone)
       }
     )
 
-    // update all lane (only update selection & initial selection)
+    // update all milestone (only update selection & initial selection)
     toUpdate.forEach(
-      lane => {
-        this.laneService.updateLane(lane)
-          .subscribe(lane => {
-            this.laneService.LaneServiceChanged.next("update")
-            console.log("lane saved")
+      milestone => {
+        this.milestoneService.updateMilestone(milestone)
+          .subscribe(milestone => {
+            this.milestoneService.MilestoneServiceChanged.next("update")
+            console.log("milestone saved")
           });
       }
     )

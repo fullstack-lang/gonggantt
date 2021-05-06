@@ -33,6 +33,17 @@
         </mat-select>
     </mat-form-field>
 </div>
+    <div class="details__item">
+    <mat-form-field>
+        <mat-label><- DiamonfAndTextAnchors</mat-label>
+        <mat-select [(ngModel)]="lane.Milestone_DiamonfAndTextAnchors_reverse">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let milestone of frontRepo.Milestones_array" [value]="milestone">
+                {{milestone.Name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
     <div class="details__save">
         <button mat-raised-button color="primary" (click)="save()">
 			Save lane

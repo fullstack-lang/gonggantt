@@ -212,6 +212,19 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 					}
 				}
 
+				// commit a slice of pointer translates to update reverse pointer to Milestone, i.e.
+				for _, milestone := range gantt.Milestones {
+					if milestoneDBID, ok := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]; ok {
+						if milestoneDB, ok := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDBID]; ok {
+							milestoneDB.Gantt_MilestonesDBID.Int64 = int64(ganttDB.ID)
+							milestoneDB.Gantt_MilestonesDBID.Valid = true
+							if q := backRepoGantt.db.Save(&milestoneDB); q.Error != nil {
+								return q.Error
+							}
+						}
+					}
+				}
+
 			}
 		}
 		query := backRepoGantt.db.Save(&ganttDB)
@@ -304,6 +317,16 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 				if LaneDB.Gantt_LanesDBID.Int64 == int64(ganttDB.ID) {
 					Lane := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[LaneDB.ID]
 					gantt.Lanes = append(gantt.Lanes, Lane)
+				}
+			}
+
+			// parse all MilestoneDB and redeem the array of poiners to Gantt
+			// first reset the slice
+			gantt.Milestones = gantt.Milestones[:0]
+			for _, MilestoneDB := range *backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB {
+				if MilestoneDB.Gantt_MilestonesDBID.Int64 == int64(ganttDB.ID) {
+					Milestone := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[MilestoneDB.ID]
+					gantt.Milestones = append(gantt.Milestones, Milestone)
 				}
 			}
 

@@ -13,6 +13,9 @@ import { GanttService } from './gantt.service'
 import { LaneDB } from './lane-db'
 import { LaneService } from './lane.service'
 
+import { MilestoneDB } from './milestone-db'
+import { MilestoneService } from './milestone.service'
+
 
 // FrontRepo stores all instances in a front repository (design pattern repository)
 export class FrontRepo { // insertion point sub template 
@@ -25,6 +28,9 @@ export class FrontRepo { // insertion point sub template
   Lanes_array = new Array<LaneDB>(); // array of repo instances
   Lanes = new Map<number, LaneDB>(); // map of repo instances
   Lanes_batch = new Map<number, LaneDB>(); // same but only in last GET (for finding repo instances to delete)
+  Milestones_array = new Array<MilestoneDB>(); // array of repo instances
+  Milestones = new Map<number, MilestoneDB>(); // map of repo instances
+  Milestones_batch = new Map<number, MilestoneDB>(); // same but only in last GET (for finding repo instances to delete)
 }
 
 //
@@ -62,6 +68,7 @@ export class FrontRepoService {
     private barService: BarService,
     private ganttService: GanttService,
     private laneService: LaneService,
+    private milestoneService: MilestoneService,
   ) { }
 
   // typing of observable can be messy in typescript. Therefore, one force the type
@@ -69,10 +76,12 @@ export class FrontRepoService {
     Observable<BarDB[]>,
     Observable<GanttDB[]>,
     Observable<LaneDB[]>,
+    Observable<MilestoneDB[]>,
   ] = [ // insertion point sub template 
       this.barService.getBars(),
       this.ganttService.getGantts(),
       this.laneService.getLanes(),
+      this.milestoneService.getMilestones(),
     ];
 
   //
@@ -91,6 +100,7 @@ export class FrontRepoService {
             bars_,
             gantts_,
             lanes_,
+            milestones_,
           ]) => {
             // Typing can be messy with many items. Therefore, type casting is necessary here
             // insertion point sub template for type casting 
@@ -100,6 +110,8 @@ export class FrontRepoService {
             gantts = gantts_
             var lanes: LaneDB[]
             lanes = lanes_
+            var milestones: MilestoneDB[]
+            milestones = milestones_
 
             // 
             // First Step: init map of instances
@@ -203,6 +215,39 @@ export class FrontRepoService {
               return 0;
             });
             
+            // init the array
+            FrontRepoSingloton.Milestones_array = milestones
+
+            // clear the map that counts Milestone in the GET
+            FrontRepoSingloton.Milestones_batch.clear()
+            
+            milestones.forEach(
+              milestone => {
+                FrontRepoSingloton.Milestones.set(milestone.ID, milestone)
+                FrontRepoSingloton.Milestones_batch.set(milestone.ID, milestone)
+              }
+            )
+            
+            // clear milestones that are absent from the batch
+            FrontRepoSingloton.Milestones.forEach(
+              milestone => {
+                if (FrontRepoSingloton.Milestones_batch.get(milestone.ID) == undefined) {
+                  FrontRepoSingloton.Milestones.delete(milestone.ID)
+                }
+              }
+            )
+            
+            // sort Milestones_array array
+            FrontRepoSingloton.Milestones_array.sort((t1, t2) => {
+              if (t1.Name > t2.Name) {
+                return 1;
+              }
+              if (t1.Name < t2.Name) {
+                return -1;
+              }
+              return 0;
+            });
+            
 
             // 
             // Second Step: redeem pointers between instances (thanks to maps in the First Step)
@@ -249,6 +294,39 @@ export class FrontRepoService {
                     _gantt.Lanes.push(lane)
                     if (lane.Gantt_Lanes_reverse == undefined) {
                       lane.Gantt_Lanes_reverse = _gantt
+                    }
+                  }
+                }
+                // insertion point for slice of pointer field Milestone.DiamonfAndTextAnchors redeeming
+                {
+                  let _milestone = FrontRepoSingloton.Milestones.get(lane.Milestone_DiamonfAndTextAnchorsDBID.Int64)
+                  if (_milestone) {
+                    if (_milestone.DiamonfAndTextAnchors == undefined) {
+                      _milestone.DiamonfAndTextAnchors = new Array<LaneDB>()
+                    }
+                    _milestone.DiamonfAndTextAnchors.push(lane)
+                    if (lane.Milestone_DiamonfAndTextAnchors_reverse == undefined) {
+                      lane.Milestone_DiamonfAndTextAnchors_reverse = _milestone
+                    }
+                  }
+                }
+              }
+            )
+            milestones.forEach(
+              milestone => {
+                // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
+
+                // insertion point for redeeming ONE-MANY associations
+                // insertion point for slice of pointer field Gantt.Milestones redeeming
+                {
+                  let _gantt = FrontRepoSingloton.Gantts.get(milestone.Gantt_MilestonesDBID.Int64)
+                  if (_gantt) {
+                    if (_gantt.Milestones == undefined) {
+                      _gantt.Milestones = new Array<MilestoneDB>()
+                    }
+                    _gantt.Milestones.push(milestone)
+                    if (milestone.Gantt_Milestones_reverse == undefined) {
+                      milestone.Gantt_Milestones_reverse = _gantt
                     }
                   }
                 }
@@ -420,6 +498,19 @@ export class FrontRepoService {
                     }
                   }
                 }
+                // insertion point for slice of pointer field Milestone.DiamonfAndTextAnchors redeeming
+                {
+                  let _milestone = FrontRepoSingloton.Milestones.get(lane.Milestone_DiamonfAndTextAnchorsDBID.Int64)
+                  if (_milestone) {
+                    if (_milestone.DiamonfAndTextAnchors == undefined) {
+                      _milestone.DiamonfAndTextAnchors = new Array<LaneDB>()
+                    }
+                    _milestone.DiamonfAndTextAnchors.push(lane)
+                    if (lane.Milestone_DiamonfAndTextAnchors_reverse == undefined) {
+                      lane.Milestone_DiamonfAndTextAnchors_reverse = _milestone
+                    }
+                  }
+                }
               }
             )
 
@@ -428,6 +519,70 @@ export class FrontRepoService {
               lane => {
                 if (FrontRepoSingloton.Lanes_batch.get(lane.ID) == undefined) {
                   FrontRepoSingloton.Lanes.delete(lane.ID)
+                }
+              }
+            )
+
+            // 
+            // Second Step: redeem pointers between instances (thanks to maps in the First Step)
+            // insertion point sub template 
+
+            // hand over control flow to observer
+            observer.next(FrontRepoSingloton)
+          }
+        )
+      }
+    )
+  }
+
+  // MilestonePull performs a GET on Milestone of the stack and redeem association pointers 
+  MilestonePull(): Observable<FrontRepo> {
+    return new Observable<FrontRepo>(
+      (observer) => {
+        combineLatest([
+          this.milestoneService.getMilestones()
+        ]).subscribe(
+          ([ // insertion point sub template 
+            milestones,
+          ]) => {
+            // init the array
+            FrontRepoSingloton.Milestones_array = milestones
+
+            // clear the map that counts Milestone in the GET
+            FrontRepoSingloton.Milestones_batch.clear()
+
+            // 
+            // First Step: init map of instances
+            // insertion point sub template 
+            milestones.forEach(
+              milestone => {
+                FrontRepoSingloton.Milestones.set(milestone.ID, milestone)
+                FrontRepoSingloton.Milestones_batch.set(milestone.ID, milestone)
+
+                // insertion point for redeeming ONE/ZERO-ONE associations 
+
+                // insertion point for redeeming ONE-MANY associations 
+                // insertion point for slice of pointer field Gantt.Milestones redeeming
+                {
+                  let _gantt = FrontRepoSingloton.Gantts.get(milestone.Gantt_MilestonesDBID.Int64)
+                  if (_gantt) {
+                    if (_gantt.Milestones == undefined) {
+                      _gantt.Milestones = new Array<MilestoneDB>()
+                    }
+                    _gantt.Milestones.push(milestone)
+                    if (milestone.Gantt_Milestones_reverse == undefined) {
+                      milestone.Gantt_Milestones_reverse = _gantt
+                    }
+                  }
+                }
+              }
+            )
+
+            // clear milestones that are absent from the GET
+            FrontRepoSingloton.Milestones.forEach(
+              milestone => {
+                if (FrontRepoSingloton.Milestones_batch.get(milestone.ID) == undefined) {
+                  FrontRepoSingloton.Milestones.delete(milestone.ID)
                 }
               }
             )
@@ -454,4 +609,7 @@ export function getGanttUniqueID(id: number): number {
 }
 export function getLaneUniqueID(id: number): number {
   return 41 * id
+}
+export function getMilestoneUniqueID(id: number): number {
+  return 43 * id
 }

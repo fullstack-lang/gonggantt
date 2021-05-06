@@ -1,6 +1,7 @@
 // insertion point for imports
 import { BarDB } from './bar-db'
 import { GanttDB } from './gantt-db'
+import { MilestoneDB } from './milestone-db'
 
 // usefull for managing pointer ID values that can be nullable
 import { NullInt64 } from './front-repo.service'
@@ -18,5 +19,8 @@ export class LaneDB {
 	Bars?: Array<BarDB>
 	Gantt_LanesDBID?: NullInt64
 	Gantt_Lanes_reverse?: GanttDB
+
+	Milestone_DiamonfAndTextAnchorsDBID?: NullInt64
+	Milestone_DiamonfAndTextAnchors_reverse?: MilestoneDB
 
 }

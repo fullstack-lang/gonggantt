@@ -14,6 +14,8 @@ import { GanttService } from '../gantt.service'
 import { getGanttUniqueID } from '../front-repo.service'
 import { LaneService } from '../lane.service'
 import { getLaneUniqueID } from '../front-repo.service'
+import { MilestoneService } from '../milestone.service'
+import { getMilestoneUniqueID } from '../front-repo.service'
 
 /**
  * Types of a GongNode / GongFlatNode
@@ -149,6 +151,7 @@ export class SidebarComponent implements OnInit {
     private barService: BarService,
     private ganttService: GanttService,
     private laneService: LaneService,
+    private milestoneService: MilestoneService,
   ) { }
 
   ngOnInit(): void {
@@ -173,6 +176,14 @@ export class SidebarComponent implements OnInit {
     )
     // observable for changes in structs
     this.laneService.LaneServiceChanged.subscribe(
+      message => {
+        if (message == "post" || message == "update" || message == "delete") {
+          this.refresh()
+        }
+      }
+    )
+    // observable for changes in structs
+    this.milestoneService.MilestoneServiceChanged.subscribe(
       message => {
         if (message == "post" || message == "update" || message == "delete") {
           this.refresh()
@@ -315,6 +326,36 @@ export class SidebarComponent implements OnInit {
             LanesGongNodeAssociation.children.push(laneNode)
           })
 
+          /**
+          * let append a node for the slide of pointer Milestones
+          */
+          let MilestonesGongNodeAssociation: GongNode = {
+            name: "(Milestone) Milestones",
+            type: GongNodeType.ONE__ZERO_MANY_ASSOCIATION,
+            id: ganttDB.ID,
+            uniqueIdPerStack: 19 * nonInstanceNodeId,
+            structName: "Gantt",
+            associatedStructName: "Milestone",
+            children: new Array<GongNode>()
+          }
+          nonInstanceNodeId = nonInstanceNodeId + 1
+          ganttGongNodeInstance.children.push(MilestonesGongNodeAssociation)
+
+          ganttDB.Milestones?.forEach(milestoneDB => {
+            let milestoneNode: GongNode = {
+              name: milestoneDB.Name,
+              type: GongNodeType.INSTANCE,
+              id: milestoneDB.ID,
+              uniqueIdPerStack: // godel numbering (thank you kurt)
+                7 * getGanttUniqueID(ganttDB.ID)
+                + 11 * getMilestoneUniqueID(milestoneDB.ID),
+              structName: "Milestone",
+              associatedStructName: "",
+              children: new Array<GongNode>()
+            }
+            MilestonesGongNodeAssociation.children.push(milestoneNode)
+          })
+
         }
       )
 
@@ -385,6 +426,78 @@ export class SidebarComponent implements OnInit {
               children: new Array<GongNode>()
             }
             BarsGongNodeAssociation.children.push(barNode)
+          })
+
+        }
+      )
+
+      /**
+      * fill up the Milestone part of the mat tree
+      */
+      let milestoneGongNodeStruct: GongNode = {
+        name: "Milestone",
+        type: GongNodeType.STRUCT,
+        id: 0,
+        uniqueIdPerStack: 13 * nonInstanceNodeId,
+        structName: "Milestone",
+        associatedStructName: "",
+        children: new Array<GongNode>()
+      }
+      nonInstanceNodeId = nonInstanceNodeId + 1
+      this.gongNodeTree.push(milestoneGongNodeStruct)
+
+      this.frontRepo.Milestones_array.sort((t1, t2) => {
+        if (t1.Name > t2.Name) {
+          return 1;
+        }
+        if (t1.Name < t2.Name) {
+          return -1;
+        }
+        return 0;
+      });
+
+      this.frontRepo.Milestones_array.forEach(
+        milestoneDB => {
+          let milestoneGongNodeInstance: GongNode = {
+            name: milestoneDB.Name,
+            type: GongNodeType.INSTANCE,
+            id: milestoneDB.ID,
+            uniqueIdPerStack: getMilestoneUniqueID(milestoneDB.ID),
+            structName: "Milestone",
+            associatedStructName: "",
+            children: new Array<GongNode>()
+          }
+          milestoneGongNodeStruct.children.push(milestoneGongNodeInstance)
+
+          // insertion point for per field code
+          /**
+          * let append a node for the slide of pointer DiamonfAndTextAnchors
+          */
+          let DiamonfAndTextAnchorsGongNodeAssociation: GongNode = {
+            name: "(Lane) DiamonfAndTextAnchors",
+            type: GongNodeType.ONE__ZERO_MANY_ASSOCIATION,
+            id: milestoneDB.ID,
+            uniqueIdPerStack: 19 * nonInstanceNodeId,
+            structName: "Milestone",
+            associatedStructName: "Lane",
+            children: new Array<GongNode>()
+          }
+          nonInstanceNodeId = nonInstanceNodeId + 1
+          milestoneGongNodeInstance.children.push(DiamonfAndTextAnchorsGongNodeAssociation)
+
+          milestoneDB.DiamonfAndTextAnchors?.forEach(laneDB => {
+            let laneNode: GongNode = {
+              name: laneDB.Name,
+              type: GongNodeType.INSTANCE,
+              id: laneDB.ID,
+              uniqueIdPerStack: // godel numbering (thank you kurt)
+                7 * getMilestoneUniqueID(milestoneDB.ID)
+                + 11 * getLaneUniqueID(laneDB.ID),
+              structName: "Lane",
+              associatedStructName: "",
+              children: new Array<GongNode>()
+            }
+            DiamonfAndTextAnchorsGongNodeAssociation.children.push(laneNode)
           })
 
         }

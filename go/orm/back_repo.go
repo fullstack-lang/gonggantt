@@ -2,8 +2,8 @@
 package orm
 
 import (
-	"github.com/fullstack-lang/gonggantt/go/models"
 	"github.com/jinzhu/gorm"
+	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
 // BackRepoStruct supports callback functions
@@ -14,6 +14,8 @@ type BackRepoStruct struct {
 	BackRepoGantt BackRepoGanttStruct
 
 	BackRepoLane BackRepoLaneStruct
+
+	BackRepoMilestone BackRepoMilestoneStruct
 
 	CommitNb uint // this ng is updated at the BackRepo level but also at the BackRepo<GongStruct> level
 }
@@ -36,6 +38,7 @@ func (backRepo *BackRepoStruct) Init(db *gorm.DB) {
 	backRepo.BackRepoBar.Init(db)
 	backRepo.BackRepoGantt.Init(db)
 	backRepo.BackRepoLane.Init(db)
+	backRepo.BackRepoMilestone.Init(db)
 
 	models.Stage.BackRepo = backRepo
 }
@@ -46,11 +49,13 @@ func (backRepo *BackRepoStruct) Commit(stage *models.StageStruct) {
 	backRepo.BackRepoBar.CommitPhaseOne(stage)
 	backRepo.BackRepoGantt.CommitPhaseOne(stage)
 	backRepo.BackRepoLane.CommitPhaseOne(stage)
+	backRepo.BackRepoMilestone.CommitPhaseOne(stage)
 
 	// insertion point for per struct back repo phase two commit
 	backRepo.BackRepoBar.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoGantt.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoLane.CommitPhaseTwo(backRepo)
+	backRepo.BackRepoMilestone.CommitPhaseTwo(backRepo)
 
 	backRepo.IncrementCommitNb()
 }
@@ -61,11 +66,13 @@ func (backRepo *BackRepoStruct) Checkout(stage *models.StageStruct) {
 	backRepo.BackRepoBar.CheckoutPhaseOne()
 	backRepo.BackRepoGantt.CheckoutPhaseOne()
 	backRepo.BackRepoLane.CheckoutPhaseOne()
+	backRepo.BackRepoMilestone.CheckoutPhaseOne()
 
 	// insertion point for per struct back repo phase two commit
 	backRepo.BackRepoBar.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoGantt.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoLane.CheckoutPhaseTwo(backRepo)
+	backRepo.BackRepoMilestone.CheckoutPhaseTwo(backRepo)
 }
 
 var BackRepo BackRepoStruct

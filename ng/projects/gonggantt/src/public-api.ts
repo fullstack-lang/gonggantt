@@ -33,4 +33,11 @@ export * from './lib/lane-db'
 export * from './lib/lane-api'
 export * from './lib/lane.service'
 
+export * from './lib/milestone-detail/milestone-detail.component'
+export * from './lib/milestone-presentation/milestone-presentation.component'
+export * from './lib/milestones-table/milestones-table.component'
+export * from './lib/milestone-db'
+export * from './lib/milestone-api'
+export * from './lib/milestone.service'
+
 
