@@ -3,6 +3,7 @@ package gantt2svg
 import (
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
@@ -89,12 +90,13 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 	// Time Line
 	//
 	// creates a tick lane
-	laneHeight := 100.0
-	barHeigth := laneHeight * 0.8
+	laneHeight := 80.0
+	ratioBarToLaneHeight := 0.7
+	barHeigth := laneHeight * ratioBarToLaneHeight
 	YTopMargin := 10.0
 	yTimeLine := laneHeight*float64(len(stage.Lanes)) + YTopMargin
 
-	XLeftText := 10.0
+	XLeftText := 25.0
 	TextHeight := 16.0
 
 	XLeftLanes := 150.0
@@ -152,6 +154,14 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 
 	mapLaneHeight := make(map[*gonggantt_models.Lane]float64, 0)
 
+	//
+	// Sort Lanes according to the Order
+	//
+	sort.Slice(ganttToRender.Lanes, func(i, j int) bool {
+		return ganttToRender.Lanes[i].Order < ganttToRender.Lanes[j].Order
+	})
+
+	laneIndex := 0
 	for _, lane := range ganttToRender.Lanes {
 
 		laneSVG := new(gongsvg_models.Rect).Stage()
@@ -165,7 +175,11 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 
 		laneSVG.Color = "grey"
 		laneSVG.FillOpacity = 0.1
-		laneSVG.Color = "black"
+
+		if laneIndex%2 == 0 {
+			laneSVG.Color = "black"
+		}
+		laneIndex = laneIndex + 1
 		laneSVG.StrokeWidth = 1.5
 
 		laneText := new(gongsvg_models.Text).Stage()
@@ -247,26 +261,26 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		//
 		// draw diamond
 		//
-		diamondWidth := 24.0
+		diamondWidth := 18.0
 		for _, diamondAndTextAnchor := range milestone.DiamonfAndTextAnchors {
 
 			diamond := new(gongsvg_models.Rect).Stage()
 			svg.Rects = append(svg.Rects, diamond)
 			diamond.Name = milestone.Name
-			diamond.X = line.X1
-			diamond.Y = mapLaneHeight[diamondAndTextAnchor] - diamondWidth/2.0 + barHeigth/2.0
+			diamond.X = line.X1 - diamondWidth/2.0
+			diamond.Y = mapLaneHeight[diamondAndTextAnchor] - diamondWidth + laneHeight/2.0
 			diamond.Width = diamondWidth
 			diamond.Height = diamondWidth
 			diamond.Color = "red"
 			diamond.FillOpacity = 0.4
-			diamond.Transform = fmt.Sprintf("rotate(%d %f %f)", 45, diamond.X, diamond.Y)
+			diamond.Transform = fmt.Sprintf("rotate(%d %d %d)", 45, int64(diamond.X+diamondWidth/2.0), int64(diamond.Y+diamondWidth/2.0))
 
 			// bar text
 			milestoneText := new(gongsvg_models.Text).Stage()
 			milestoneText.Name = milestone.Name
 			milestoneText.Content = milestoneText.Name
 			milestoneText.X = diamond.X + XLeftText
-			milestoneText.Y = diamond.Y + TextHeight
+			milestoneText.Y = diamond.Y + TextHeight/2.0 + 5 // manual fine tuning
 			milestoneText.Color = "black"
 			milestoneText.FillOpacity = 1.0
 			svg.Texts = append(svg.Texts, milestoneText)
