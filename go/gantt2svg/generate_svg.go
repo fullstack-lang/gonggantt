@@ -99,7 +99,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 	XLeftText := 25.0
 	TextHeight := 16.0
 
-	XLeftLanes := 150.0
+	XLeftLanes := 250.0
 	XRightMargin := 2000.0
 
 	timeLine := new(gongsvg_models.Line).Stage()
