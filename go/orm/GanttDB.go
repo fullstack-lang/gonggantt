@@ -36,6 +36,55 @@ type GanttAPI struct {
 	// Declation for basic field ganttDB.End
 	End_Data sql.NullTime
 
+	// Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to be completed)
+	LaneHeight_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}} (to be completed)
+	RatioBarToLaneHeight_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to be completed)
+	YTopMargin_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.XLeftText {{BasicKind}} (to be completed)
+	XLeftText_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.TextHeight {{BasicKind}} (to be completed)
+	TextHeight_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to be completed)
+	XLeftLanes_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.XRightMargin {{BasicKind}} (to be completed)
+	XRightMargin_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.TimeLine_Color {{BasicKind}} (to be completed)
+	TimeLine_Color_Data sql.NullString
+
+	// Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}} (to be completed)
+	TimeLine_FillOpacity_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}} (to be completed)
+	TimeLine_Stroke_Data sql.NullString
+
+	// Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}} (to be completed)
+	TimeLine_StrokeWidth_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.Group_Stroke {{BasicKind}} (to be completed)
+	Group_Stroke_Data sql.NullString
+
+	// Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}} (to be completed)
+	Group_StrokeWidth_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}} (to be completed)
+	Group_StrokeDashArray_Data sql.NullString
+
+	// Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to be completed)
+	DateYOffset_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.AlignOnStartEndOnYearStart bool (to be completed)
+	// provide the sql storage for the boolan
+	AlignOnStartEndOnYearStart_Data sql.NullBool
+
 	// end of insertion
 }
 
@@ -199,6 +248,54 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 				ganttDB.End_Data.Time = gantt.End
 				ganttDB.End_Data.Valid = true
 
+				ganttDB.LaneHeight_Data.Float64 = gantt.LaneHeight
+				ganttDB.LaneHeight_Data.Valid = true
+
+				ganttDB.RatioBarToLaneHeight_Data.Float64 = gantt.RatioBarToLaneHeight
+				ganttDB.RatioBarToLaneHeight_Data.Valid = true
+
+				ganttDB.YTopMargin_Data.Float64 = gantt.YTopMargin
+				ganttDB.YTopMargin_Data.Valid = true
+
+				ganttDB.XLeftText_Data.Float64 = gantt.XLeftText
+				ganttDB.XLeftText_Data.Valid = true
+
+				ganttDB.TextHeight_Data.Float64 = gantt.TextHeight
+				ganttDB.TextHeight_Data.Valid = true
+
+				ganttDB.XLeftLanes_Data.Float64 = gantt.XLeftLanes
+				ganttDB.XLeftLanes_Data.Valid = true
+
+				ganttDB.XRightMargin_Data.Float64 = gantt.XRightMargin
+				ganttDB.XRightMargin_Data.Valid = true
+
+				ganttDB.TimeLine_Color_Data.String = gantt.TimeLine_Color
+				ganttDB.TimeLine_Color_Data.Valid = true
+
+				ganttDB.TimeLine_FillOpacity_Data.Float64 = gantt.TimeLine_FillOpacity
+				ganttDB.TimeLine_FillOpacity_Data.Valid = true
+
+				ganttDB.TimeLine_Stroke_Data.String = gantt.TimeLine_Stroke
+				ganttDB.TimeLine_Stroke_Data.Valid = true
+
+				ganttDB.TimeLine_StrokeWidth_Data.Float64 = gantt.TimeLine_StrokeWidth
+				ganttDB.TimeLine_StrokeWidth_Data.Valid = true
+
+				ganttDB.Group_Stroke_Data.String = gantt.Group_Stroke
+				ganttDB.Group_Stroke_Data.Valid = true
+
+				ganttDB.Group_StrokeWidth_Data.Float64 = gantt.Group_StrokeWidth
+				ganttDB.Group_StrokeWidth_Data.Valid = true
+
+				ganttDB.Group_StrokeDashArray_Data.String = gantt.Group_StrokeDashArray
+				ganttDB.Group_StrokeDashArray_Data.Valid = true
+
+				ganttDB.DateYOffset_Data.Float64 = gantt.DateYOffset
+				ganttDB.DateYOffset_Data.Valid = true
+
+				ganttDB.AlignOnStartEndOnYearStart_Data.Bool = gantt.AlignOnStartEndOnYearStart
+				ganttDB.AlignOnStartEndOnYearStart_Data.Valid = true
+
 				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
 				for _, lane := range gantt.Lanes {
 					if laneDBID, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
@@ -206,6 +303,32 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 							laneDB.Gantt_LanesDBID.Int64 = int64(ganttDB.ID)
 							laneDB.Gantt_LanesDBID.Valid = true
 							if q := backRepoGantt.db.Save(&laneDB); q.Error != nil {
+								return q.Error
+							}
+						}
+					}
+				}
+
+				// commit a slice of pointer translates to update reverse pointer to Milestone, i.e.
+				for _, milestone := range gantt.Milestones {
+					if milestoneDBID, ok := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]; ok {
+						if milestoneDB, ok := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDBID]; ok {
+							milestoneDB.Gantt_MilestonesDBID.Int64 = int64(ganttDB.ID)
+							milestoneDB.Gantt_MilestonesDBID.Valid = true
+							if q := backRepoGantt.db.Save(&milestoneDB); q.Error != nil {
+								return q.Error
+							}
+						}
+					}
+				}
+
+				// commit a slice of pointer translates to update reverse pointer to Group, i.e.
+				for _, group := range gantt.Groups {
+					if groupDBID, ok := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[group]; ok {
+						if groupDB, ok := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDBID]; ok {
+							groupDB.Gantt_GroupsDBID.Int64 = int64(ganttDB.ID)
+							groupDB.Gantt_GroupsDBID.Valid = true
+							if q := backRepoGantt.db.Save(&groupDB); q.Error != nil {
 								return q.Error
 							}
 						}
@@ -297,6 +420,37 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 
 			gantt.End = ganttDB.End_Data.Time
 
+			gantt.LaneHeight = ganttDB.LaneHeight_Data.Float64
+
+			gantt.RatioBarToLaneHeight = ganttDB.RatioBarToLaneHeight_Data.Float64
+
+			gantt.YTopMargin = ganttDB.YTopMargin_Data.Float64
+
+			gantt.XLeftText = ganttDB.XLeftText_Data.Float64
+
+			gantt.TextHeight = ganttDB.TextHeight_Data.Float64
+
+			gantt.XLeftLanes = ganttDB.XLeftLanes_Data.Float64
+
+			gantt.XRightMargin = ganttDB.XRightMargin_Data.Float64
+
+			gantt.TimeLine_Color = ganttDB.TimeLine_Color_Data.String
+
+			gantt.TimeLine_FillOpacity = ganttDB.TimeLine_FillOpacity_Data.Float64
+
+			gantt.TimeLine_Stroke = ganttDB.TimeLine_Stroke_Data.String
+
+			gantt.TimeLine_StrokeWidth = ganttDB.TimeLine_StrokeWidth_Data.Float64
+
+			gantt.Group_Stroke = ganttDB.Group_Stroke_Data.String
+
+			gantt.Group_StrokeWidth = ganttDB.Group_StrokeWidth_Data.Float64
+
+			gantt.Group_StrokeDashArray = ganttDB.Group_StrokeDashArray_Data.String
+
+			gantt.DateYOffset = ganttDB.DateYOffset_Data.Float64
+
+			gantt.AlignOnStartEndOnYearStart = ganttDB.AlignOnStartEndOnYearStart_Data.Bool
 			// parse all LaneDB and redeem the array of poiners to Gantt
 			// first reset the slice
 			gantt.Lanes = gantt.Lanes[:0]
@@ -304,6 +458,26 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 				if LaneDB.Gantt_LanesDBID.Int64 == int64(ganttDB.ID) {
 					Lane := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[LaneDB.ID]
 					gantt.Lanes = append(gantt.Lanes, Lane)
+				}
+			}
+
+			// parse all MilestoneDB and redeem the array of poiners to Gantt
+			// first reset the slice
+			gantt.Milestones = gantt.Milestones[:0]
+			for _, MilestoneDB := range *backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB {
+				if MilestoneDB.Gantt_MilestonesDBID.Int64 == int64(ganttDB.ID) {
+					Milestone := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[MilestoneDB.ID]
+					gantt.Milestones = append(gantt.Milestones, Milestone)
+				}
+			}
+
+			// parse all GroupDB and redeem the array of poiners to Gantt
+			// first reset the slice
+			gantt.Groups = gantt.Groups[:0]
+			for _, GroupDB := range *backRepo.BackRepoGroup.Map_GroupDBID_GroupDB {
+				if GroupDB.Gantt_GroupsDBID.Int64 == int64(ganttDB.ID) {
+					Group := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[GroupDB.ID]
+					gantt.Groups = append(gantt.Groups, Group)
 				}
 			}
 

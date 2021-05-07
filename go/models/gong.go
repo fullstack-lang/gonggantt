@@ -16,14 +16,18 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 
 	Gantts map[*Gantt]struct{}
 
+	Groups map[*Group]struct{}
+
 	Lanes map[*Lane]struct{}
+
+	Milestones map[*Milestone]struct{}
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
 
 	AllModelsStructDeleteCallback AllModelsStructDeleteInterface
 
 	BackRepo BackRepoInterface
-
+	
 	// if set will be called before each commit to the back repo
 	OnInitCommitCallback OnInitCommitInterface
 }
@@ -40,8 +44,12 @@ type BackRepoInterface interface {
 	CheckoutBar(bar *Bar)
 	CommitGantt(gantt *Gantt)
 	CheckoutGantt(gantt *Gantt)
+	CommitGroup(group *Group)
+	CheckoutGroup(group *Group)
 	CommitLane(lane *Lane)
 	CheckoutLane(lane *Lane)
+	CommitMilestone(milestone *Milestone)
+	CheckoutMilestone(milestone *Milestone)
 	GetLastCommitNb() uint
 }
 
@@ -51,13 +59,15 @@ var Stage StageStruct = StageStruct{ // insertion point for array initiatialisat
 
 	Gantts: make(map[*Gantt]struct{}, 0),
 
+	Groups: make(map[*Group]struct{}, 0),
+
 	Lanes: make(map[*Lane]struct{}, 0),
+
+	Milestones: make(map[*Milestone]struct{}, 0),
+
 }
 
 func (stage *StageStruct) Commit() {
-	if stage.OnInitCommitCallback != nil {
-		stage.OnInitCommitCallback.BeforeCommit(stage)
-	}
 	if stage.BackRepo != nil {
 		stage.BackRepo.Commit(stage)
 	}
@@ -268,6 +278,105 @@ func DeleteORMGantt(gantt *Gantt) {
 	}
 }
 
+func (stage *StageStruct) getGroupOrderedStructWithNameField() []*Group {
+	// have alphabetical order generation
+	groupOrdered := []*Group{}
+	for group := range stage.Groups {
+		groupOrdered = append(groupOrdered, group)
+	}
+	sort.Slice(groupOrdered[:], func(i, j int) bool {
+		return groupOrdered[i].Name < groupOrdered[j].Name
+	})
+	return groupOrdered
+}
+
+// Stage puts group to the model stage
+func (group *Group) Stage() *Group {
+	Stage.Groups[group] = __member
+	return group
+}
+
+// Unstage removes group off the model stage
+func (group *Group) Unstage() *Group {
+	delete(Stage.Groups, group)
+	return group
+}
+
+// commit group to the back repo (if it is already staged)
+func (group *Group) Commit() *Group {
+	if _, ok := Stage.Groups[group]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CommitGroup(group)
+		}
+	}
+	return group
+}
+
+// Checkout group to the back repo (if it is already staged)
+func (group *Group) Checkout() *Group {
+	if _, ok := Stage.Groups[group]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CheckoutGroup(group)
+		}
+	}
+	return group
+}
+
+//
+// Legacy, to be deleted
+//
+
+// StageCopy appends a copy of group to the model stage
+func (group *Group) StageCopy() *Group {
+	_group := new(Group)
+	*_group = *group
+	_group.Stage()
+	return _group
+}
+
+// StageAndCommit appends group to the model stage and commit to the orm repo
+func (group *Group) StageAndCommit() *Group {
+	group.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMGroup(group)
+	}
+	return group
+}
+
+// DeleteStageAndCommit appends group to the model stage and commit to the orm repo
+func (group *Group) DeleteStageAndCommit() *Group {
+	group.Unstage()
+	DeleteORMGroup(group)
+	return group
+}
+
+// StageCopyAndCommit appends a copy of group to the model stage and commit to the orm repo
+func (group *Group) StageCopyAndCommit() *Group {
+	_group := new(Group)
+	*_group = *group
+	_group.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMGroup(group)
+	}
+	return _group
+}
+
+// CreateORMGroup enables dynamic staging of a Group instance
+func CreateORMGroup(group *Group) {
+	group.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMGroup(group)
+	}
+}
+
+// DeleteORMGroup enables dynamic staging of a Group instance
+func DeleteORMGroup(group *Group) {
+	group.Unstage()
+	if Stage.AllModelsStructDeleteCallback != nil {
+		Stage.AllModelsStructDeleteCallback.DeleteORMGroup(group)
+	}
+}
+
 func (stage *StageStruct) getLaneOrderedStructWithNameField() []*Lane {
 	// have alphabetical order generation
 	laneOrdered := []*Lane{}
@@ -367,27 +476,134 @@ func DeleteORMLane(lane *Lane) {
 	}
 }
 
+func (stage *StageStruct) getMilestoneOrderedStructWithNameField() []*Milestone {
+	// have alphabetical order generation
+	milestoneOrdered := []*Milestone{}
+	for milestone := range stage.Milestones {
+		milestoneOrdered = append(milestoneOrdered, milestone)
+	}
+	sort.Slice(milestoneOrdered[:], func(i, j int) bool {
+		return milestoneOrdered[i].Name < milestoneOrdered[j].Name
+	})
+	return milestoneOrdered
+}
+
+// Stage puts milestone to the model stage
+func (milestone *Milestone) Stage() *Milestone {
+	Stage.Milestones[milestone] = __member
+	return milestone
+}
+
+// Unstage removes milestone off the model stage
+func (milestone *Milestone) Unstage() *Milestone {
+	delete(Stage.Milestones, milestone)
+	return milestone
+}
+
+// commit milestone to the back repo (if it is already staged)
+func (milestone *Milestone) Commit() *Milestone {
+	if _, ok := Stage.Milestones[milestone]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CommitMilestone(milestone)
+		}
+	}
+	return milestone
+}
+
+// Checkout milestone to the back repo (if it is already staged)
+func (milestone *Milestone) Checkout() *Milestone {
+	if _, ok := Stage.Milestones[milestone]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CheckoutMilestone(milestone)
+		}
+	}
+	return milestone
+}
+
+//
+// Legacy, to be deleted
+//
+
+// StageCopy appends a copy of milestone to the model stage
+func (milestone *Milestone) StageCopy() *Milestone {
+	_milestone := new(Milestone)
+	*_milestone = *milestone
+	_milestone.Stage()
+	return _milestone
+}
+
+// StageAndCommit appends milestone to the model stage and commit to the orm repo
+func (milestone *Milestone) StageAndCommit() *Milestone {
+	milestone.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMMilestone(milestone)
+	}
+	return milestone
+}
+
+// DeleteStageAndCommit appends milestone to the model stage and commit to the orm repo
+func (milestone *Milestone) DeleteStageAndCommit() *Milestone {
+	milestone.Unstage()
+	DeleteORMMilestone(milestone)
+	return milestone
+}
+
+// StageCopyAndCommit appends a copy of milestone to the model stage and commit to the orm repo
+func (milestone *Milestone) StageCopyAndCommit() *Milestone {
+	_milestone := new(Milestone)
+	*_milestone = *milestone
+	_milestone.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMMilestone(milestone)
+	}
+	return _milestone
+}
+
+// CreateORMMilestone enables dynamic staging of a Milestone instance
+func CreateORMMilestone(milestone *Milestone) {
+	milestone.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMMilestone(milestone)
+	}
+}
+
+// DeleteORMMilestone enables dynamic staging of a Milestone instance
+func DeleteORMMilestone(milestone *Milestone) {
+	milestone.Unstage()
+	if Stage.AllModelsStructDeleteCallback != nil {
+		Stage.AllModelsStructDeleteCallback.DeleteORMMilestone(milestone)
+	}
+}
+
 // swagger:ignore
 type AllModelsStructCreateInterface interface { // insertion point for Callbacks on creation
 	CreateORMBar(Bar *Bar)
 	CreateORMGantt(Gantt *Gantt)
+	CreateORMGroup(Group *Group)
 	CreateORMLane(Lane *Lane)
+	CreateORMMilestone(Milestone *Milestone)
 }
 
 type AllModelsStructDeleteInterface interface { // insertion point for Callbacks on deletion
 	DeleteORMBar(Bar *Bar)
 	DeleteORMGantt(Gantt *Gantt)
+	DeleteORMGroup(Group *Group)
 	DeleteORMLane(Lane *Lane)
+	DeleteORMMilestone(Milestone *Milestone)
 }
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
 	stage.Bars = make(map[*Bar]struct{}, 0)
 	stage.Gantts = make(map[*Gantt]struct{}, 0)
+	stage.Groups = make(map[*Group]struct{}, 0)
 	stage.Lanes = make(map[*Lane]struct{}, 0)
+	stage.Milestones = make(map[*Milestone]struct{}, 0)
 }
 
 func (stage *StageStruct) Nil() { // insertion point for array nil
 	stage.Bars = nil
 	stage.Gantts = nil
+	stage.Groups = nil
 	stage.Lanes = nil
+	stage.Milestones = nil
 }

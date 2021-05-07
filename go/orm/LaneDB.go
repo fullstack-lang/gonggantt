@@ -36,6 +36,12 @@ type LaneAPI struct {
 	// Implementation of a reverse ID for field Gantt{}.Lanes []*Lane
 	Gantt_LanesDBID sql.NullInt64
 
+	// Implementation of a reverse ID for field Group{}.GroupLanes []*Lane
+	Group_GroupLanesDBID sql.NullInt64
+
+	// Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
+	Milestone_DiamonfAndTextAnchorsDBID sql.NullInt64
+
 	// end of insertion
 }
 

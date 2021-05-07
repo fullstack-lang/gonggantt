@@ -85,12 +85,16 @@ export class LanesTableComponent implements OnInit {
         "Name",
         "Order",
         "Lanes",
+        "GroupLanes",
+        "DiamonfAndTextAnchors",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
         "Order",
         "Lanes",
+        "GroupLanes",
+        "DiamonfAndTextAnchors",
       ]
       this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
     }

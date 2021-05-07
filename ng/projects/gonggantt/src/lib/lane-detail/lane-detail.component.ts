@@ -100,6 +100,18 @@ export class LaneDetailComponent implements OnInit {
 				this.lane.Gantt_LanesDBID.Valid = true
 				this.lane.Gantt_Lanes_reverse = undefined // very important, otherwise, circular JSON
 			}
+			if (this.lane.Group_GroupLanes_reverse != undefined) {
+				this.lane.Group_GroupLanesDBID = new NullInt64
+				this.lane.Group_GroupLanesDBID.Int64 = this.lane.Group_GroupLanes_reverse.ID
+				this.lane.Group_GroupLanesDBID.Valid = true
+				this.lane.Group_GroupLanes_reverse = undefined // very important, otherwise, circular JSON
+			}
+			if (this.lane.Milestone_DiamonfAndTextAnchors_reverse != undefined) {
+				this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
+				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = this.lane.Milestone_DiamonfAndTextAnchors_reverse.ID
+				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
+				this.lane.Milestone_DiamonfAndTextAnchors_reverse = undefined // very important, otherwise, circular JSON
+			}
 		}
 
 		if (id != 0 && association == undefined) {
@@ -117,6 +129,16 @@ export class LaneDetailComponent implements OnInit {
 					this.lane.Gantt_LanesDBID = new NullInt64
 					this.lane.Gantt_LanesDBID.Int64 = id
 					this.lane.Gantt_LanesDBID.Valid = true
+					break
+				case "Group_GroupLanes":
+					this.lane.Group_GroupLanesDBID = new NullInt64
+					this.lane.Group_GroupLanesDBID.Int64 = id
+					this.lane.Group_GroupLanesDBID.Valid = true
+					break
+				case "Milestone_DiamonfAndTextAnchors":
+					this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
+					this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = id
+					this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
 					break
 			}
 			this.laneService.postLane(this.lane).subscribe(lane => {

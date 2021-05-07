@@ -58,12 +58,26 @@ func RegisterControllers(r *gin.Engine) {
 		v1.PUT("/v1/gantts/:id", UpdateGantt)
 		v1.DELETE("/v1/gantts/:id", DeleteGantt)
 
+		v1.GET("/v1/groups", GetGroups)
+		v1.GET("/v1/groups/:id", GetGroup)
+		v1.POST("/v1/groups", PostGroup)
+		v1.PATCH("/v1/groups/:id", UpdateGroup)
+		v1.PUT("/v1/groups/:id", UpdateGroup)
+		v1.DELETE("/v1/groups/:id", DeleteGroup)
+
 		v1.GET("/v1/lanes", GetLanes)
 		v1.GET("/v1/lanes/:id", GetLane)
 		v1.POST("/v1/lanes", PostLane)
 		v1.PATCH("/v1/lanes/:id", UpdateLane)
 		v1.PUT("/v1/lanes/:id", UpdateLane)
 		v1.DELETE("/v1/lanes/:id", DeleteLane)
+
+		v1.GET("/v1/milestones", GetMilestones)
+		v1.GET("/v1/milestones/:id", GetMilestone)
+		v1.POST("/v1/milestones", PostMilestone)
+		v1.PATCH("/v1/milestones/:id", UpdateMilestone)
+		v1.PUT("/v1/milestones/:id", UpdateMilestone)
+		v1.DELETE("/v1/milestones/:id", DeleteMilestone)
 
 
 		v1.GET("/commitnb", GetLastCommitNb)

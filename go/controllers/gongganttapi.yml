@@ -1,0 +1,1371 @@
+basePath: /api/github.com/fullstack-lang/gonggantt/go/v1
+consumes:
+- application/json
+definitions:
+  Bar:
+    properties:
+      End:
+        format: date-time
+        type: string
+      Name:
+        type: string
+      Start:
+        format: date-time
+        type: string
+    type: object
+    x-go-package: github.com/fullstack-lang/gonggantt/go/models
+  Group:
+    properties:
+      GroupLanes:
+        description: Lanes that need to be grouped
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Name:
+        type: string
+    type: object
+    x-go-package: github.com/fullstack-lang/gonggantt/go/models
+  Lane:
+    properties:
+      Bars:
+        items:
+          $ref: '#/definitions/Bar'
+        type: array
+      Name:
+        type: string
+      Order:
+        description: Lane are displayed in increasing order
+        format: int64
+        type: integer
+    type: object
+    x-go-package: github.com/fullstack-lang/gonggantt/go/models
+  Milestone:
+    properties:
+      Date:
+        format: date-time
+        type: string
+      DiamonfAndTextAnchors:
+        description: a red diamond a text anchor will be displayed
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Name:
+        type: string
+    type: object
+    x-go-package: github.com/fullstack-lang/gonggantt/go/models
+  NullBool:
+    description: |-
+      NullBool implements the Scanner interface so
+      it can be used as a scan destination, similar to NullString.
+    properties:
+      Bool:
+        type: boolean
+      Valid:
+        type: boolean
+    title: NullBool represents a bool that may be null.
+    type: object
+    x-go-package: database/sql
+  NullFloat64:
+    description: |-
+      NullFloat64 implements the Scanner interface so
+      it can be used as a scan destination, similar to NullString.
+    properties:
+      Float64:
+        format: double
+        type: number
+      Valid:
+        type: boolean
+    title: NullFloat64 represents a float64 that may be null.
+    type: object
+    x-go-package: database/sql
+  NullInt64:
+    description: |-
+      NullInt64 implements the Scanner interface so
+      it can be used as a scan destination, similar to NullString.
+    properties:
+      Int64:
+        format: int64
+        type: integer
+      Valid:
+        type: boolean
+    title: NullInt64 represents an int64 that may be null.
+    type: object
+    x-go-package: database/sql
+  NullString:
+    description: |-
+      var s NullString
+      err := db.QueryRow("SELECT name FROM foo WHERE id=?", id).Scan(&s)
+      ...
+      if s.Valid {
+      use s.String
+      } else {
+      NULL value
+      }
+    properties:
+      String:
+        type: string
+      Valid:
+        type: boolean
+    title: |-
+      NullString represents a string that may be null.
+      NullString implements the Scanner interface so
+      it can be used as a scan destination:
+    type: object
+    x-go-package: database/sql
+  NullTime:
+    description: |-
+      NullTime implements the Scanner interface so
+      it can be used as a scan destination, similar to NullString.
+    properties:
+      Time:
+        format: date-time
+        type: string
+      Valid:
+        type: boolean
+    title: NullTime represents a time.Time that may be null.
+    type: object
+    x-go-package: database/sql
+  barAPI:
+    description: |-
+      for POST, API, one needs the fields of the model as well as the fields
+      from associations ("Has One" and "Has Many") that are generated to
+      fullfill the ORM requirements for associations
+    properties:
+      End:
+        format: date-time
+        type: string
+      End_Data:
+        $ref: '#/definitions/NullTime'
+      Lane_BarsDBID:
+        $ref: '#/definitions/NullInt64'
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+      Start:
+        format: date-time
+        type: string
+      Start_Data:
+        $ref: '#/definitions/NullTime'
+    title: BarAPI is the input in POST API
+    type: object
+    x-go-name: BarAPI
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  barDB:
+    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    properties:
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        format: date-time
+        type: string
+      End:
+        format: date-time
+        type: string
+      End_Data:
+        $ref: '#/definitions/NullTime'
+      ID:
+        format: uint64
+        type: integer
+      Lane_BarsDBID:
+        $ref: '#/definitions/NullInt64'
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+      Start:
+        format: date-time
+        type: string
+      Start_Data:
+        $ref: '#/definitions/NullTime'
+      UpdatedAt:
+        format: date-time
+        type: string
+    title: BarDB describes a bar in the database
+    type: object
+    x-go-name: BarDB
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  ganttAPI:
+    description: |-
+      for POST, API, one needs the fields of the model as well as the fields
+      from associations ("Has One" and "Has Many") that are generated to
+      fullfill the ORM requirements for associations
+    properties:
+      AlignOnStartEndOnYearStart:
+        type: boolean
+      AlignOnStartEndOnYearStart_Data:
+        $ref: '#/definitions/NullBool'
+      DateYOffset:
+        format: double
+        type: number
+      DateYOffset_Data:
+        $ref: '#/definitions/NullFloat64'
+      End:
+        format: date-time
+        type: string
+      End_Data:
+        $ref: '#/definitions/NullTime'
+      Group_Stroke:
+        type: string
+      Group_Stroke_Data:
+        $ref: '#/definitions/NullString'
+      Group_StrokeDashArray:
+        type: string
+      Group_StrokeDashArray_Data:
+        $ref: '#/definitions/NullString'
+      Group_StrokeWidth:
+        format: double
+        type: number
+      Group_StrokeWidth_Data:
+        $ref: '#/definitions/NullFloat64'
+      Groups:
+        description: list of Groups
+        items:
+          $ref: '#/definitions/Group'
+        type: array
+      LaneHeight:
+        format: double
+        type: number
+      LaneHeight_Data:
+        $ref: '#/definitions/NullFloat64'
+      Lanes:
+        description: List of Lanes
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Milestones:
+        description: list of Milestones
+        items:
+          $ref: '#/definitions/Milestone'
+        type: array
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+      RatioBarToLaneHeight:
+        format: double
+        type: number
+      RatioBarToLaneHeight_Data:
+        $ref: '#/definitions/NullFloat64'
+      Start:
+        format: date-time
+        type: string
+      Start_Data:
+        $ref: '#/definitions/NullTime'
+      TextHeight:
+        format: double
+        type: number
+      TextHeight_Data:
+        $ref: '#/definitions/NullFloat64'
+      TimeLine_Color:
+        type: string
+      TimeLine_Color_Data:
+        $ref: '#/definitions/NullString'
+      TimeLine_FillOpacity:
+        format: double
+        type: number
+      TimeLine_FillOpacity_Data:
+        $ref: '#/definitions/NullFloat64'
+      TimeLine_Stroke:
+        type: string
+      TimeLine_Stroke_Data:
+        $ref: '#/definitions/NullString'
+      TimeLine_StrokeWidth:
+        format: double
+        type: number
+      TimeLine_StrokeWidth_Data:
+        $ref: '#/definitions/NullFloat64'
+      XLeftLanes:
+        format: double
+        type: number
+      XLeftLanes_Data:
+        $ref: '#/definitions/NullFloat64'
+      XLeftText:
+        format: double
+        type: number
+      XLeftText_Data:
+        $ref: '#/definitions/NullFloat64'
+      XRightMargin:
+        format: double
+        type: number
+      XRightMargin_Data:
+        $ref: '#/definitions/NullFloat64'
+      YTopMargin:
+        format: double
+        type: number
+      YTopMargin_Data:
+        $ref: '#/definitions/NullFloat64'
+    title: GanttAPI is the input in POST API
+    type: object
+    x-go-name: GanttAPI
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  ganttDB:
+    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    properties:
+      AlignOnStartEndOnYearStart:
+        type: boolean
+      AlignOnStartEndOnYearStart_Data:
+        $ref: '#/definitions/NullBool'
+      CreatedAt:
+        format: date-time
+        type: string
+      DateYOffset:
+        format: double
+        type: number
+      DateYOffset_Data:
+        $ref: '#/definitions/NullFloat64'
+      DeletedAt:
+        format: date-time
+        type: string
+      End:
+        format: date-time
+        type: string
+      End_Data:
+        $ref: '#/definitions/NullTime'
+      Group_Stroke:
+        type: string
+      Group_Stroke_Data:
+        $ref: '#/definitions/NullString'
+      Group_StrokeDashArray:
+        type: string
+      Group_StrokeDashArray_Data:
+        $ref: '#/definitions/NullString'
+      Group_StrokeWidth:
+        format: double
+        type: number
+      Group_StrokeWidth_Data:
+        $ref: '#/definitions/NullFloat64'
+      Groups:
+        description: list of Groups
+        items:
+          $ref: '#/definitions/Group'
+        type: array
+      ID:
+        format: uint64
+        type: integer
+      LaneHeight:
+        format: double
+        type: number
+      LaneHeight_Data:
+        $ref: '#/definitions/NullFloat64'
+      Lanes:
+        description: List of Lanes
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Milestones:
+        description: list of Milestones
+        items:
+          $ref: '#/definitions/Milestone'
+        type: array
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+      RatioBarToLaneHeight:
+        format: double
+        type: number
+      RatioBarToLaneHeight_Data:
+        $ref: '#/definitions/NullFloat64'
+      Start:
+        format: date-time
+        type: string
+      Start_Data:
+        $ref: '#/definitions/NullTime'
+      TextHeight:
+        format: double
+        type: number
+      TextHeight_Data:
+        $ref: '#/definitions/NullFloat64'
+      TimeLine_Color:
+        type: string
+      TimeLine_Color_Data:
+        $ref: '#/definitions/NullString'
+      TimeLine_FillOpacity:
+        format: double
+        type: number
+      TimeLine_FillOpacity_Data:
+        $ref: '#/definitions/NullFloat64'
+      TimeLine_Stroke:
+        type: string
+      TimeLine_Stroke_Data:
+        $ref: '#/definitions/NullString'
+      TimeLine_StrokeWidth:
+        format: double
+        type: number
+      TimeLine_StrokeWidth_Data:
+        $ref: '#/definitions/NullFloat64'
+      UpdatedAt:
+        format: date-time
+        type: string
+      XLeftLanes:
+        format: double
+        type: number
+      XLeftLanes_Data:
+        $ref: '#/definitions/NullFloat64'
+      XLeftText:
+        format: double
+        type: number
+      XLeftText_Data:
+        $ref: '#/definitions/NullFloat64'
+      XRightMargin:
+        format: double
+        type: number
+      XRightMargin_Data:
+        $ref: '#/definitions/NullFloat64'
+      YTopMargin:
+        format: double
+        type: number
+      YTopMargin_Data:
+        $ref: '#/definitions/NullFloat64'
+    title: GanttDB describes a gantt in the database
+    type: object
+    x-go-name: GanttDB
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  groupAPI:
+    description: |-
+      for POST, API, one needs the fields of the model as well as the fields
+      from associations ("Has One" and "Has Many") that are generated to
+      fullfill the ORM requirements for associations
+    properties:
+      Gantt_GroupsDBID:
+        $ref: '#/definitions/NullInt64'
+      GroupLanes:
+        description: Lanes that need to be grouped
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+    title: GroupAPI is the input in POST API
+    type: object
+    x-go-name: GroupAPI
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  groupDB:
+    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    properties:
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        format: date-time
+        type: string
+      Gantt_GroupsDBID:
+        $ref: '#/definitions/NullInt64'
+      GroupLanes:
+        description: Lanes that need to be grouped
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      ID:
+        format: uint64
+        type: integer
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+      UpdatedAt:
+        format: date-time
+        type: string
+    title: GroupDB describes a group in the database
+    type: object
+    x-go-name: GroupDB
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  laneAPI:
+    description: |-
+      for POST, API, one needs the fields of the model as well as the fields
+      from associations ("Has One" and "Has Many") that are generated to
+      fullfill the ORM requirements for associations
+    properties:
+      Bars:
+        items:
+          $ref: '#/definitions/Bar'
+        type: array
+      Gantt_LanesDBID:
+        $ref: '#/definitions/NullInt64'
+      Group_GroupLanesDBID:
+        $ref: '#/definitions/NullInt64'
+      Milestone_DiamonfAndTextAnchorsDBID:
+        $ref: '#/definitions/NullInt64'
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+      Order:
+        description: Lane are displayed in increasing order
+        format: int64
+        type: integer
+      Order_Data:
+        $ref: '#/definitions/NullInt64'
+    title: LaneAPI is the input in POST API
+    type: object
+    x-go-name: LaneAPI
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  laneDB:
+    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    properties:
+      Bars:
+        items:
+          $ref: '#/definitions/Bar'
+        type: array
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        format: date-time
+        type: string
+      Gantt_LanesDBID:
+        $ref: '#/definitions/NullInt64'
+      Group_GroupLanesDBID:
+        $ref: '#/definitions/NullInt64'
+      ID:
+        format: uint64
+        type: integer
+      Milestone_DiamonfAndTextAnchorsDBID:
+        $ref: '#/definitions/NullInt64'
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+      Order:
+        description: Lane are displayed in increasing order
+        format: int64
+        type: integer
+      Order_Data:
+        $ref: '#/definitions/NullInt64'
+      UpdatedAt:
+        format: date-time
+        type: string
+    title: LaneDB describes a lane in the database
+    type: object
+    x-go-name: LaneDB
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  milestoneAPI:
+    description: |-
+      for POST, API, one needs the fields of the model as well as the fields
+      from associations ("Has One" and "Has Many") that are generated to
+      fullfill the ORM requirements for associations
+    properties:
+      Date:
+        format: date-time
+        type: string
+      Date_Data:
+        $ref: '#/definitions/NullTime'
+      DiamonfAndTextAnchors:
+        description: a red diamond a text anchor will be displayed
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Gantt_MilestonesDBID:
+        $ref: '#/definitions/NullInt64'
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+    title: MilestoneAPI is the input in POST API
+    type: object
+    x-go-name: MilestoneAPI
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  milestoneDB:
+    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    properties:
+      CreatedAt:
+        format: date-time
+        type: string
+      Date:
+        format: date-time
+        type: string
+      Date_Data:
+        $ref: '#/definitions/NullTime'
+      DeletedAt:
+        format: date-time
+        type: string
+      DiamonfAndTextAnchors:
+        description: a red diamond a text anchor will be displayed
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Gantt_MilestonesDBID:
+        $ref: '#/definitions/NullInt64'
+      ID:
+        format: uint64
+        type: integer
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+      UpdatedAt:
+        format: date-time
+        type: string
+    title: MilestoneDB describes a milestone in the database
+    type: object
+    x-go-name: MilestoneDB
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+host: localhost:8080
+info:
+  description: gonggantt exposes types of a package.
+  title: gonggantt backend API
+  version: "0.1"
+paths:
+  /bars:
+    get:
+      description: Get all bars
+      operationId: getBars
+      responses:
+        "200":
+          $ref: '#/responses/barDBsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - bars
+    post:
+      consumes:
+      - application/json
+      description: Creates a bar
+      operationId: postBar
+      parameters:
+      - description: The Bar to submit or modify
+        in: body
+        name: Bar
+        schema:
+          $ref: '#/definitions/barAPI'
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/barDBResponse'
+      tags:
+      - bars
+  /bars/{ID}:
+    delete:
+      description: Delete a bar
+      operationId: deleteBar
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - bars
+    get:
+      operationId: getBar
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/barDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Gets the details for a bar.
+      tags:
+      - bars
+    patch:
+      description: Update a bar
+      operationId: updateBar
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: The Bar to submit or modify
+        in: body
+        name: Bar
+        schema:
+          $ref: '#/definitions/barAPI'
+      responses:
+        "200":
+          $ref: '#/responses/barDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - bars
+  /commitnb:
+    get:
+      operationId: GetLastCommitNb
+      tags:
+      - backrepo
+  /gantts:
+    get:
+      description: Get all gantts
+      operationId: getGantts
+      responses:
+        "200":
+          $ref: '#/responses/ganttDBsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - gantts
+    post:
+      consumes:
+      - application/json
+      description: Creates a gantt
+      operationId: postGantt
+      parameters:
+      - description: The Gantt to submit or modify
+        in: body
+        name: Gantt
+        schema:
+          $ref: '#/definitions/ganttAPI'
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/ganttDBResponse'
+      tags:
+      - gantts
+  /gantts/{ID}:
+    delete:
+      description: Delete a gantt
+      operationId: deleteGantt
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - gantts
+    get:
+      operationId: getGantt
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/ganttDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Gets the details for a gantt.
+      tags:
+      - gantts
+    patch:
+      description: Update a gantt
+      operationId: updateGantt
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: The Gantt to submit or modify
+        in: body
+        name: Gantt
+        schema:
+          $ref: '#/definitions/ganttAPI'
+      responses:
+        "200":
+          $ref: '#/responses/ganttDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - gantts
+  /groups:
+    get:
+      description: Get all groups
+      operationId: getGroups
+      responses:
+        "200":
+          $ref: '#/responses/groupDBsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      description: Creates a group
+      operationId: postGroup
+      parameters:
+      - description: The Group to submit or modify
+        in: body
+        name: Group
+        schema:
+          $ref: '#/definitions/groupAPI'
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/groupDBResponse'
+      tags:
+      - groups
+  /groups/{ID}:
+    delete:
+      description: Delete a group
+      operationId: deleteGroup
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - groups
+    get:
+      operationId: getGroup
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/groupDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Gets the details for a group.
+      tags:
+      - groups
+    patch:
+      description: Update a group
+      operationId: updateGroup
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: The Group to submit or modify
+        in: body
+        name: Group
+        schema:
+          $ref: '#/definitions/groupAPI'
+      responses:
+        "200":
+          $ref: '#/responses/groupDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - groups
+  /lanes:
+    get:
+      description: Get all lanes
+      operationId: getLanes
+      responses:
+        "200":
+          $ref: '#/responses/laneDBsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - lanes
+    post:
+      consumes:
+      - application/json
+      description: Creates a lane
+      operationId: postLane
+      parameters:
+      - description: The Lane to submit or modify
+        in: body
+        name: Lane
+        schema:
+          $ref: '#/definitions/laneAPI'
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/laneDBResponse'
+      tags:
+      - lanes
+  /lanes/{ID}:
+    delete:
+      description: Delete a lane
+      operationId: deleteLane
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - lanes
+    get:
+      operationId: getLane
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/laneDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Gets the details for a lane.
+      tags:
+      - lanes
+    patch:
+      description: Update a lane
+      operationId: updateLane
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: The Lane to submit or modify
+        in: body
+        name: Lane
+        schema:
+          $ref: '#/definitions/laneAPI'
+      responses:
+        "200":
+          $ref: '#/responses/laneDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - lanes
+  /milestones:
+    get:
+      description: Get all milestones
+      operationId: getMilestones
+      responses:
+        "200":
+          $ref: '#/responses/milestoneDBsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - milestones
+    post:
+      consumes:
+      - application/json
+      description: Creates a milestone
+      operationId: postMilestone
+      parameters:
+      - description: The Milestone to submit or modify
+        in: body
+        name: Milestone
+        schema:
+          $ref: '#/definitions/milestoneAPI'
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/milestoneDBResponse'
+      tags:
+      - milestones
+  /milestones/{ID}:
+    delete:
+      description: Delete a milestone
+      operationId: deleteMilestone
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - milestones
+    get:
+      operationId: getMilestone
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/milestoneDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Gets the details for a milestone.
+      tags:
+      - milestones
+    patch:
+      description: Update a milestone
+      operationId: updateMilestone
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: The Milestone to submit or modify
+        in: body
+        name: Milestone
+        schema:
+          $ref: '#/definitions/milestoneAPI'
+      responses:
+        "200":
+          $ref: '#/responses/milestoneDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - milestones
+produces:
+- application/json
+responses:
+  barDBResponse:
+    description: BarDBResponse provides response
+    headers:
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        format: date-time
+        type: string
+      End:
+        format: date-time
+        type: string
+      End_Data:
+        description: Declation for basic field barDB.End
+      ID:
+        format: uint64
+        type: integer
+      Lane_BarsDBID:
+        description: Implementation of a reverse ID for field Lane{}.Bars []*Bar
+      Name:
+        type: string
+      Name_Data:
+        description: |-
+          insertion for fields declaration
+          Declation for basic field barDB.Name {{BasicKind}} (to be completed)
+      Start:
+        format: date-time
+        type: string
+      Start_Data:
+        description: Declation for basic field barDB.Start
+      UpdatedAt:
+        format: date-time
+        type: string
+    schema:
+      $ref: '#/definitions/NullInt64'
+  barDBsResponse:
+    description: BarDBs arrays barDBs
+    schema:
+      items:
+        $ref: '#/definitions/barDB'
+      type: array
+  ganttDBResponse:
+    description: GanttDBResponse provides response
+    headers:
+      AlignOnStartEndOnYearStart:
+        type: boolean
+      AlignOnStartEndOnYearStart_Data:
+        description: |-
+          Declation for basic field ganttDB.AlignOnStartEndOnYearStart bool (to be completed)
+          provide the sql storage for the boolan
+      CreatedAt:
+        format: date-time
+        type: string
+      DateYOffset:
+        format: double
+        type: number
+      DateYOffset_Data:
+        description: Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to be completed)
+      DeletedAt:
+        format: date-time
+        type: string
+      End:
+        format: date-time
+        type: string
+      End_Data:
+        description: Declation for basic field ganttDB.End
+      Group_Stroke:
+        type: string
+      Group_Stroke_Data:
+        description: Declation for basic field ganttDB.Group_Stroke {{BasicKind}} (to be completed)
+      Group_StrokeDashArray:
+        type: string
+      Group_StrokeDashArray_Data:
+        description: Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}} (to be completed)
+      Group_StrokeWidth:
+        format: double
+        type: number
+      Group_StrokeWidth_Data:
+        description: Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}} (to be completed)
+      Groups:
+        description: list of Groups
+        items:
+          $ref: '#/definitions/Group'
+        type: array
+      ID:
+        format: uint64
+        type: integer
+      LaneHeight:
+        format: double
+        type: number
+      LaneHeight_Data:
+        description: Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to be completed)
+      Lanes:
+        description: List of Lanes
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Milestones:
+        description: list of Milestones
+        items:
+          $ref: '#/definitions/Milestone'
+        type: array
+      Name:
+        type: string
+      Name_Data:
+        description: |-
+          insertion for fields declaration
+          Declation for basic field ganttDB.Name {{BasicKind}} (to be completed)
+      RatioBarToLaneHeight:
+        format: double
+        type: number
+      RatioBarToLaneHeight_Data:
+        description: Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}} (to be completed)
+      Start:
+        format: date-time
+        type: string
+      Start_Data:
+        description: Declation for basic field ganttDB.Start
+      TextHeight:
+        format: double
+        type: number
+      TextHeight_Data:
+        description: Declation for basic field ganttDB.TextHeight {{BasicKind}} (to be completed)
+      TimeLine_Color:
+        type: string
+      TimeLine_Color_Data:
+        description: Declation for basic field ganttDB.TimeLine_Color {{BasicKind}} (to be completed)
+      TimeLine_FillOpacity:
+        format: double
+        type: number
+      TimeLine_FillOpacity_Data:
+        description: Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}} (to be completed)
+      TimeLine_Stroke:
+        type: string
+      TimeLine_Stroke_Data:
+        description: Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}} (to be completed)
+      TimeLine_StrokeWidth:
+        format: double
+        type: number
+      TimeLine_StrokeWidth_Data:
+        description: Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}} (to be completed)
+      UpdatedAt:
+        format: date-time
+        type: string
+      XLeftLanes:
+        format: double
+        type: number
+      XLeftLanes_Data:
+        description: Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to be completed)
+      XLeftText:
+        format: double
+        type: number
+      XLeftText_Data:
+        description: Declation for basic field ganttDB.XLeftText {{BasicKind}} (to be completed)
+      XRightMargin:
+        format: double
+        type: number
+      XRightMargin_Data:
+        description: Declation for basic field ganttDB.XRightMargin {{BasicKind}} (to be completed)
+      YTopMargin:
+        format: double
+        type: number
+      YTopMargin_Data:
+        description: Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to be completed)
+    schema:
+      $ref: '#/definitions/NullBool'
+  ganttDBsResponse:
+    description: GanttDBs arrays ganttDBs
+    schema:
+      items:
+        $ref: '#/definitions/ganttDB'
+      type: array
+  genericError:
+    description: |-
+      A GenericError is the default error message that is generated.
+      For certain status codes there are more appropriate error structures.
+    schema:
+      properties:
+        code:
+          format: int32
+          type: integer
+          x-go-name: Code
+        message:
+          type: string
+          x-go-name: Message
+      type: object
+  groupDBResponse:
+    description: GroupDBResponse provides response
+    headers:
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        format: date-time
+        type: string
+      Gantt_GroupsDBID:
+        description: Implementation of a reverse ID for field Gantt{}.Groups []*Group
+      GroupLanes:
+        description: Lanes that need to be grouped
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      ID:
+        format: uint64
+        type: integer
+      Name:
+        type: string
+      Name_Data:
+        description: |-
+          insertion for fields declaration
+          Declation for basic field groupDB.Name {{BasicKind}} (to be completed)
+      UpdatedAt:
+        format: date-time
+        type: string
+    schema:
+      $ref: '#/definitions/NullInt64'
+  groupDBsResponse:
+    description: GroupDBs arrays groupDBs
+    schema:
+      items:
+        $ref: '#/definitions/groupDB'
+      type: array
+  laneDBResponse:
+    description: LaneDBResponse provides response
+    headers:
+      Bars:
+        items:
+          $ref: '#/definitions/Bar'
+        type: array
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        format: date-time
+        type: string
+      Gantt_LanesDBID:
+        description: Implementation of a reverse ID for field Gantt{}.Lanes []*Lane
+      Group_GroupLanesDBID:
+        description: Implementation of a reverse ID for field Group{}.GroupLanes []*Lane
+      ID:
+        format: uint64
+        type: integer
+      Milestone_DiamonfAndTextAnchorsDBID:
+        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
+      Name:
+        type: string
+      Name_Data:
+        description: |-
+          insertion for fields declaration
+          Declation for basic field laneDB.Name {{BasicKind}} (to be completed)
+      Order:
+        description: Lane are displayed in increasing order
+        format: int64
+        type: integer
+      Order_Data:
+        description: Declation for basic field laneDB.Order {{BasicKind}} (to be completed)
+      UpdatedAt:
+        format: date-time
+        type: string
+    schema:
+      $ref: '#/definitions/NullInt64'
+  laneDBsResponse:
+    description: LaneDBs arrays laneDBs
+    schema:
+      items:
+        $ref: '#/definitions/laneDB'
+      type: array
+  milestoneDBResponse:
+    description: MilestoneDBResponse provides response
+    headers:
+      CreatedAt:
+        format: date-time
+        type: string
+      Date:
+        format: date-time
+        type: string
+      Date_Data:
+        description: Declation for basic field milestoneDB.Date
+      DeletedAt:
+        format: date-time
+        type: string
+      DiamonfAndTextAnchors:
+        description: a red diamond a text anchor will be displayed
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Gantt_MilestonesDBID:
+        description: Implementation of a reverse ID for field Gantt{}.Milestones []*Milestone
+      ID:
+        format: uint64
+        type: integer
+      Name:
+        type: string
+      Name_Data:
+        description: |-
+          insertion for fields declaration
+          Declation for basic field milestoneDB.Name {{BasicKind}} (to be completed)
+      UpdatedAt:
+        format: date-time
+        type: string
+    schema:
+      $ref: '#/definitions/NullInt64'
+  milestoneDBsResponse:
+    description: MilestoneDBs arrays milestoneDBs
+    schema:
+      items:
+        $ref: '#/definitions/milestoneDB'
+      type: array
+  validationError:
+    description: |-
+      A ValidationError is an that is generated for validation failures.
+      It has the same fields as a generic error but adds a Field property.
+    schema:
+      properties:
+        code:
+          format: int32
+          type: integer
+          x-go-name: Code
+        field:
+          type: string
+          x-go-name: Field
+        message:
+          type: string
+          x-go-name: Message
+      type: object
+schemes:
+- http
+securityDefinitions:
+  basic:
+    type: basic
+swagger: "2.0"

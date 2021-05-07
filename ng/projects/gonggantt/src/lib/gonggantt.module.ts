@@ -39,9 +39,17 @@ import { GanttsTableComponent } from './gantts-table/gantts-table.component'
 import { GanttDetailComponent } from './gantt-detail/gantt-detail.component'
 import { GanttPresentationComponent } from './gantt-presentation/gantt-presentation.component'
 
+import { GroupsTableComponent } from './groups-table/groups-table.component'
+import { GroupDetailComponent } from './group-detail/group-detail.component'
+import { GroupPresentationComponent } from './group-presentation/group-presentation.component'
+
 import { LanesTableComponent } from './lanes-table/lanes-table.component'
 import { LaneDetailComponent } from './lane-detail/lane-detail.component'
 import { LanePresentationComponent } from './lane-presentation/lane-presentation.component'
+
+import { MilestonesTableComponent } from './milestones-table/milestones-table.component'
+import { MilestoneDetailComponent } from './milestone-detail/milestone-detail.component'
+import { MilestonePresentationComponent } from './milestone-presentation/milestone-presentation.component'
 
 
 @NgModule({
@@ -55,9 +63,17 @@ import { LanePresentationComponent } from './lane-presentation/lane-presentation
 		GanttDetailComponent,
 		GanttPresentationComponent,
 
+		GroupsTableComponent,
+		GroupDetailComponent,
+		GroupPresentationComponent,
+
 		LanesTableComponent,
 		LaneDetailComponent,
 		LanePresentationComponent,
+
+		MilestonesTableComponent,
+		MilestoneDetailComponent,
+		MilestonePresentationComponent,
 
 
 		SplitterComponent,
@@ -101,9 +117,17 @@ import { LanePresentationComponent } from './lane-presentation/lane-presentation
 		GanttDetailComponent,
 		GanttPresentationComponent,
 
+		GroupsTableComponent,
+		GroupDetailComponent,
+		GroupPresentationComponent,
+
 		LanesTableComponent,
 		LaneDetailComponent,
 		LanePresentationComponent,
+
+		MilestonesTableComponent,
+		MilestoneDetailComponent,
+		MilestonePresentationComponent,
 
 
 		SplitterComponent,
