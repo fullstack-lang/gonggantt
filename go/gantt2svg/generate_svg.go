@@ -292,7 +292,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 			milestoneText := new(gongsvg_models.Text).Stage()
 			milestoneText.Name = milestone.Name
 			milestoneText.Content = milestoneText.Name
-			milestoneText.X = diamond.X + XLeftText
+			milestoneText.X = diamond.X + XLeftText + diamondWidth
 			milestoneText.Y = diamond.Y + TextHeight/2.0 + 5 // manual fine tuning
 			milestoneText.Color = "black"
 			milestoneText.FillOpacity = 1.0
