@@ -28,6 +28,114 @@
             </mat-form-field>
         </form>
     </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>LaneHeight</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.LaneHeight">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>RatioBarToLaneHeight</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.RatioBarToLaneHeight">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>YTopMargin</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.YTopMargin">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>XLeftText</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XLeftText">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>TextHeight</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TextHeight">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>XLeftLanes</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XLeftLanes">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>XRightMargin</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XRightMargin">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>TimeLine_Color</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_Color">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>TimeLine_FillOpacity</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_FillOpacity">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>TimeLine_Stroke</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_Stroke">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>TimeLine_StrokeWidth</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_StrokeWidth">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>DateYOffset</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.DateYOffset">
+            </mat-form-field>
+        </form>
+    </div>
     <div class="details__item">
         <button mat-raised-button (click)="openReverseSelection('Lane', 'Gantt_LanesDBID')">Lanes</button>
     </div>

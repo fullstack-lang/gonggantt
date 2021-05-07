@@ -7,6 +7,23 @@ type Gantt struct {
 	Start time.Time
 	End   time.Time
 
+	LaneHeight           float64
+	RatioBarToLaneHeight float64
+	YTopMargin           float64
+
+	XLeftText  float64
+	TextHeight float64
+
+	XLeftLanes   float64
+	XRightMargin float64
+
+	TimeLine_Color       string
+	TimeLine_FillOpacity float64
+	TimeLine_Stroke      string
+	TimeLine_StrokeWidth float64
+
+	DateYOffset float64
+
 	// List of Lanes
 	Lanes []*Lane
 

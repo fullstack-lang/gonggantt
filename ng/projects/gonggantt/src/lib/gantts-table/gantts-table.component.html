@@ -39,6 +39,90 @@
                 {{Gantt.End}}
             </td>
         </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="LaneHeight">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> LaneHeight </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.LaneHeight.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="RatioBarToLaneHeight">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> RatioBarToLaneHeight </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.RatioBarToLaneHeight.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="YTopMargin">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> YTopMargin </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.YTopMargin.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="XLeftText">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> XLeftText </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.XLeftText.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="TextHeight">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> TextHeight </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.TextHeight.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="XLeftLanes">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> XLeftLanes </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.XLeftLanes.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="XRightMargin">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> XRightMargin </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.XRightMargin.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="TimeLine_Color">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> TimeLine_Color </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.TimeLine_Color}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="TimeLine_FillOpacity">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> TimeLine_FillOpacity </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.TimeLine_FillOpacity.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="TimeLine_Stroke">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> TimeLine_Stroke </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.TimeLine_Stroke}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="TimeLine_StrokeWidth">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> TimeLine_StrokeWidth </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.TimeLine_StrokeWidth.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="DateYOffset">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> DateYOffset </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.DateYOffset.toPrecision(5)}}
+            </td>
+        </ng-container>
 
         <ng-container matColumnDef="ID" sticky>
             <th mat-header-cell *matHeaderCellDef> ID. </th>

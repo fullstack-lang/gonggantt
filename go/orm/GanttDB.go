@@ -36,6 +36,42 @@ type GanttAPI struct {
 	// Declation for basic field ganttDB.End
 	End_Data sql.NullTime
 
+	// Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to be completed)
+	LaneHeight_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}} (to be completed)
+	RatioBarToLaneHeight_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to be completed)
+	YTopMargin_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.XLeftText {{BasicKind}} (to be completed)
+	XLeftText_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.TextHeight {{BasicKind}} (to be completed)
+	TextHeight_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to be completed)
+	XLeftLanes_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.XRightMargin {{BasicKind}} (to be completed)
+	XRightMargin_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.TimeLine_Color {{BasicKind}} (to be completed)
+	TimeLine_Color_Data sql.NullString
+
+	// Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}} (to be completed)
+	TimeLine_FillOpacity_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}} (to be completed)
+	TimeLine_Stroke_Data sql.NullString
+
+	// Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}} (to be completed)
+	TimeLine_StrokeWidth_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to be completed)
+	DateYOffset_Data sql.NullFloat64
+
 	// end of insertion
 }
 
@@ -199,6 +235,42 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 				ganttDB.End_Data.Time = gantt.End
 				ganttDB.End_Data.Valid = true
 
+				ganttDB.LaneHeight_Data.Float64 = gantt.LaneHeight
+				ganttDB.LaneHeight_Data.Valid = true
+
+				ganttDB.RatioBarToLaneHeight_Data.Float64 = gantt.RatioBarToLaneHeight
+				ganttDB.RatioBarToLaneHeight_Data.Valid = true
+
+				ganttDB.YTopMargin_Data.Float64 = gantt.YTopMargin
+				ganttDB.YTopMargin_Data.Valid = true
+
+				ganttDB.XLeftText_Data.Float64 = gantt.XLeftText
+				ganttDB.XLeftText_Data.Valid = true
+
+				ganttDB.TextHeight_Data.Float64 = gantt.TextHeight
+				ganttDB.TextHeight_Data.Valid = true
+
+				ganttDB.XLeftLanes_Data.Float64 = gantt.XLeftLanes
+				ganttDB.XLeftLanes_Data.Valid = true
+
+				ganttDB.XRightMargin_Data.Float64 = gantt.XRightMargin
+				ganttDB.XRightMargin_Data.Valid = true
+
+				ganttDB.TimeLine_Color_Data.String = gantt.TimeLine_Color
+				ganttDB.TimeLine_Color_Data.Valid = true
+
+				ganttDB.TimeLine_FillOpacity_Data.Float64 = gantt.TimeLine_FillOpacity
+				ganttDB.TimeLine_FillOpacity_Data.Valid = true
+
+				ganttDB.TimeLine_Stroke_Data.String = gantt.TimeLine_Stroke
+				ganttDB.TimeLine_Stroke_Data.Valid = true
+
+				ganttDB.TimeLine_StrokeWidth_Data.Float64 = gantt.TimeLine_StrokeWidth
+				ganttDB.TimeLine_StrokeWidth_Data.Valid = true
+
+				ganttDB.DateYOffset_Data.Float64 = gantt.DateYOffset
+				ganttDB.DateYOffset_Data.Valid = true
+
 				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
 				for _, lane := range gantt.Lanes {
 					if laneDBID, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
@@ -309,6 +381,30 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 			gantt.Start = ganttDB.Start_Data.Time
 
 			gantt.End = ganttDB.End_Data.Time
+
+			gantt.LaneHeight = ganttDB.LaneHeight_Data.Float64
+
+			gantt.RatioBarToLaneHeight = ganttDB.RatioBarToLaneHeight_Data.Float64
+
+			gantt.YTopMargin = ganttDB.YTopMargin_Data.Float64
+
+			gantt.XLeftText = ganttDB.XLeftText_Data.Float64
+
+			gantt.TextHeight = ganttDB.TextHeight_Data.Float64
+
+			gantt.XLeftLanes = ganttDB.XLeftLanes_Data.Float64
+
+			gantt.XRightMargin = ganttDB.XRightMargin_Data.Float64
+
+			gantt.TimeLine_Color = ganttDB.TimeLine_Color_Data.String
+
+			gantt.TimeLine_FillOpacity = ganttDB.TimeLine_FillOpacity_Data.Float64
+
+			gantt.TimeLine_Stroke = ganttDB.TimeLine_Stroke_Data.String
+
+			gantt.TimeLine_StrokeWidth = ganttDB.TimeLine_StrokeWidth_Data.Float64
+
+			gantt.DateYOffset = ganttDB.DateYOffset_Data.Float64
 
 			// parse all LaneDB and redeem the array of poiners to Gantt
 			// first reset the slice

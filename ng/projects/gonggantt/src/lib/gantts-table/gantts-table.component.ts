@@ -85,12 +85,36 @@ export class GanttsTableComponent implements OnInit {
         "Name",
         "Start",
         "End",
+        "LaneHeight",
+        "RatioBarToLaneHeight",
+        "YTopMargin",
+        "XLeftText",
+        "TextHeight",
+        "XLeftLanes",
+        "XRightMargin",
+        "TimeLine_Color",
+        "TimeLine_FillOpacity",
+        "TimeLine_Stroke",
+        "TimeLine_StrokeWidth",
+        "DateYOffset",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
         "Start",
         "End",
+        "LaneHeight",
+        "RatioBarToLaneHeight",
+        "YTopMargin",
+        "XLeftText",
+        "TextHeight",
+        "XLeftLanes",
+        "XRightMargin",
+        "TimeLine_Color",
+        "TimeLine_FillOpacity",
+        "TimeLine_Stroke",
+        "TimeLine_StrokeWidth",
+        "DateYOffset",
       ]
       this.selection = new SelectionModel<GanttDB>(allowMultiSelect, this.initialSelection);
     }

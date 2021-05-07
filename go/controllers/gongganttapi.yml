@@ -42,6 +42,19 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/fullstack-lang/gonggantt/go/models
+  NullFloat64:
+    description: |-
+      NullFloat64 implements the Scanner interface so
+      it can be used as a scan destination, similar to NullString.
+    properties:
+      Float64:
+        format: double
+        type: number
+      Valid:
+        type: boolean
+    title: NullFloat64 represents a float64 that may be null.
+    type: object
+    x-go-package: database/sql
   NullInt64:
     description: |-
       NullInt64 implements the Scanner interface so
@@ -116,7 +129,8 @@ definitions:
     x-go-name: BarAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   barDB:
-    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated
+      field for the API and the GORM ID'
     properties:
       CreatedAt:
         format: date-time
@@ -156,11 +170,21 @@ definitions:
       from associations ("Has One" and "Has Many") that are generated to
       fullfill the ORM requirements for associations
     properties:
+      DateYOffset:
+        format: double
+        type: number
+      DateYOffset_Data:
+        $ref: '#/definitions/NullFloat64'
       End:
         format: date-time
         type: string
       End_Data:
         $ref: '#/definitions/NullTime'
+      LaneHeight:
+        format: double
+        type: number
+      LaneHeight_Data:
+        $ref: '#/definitions/NullFloat64'
       Lanes:
         description: List of Lanes
         items:
@@ -175,21 +199,75 @@ definitions:
         type: string
       Name_Data:
         $ref: '#/definitions/NullString'
+      RatioBarToLaneHeight:
+        format: double
+        type: number
+      RatioBarToLaneHeight_Data:
+        $ref: '#/definitions/NullFloat64'
       Start:
         format: date-time
         type: string
       Start_Data:
         $ref: '#/definitions/NullTime'
+      TextHeight:
+        format: double
+        type: number
+      TextHeight_Data:
+        $ref: '#/definitions/NullFloat64'
+      TimeLine_Color:
+        type: string
+      TimeLine_Color_Data:
+        $ref: '#/definitions/NullString'
+      TimeLine_FillOpacity:
+        format: double
+        type: number
+      TimeLine_FillOpacity_Data:
+        $ref: '#/definitions/NullFloat64'
+      TimeLine_Stroke:
+        type: string
+      TimeLine_Stroke_Data:
+        $ref: '#/definitions/NullString'
+      TimeLine_StrokeWidth:
+        format: double
+        type: number
+      TimeLine_StrokeWidth_Data:
+        $ref: '#/definitions/NullFloat64'
+      XLeftLanes:
+        format: double
+        type: number
+      XLeftLanes_Data:
+        $ref: '#/definitions/NullFloat64'
+      XLeftText:
+        format: double
+        type: number
+      XLeftText_Data:
+        $ref: '#/definitions/NullFloat64'
+      XRightMargin:
+        format: double
+        type: number
+      XRightMargin_Data:
+        $ref: '#/definitions/NullFloat64'
+      YTopMargin:
+        format: double
+        type: number
+      YTopMargin_Data:
+        $ref: '#/definitions/NullFloat64'
     title: GanttAPI is the input in POST API
     type: object
     x-go-name: GanttAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   ganttDB:
-    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated
+      field for the API and the GORM ID'
     properties:
       CreatedAt:
         format: date-time
         type: string
+      DateYOffset:
+        format: double
+        type: number
+      DateYOffset_Data:
+        $ref: '#/definitions/NullFloat64'
       DeletedAt:
         format: date-time
         type: string
@@ -201,6 +279,11 @@ definitions:
       ID:
         format: uint64
         type: integer
+      LaneHeight:
+        format: double
+        type: number
+      LaneHeight_Data:
+        $ref: '#/definitions/NullFloat64'
       Lanes:
         description: List of Lanes
         items:
@@ -215,14 +298,62 @@ definitions:
         type: string
       Name_Data:
         $ref: '#/definitions/NullString'
+      RatioBarToLaneHeight:
+        format: double
+        type: number
+      RatioBarToLaneHeight_Data:
+        $ref: '#/definitions/NullFloat64'
       Start:
         format: date-time
         type: string
       Start_Data:
         $ref: '#/definitions/NullTime'
+      TextHeight:
+        format: double
+        type: number
+      TextHeight_Data:
+        $ref: '#/definitions/NullFloat64'
+      TimeLine_Color:
+        type: string
+      TimeLine_Color_Data:
+        $ref: '#/definitions/NullString'
+      TimeLine_FillOpacity:
+        format: double
+        type: number
+      TimeLine_FillOpacity_Data:
+        $ref: '#/definitions/NullFloat64'
+      TimeLine_Stroke:
+        type: string
+      TimeLine_Stroke_Data:
+        $ref: '#/definitions/NullString'
+      TimeLine_StrokeWidth:
+        format: double
+        type: number
+      TimeLine_StrokeWidth_Data:
+        $ref: '#/definitions/NullFloat64'
       UpdatedAt:
         format: date-time
         type: string
+      XLeftLanes:
+        format: double
+        type: number
+      XLeftLanes_Data:
+        $ref: '#/definitions/NullFloat64'
+      XLeftText:
+        format: double
+        type: number
+      XLeftText_Data:
+        $ref: '#/definitions/NullFloat64'
+      XRightMargin:
+        format: double
+        type: number
+      XRightMargin_Data:
+        $ref: '#/definitions/NullFloat64'
+      YTopMargin:
+        format: double
+        type: number
+      YTopMargin_Data:
+        $ref: '#/definitions/NullFloat64'
     title: GanttDB describes a gantt in the database
     type: object
     x-go-name: GanttDB
@@ -256,7 +387,8 @@ definitions:
     x-go-name: LaneAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   laneDB:
-    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated
+      field for the API and the GORM ID'
     properties:
       Bars:
         items:
@@ -319,7 +451,8 @@ definitions:
     x-go-name: MilestoneAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   milestoneDB:
-    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated
+      field for the API and the GORM ID'
     properties:
       CreatedAt:
         format: date-time
@@ -750,6 +883,12 @@ responses:
       CreatedAt:
         format: date-time
         type: string
+      DateYOffset:
+        format: double
+        type: number
+      DateYOffset_Data:
+        description: Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to
+          be completed)
       DeletedAt:
         format: date-time
         type: string
@@ -761,6 +900,12 @@ responses:
       ID:
         format: uint64
         type: integer
+      LaneHeight:
+        format: double
+        type: number
+      LaneHeight_Data:
+        description: Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to
+          be completed)
       Lanes:
         description: List of Lanes
         items:
@@ -777,16 +922,74 @@ responses:
         description: |-
           insertion for fields declaration
           Declation for basic field ganttDB.Name {{BasicKind}} (to be completed)
+      RatioBarToLaneHeight:
+        format: double
+        type: number
+      RatioBarToLaneHeight_Data:
+        description: Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}}
+          (to be completed)
       Start:
         format: date-time
         type: string
       Start_Data:
         description: Declation for basic field ganttDB.Start
+      TextHeight:
+        format: double
+        type: number
+      TextHeight_Data:
+        description: Declation for basic field ganttDB.TextHeight {{BasicKind}} (to
+          be completed)
+      TimeLine_Color:
+        type: string
+      TimeLine_Color_Data:
+        description: Declation for basic field ganttDB.TimeLine_Color {{BasicKind}}
+          (to be completed)
+      TimeLine_FillOpacity:
+        format: double
+        type: number
+      TimeLine_FillOpacity_Data:
+        description: Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}}
+          (to be completed)
+      TimeLine_Stroke:
+        type: string
+      TimeLine_Stroke_Data:
+        description: Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}}
+          (to be completed)
+      TimeLine_StrokeWidth:
+        format: double
+        type: number
+      TimeLine_StrokeWidth_Data:
+        description: Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}}
+          (to be completed)
       UpdatedAt:
         format: date-time
         type: string
+      XLeftLanes:
+        format: double
+        type: number
+      XLeftLanes_Data:
+        description: Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to
+          be completed)
+      XLeftText:
+        format: double
+        type: number
+      XLeftText_Data:
+        description: Declation for basic field ganttDB.XLeftText {{BasicKind}} (to
+          be completed)
+      XRightMargin:
+        format: double
+        type: number
+      XRightMargin_Data:
+        description: Declation for basic field ganttDB.XRightMargin {{BasicKind}}
+          (to be completed)
+      YTopMargin:
+        format: double
+        type: number
+      YTopMargin_Data:
+        description: Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to
+          be completed)
     schema:
-      $ref: '#/definitions/NullTime'
+      $ref: '#/definitions/NullFloat64'
   ganttDBsResponse:
     description: GanttDBs arrays ganttDBs
     schema:
@@ -826,7 +1029,8 @@ responses:
         format: uint64
         type: integer
       Milestone_DiamonfAndTextAnchorsDBID:
-        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
+        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors
+          []*Lane
       Name:
         type: string
       Name_Data:

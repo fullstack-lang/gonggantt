@@ -76,6 +76,54 @@ func GetGantts(c *gin.Context) {
 			gantt.End = gantt.End_Data.Time
 		}
 
+		if gantt.LaneHeight_Data.Valid {
+			gantt.LaneHeight = gantt.LaneHeight_Data.Float64
+		}
+
+		if gantt.RatioBarToLaneHeight_Data.Valid {
+			gantt.RatioBarToLaneHeight = gantt.RatioBarToLaneHeight_Data.Float64
+		}
+
+		if gantt.YTopMargin_Data.Valid {
+			gantt.YTopMargin = gantt.YTopMargin_Data.Float64
+		}
+
+		if gantt.XLeftText_Data.Valid {
+			gantt.XLeftText = gantt.XLeftText_Data.Float64
+		}
+
+		if gantt.TextHeight_Data.Valid {
+			gantt.TextHeight = gantt.TextHeight_Data.Float64
+		}
+
+		if gantt.XLeftLanes_Data.Valid {
+			gantt.XLeftLanes = gantt.XLeftLanes_Data.Float64
+		}
+
+		if gantt.XRightMargin_Data.Valid {
+			gantt.XRightMargin = gantt.XRightMargin_Data.Float64
+		}
+
+		if gantt.TimeLine_Color_Data.Valid {
+			gantt.TimeLine_Color = gantt.TimeLine_Color_Data.String
+		}
+
+		if gantt.TimeLine_FillOpacity_Data.Valid {
+			gantt.TimeLine_FillOpacity = gantt.TimeLine_FillOpacity_Data.Float64
+		}
+
+		if gantt.TimeLine_Stroke_Data.Valid {
+			gantt.TimeLine_Stroke = gantt.TimeLine_Stroke_Data.String
+		}
+
+		if gantt.TimeLine_StrokeWidth_Data.Valid {
+			gantt.TimeLine_StrokeWidth = gantt.TimeLine_StrokeWidth_Data.Float64
+		}
+
+		if gantt.DateYOffset_Data.Valid {
+			gantt.DateYOffset = gantt.DateYOffset_Data.Float64
+		}
+
 	}
 
 	c.JSON(http.StatusOK, gantts)
@@ -121,6 +169,42 @@ func PostGantt(c *gin.Context) {
 
 	ganttDB.End_Data.Time = input.End
 	ganttDB.End_Data.Valid = true
+
+	ganttDB.LaneHeight_Data.Float64 = input.LaneHeight
+	ganttDB.LaneHeight_Data.Valid = true
+
+	ganttDB.RatioBarToLaneHeight_Data.Float64 = input.RatioBarToLaneHeight
+	ganttDB.RatioBarToLaneHeight_Data.Valid = true
+
+	ganttDB.YTopMargin_Data.Float64 = input.YTopMargin
+	ganttDB.YTopMargin_Data.Valid = true
+
+	ganttDB.XLeftText_Data.Float64 = input.XLeftText
+	ganttDB.XLeftText_Data.Valid = true
+
+	ganttDB.TextHeight_Data.Float64 = input.TextHeight
+	ganttDB.TextHeight_Data.Valid = true
+
+	ganttDB.XLeftLanes_Data.Float64 = input.XLeftLanes
+	ganttDB.XLeftLanes_Data.Valid = true
+
+	ganttDB.XRightMargin_Data.Float64 = input.XRightMargin
+	ganttDB.XRightMargin_Data.Valid = true
+
+	ganttDB.TimeLine_Color_Data.String = input.TimeLine_Color
+	ganttDB.TimeLine_Color_Data.Valid = true
+
+	ganttDB.TimeLine_FillOpacity_Data.Float64 = input.TimeLine_FillOpacity
+	ganttDB.TimeLine_FillOpacity_Data.Valid = true
+
+	ganttDB.TimeLine_Stroke_Data.String = input.TimeLine_Stroke
+	ganttDB.TimeLine_Stroke_Data.Valid = true
+
+	ganttDB.TimeLine_StrokeWidth_Data.Float64 = input.TimeLine_StrokeWidth
+	ganttDB.TimeLine_StrokeWidth_Data.Valid = true
+
+	ganttDB.DateYOffset_Data.Float64 = input.DateYOffset
+	ganttDB.DateYOffset_Data.Valid = true
 
 	query := db.Create(&ganttDB)
 	if query.Error != nil {
@@ -173,6 +257,54 @@ func GetGantt(c *gin.Context) {
 		gantt.End = gantt.End_Data.Time
 	}
 
+	if gantt.LaneHeight_Data.Valid {
+		gantt.LaneHeight = gantt.LaneHeight_Data.Float64
+	}
+
+	if gantt.RatioBarToLaneHeight_Data.Valid {
+		gantt.RatioBarToLaneHeight = gantt.RatioBarToLaneHeight_Data.Float64
+	}
+
+	if gantt.YTopMargin_Data.Valid {
+		gantt.YTopMargin = gantt.YTopMargin_Data.Float64
+	}
+
+	if gantt.XLeftText_Data.Valid {
+		gantt.XLeftText = gantt.XLeftText_Data.Float64
+	}
+
+	if gantt.TextHeight_Data.Valid {
+		gantt.TextHeight = gantt.TextHeight_Data.Float64
+	}
+
+	if gantt.XLeftLanes_Data.Valid {
+		gantt.XLeftLanes = gantt.XLeftLanes_Data.Float64
+	}
+
+	if gantt.XRightMargin_Data.Valid {
+		gantt.XRightMargin = gantt.XRightMargin_Data.Float64
+	}
+
+	if gantt.TimeLine_Color_Data.Valid {
+		gantt.TimeLine_Color = gantt.TimeLine_Color_Data.String
+	}
+
+	if gantt.TimeLine_FillOpacity_Data.Valid {
+		gantt.TimeLine_FillOpacity = gantt.TimeLine_FillOpacity_Data.Float64
+	}
+
+	if gantt.TimeLine_Stroke_Data.Valid {
+		gantt.TimeLine_Stroke = gantt.TimeLine_Stroke_Data.String
+	}
+
+	if gantt.TimeLine_StrokeWidth_Data.Valid {
+		gantt.TimeLine_StrokeWidth = gantt.TimeLine_StrokeWidth_Data.Float64
+	}
+
+	if gantt.DateYOffset_Data.Valid {
+		gantt.DateYOffset = gantt.DateYOffset_Data.Float64
+	}
+
 	c.JSON(http.StatusOK, gantt)
 }
 
@@ -219,6 +351,42 @@ func UpdateGantt(c *gin.Context) {
 
 	input.End_Data.Time = input.End
 	input.End_Data.Valid = true
+
+	input.LaneHeight_Data.Float64 = input.LaneHeight
+	input.LaneHeight_Data.Valid = true
+
+	input.RatioBarToLaneHeight_Data.Float64 = input.RatioBarToLaneHeight
+	input.RatioBarToLaneHeight_Data.Valid = true
+
+	input.YTopMargin_Data.Float64 = input.YTopMargin
+	input.YTopMargin_Data.Valid = true
+
+	input.XLeftText_Data.Float64 = input.XLeftText
+	input.XLeftText_Data.Valid = true
+
+	input.TextHeight_Data.Float64 = input.TextHeight
+	input.TextHeight_Data.Valid = true
+
+	input.XLeftLanes_Data.Float64 = input.XLeftLanes
+	input.XLeftLanes_Data.Valid = true
+
+	input.XRightMargin_Data.Float64 = input.XRightMargin
+	input.XRightMargin_Data.Valid = true
+
+	input.TimeLine_Color_Data.String = input.TimeLine_Color
+	input.TimeLine_Color_Data.Valid = true
+
+	input.TimeLine_FillOpacity_Data.Float64 = input.TimeLine_FillOpacity
+	input.TimeLine_FillOpacity_Data.Valid = true
+
+	input.TimeLine_Stroke_Data.String = input.TimeLine_Stroke
+	input.TimeLine_Stroke_Data.Valid = true
+
+	input.TimeLine_StrokeWidth_Data.Float64 = input.TimeLine_StrokeWidth
+	input.TimeLine_StrokeWidth_Data.Valid = true
+
+	input.DateYOffset_Data.Float64 = input.DateYOffset
+	input.DateYOffset_Data.Valid = true
 
 	query = db.Model(&ganttDB).Updates(input)
 	if query.Error != nil {

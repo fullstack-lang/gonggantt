@@ -90,17 +90,17 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 	// Time Line
 	//
 	// creates a tick lane
-	laneHeight := 80.0
-	ratioBarToLaneHeight := 0.7
-	barHeigth := laneHeight * ratioBarToLaneHeight
-	YTopMargin := 10.0
-	yTimeLine := laneHeight*float64(len(stage.Lanes)) + YTopMargin
+	LaneHeight := ganttToRender.LaneHeight
+	RatioBarToLaneHeight := ganttToRender.RatioBarToLaneHeight
+	barHeigth := LaneHeight * RatioBarToLaneHeight
+	YTopMargin := ganttToRender.YTopMargin
+	yTimeLine := LaneHeight*float64(len(stage.Lanes)) + YTopMargin
 
-	XLeftText := 25.0
-	TextHeight := 16.0
+	XLeftText := ganttToRender.XLeftText
+	TextHeight := ganttToRender.TextHeight
 
-	XLeftLanes := 250.0
-	XRightMargin := 2000.0
+	XLeftLanes := ganttToRender.XLeftLanes
+	XRightMargin := ganttToRender.XRightMargin
 
 	timeLine := new(gongsvg_models.Line).Stage()
 	timeLine.Name = "Time Line"
@@ -109,10 +109,10 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 	timeLine.X2 = XRightMargin
 	timeLine.Y2 = yTimeLine
 
-	timeLine.Color = "black"
-	timeLine.FillOpacity = 1.0
-	timeLine.Stroke = "black"
-	timeLine.StrokeWidth = 1
+	timeLine.Color = ganttToRender.TimeLine_Color
+	timeLine.FillOpacity = ganttToRender.TimeLine_FillOpacity
+	timeLine.Stroke = ganttToRender.TimeLine_Stroke
+	timeLine.StrokeWidth = ganttToRender.TimeLine_StrokeWidth
 
 	svg.Lines = append(svg.Lines, timeLine)
 
@@ -129,7 +129,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 
 	// put a date for every year
 	for year := ganttToRender.Start.Year(); year <= ganttToRender.End.Year(); year++ {
-		yearTime := time.Date(year, 0, 0, 0, 0, 0, 0, time.UTC)
+		yearTime := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
 		durationBetweenYearAndGanttStart := yearTime.Sub(ganttToRender.Start)
 
 		durationBetweenYearStartAndGanttStartRelativeToGanttDuration :=
@@ -145,6 +145,19 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		svg.Texts = append(svg.Texts, yearText)
 
 		// log.Printf("year %d", year)
+		//
+		// draw the line
+		//
+		lineForYear := new(gongsvg_models.Line).Stage()
+		lineForYear.Name = yearText.Name
+		svg.Lines = append(svg.Lines, lineForYear)
+		lineForYear.X1 = yearText.X
+		lineForYear.X2 = lineForYear.X1
+		lineForYear.Y1 = YTopMargin
+		lineForYear.Y2 = yTimeLine
+		lineForYear.Stroke = "black"
+		lineForYear.StrokeWidth = 0.25
+		lineForYear.StrokeDashArray = "4 4"
 	}
 
 	//
@@ -171,7 +184,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		laneSVG.Y = currentY
 
 		laneSVG.Width = XRightMargin - XLeftLanes
-		laneSVG.Height = laneHeight
+		laneSVG.Height = LaneHeight
 
 		laneSVG.Color = "grey"
 		laneSVG.FillOpacity = 0.1
@@ -186,7 +199,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		laneText.Name = lane.Name
 		laneText.Content = laneText.Name
 		laneText.X = XLeftText
-		laneText.Y = currentY + laneHeight/2.0 + TextHeight/2.0
+		laneText.Y = currentY + LaneHeight/2.0 + TextHeight/2.0
 		mapLaneHeight[lane] = laneText.Y
 		laneText.Color = "black"
 		laneText.FillOpacity = 1.0
@@ -211,7 +224,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 			// log.Printf("Relative Duration is %f", durationBetweenBarEndAndBarStartRelativeToGanttDuration)
 
 			barSVG.X = XLeftLanes + (XRightMargin-XLeftLanes)*durationBetweenBarStartAndGanttStartRelativeToGanttDuration
-			barSVG.Y = currentY + (laneHeight-barHeigth)/2.0
+			barSVG.Y = currentY + (LaneHeight-barHeigth)/2.0
 			barSVG.Height = barHeigth
 			barSVG.Width = (XRightMargin - XLeftLanes) * durationBetweenBarEndAndBarStartRelativeToGanttDuration
 
@@ -225,13 +238,13 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 			barText.Name = bar.Name
 			barText.Content = barText.Name
 			barText.X = barSVG.X + XLeftText
-			barText.Y = currentY + laneHeight/2.0 + TextHeight/2.0
+			barText.Y = currentY + LaneHeight/2.0 + TextHeight/2.0
 			barText.Color = "black"
 			barText.FillOpacity = 1.0
 			svg.Texts = append(svg.Texts, barText)
 		}
 
-		currentY = currentY + laneHeight
+		currentY = currentY + LaneHeight
 
 	}
 
@@ -268,7 +281,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 			svg.Rects = append(svg.Rects, diamond)
 			diamond.Name = milestone.Name
 			diamond.X = line.X1 - diamondWidth/2.0
-			diamond.Y = mapLaneHeight[diamondAndTextAnchor] - diamondWidth + laneHeight/2.0
+			diamond.Y = mapLaneHeight[diamondAndTextAnchor] - diamondWidth + LaneHeight/2.0
 			diamond.Width = diamondWidth
 			diamond.Height = diamondWidth
 			diamond.Color = "red"
