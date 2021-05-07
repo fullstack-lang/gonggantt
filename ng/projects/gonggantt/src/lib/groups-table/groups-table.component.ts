@@ -13,29 +13,29 @@ import { SelectionModel } from '@angular/cdk/collections';
 const allowMultiSelect = true;
 
 import { Router, RouterState } from '@angular/router';
-import { LaneDB } from '../lane-db'
-import { LaneService } from '../lane.service'
+import { GroupDB } from '../group-db'
+import { GroupService } from '../group.service'
 
 import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 // generated table component
 @Component({
-  selector: 'app-lanes-table',
-  templateUrl: './lanes-table.component.html',
-  styleUrls: ['./lanes-table.component.css'],
+  selector: 'app-groups-table',
+  templateUrl: './groups-table.component.html',
+  styleUrls: ['./groups-table.component.css'],
 })
-export class LanesTableComponent implements OnInit {
+export class GroupsTableComponent implements OnInit {
 
-  // used if the component is called as a selection component of Lane instances
-  selection: SelectionModel<LaneDB>;
-  initialSelection = new Array<LaneDB>();
+  // used if the component is called as a selection component of Group instances
+  selection: SelectionModel<GroupDB>;
+  initialSelection = new Array<GroupDB>();
 
   // the data source for the table
-  lanes: LaneDB[];
-  matTableDataSource: MatTableDataSource<LaneDB>
+  groups: GroupDB[];
+  matTableDataSource: MatTableDataSource<GroupDB>
 
 
-  // front repo, that will be referenced by this.lanes
+  // front repo, that will be referenced by this.groups
   frontRepo: FrontRepo
 
   // displayedColumns is referenced by the MatTable component for specify what columns
@@ -57,11 +57,11 @@ export class LanesTableComponent implements OnInit {
   }
 
   constructor(
-    private laneService: LaneService,
+    private groupService: GroupService,
     private frontRepoService: FrontRepoService,
 
-    // not null if the component is called as a selection component of lane instances
-    public dialogRef: MatDialogRef<LanesTableComponent>,
+    // not null if the component is called as a selection component of group instances
+    public dialogRef: MatDialogRef<GroupsTableComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public dialogData: DialogData,
 
     private router: Router,
@@ -73,110 +73,104 @@ export class LanesTableComponent implements OnInit {
     };
 
     // observable for changes in structs
-    this.laneService.LaneServiceChanged.subscribe(
+    this.groupService.GroupServiceChanged.subscribe(
       message => {
         if (message == "post" || message == "update" || message == "delete") {
-          this.getLanes()
+          this.getGroups()
         }
       }
     )
     if (dialogData == undefined) {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
-        "Order",
-        "Lanes",
-        "GroupLanes",
-        "DiamonfAndTextAnchors",
+        "Groups",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
-        "Order",
-        "Lanes",
-        "GroupLanes",
-        "DiamonfAndTextAnchors",
+        "Groups",
       ]
-      this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
+      this.selection = new SelectionModel<GroupDB>(allowMultiSelect, this.initialSelection);
     }
 
   }
 
   ngOnInit(): void {
-    this.getLanes()
-    this.matTableDataSource = new MatTableDataSource(this.lanes)
+    this.getGroups()
+    this.matTableDataSource = new MatTableDataSource(this.groups)
   }
 
-  getLanes(): void {
+  getGroups(): void {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
         console.log("front repo pull returned")
 
-        this.lanes = this.frontRepo.Lanes_array;
+        this.groups = this.frontRepo.Groups_array;
 
         // insertion point for variables Recoveries
 
         // in case the component is called as a selection component
         if (this.dialogData != undefined) {
-          this.lanes.forEach(
-            lane => {
+          this.groups.forEach(
+            group => {
               let ID = this.dialogData.ID
-              let revPointer = lane[this.dialogData.ReversePointer]
+              let revPointer = group[this.dialogData.ReversePointer]
               if (revPointer.Int64 == ID) {
-                this.initialSelection.push(lane)
+                this.initialSelection.push(group)
               }
             }
           )
-          this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
+          this.selection = new SelectionModel<GroupDB>(allowMultiSelect, this.initialSelection);
         }
 
         // update the mat table data source
-        this.matTableDataSource.data = this.lanes
+        this.matTableDataSource.data = this.groups
       }
     )
   }
 
-  // newLane initiate a new lane
-  // create a new Lane objet
-  newLane() {
+  // newGroup initiate a new group
+  // create a new Group objet
+  newGroup() {
   }
 
-  deleteLane(laneID: number, lane: LaneDB) {
-    // list of lanes is truncated of lane before the delete
-    this.lanes = this.lanes.filter(h => h !== lane);
+  deleteGroup(groupID: number, group: GroupDB) {
+    // list of groups is truncated of group before the delete
+    this.groups = this.groups.filter(h => h !== group);
 
-    this.laneService.deleteLane(laneID).subscribe(
-      lane => {
-        this.laneService.LaneServiceChanged.next("delete")
+    this.groupService.deleteGroup(groupID).subscribe(
+      group => {
+        this.groupService.GroupServiceChanged.next("delete")
 
-        console.log("lane deleted")
+        console.log("group deleted")
       }
     );
   }
 
-  editLane(laneID: number, lane: LaneDB) {
+  editGroup(groupID: number, group: GroupDB) {
 
   }
 
-  // display lane in router
-  displayLaneInRouter(laneID: number) {
-    this.router.navigate(["lane-display", laneID])
+  // display group in router
+  displayGroupInRouter(groupID: number) {
+    this.router.navigate(["group-display", groupID])
   }
 
   // set editor outlet
-  setEditorRouterOutlet(laneID: number) {
+  setEditorRouterOutlet(groupID: number) {
     this.router.navigate([{
       outlets: {
-        editor: ["lane-detail", laneID]
+        editor: ["group-detail", groupID]
       }
     }]);
   }
 
   // set presentation outlet
-  setPresentationRouterOutlet(laneID: number) {
+  setPresentationRouterOutlet(groupID: number) {
     this.router.navigate([{
       outlets: {
-        presentation: ["lane-presentation", laneID]
+        presentation: ["group-presentation", groupID]
       }
     }]);
   }
@@ -184,7 +178,7 @@ export class LanesTableComponent implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.lanes.length;
+    const numRows = this.groups.length;
     return numSelected === numRows;
   }
 
@@ -192,40 +186,40 @@ export class LanesTableComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.lanes.forEach(row => this.selection.select(row));
+      this.groups.forEach(row => this.selection.select(row));
   }
 
   save() {
 
-    let toUpdate = new Set<LaneDB>()
+    let toUpdate = new Set<GroupDB>()
 
-    // reset all initial selection of lane that belong to lane through Anarrayofb
+    // reset all initial selection of group that belong to group through Anarrayofb
     this.initialSelection.forEach(
-      lane => {
-        lane[this.dialogData.ReversePointer].Int64 = 0
-        lane[this.dialogData.ReversePointer].Valid = true
-        toUpdate.add(lane)
+      group => {
+        group[this.dialogData.ReversePointer].Int64 = 0
+        group[this.dialogData.ReversePointer].Valid = true
+        toUpdate.add(group)
       }
     )
 
-    // from selection, set lane that belong to lane through Anarrayofb
+    // from selection, set group that belong to group through Anarrayofb
     this.selection.selected.forEach(
-      lane => {
-        console.log("selection ID " + lane.ID)
+      group => {
+        console.log("selection ID " + group.ID)
         let ID = +this.dialogData.ID
-        lane[this.dialogData.ReversePointer].Int64 = ID
-        lane[this.dialogData.ReversePointer].Valid = true
-        toUpdate.add(lane)
+        group[this.dialogData.ReversePointer].Int64 = ID
+        group[this.dialogData.ReversePointer].Valid = true
+        toUpdate.add(group)
       }
     )
 
-    // update all lane (only update selection & initial selection)
+    // update all group (only update selection & initial selection)
     toUpdate.forEach(
-      lane => {
-        this.laneService.updateLane(lane)
-          .subscribe(lane => {
-            this.laneService.LaneServiceChanged.next("update")
-            console.log("lane saved")
+      group => {
+        this.groupService.updateGroup(group)
+          .subscribe(group => {
+            this.groupService.GroupServiceChanged.next("update")
+            console.log("group saved")
           });
       }
     )

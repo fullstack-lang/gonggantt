@@ -14,5 +14,9 @@ export class GanttAPI {
 	TimeLine_FillOpacity?: number
 	TimeLine_Stroke?: string
 	TimeLine_StrokeWidth?: number
+	Group_Stroke?: string
+	Group_StrokeWidth?: number
+	Group_StrokeDashArray?: string
 	DateYOffset?: number
+	AlignOnStartEndOnYearStart?: string
 }

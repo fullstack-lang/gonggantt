@@ -2,8 +2,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { LaneDB } from '../lane-db'
-import { LaneService } from '../lane.service'
+import { GroupDB } from '../group-db'
+import { GroupService } from '../group.service'
 
 import { FrontRepoService, FrontRepo } from '../front-repo.service'
 import { MapOfComponents } from '../map-components'
@@ -17,22 +17,22 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 import { NullInt64 } from '../front-repo.service'
 
 @Component({
-	selector: 'app-lane-detail',
-	templateUrl: './lane-detail.component.html',
-	styleUrls: ['./lane-detail.component.css'],
+	selector: 'app-group-detail',
+	templateUrl: './group-detail.component.html',
+	styleUrls: ['./group-detail.component.css'],
 })
-export class LaneDetailComponent implements OnInit {
+export class GroupDetailComponent implements OnInit {
 
 	// insertion point for declarations
 
-	// the LaneDB of interest
-	lane: LaneDB;
+	// the GroupDB of interest
+	group: GroupDB;
 
 	// front repo
 	frontRepo: FrontRepo
 
 	constructor(
-		private laneService: LaneService,
+		private groupService: GroupService,
 		private frontRepoService: FrontRepoService,
 		public dialog: MatDialog,
 		private route: ActivatedRoute,
@@ -46,13 +46,13 @@ export class LaneDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
-		this.getLane()
+		this.getGroup()
 
 		// observable for changes in structs
-		this.laneService.LaneServiceChanged.subscribe(
+		this.groupService.GroupServiceChanged.subscribe(
 			message => {
 				if (message == "post" || message == "update" || message == "delete") {
-					this.getLane()
+					this.getGroup()
 				}
 			}
 		)
@@ -60,19 +60,19 @@ export class LaneDetailComponent implements OnInit {
 		// insertion point for initialisation of enums list
 	}
 
-	getLane(): void {
+	getGroup(): void {
 		const id = +this.route.snapshot.paramMap.get('id');
 		const association = this.route.snapshot.paramMap.get('association');
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				console.log("front repo LanePull returned")
+				console.log("front repo GroupPull returned")
 
 				if (id != 0 && association == undefined) {
-					this.lane = frontRepo.Lanes.get(id)
+					this.group = frontRepo.Groups.get(id)
 				} else {
-					this.lane = new (LaneDB)
+					this.group = new (GroupDB)
 				}
 
 				// insertion point for recovery of form controls value for bool fields
@@ -94,59 +94,37 @@ export class LaneDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 		if (association == undefined) {
 			// insertion point for translation/nullation of each pointers
-			if (this.lane.Gantt_Lanes_reverse != undefined) {
-				this.lane.Gantt_LanesDBID = new NullInt64
-				this.lane.Gantt_LanesDBID.Int64 = this.lane.Gantt_Lanes_reverse.ID
-				this.lane.Gantt_LanesDBID.Valid = true
-				this.lane.Gantt_Lanes_reverse = undefined // very important, otherwise, circular JSON
-			}
-			if (this.lane.Group_GroupLanes_reverse != undefined) {
-				this.lane.Group_GroupLanesDBID = new NullInt64
-				this.lane.Group_GroupLanesDBID.Int64 = this.lane.Group_GroupLanes_reverse.ID
-				this.lane.Group_GroupLanesDBID.Valid = true
-				this.lane.Group_GroupLanes_reverse = undefined // very important, otherwise, circular JSON
-			}
-			if (this.lane.Milestone_DiamonfAndTextAnchors_reverse != undefined) {
-				this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
-				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = this.lane.Milestone_DiamonfAndTextAnchors_reverse.ID
-				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
-				this.lane.Milestone_DiamonfAndTextAnchors_reverse = undefined // very important, otherwise, circular JSON
+			if (this.group.Gantt_Groups_reverse != undefined) {
+				this.group.Gantt_GroupsDBID = new NullInt64
+				this.group.Gantt_GroupsDBID.Int64 = this.group.Gantt_Groups_reverse.ID
+				this.group.Gantt_GroupsDBID.Valid = true
+				this.group.Gantt_Groups_reverse = undefined // very important, otherwise, circular JSON
 			}
 		}
 
 		if (id != 0 && association == undefined) {
 
-			this.laneService.updateLane(this.lane)
-				.subscribe(lane => {
-					this.laneService.LaneServiceChanged.next("update")
+			this.groupService.updateGroup(this.group)
+				.subscribe(group => {
+					this.groupService.GroupServiceChanged.next("update")
 
-					console.log("lane saved")
+					console.log("group saved")
 				});
 		} else {
 			switch (association) {
 				// insertion point for saving value of ONE_MANY association reverse pointer
-				case "Gantt_Lanes":
-					this.lane.Gantt_LanesDBID = new NullInt64
-					this.lane.Gantt_LanesDBID.Int64 = id
-					this.lane.Gantt_LanesDBID.Valid = true
-					break
-				case "Group_GroupLanes":
-					this.lane.Group_GroupLanesDBID = new NullInt64
-					this.lane.Group_GroupLanesDBID.Int64 = id
-					this.lane.Group_GroupLanesDBID.Valid = true
-					break
-				case "Milestone_DiamonfAndTextAnchors":
-					this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
-					this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = id
-					this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
+				case "Gantt_Groups":
+					this.group.Gantt_GroupsDBID = new NullInt64
+					this.group.Gantt_GroupsDBID.Int64 = id
+					this.group.Gantt_GroupsDBID.Valid = true
 					break
 			}
-			this.laneService.postLane(this.lane).subscribe(lane => {
+			this.groupService.postGroup(this.group).subscribe(group => {
 
-				this.laneService.LaneServiceChanged.next("post")
+				this.groupService.GroupServiceChanged.next("post")
 
-				this.lane = {} // reset fields
-				console.log("lane added")
+				this.group = {} // reset fields
+				console.log("group added")
 			});
 		}
 	}
@@ -161,7 +139,7 @@ export class LaneDetailComponent implements OnInit {
 		// dialogConfig.disableClose = true;
 		dialogConfig.autoFocus = true;
 		dialogConfig.data = {
-			ID: this.lane.ID,
+			ID: this.group.ID,
 			ReversePointer: reverseField,
 		};
 		const dialogRef: MatDialogRef<string, any> = this.dialog.open(

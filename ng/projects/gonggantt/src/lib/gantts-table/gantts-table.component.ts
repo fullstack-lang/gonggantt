@@ -96,7 +96,11 @@ export class GanttsTableComponent implements OnInit {
         "TimeLine_FillOpacity",
         "TimeLine_Stroke",
         "TimeLine_StrokeWidth",
+        "Group_Stroke",
+        "Group_StrokeWidth",
+        "Group_StrokeDashArray",
         "DateYOffset",
+        "AlignOnStartEndOnYearStart",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -114,7 +118,11 @@ export class GanttsTableComponent implements OnInit {
         "TimeLine_FillOpacity",
         "TimeLine_Stroke",
         "TimeLine_StrokeWidth",
+        "Group_Stroke",
+        "Group_StrokeWidth",
+        "Group_StrokeDashArray",
         "DateYOffset",
+        "AlignOnStartEndOnYearStart",
       ]
       this.selection = new SelectionModel<GanttDB>(allowMultiSelect, this.initialSelection);
     }

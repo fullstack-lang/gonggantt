@@ -120,9 +120,23 @@ func GetGantts(c *gin.Context) {
 			gantt.TimeLine_StrokeWidth = gantt.TimeLine_StrokeWidth_Data.Float64
 		}
 
+		if gantt.Group_Stroke_Data.Valid {
+			gantt.Group_Stroke = gantt.Group_Stroke_Data.String
+		}
+
+		if gantt.Group_StrokeWidth_Data.Valid {
+			gantt.Group_StrokeWidth = gantt.Group_StrokeWidth_Data.Float64
+		}
+
+		if gantt.Group_StrokeDashArray_Data.Valid {
+			gantt.Group_StrokeDashArray = gantt.Group_StrokeDashArray_Data.String
+		}
+
 		if gantt.DateYOffset_Data.Valid {
 			gantt.DateYOffset = gantt.DateYOffset_Data.Float64
 		}
+
+		gantt.AlignOnStartEndOnYearStart = gantt.AlignOnStartEndOnYearStart_Data.Bool
 
 	}
 
@@ -203,8 +217,20 @@ func PostGantt(c *gin.Context) {
 	ganttDB.TimeLine_StrokeWidth_Data.Float64 = input.TimeLine_StrokeWidth
 	ganttDB.TimeLine_StrokeWidth_Data.Valid = true
 
+	ganttDB.Group_Stroke_Data.String = input.Group_Stroke
+	ganttDB.Group_Stroke_Data.Valid = true
+
+	ganttDB.Group_StrokeWidth_Data.Float64 = input.Group_StrokeWidth
+	ganttDB.Group_StrokeWidth_Data.Valid = true
+
+	ganttDB.Group_StrokeDashArray_Data.String = input.Group_StrokeDashArray
+	ganttDB.Group_StrokeDashArray_Data.Valid = true
+
 	ganttDB.DateYOffset_Data.Float64 = input.DateYOffset
 	ganttDB.DateYOffset_Data.Valid = true
+
+	ganttDB.AlignOnStartEndOnYearStart_Data.Bool = input.AlignOnStartEndOnYearStart
+	ganttDB.AlignOnStartEndOnYearStart_Data.Valid = true
 
 	query := db.Create(&ganttDB)
 	if query.Error != nil {
@@ -301,9 +327,23 @@ func GetGantt(c *gin.Context) {
 		gantt.TimeLine_StrokeWidth = gantt.TimeLine_StrokeWidth_Data.Float64
 	}
 
+	if gantt.Group_Stroke_Data.Valid {
+		gantt.Group_Stroke = gantt.Group_Stroke_Data.String
+	}
+
+	if gantt.Group_StrokeWidth_Data.Valid {
+		gantt.Group_StrokeWidth = gantt.Group_StrokeWidth_Data.Float64
+	}
+
+	if gantt.Group_StrokeDashArray_Data.Valid {
+		gantt.Group_StrokeDashArray = gantt.Group_StrokeDashArray_Data.String
+	}
+
 	if gantt.DateYOffset_Data.Valid {
 		gantt.DateYOffset = gantt.DateYOffset_Data.Float64
 	}
+
+	gantt.AlignOnStartEndOnYearStart = gantt.AlignOnStartEndOnYearStart_Data.Bool
 
 	c.JSON(http.StatusOK, gantt)
 }
@@ -385,8 +425,20 @@ func UpdateGantt(c *gin.Context) {
 	input.TimeLine_StrokeWidth_Data.Float64 = input.TimeLine_StrokeWidth
 	input.TimeLine_StrokeWidth_Data.Valid = true
 
+	input.Group_Stroke_Data.String = input.Group_Stroke
+	input.Group_Stroke_Data.Valid = true
+
+	input.Group_StrokeWidth_Data.Float64 = input.Group_StrokeWidth
+	input.Group_StrokeWidth_Data.Valid = true
+
+	input.Group_StrokeDashArray_Data.String = input.Group_StrokeDashArray
+	input.Group_StrokeDashArray_Data.Valid = true
+
 	input.DateYOffset_Data.Float64 = input.DateYOffset
 	input.DateYOffset_Data.Valid = true
+
+	input.AlignOnStartEndOnYearStart_Data.Bool = input.AlignOnStartEndOnYearStart
+	input.AlignOnStartEndOnYearStart_Data.Valid = true
 
 	query = db.Model(&ganttDB).Updates(input)
 	if query.Error != nil {

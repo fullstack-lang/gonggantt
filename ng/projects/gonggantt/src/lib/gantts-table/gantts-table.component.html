@@ -117,10 +117,38 @@
             </td>
         </ng-container>
         <!-- -->
+        <ng-container matColumnDef="Group_Stroke">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Group_Stroke </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.Group_Stroke}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="Group_StrokeWidth">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Group_StrokeWidth </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.Group_StrokeWidth.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="Group_StrokeDashArray">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Group_StrokeDashArray </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.Group_StrokeDashArray}}
+            </td>
+        </ng-container>
+        <!-- -->
         <ng-container matColumnDef="DateYOffset">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> DateYOffset </th>
             <td mat-cell *matCellDef="let Gantt">
                 {{Gantt.DateYOffset.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="AlignOnStartEndOnYearStart">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> AlignOnStartEndOnYearStart </th>
+            <td mat-cell *matCellDef="let Gantt">
+                <mat-checkbox [checked]="Gantt.AlignOnStartEndOnYearStart" disabled=true></mat-checkbox>
             </td>
         </ng-container>
 

@@ -59,6 +59,8 @@ export class LaneService {
     lanedb.Bars = []
     let _Gantt_Lanes_reverse = lanedb.Gantt_Lanes_reverse
     lanedb.Gantt_Lanes_reverse = {}
+    let _Group_GroupLanes_reverse = lanedb.Group_GroupLanes_reverse
+    lanedb.Group_GroupLanes_reverse = {}
     let _Milestone_DiamonfAndTextAnchors_reverse = lanedb.Milestone_DiamonfAndTextAnchors_reverse
     lanedb.Milestone_DiamonfAndTextAnchors_reverse = {}
 
@@ -66,6 +68,7 @@ export class LaneService {
 			tap(_ => {
 				// insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
+        lanedb.Group_GroupLanes_reverse = _Group_GroupLanes_reverse
         lanedb.Milestone_DiamonfAndTextAnchors_reverse = _Milestone_DiamonfAndTextAnchors_reverse
 				this.log(`posted lanedb id=${lanedb.ID}`)
 			}),
@@ -93,6 +96,8 @@ export class LaneService {
     lanedb.Bars = []
     let _Gantt_Lanes_reverse = lanedb.Gantt_Lanes_reverse
     lanedb.Gantt_Lanes_reverse = {}
+    let _Group_GroupLanes_reverse = lanedb.Group_GroupLanes_reverse
+    lanedb.Group_GroupLanes_reverse = {}
     let _Milestone_DiamonfAndTextAnchors_reverse = lanedb.Milestone_DiamonfAndTextAnchors_reverse
     lanedb.Milestone_DiamonfAndTextAnchors_reverse = {}
 
@@ -100,6 +105,7 @@ export class LaneService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
+        lanedb.Group_GroupLanes_reverse = _Group_GroupLanes_reverse
         lanedb.Milestone_DiamonfAndTextAnchors_reverse = _Milestone_DiamonfAndTextAnchors_reverse
         this.log(`updated lanedb id=${lanedb.ID}`)
       }),

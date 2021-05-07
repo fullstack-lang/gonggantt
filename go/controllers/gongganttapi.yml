@@ -14,6 +14,17 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/fullstack-lang/gonggantt/go/models
+  Group:
+    properties:
+      GroupLanes:
+        description: Lanes that need to be grouped
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Name:
+        type: string
+    type: object
+    x-go-package: github.com/fullstack-lang/gonggantt/go/models
   Lane:
     properties:
       Bars:
@@ -42,6 +53,18 @@ definitions:
         type: string
     type: object
     x-go-package: github.com/fullstack-lang/gonggantt/go/models
+  NullBool:
+    description: |-
+      NullBool implements the Scanner interface so
+      it can be used as a scan destination, similar to NullString.
+    properties:
+      Bool:
+        type: boolean
+      Valid:
+        type: boolean
+    title: NullBool represents a bool that may be null.
+    type: object
+    x-go-package: database/sql
   NullFloat64:
     description: |-
       NullFloat64 implements the Scanner interface so
@@ -129,8 +152,7 @@ definitions:
     x-go-name: BarAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   barDB:
-    description: 'It incorporates all fields : from the model, from the generated
-      field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
     properties:
       CreatedAt:
         format: date-time
@@ -170,6 +192,10 @@ definitions:
       from associations ("Has One" and "Has Many") that are generated to
       fullfill the ORM requirements for associations
     properties:
+      AlignOnStartEndOnYearStart:
+        type: boolean
+      AlignOnStartEndOnYearStart_Data:
+        $ref: '#/definitions/NullBool'
       DateYOffset:
         format: double
         type: number
@@ -180,6 +206,24 @@ definitions:
         type: string
       End_Data:
         $ref: '#/definitions/NullTime'
+      Group_Stroke:
+        type: string
+      Group_Stroke_Data:
+        $ref: '#/definitions/NullString'
+      Group_StrokeDashArray:
+        type: string
+      Group_StrokeDashArray_Data:
+        $ref: '#/definitions/NullString'
+      Group_StrokeWidth:
+        format: double
+        type: number
+      Group_StrokeWidth_Data:
+        $ref: '#/definitions/NullFloat64'
+      Groups:
+        description: list of Groups
+        items:
+          $ref: '#/definitions/Group'
+        type: array
       LaneHeight:
         format: double
         type: number
@@ -257,9 +301,12 @@ definitions:
     x-go-name: GanttAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   ganttDB:
-    description: 'It incorporates all fields : from the model, from the generated
-      field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
     properties:
+      AlignOnStartEndOnYearStart:
+        type: boolean
+      AlignOnStartEndOnYearStart_Data:
+        $ref: '#/definitions/NullBool'
       CreatedAt:
         format: date-time
         type: string
@@ -276,6 +323,24 @@ definitions:
         type: string
       End_Data:
         $ref: '#/definitions/NullTime'
+      Group_Stroke:
+        type: string
+      Group_Stroke_Data:
+        $ref: '#/definitions/NullString'
+      Group_StrokeDashArray:
+        type: string
+      Group_StrokeDashArray_Data:
+        $ref: '#/definitions/NullString'
+      Group_StrokeWidth:
+        format: double
+        type: number
+      Group_StrokeWidth_Data:
+        $ref: '#/definitions/NullFloat64'
+      Groups:
+        description: list of Groups
+        items:
+          $ref: '#/definitions/Group'
+        type: array
       ID:
         format: uint64
         type: integer
@@ -358,6 +423,57 @@ definitions:
     type: object
     x-go-name: GanttDB
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  groupAPI:
+    description: |-
+      for POST, API, one needs the fields of the model as well as the fields
+      from associations ("Has One" and "Has Many") that are generated to
+      fullfill the ORM requirements for associations
+    properties:
+      Gantt_GroupsDBID:
+        $ref: '#/definitions/NullInt64'
+      GroupLanes:
+        description: Lanes that need to be grouped
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+    title: GroupAPI is the input in POST API
+    type: object
+    x-go-name: GroupAPI
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  groupDB:
+    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    properties:
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        format: date-time
+        type: string
+      Gantt_GroupsDBID:
+        $ref: '#/definitions/NullInt64'
+      GroupLanes:
+        description: Lanes that need to be grouped
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      ID:
+        format: uint64
+        type: integer
+      Name:
+        type: string
+      Name_Data:
+        $ref: '#/definitions/NullString'
+      UpdatedAt:
+        format: date-time
+        type: string
+    title: GroupDB describes a group in the database
+    type: object
+    x-go-name: GroupDB
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   laneAPI:
     description: |-
       for POST, API, one needs the fields of the model as well as the fields
@@ -369,6 +485,8 @@ definitions:
           $ref: '#/definitions/Bar'
         type: array
       Gantt_LanesDBID:
+        $ref: '#/definitions/NullInt64'
+      Group_GroupLanesDBID:
         $ref: '#/definitions/NullInt64'
       Milestone_DiamonfAndTextAnchorsDBID:
         $ref: '#/definitions/NullInt64'
@@ -387,8 +505,7 @@ definitions:
     x-go-name: LaneAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   laneDB:
-    description: 'It incorporates all fields : from the model, from the generated
-      field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
     properties:
       Bars:
         items:
@@ -401,6 +518,8 @@ definitions:
         format: date-time
         type: string
       Gantt_LanesDBID:
+        $ref: '#/definitions/NullInt64'
+      Group_GroupLanesDBID:
         $ref: '#/definitions/NullInt64'
       ID:
         format: uint64
@@ -451,8 +570,7 @@ definitions:
     x-go-name: MilestoneAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   milestoneDB:
-    description: 'It incorporates all fields : from the model, from the generated
-      field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
     properties:
       CreatedAt:
         format: date-time
@@ -665,6 +783,90 @@ paths:
           $ref: '#/responses/genericError'
       tags:
       - gantts
+  /groups:
+    get:
+      description: Get all groups
+      operationId: getGroups
+      responses:
+        "200":
+          $ref: '#/responses/groupDBsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      description: Creates a group
+      operationId: postGroup
+      parameters:
+      - description: The Group to submit or modify
+        in: body
+        name: Group
+        schema:
+          $ref: '#/definitions/groupAPI'
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/groupDBResponse'
+      tags:
+      - groups
+  /groups/{ID}:
+    delete:
+      description: Delete a group
+      operationId: deleteGroup
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - groups
+    get:
+      operationId: getGroup
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/groupDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Gets the details for a group.
+      tags:
+      - groups
+    patch:
+      description: Update a group
+      operationId: updateGroup
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: The Group to submit or modify
+        in: body
+        name: Group
+        schema:
+          $ref: '#/definitions/groupAPI'
+      responses:
+        "200":
+          $ref: '#/responses/groupDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - groups
   /lanes:
     get:
       description: Get all lanes
@@ -880,6 +1082,12 @@ responses:
   ganttDBResponse:
     description: GanttDBResponse provides response
     headers:
+      AlignOnStartEndOnYearStart:
+        type: boolean
+      AlignOnStartEndOnYearStart_Data:
+        description: |-
+          Declation for basic field ganttDB.AlignOnStartEndOnYearStart bool (to be completed)
+          provide the sql storage for the boolan
       CreatedAt:
         format: date-time
         type: string
@@ -887,8 +1095,7 @@ responses:
         format: double
         type: number
       DateYOffset_Data:
-        description: Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to be completed)
       DeletedAt:
         format: date-time
         type: string
@@ -897,6 +1104,24 @@ responses:
         type: string
       End_Data:
         description: Declation for basic field ganttDB.End
+      Group_Stroke:
+        type: string
+      Group_Stroke_Data:
+        description: Declation for basic field ganttDB.Group_Stroke {{BasicKind}} (to be completed)
+      Group_StrokeDashArray:
+        type: string
+      Group_StrokeDashArray_Data:
+        description: Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}} (to be completed)
+      Group_StrokeWidth:
+        format: double
+        type: number
+      Group_StrokeWidth_Data:
+        description: Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}} (to be completed)
+      Groups:
+        description: list of Groups
+        items:
+          $ref: '#/definitions/Group'
+        type: array
       ID:
         format: uint64
         type: integer
@@ -904,8 +1129,7 @@ responses:
         format: double
         type: number
       LaneHeight_Data:
-        description: Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to be completed)
       Lanes:
         description: List of Lanes
         items:
@@ -926,8 +1150,7 @@ responses:
         format: double
         type: number
       RatioBarToLaneHeight_Data:
-        description: Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}} (to be completed)
       Start:
         format: date-time
         type: string
@@ -937,30 +1160,25 @@ responses:
         format: double
         type: number
       TextHeight_Data:
-        description: Declation for basic field ganttDB.TextHeight {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.TextHeight {{BasicKind}} (to be completed)
       TimeLine_Color:
         type: string
       TimeLine_Color_Data:
-        description: Declation for basic field ganttDB.TimeLine_Color {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_Color {{BasicKind}} (to be completed)
       TimeLine_FillOpacity:
         format: double
         type: number
       TimeLine_FillOpacity_Data:
-        description: Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}} (to be completed)
       TimeLine_Stroke:
         type: string
       TimeLine_Stroke_Data:
-        description: Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}} (to be completed)
       TimeLine_StrokeWidth:
         format: double
         type: number
       TimeLine_StrokeWidth_Data:
-        description: Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}} (to be completed)
       UpdatedAt:
         format: date-time
         type: string
@@ -968,28 +1186,24 @@ responses:
         format: double
         type: number
       XLeftLanes_Data:
-        description: Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to be completed)
       XLeftText:
         format: double
         type: number
       XLeftText_Data:
-        description: Declation for basic field ganttDB.XLeftText {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.XLeftText {{BasicKind}} (to be completed)
       XRightMargin:
         format: double
         type: number
       XRightMargin_Data:
-        description: Declation for basic field ganttDB.XRightMargin {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.XRightMargin {{BasicKind}} (to be completed)
       YTopMargin:
         format: double
         type: number
       YTopMargin_Data:
-        description: Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to be completed)
     schema:
-      $ref: '#/definitions/NullFloat64'
+      $ref: '#/definitions/NullBool'
   ganttDBsResponse:
     description: GanttDBs arrays ganttDBs
     schema:
@@ -1010,6 +1224,42 @@ responses:
           type: string
           x-go-name: Message
       type: object
+  groupDBResponse:
+    description: GroupDBResponse provides response
+    headers:
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        format: date-time
+        type: string
+      Gantt_GroupsDBID:
+        description: Implementation of a reverse ID for field Gantt{}.Groups []*Group
+      GroupLanes:
+        description: Lanes that need to be grouped
+        items:
+          $ref: '#/definitions/Lane'
+        type: array
+      ID:
+        format: uint64
+        type: integer
+      Name:
+        type: string
+      Name_Data:
+        description: |-
+          insertion for fields declaration
+          Declation for basic field groupDB.Name {{BasicKind}} (to be completed)
+      UpdatedAt:
+        format: date-time
+        type: string
+    schema:
+      $ref: '#/definitions/NullInt64'
+  groupDBsResponse:
+    description: GroupDBs arrays groupDBs
+    schema:
+      items:
+        $ref: '#/definitions/groupDB'
+      type: array
   laneDBResponse:
     description: LaneDBResponse provides response
     headers:
@@ -1025,12 +1275,13 @@ responses:
         type: string
       Gantt_LanesDBID:
         description: Implementation of a reverse ID for field Gantt{}.Lanes []*Lane
+      Group_GroupLanesDBID:
+        description: Implementation of a reverse ID for field Group{}.GroupLanes []*Lane
       ID:
         format: uint64
         type: integer
       Milestone_DiamonfAndTextAnchorsDBID:
-        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors
-          []*Lane
+        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
       Name:
         type: string
       Name_Data:

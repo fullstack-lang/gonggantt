@@ -65,8 +65,27 @@
         <td class="mat-cell">{{gantt.TimeLine_StrokeWidth}}</td>
     </tr>
     <tr class="mat-row">
+        <td class="mat-cell">Group_Stroke</td>
+        <td class="mat-cell">{{gantt.Group_Stroke}}</td>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">Group_StrokeWidth</td>
+        <td class="mat-cell">{{gantt.Group_StrokeWidth}}</td>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">Group_StrokeDashArray</td>
+        <td class="mat-cell">{{gantt.Group_StrokeDashArray}}</td>
+    </tr>
+    <tr class="mat-row">
         <td class="mat-cell">DateYOffset</td>
         <td class="mat-cell">{{gantt.DateYOffset}}</td>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">AlignOnStartEndOnYearStart</td>
+        <td class="mat-cell">
+            <mat-checkbox [checked]="gantt.AlignOnStartEndOnYearStart" disabled=true>
+            </mat-checkbox>
+        </td>
     </tr>
 </table>
 <!-- hack to force loading of mat table style an error is generated but it is a know angular issue https://github.com/angular/components/issues/10941 -->

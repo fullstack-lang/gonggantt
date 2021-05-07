@@ -22,13 +22,22 @@ type Gantt struct {
 	TimeLine_Stroke      string
 	TimeLine_StrokeWidth float64
 
+	Group_Stroke          string
+	Group_StrokeWidth     float64
+	Group_StrokeDashArray string
+
 	DateYOffset float64
+
+	AlignOnStartEndOnYearStart bool
 
 	// List of Lanes
 	Lanes []*Lane
 
 	// list of Milestones
 	Milestones []*Milestone
+
+	// list of Groups
+	Groups []*Group
 }
 
 func (gantt *Gantt) ComputeStartAndEndDate() {
@@ -51,5 +60,11 @@ func (gantt *Gantt) ComputeStartAndEndDate() {
 				}
 			}
 		}
+	}
+
+	// align start on the beginning of the year
+	if gantt.AlignOnStartEndOnYearStart {
+		gantt.Start = time.Date(gantt.Start.Year(), time.January, 1, 0, 0, 0, 0, time.UTC)
+		gantt.End = time.Date(gantt.End.Year(), time.December, 31, 0, 0, 0, 0, time.UTC)
 	}
 }

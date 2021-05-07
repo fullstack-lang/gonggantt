@@ -39,6 +39,10 @@ import { GanttsTableComponent } from './gantts-table/gantts-table.component'
 import { GanttDetailComponent } from './gantt-detail/gantt-detail.component'
 import { GanttPresentationComponent } from './gantt-presentation/gantt-presentation.component'
 
+import { GroupsTableComponent } from './groups-table/groups-table.component'
+import { GroupDetailComponent } from './group-detail/group-detail.component'
+import { GroupPresentationComponent } from './group-presentation/group-presentation.component'
+
 import { LanesTableComponent } from './lanes-table/lanes-table.component'
 import { LaneDetailComponent } from './lane-detail/lane-detail.component'
 import { LanePresentationComponent } from './lane-presentation/lane-presentation.component'
@@ -58,6 +62,10 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 		GanttsTableComponent,
 		GanttDetailComponent,
 		GanttPresentationComponent,
+
+		GroupsTableComponent,
+		GroupDetailComponent,
+		GroupPresentationComponent,
 
 		LanesTableComponent,
 		LaneDetailComponent,
@@ -108,6 +116,10 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 		GanttsTableComponent,
 		GanttDetailComponent,
 		GanttPresentationComponent,
+
+		GroupsTableComponent,
+		GroupDetailComponent,
+		GroupPresentationComponent,
 
 		LanesTableComponent,
 		LaneDetailComponent,

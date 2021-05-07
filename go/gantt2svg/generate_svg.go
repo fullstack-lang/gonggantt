@@ -3,6 +3,7 @@ package gantt2svg
 import (
 	"fmt"
 	"log"
+	"math"
 	"sort"
 	"time"
 
@@ -165,7 +166,8 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 	//
 	currentY := YTopMargin
 
-	mapLaneHeight := make(map[*gonggantt_models.Lane]float64, 0)
+	mapLane_TextY := make(map[*gonggantt_models.Lane]float64, 0)
+	mapLane_TopY := make(map[*gonggantt_models.Lane]float64, 0)
 
 	//
 	// Sort Lanes according to the Order
@@ -182,6 +184,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		laneSVG.Name = lane.Name
 		laneSVG.X = XLeftLanes
 		laneSVG.Y = currentY
+		mapLane_TopY[lane] = currentY
 
 		laneSVG.Width = XRightMargin - XLeftLanes
 		laneSVG.Height = LaneHeight
@@ -200,7 +203,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		laneText.Content = laneText.Name
 		laneText.X = XLeftText
 		laneText.Y = currentY + LaneHeight/2.0 + TextHeight/2.0
-		mapLaneHeight[lane] = laneText.Y
+		mapLane_TextY[lane] = laneText.Y
 		laneText.Color = "black"
 		laneText.FillOpacity = 1.0
 		svg.Texts = append(svg.Texts, laneText)
@@ -281,7 +284,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 			svg.Rects = append(svg.Rects, diamond)
 			diamond.Name = milestone.Name
 			diamond.X = line.X1 - diamondWidth/2.0
-			diamond.Y = mapLaneHeight[diamondAndTextAnchor] - diamondWidth + LaneHeight/2.0
+			diamond.Y = mapLane_TextY[diamondAndTextAnchor] - diamondWidth + LaneHeight/2.0
 			diamond.Width = diamondWidth
 			diamond.Height = diamondWidth
 			diamond.Color = "red"
@@ -298,6 +301,51 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 			milestoneText.FillOpacity = 1.0
 			svg.Texts = append(svg.Texts, milestoneText)
 		}
+	}
+
+	//
+	// Groups of Lanes
+	//
+	for _, group := range ganttToRender.Groups {
+
+		if len(group.GroupLanes) == 0 {
+			continue
+		}
+
+		groupSVG := new(gongsvg_models.Rect).Stage()
+		svg.Rects = append(svg.Rects, groupSVG)
+		groupSVG.Name = group.Name
+
+		// compute X from list of lane
+		groupTopY := math.MaxFloat64
+		groupBottomY := 0.0
+		for _, lane := range group.GroupLanes {
+			if groupTopY > mapLane_TopY[lane] {
+				groupTopY = mapLane_TopY[lane]
+			}
+			if groupBottomY < (mapLane_TopY[lane] + ganttToRender.LaneHeight) {
+				groupBottomY = mapLane_TopY[lane] + ganttToRender.LaneHeight
+			}
+		}
+
+		groupSVG.X = 0
+		groupSVG.Y = groupTopY
+		groupSVG.Width = ganttToRender.XRightMargin - groupSVG.X
+		groupSVG.Height = groupBottomY - groupTopY
+
+		groupSVG.Stroke = ganttToRender.Group_Stroke
+		groupSVG.StrokeWidth = ganttToRender.Group_StrokeWidth
+		groupSVG.StrokeDashArray = ganttToRender.Group_StrokeDashArray
+
+		// text
+		groupText := new(gongsvg_models.Text).Stage()
+		groupText.Name = group.Name
+		groupText.Content = groupText.Name
+		groupText.X = XLeftText
+		groupText.Y = groupTopY + ganttToRender.DateYOffset
+		groupText.Color = "blue"
+		groupText.FillOpacity = 0.5
+		svg.Texts = append(svg.Texts, groupText)
 	}
 
 	gongsvg_models.Stage.Commit()

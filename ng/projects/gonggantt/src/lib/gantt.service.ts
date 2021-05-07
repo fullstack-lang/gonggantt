@@ -58,6 +58,7 @@ export class GanttService {
 		// insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     ganttdb.Lanes = []
     ganttdb.Milestones = []
+    ganttdb.Groups = []
 
 		return this.http.post<GanttDB>(this.ganttsUrl, ganttdb, this.httpOptions).pipe(
 			tap(_ => {
@@ -87,6 +88,7 @@ export class GanttService {
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     ganttdb.Lanes = []
     ganttdb.Milestones = []
+    ganttdb.Groups = []
 
     return this.http.put(url, ganttdb, this.httpOptions).pipe(
       tap(_ => {

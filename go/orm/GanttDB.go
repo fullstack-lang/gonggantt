@@ -69,8 +69,21 @@ type GanttAPI struct {
 	// Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}} (to be completed)
 	TimeLine_StrokeWidth_Data sql.NullFloat64
 
+	// Declation for basic field ganttDB.Group_Stroke {{BasicKind}} (to be completed)
+	Group_Stroke_Data sql.NullString
+
+	// Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}} (to be completed)
+	Group_StrokeWidth_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}} (to be completed)
+	Group_StrokeDashArray_Data sql.NullString
+
 	// Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to be completed)
 	DateYOffset_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.AlignOnStartEndOnYearStart bool (to be completed)
+	// provide the sql storage for the boolan
+	AlignOnStartEndOnYearStart_Data sql.NullBool
 
 	// end of insertion
 }
@@ -268,8 +281,20 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 				ganttDB.TimeLine_StrokeWidth_Data.Float64 = gantt.TimeLine_StrokeWidth
 				ganttDB.TimeLine_StrokeWidth_Data.Valid = true
 
+				ganttDB.Group_Stroke_Data.String = gantt.Group_Stroke
+				ganttDB.Group_Stroke_Data.Valid = true
+
+				ganttDB.Group_StrokeWidth_Data.Float64 = gantt.Group_StrokeWidth
+				ganttDB.Group_StrokeWidth_Data.Valid = true
+
+				ganttDB.Group_StrokeDashArray_Data.String = gantt.Group_StrokeDashArray
+				ganttDB.Group_StrokeDashArray_Data.Valid = true
+
 				ganttDB.DateYOffset_Data.Float64 = gantt.DateYOffset
 				ganttDB.DateYOffset_Data.Valid = true
+
+				ganttDB.AlignOnStartEndOnYearStart_Data.Bool = gantt.AlignOnStartEndOnYearStart
+				ganttDB.AlignOnStartEndOnYearStart_Data.Valid = true
 
 				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
 				for _, lane := range gantt.Lanes {
@@ -291,6 +316,19 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 							milestoneDB.Gantt_MilestonesDBID.Int64 = int64(ganttDB.ID)
 							milestoneDB.Gantt_MilestonesDBID.Valid = true
 							if q := backRepoGantt.db.Save(&milestoneDB); q.Error != nil {
+								return q.Error
+							}
+						}
+					}
+				}
+
+				// commit a slice of pointer translates to update reverse pointer to Group, i.e.
+				for _, group := range gantt.Groups {
+					if groupDBID, ok := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[group]; ok {
+						if groupDB, ok := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDBID]; ok {
+							groupDB.Gantt_GroupsDBID.Int64 = int64(ganttDB.ID)
+							groupDB.Gantt_GroupsDBID.Valid = true
+							if q := backRepoGantt.db.Save(&groupDB); q.Error != nil {
 								return q.Error
 							}
 						}
@@ -404,8 +442,15 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 
 			gantt.TimeLine_StrokeWidth = ganttDB.TimeLine_StrokeWidth_Data.Float64
 
+			gantt.Group_Stroke = ganttDB.Group_Stroke_Data.String
+
+			gantt.Group_StrokeWidth = ganttDB.Group_StrokeWidth_Data.Float64
+
+			gantt.Group_StrokeDashArray = ganttDB.Group_StrokeDashArray_Data.String
+
 			gantt.DateYOffset = ganttDB.DateYOffset_Data.Float64
 
+			gantt.AlignOnStartEndOnYearStart = ganttDB.AlignOnStartEndOnYearStart_Data.Bool
 			// parse all LaneDB and redeem the array of poiners to Gantt
 			// first reset the slice
 			gantt.Lanes = gantt.Lanes[:0]
@@ -423,6 +468,16 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 				if MilestoneDB.Gantt_MilestonesDBID.Int64 == int64(ganttDB.ID) {
 					Milestone := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[MilestoneDB.ID]
 					gantt.Milestones = append(gantt.Milestones, Milestone)
+				}
+			}
+
+			// parse all GroupDB and redeem the array of poiners to Gantt
+			// first reset the slice
+			gantt.Groups = gantt.Groups[:0]
+			for _, GroupDB := range *backRepo.BackRepoGroup.Map_GroupDBID_GroupDB {
+				if GroupDB.Gantt_GroupsDBID.Int64 == int64(ganttDB.ID) {
+					Group := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[GroupDB.ID]
+					gantt.Groups = append(gantt.Groups, Group)
 				}
 			}
 

@@ -10,6 +10,10 @@ import { GanttsTableComponent } from './gantts-table/gantts-table.component'
 import { GanttDetailComponent } from './gantt-detail/gantt-detail.component'
 import { GanttPresentationComponent } from './gantt-presentation/gantt-presentation.component'
 
+import { GroupsTableComponent } from './groups-table/groups-table.component'
+import { GroupDetailComponent } from './group-detail/group-detail.component'
+import { GroupPresentationComponent } from './group-presentation/group-presentation.component'
+
 import { LanesTableComponent } from './lanes-table/lanes-table.component'
 import { LaneDetailComponent } from './lane-detail/lane-detail.component'
 import { LanePresentationComponent } from './lane-presentation/lane-presentation.component'
@@ -33,6 +37,13 @@ const routes: Routes = [ // insertion point for routes declarations
 	{ path: 'gantt-detail/:id', component: GanttDetailComponent, outlet: 'editor' },
 	{ path: 'gantt-presentation/:id', component: GanttPresentationComponent, outlet: 'presentation' },
 	{ path: 'gantt-presentation-special/:id', component: GanttPresentationComponent, outlet: 'ganttpres' },
+
+	{ path: 'groups', component: GroupsTableComponent, outlet: 'table' },
+	{ path: 'group-adder', component: GroupDetailComponent, outlet: 'editor' },
+	{ path: 'group-adder/:id/:association', component: GroupDetailComponent, outlet: 'editor' },
+	{ path: 'group-detail/:id', component: GroupDetailComponent, outlet: 'editor' },
+	{ path: 'group-presentation/:id', component: GroupPresentationComponent, outlet: 'presentation' },
+	{ path: 'group-presentation-special/:id', component: GroupPresentationComponent, outlet: 'grouppres' },
 
 	{ path: 'lanes', component: LanesTableComponent, outlet: 'table' },
 	{ path: 'lane-adder', component: LaneDetailComponent, outlet: 'editor' },

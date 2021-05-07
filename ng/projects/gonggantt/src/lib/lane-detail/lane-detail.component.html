@@ -35,6 +35,17 @@
 </div>
     <div class="details__item">
     <mat-form-field>
+        <mat-label><- GroupLanes</mat-label>
+        <mat-select [(ngModel)]="lane.Group_GroupLanes_reverse">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let group of frontRepo.Groups_array" [value]="group">
+                {{group.Name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+    <div class="details__item">
+    <mat-form-field>
         <mat-label><- DiamonfAndTextAnchors</mat-label>
         <mat-select [(ngModel)]="lane.Milestone_DiamonfAndTextAnchors_reverse">
             <mat-option>None</mat-option>

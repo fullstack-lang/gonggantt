@@ -16,6 +16,8 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 
 	Gantts map[*Gantt]struct{}
 
+	Groups map[*Group]struct{}
+
 	Lanes map[*Lane]struct{}
 
 	Milestones map[*Milestone]struct{}
@@ -42,6 +44,8 @@ type BackRepoInterface interface {
 	CheckoutBar(bar *Bar)
 	CommitGantt(gantt *Gantt)
 	CheckoutGantt(gantt *Gantt)
+	CommitGroup(group *Group)
+	CheckoutGroup(group *Group)
 	CommitLane(lane *Lane)
 	CheckoutLane(lane *Lane)
 	CommitMilestone(milestone *Milestone)
@@ -54,6 +58,8 @@ var Stage StageStruct = StageStruct{ // insertion point for array initiatialisat
 	Bars: make(map[*Bar]struct{}, 0),
 
 	Gantts: make(map[*Gantt]struct{}, 0),
+
+	Groups: make(map[*Group]struct{}, 0),
 
 	Lanes: make(map[*Lane]struct{}, 0),
 
@@ -272,6 +278,105 @@ func DeleteORMGantt(gantt *Gantt) {
 	}
 }
 
+func (stage *StageStruct) getGroupOrderedStructWithNameField() []*Group {
+	// have alphabetical order generation
+	groupOrdered := []*Group{}
+	for group := range stage.Groups {
+		groupOrdered = append(groupOrdered, group)
+	}
+	sort.Slice(groupOrdered[:], func(i, j int) bool {
+		return groupOrdered[i].Name < groupOrdered[j].Name
+	})
+	return groupOrdered
+}
+
+// Stage puts group to the model stage
+func (group *Group) Stage() *Group {
+	Stage.Groups[group] = __member
+	return group
+}
+
+// Unstage removes group off the model stage
+func (group *Group) Unstage() *Group {
+	delete(Stage.Groups, group)
+	return group
+}
+
+// commit group to the back repo (if it is already staged)
+func (group *Group) Commit() *Group {
+	if _, ok := Stage.Groups[group]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CommitGroup(group)
+		}
+	}
+	return group
+}
+
+// Checkout group to the back repo (if it is already staged)
+func (group *Group) Checkout() *Group {
+	if _, ok := Stage.Groups[group]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CheckoutGroup(group)
+		}
+	}
+	return group
+}
+
+//
+// Legacy, to be deleted
+//
+
+// StageCopy appends a copy of group to the model stage
+func (group *Group) StageCopy() *Group {
+	_group := new(Group)
+	*_group = *group
+	_group.Stage()
+	return _group
+}
+
+// StageAndCommit appends group to the model stage and commit to the orm repo
+func (group *Group) StageAndCommit() *Group {
+	group.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMGroup(group)
+	}
+	return group
+}
+
+// DeleteStageAndCommit appends group to the model stage and commit to the orm repo
+func (group *Group) DeleteStageAndCommit() *Group {
+	group.Unstage()
+	DeleteORMGroup(group)
+	return group
+}
+
+// StageCopyAndCommit appends a copy of group to the model stage and commit to the orm repo
+func (group *Group) StageCopyAndCommit() *Group {
+	_group := new(Group)
+	*_group = *group
+	_group.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMGroup(group)
+	}
+	return _group
+}
+
+// CreateORMGroup enables dynamic staging of a Group instance
+func CreateORMGroup(group *Group) {
+	group.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMGroup(group)
+	}
+}
+
+// DeleteORMGroup enables dynamic staging of a Group instance
+func DeleteORMGroup(group *Group) {
+	group.Unstage()
+	if Stage.AllModelsStructDeleteCallback != nil {
+		Stage.AllModelsStructDeleteCallback.DeleteORMGroup(group)
+	}
+}
+
 func (stage *StageStruct) getLaneOrderedStructWithNameField() []*Lane {
 	// have alphabetical order generation
 	laneOrdered := []*Lane{}
@@ -474,6 +579,7 @@ func DeleteORMMilestone(milestone *Milestone) {
 type AllModelsStructCreateInterface interface { // insertion point for Callbacks on creation
 	CreateORMBar(Bar *Bar)
 	CreateORMGantt(Gantt *Gantt)
+	CreateORMGroup(Group *Group)
 	CreateORMLane(Lane *Lane)
 	CreateORMMilestone(Milestone *Milestone)
 }
@@ -481,6 +587,7 @@ type AllModelsStructCreateInterface interface { // insertion point for Callbacks
 type AllModelsStructDeleteInterface interface { // insertion point for Callbacks on deletion
 	DeleteORMBar(Bar *Bar)
 	DeleteORMGantt(Gantt *Gantt)
+	DeleteORMGroup(Group *Group)
 	DeleteORMLane(Lane *Lane)
 	DeleteORMMilestone(Milestone *Milestone)
 }
@@ -488,6 +595,7 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 func (stage *StageStruct) Reset() { // insertion point for array reset
 	stage.Bars = make(map[*Bar]struct{}, 0)
 	stage.Gantts = make(map[*Gantt]struct{}, 0)
+	stage.Groups = make(map[*Group]struct{}, 0)
 	stage.Lanes = make(map[*Lane]struct{}, 0)
 	stage.Milestones = make(map[*Milestone]struct{}, 0)
 }
@@ -495,6 +603,7 @@ func (stage *StageStruct) Reset() { // insertion point for array reset
 func (stage *StageStruct) Nil() { // insertion point for array nil
 	stage.Bars = nil
 	stage.Gantts = nil
+	stage.Groups = nil
 	stage.Lanes = nil
 	stage.Milestones = nil
 }

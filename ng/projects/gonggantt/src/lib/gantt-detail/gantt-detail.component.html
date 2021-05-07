@@ -131,9 +131,42 @@
     <div class="details__item">
         <form>
             <mat-form-field>
+                <mat-label>Group_Stroke</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_Stroke">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>Group_StrokeWidth</mat-label>
+                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_StrokeWidth">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
+                <mat-label>Group_StrokeDashArray</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_StrokeDashArray">
+            </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-form-field>
                 <mat-label>DateYOffset</mat-label>
                 <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.DateYOffset">
             </mat-form-field>
+        </form>
+    </div>
+    <!-- -->
+    <div class="details__item">
+        <form>
+            <mat-checkbox [formControl]="AlignOnStartEndOnYearStartFormControl">AlignOnStartEndOnYearStart</mat-checkbox>
         </form>
     </div>
     <div class="details__item">
@@ -141,6 +174,9 @@
     </div>
     <div class="details__item">
         <button mat-raised-button (click)="openReverseSelection('Milestone', 'Gantt_MilestonesDBID')">Milestones</button>
+    </div>
+    <div class="details__item">
+        <button mat-raised-button (click)="openReverseSelection('Group', 'Gantt_GroupsDBID')">Groups</button>
     </div>
     <div class="details__save">
         <button mat-raised-button color="primary" (click)="save()">

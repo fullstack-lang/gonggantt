@@ -26,6 +26,13 @@ export * from './lib/gantt-db'
 export * from './lib/gantt-api'
 export * from './lib/gantt.service'
 
+export * from './lib/group-detail/group-detail.component'
+export * from './lib/group-presentation/group-presentation.component'
+export * from './lib/groups-table/groups-table.component'
+export * from './lib/group-db'
+export * from './lib/group-api'
+export * from './lib/group.service'
+
 export * from './lib/lane-detail/lane-detail.component'
 export * from './lib/lane-presentation/lane-presentation.component'
 export * from './lib/lanes-table/lanes-table.component'

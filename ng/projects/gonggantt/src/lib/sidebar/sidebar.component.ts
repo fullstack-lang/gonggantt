@@ -12,6 +12,8 @@ import { BarService } from '../bar.service'
 import { getBarUniqueID } from '../front-repo.service'
 import { GanttService } from '../gantt.service'
 import { getGanttUniqueID } from '../front-repo.service'
+import { GroupService } from '../group.service'
+import { getGroupUniqueID } from '../front-repo.service'
 import { LaneService } from '../lane.service'
 import { getLaneUniqueID } from '../front-repo.service'
 import { MilestoneService } from '../milestone.service'
@@ -150,6 +152,7 @@ export class SidebarComponent implements OnInit {
     // insertion point for per struct service declaration
     private barService: BarService,
     private ganttService: GanttService,
+    private groupService: GroupService,
     private laneService: LaneService,
     private milestoneService: MilestoneService,
   ) { }
@@ -168,6 +171,14 @@ export class SidebarComponent implements OnInit {
     )
     // observable for changes in structs
     this.ganttService.GanttServiceChanged.subscribe(
+      message => {
+        if (message == "post" || message == "update" || message == "delete") {
+          this.refresh()
+        }
+      }
+    )
+    // observable for changes in structs
+    this.groupService.GroupServiceChanged.subscribe(
       message => {
         if (message == "post" || message == "update" || message == "delete") {
           this.refresh()
@@ -354,6 +365,108 @@ export class SidebarComponent implements OnInit {
               children: new Array<GongNode>()
             }
             MilestonesGongNodeAssociation.children.push(milestoneNode)
+          })
+
+          /**
+          * let append a node for the slide of pointer Groups
+          */
+          let GroupsGongNodeAssociation: GongNode = {
+            name: "(Group) Groups",
+            type: GongNodeType.ONE__ZERO_MANY_ASSOCIATION,
+            id: ganttDB.ID,
+            uniqueIdPerStack: 19 * nonInstanceNodeId,
+            structName: "Gantt",
+            associatedStructName: "Group",
+            children: new Array<GongNode>()
+          }
+          nonInstanceNodeId = nonInstanceNodeId + 1
+          ganttGongNodeInstance.children.push(GroupsGongNodeAssociation)
+
+          ganttDB.Groups?.forEach(groupDB => {
+            let groupNode: GongNode = {
+              name: groupDB.Name,
+              type: GongNodeType.INSTANCE,
+              id: groupDB.ID,
+              uniqueIdPerStack: // godel numbering (thank you kurt)
+                7 * getGanttUniqueID(ganttDB.ID)
+                + 11 * getGroupUniqueID(groupDB.ID),
+              structName: "Group",
+              associatedStructName: "",
+              children: new Array<GongNode>()
+            }
+            GroupsGongNodeAssociation.children.push(groupNode)
+          })
+
+        }
+      )
+
+      /**
+      * fill up the Group part of the mat tree
+      */
+      let groupGongNodeStruct: GongNode = {
+        name: "Group",
+        type: GongNodeType.STRUCT,
+        id: 0,
+        uniqueIdPerStack: 13 * nonInstanceNodeId,
+        structName: "Group",
+        associatedStructName: "",
+        children: new Array<GongNode>()
+      }
+      nonInstanceNodeId = nonInstanceNodeId + 1
+      this.gongNodeTree.push(groupGongNodeStruct)
+
+      this.frontRepo.Groups_array.sort((t1, t2) => {
+        if (t1.Name > t2.Name) {
+          return 1;
+        }
+        if (t1.Name < t2.Name) {
+          return -1;
+        }
+        return 0;
+      });
+
+      this.frontRepo.Groups_array.forEach(
+        groupDB => {
+          let groupGongNodeInstance: GongNode = {
+            name: groupDB.Name,
+            type: GongNodeType.INSTANCE,
+            id: groupDB.ID,
+            uniqueIdPerStack: getGroupUniqueID(groupDB.ID),
+            structName: "Group",
+            associatedStructName: "",
+            children: new Array<GongNode>()
+          }
+          groupGongNodeStruct.children.push(groupGongNodeInstance)
+
+          // insertion point for per field code
+          /**
+          * let append a node for the slide of pointer GroupLanes
+          */
+          let GroupLanesGongNodeAssociation: GongNode = {
+            name: "(Lane) GroupLanes",
+            type: GongNodeType.ONE__ZERO_MANY_ASSOCIATION,
+            id: groupDB.ID,
+            uniqueIdPerStack: 19 * nonInstanceNodeId,
+            structName: "Group",
+            associatedStructName: "Lane",
+            children: new Array<GongNode>()
+          }
+          nonInstanceNodeId = nonInstanceNodeId + 1
+          groupGongNodeInstance.children.push(GroupLanesGongNodeAssociation)
+
+          groupDB.GroupLanes?.forEach(laneDB => {
+            let laneNode: GongNode = {
+              name: laneDB.Name,
+              type: GongNodeType.INSTANCE,
+              id: laneDB.ID,
+              uniqueIdPerStack: // godel numbering (thank you kurt)
+                7 * getGroupUniqueID(groupDB.ID)
+                + 11 * getLaneUniqueID(laneDB.ID),
+              structName: "Lane",
+              associatedStructName: "",
+              children: new Array<GongNode>()
+            }
+            GroupLanesGongNodeAssociation.children.push(laneNode)
           })
 
         }

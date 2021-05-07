@@ -1,6 +1,7 @@
 // insertion point for imports
 import { LaneDB } from './lane-db'
 import { MilestoneDB } from './milestone-db'
+import { GroupDB } from './group-db'
 
 // usefull for managing pointer ID values that can be nullable
 import { NullInt64 } from './front-repo.service'
@@ -25,9 +26,14 @@ export class GanttDB {
 	TimeLine_FillOpacity?: number
 	TimeLine_Stroke?: string
 	TimeLine_StrokeWidth?: number
+	Group_Stroke?: string
+	Group_StrokeWidth?: number
+	Group_StrokeDashArray?: string
 	DateYOffset?: number
+	AlignOnStartEndOnYearStart?: string
 
 	// insertion point for other declarations
 	Lanes?: Array<LaneDB>
 	Milestones?: Array<MilestoneDB>
+	Groups?: Array<GroupDB>
 }

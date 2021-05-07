@@ -24,6 +24,7 @@ import { NullInt64 } from '../front-repo.service'
 export class GanttDetailComponent implements OnInit {
 
 	// insertion point for declarations
+	AlignOnStartEndOnYearStartFormControl = new FormControl(false);
 
 	// the GanttDB of interest
 	gantt: GanttDB;
@@ -76,6 +77,7 @@ export class GanttDetailComponent implements OnInit {
 				}
 
 				// insertion point for recovery of form controls value for bool fields
+				this.AlignOnStartEndOnYearStartFormControl.setValue(this.gantt.AlignOnStartEndOnYearStart)
 			}
 		)
 
@@ -90,6 +92,7 @@ export class GanttDetailComponent implements OnInit {
 		// pointers fields, after the translation, are nulled in order to perform serialization
 		
 		// insertion point for translation/nullation of each field
+		this.gantt.AlignOnStartEndOnYearStart = this.AlignOnStartEndOnYearStartFormControl.value
 		
 		// save from the front pointer space to the non pointer space for serialization
 		if (association == undefined) {
