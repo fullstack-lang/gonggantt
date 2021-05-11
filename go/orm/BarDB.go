@@ -6,15 +6,18 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/jinzhu/gorm"
+
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
-// dummy variable to have the import database/sql wihthout compile failure id no sql is used
+// dummy variable to have the import declaration wihthout compile failure (even if no code needing this import is generated)
 var dummy_Bar sql.NullBool
 var __Bar_time__dummyDeclaration time.Duration
+var dummy_Bar_sort sort.Float64Slice
 
 // BarAPI is the input in POST API
 //
@@ -38,6 +41,7 @@ type BarAPI struct {
 
 	// Implementation of a reverse ID for field Lane{}.Bars []*Bar
 	Lane_BarsDBID sql.NullInt64
+	Lane_BarsDBID_Index sql.NullInt64
 
 	// end of insertion
 }

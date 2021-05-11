@@ -138,6 +138,8 @@ definitions:
         $ref: '#/definitions/NullTime'
       Lane_BarsDBID:
         $ref: '#/definitions/NullInt64'
+      Lane_BarsDBID_Index:
+        $ref: '#/definitions/NullInt64'
       Name:
         type: string
       Name_Data:
@@ -169,6 +171,8 @@ definitions:
         format: uint64
         type: integer
       Lane_BarsDBID:
+        $ref: '#/definitions/NullInt64'
+      Lane_BarsDBID_Index:
         $ref: '#/definitions/NullInt64'
       Name:
         type: string
@@ -431,6 +435,8 @@ definitions:
     properties:
       Gantt_GroupsDBID:
         $ref: '#/definitions/NullInt64'
+      Gantt_GroupsDBID_Index:
+        $ref: '#/definitions/NullInt64'
       GroupLanes:
         description: Lanes that need to be grouped
         items:
@@ -454,6 +460,8 @@ definitions:
         format: date-time
         type: string
       Gantt_GroupsDBID:
+        $ref: '#/definitions/NullInt64'
+      Gantt_GroupsDBID_Index:
         $ref: '#/definitions/NullInt64'
       GroupLanes:
         description: Lanes that need to be grouped
@@ -486,9 +494,15 @@ definitions:
         type: array
       Gantt_LanesDBID:
         $ref: '#/definitions/NullInt64'
+      Gantt_LanesDBID_Index:
+        $ref: '#/definitions/NullInt64'
       Group_GroupLanesDBID:
         $ref: '#/definitions/NullInt64'
+      Group_GroupLanesDBID_Index:
+        $ref: '#/definitions/NullInt64'
       Milestone_DiamonfAndTextAnchorsDBID:
+        $ref: '#/definitions/NullInt64'
+      Milestone_DiamonfAndTextAnchorsDBID_Index:
         $ref: '#/definitions/NullInt64'
       Name:
         type: string
@@ -519,12 +533,18 @@ definitions:
         type: string
       Gantt_LanesDBID:
         $ref: '#/definitions/NullInt64'
+      Gantt_LanesDBID_Index:
+        $ref: '#/definitions/NullInt64'
       Group_GroupLanesDBID:
+        $ref: '#/definitions/NullInt64'
+      Group_GroupLanesDBID_Index:
         $ref: '#/definitions/NullInt64'
       ID:
         format: uint64
         type: integer
       Milestone_DiamonfAndTextAnchorsDBID:
+        $ref: '#/definitions/NullInt64'
+      Milestone_DiamonfAndTextAnchorsDBID_Index:
         $ref: '#/definitions/NullInt64'
       Name:
         type: string
@@ -561,6 +581,8 @@ definitions:
         type: array
       Gantt_MilestonesDBID:
         $ref: '#/definitions/NullInt64'
+      Gantt_MilestonesDBID_Index:
+        $ref: '#/definitions/NullInt64'
       Name:
         type: string
       Name_Data:
@@ -589,6 +611,8 @@ definitions:
           $ref: '#/definitions/Lane'
         type: array
       Gantt_MilestonesDBID:
+        $ref: '#/definitions/NullInt64'
+      Gantt_MilestonesDBID_Index:
         $ref: '#/definitions/NullInt64'
       ID:
         format: uint64
@@ -1057,6 +1081,7 @@ responses:
         type: integer
       Lane_BarsDBID:
         description: Implementation of a reverse ID for field Lane{}.Bars []*Bar
+      Lane_BarsDBID_Index: {}
       Name:
         type: string
       Name_Data:
@@ -1235,6 +1260,7 @@ responses:
         type: string
       Gantt_GroupsDBID:
         description: Implementation of a reverse ID for field Gantt{}.Groups []*Group
+      Gantt_GroupsDBID_Index: {}
       GroupLanes:
         description: Lanes that need to be grouped
         items:
@@ -1275,13 +1301,16 @@ responses:
         type: string
       Gantt_LanesDBID:
         description: Implementation of a reverse ID for field Gantt{}.Lanes []*Lane
+      Gantt_LanesDBID_Index: {}
       Group_GroupLanesDBID:
         description: Implementation of a reverse ID for field Group{}.GroupLanes []*Lane
+      Group_GroupLanesDBID_Index: {}
       ID:
         format: uint64
         type: integer
       Milestone_DiamonfAndTextAnchorsDBID:
         description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
+      Milestone_DiamonfAndTextAnchorsDBID_Index: {}
       Name:
         type: string
       Name_Data:
@@ -1326,6 +1355,7 @@ responses:
         type: array
       Gantt_MilestonesDBID:
         description: Implementation of a reverse ID for field Gantt{}.Milestones []*Milestone
+      Gantt_MilestonesDBID_Index: {}
       ID:
         format: uint64
         type: integer

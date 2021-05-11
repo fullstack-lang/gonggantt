@@ -6,15 +6,18 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/jinzhu/gorm"
+
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
-// dummy variable to have the import database/sql wihthout compile failure id no sql is used
+// dummy variable to have the import declaration wihthout compile failure (even if no code needing this import is generated)
 var dummy_Milestone sql.NullBool
 var __Milestone_time__dummyDeclaration time.Duration
+var dummy_Milestone_sort sort.Float64Slice
 
 // MilestoneAPI is the input in POST API
 //
@@ -35,6 +38,7 @@ type MilestoneAPI struct {
 
 	// Implementation of a reverse ID for field Gantt{}.Milestones []*Milestone
 	Gantt_MilestonesDBID sql.NullInt64
+	Gantt_MilestonesDBID_Index sql.NullInt64
 
 	// end of insertion
 }
@@ -198,10 +202,14 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 
 				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
 				for _, lane := range milestone.DiamonfAndTextAnchors {
+					index := 0
 					if laneDBID, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
 						if laneDB, ok := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDBID]; ok {
 							laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64 = int64(milestoneDB.ID)
 							laneDB.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
+							laneDB.Milestone_DiamonfAndTextAnchorsDBID_Index.Int64 = int64(index)
+							index = index + 1
+							laneDB.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
 							if q := backRepoMilestone.db.Save(&laneDB); q.Error != nil {
 								return q.Error
 							}
@@ -301,6 +309,17 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwoInstance(backR
 					milestone.DiamonfAndTextAnchors = append(milestone.DiamonfAndTextAnchors, Lane)
 				}
 			}
+			
+			// sort the array according to the order
+			sort.Slice(milestone.DiamonfAndTextAnchors, func(i, j int) bool {
+				laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[milestone.DiamonfAndTextAnchors[i]]
+				laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[milestone.DiamonfAndTextAnchors[j]]
+
+				laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
+				laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
+
+				return laneDB_i.Milestone_DiamonfAndTextAnchorsDBID_Index.Int64 < laneDB_j.Milestone_DiamonfAndTextAnchorsDBID_Index.Int64
+			})
 
 		}
 	}

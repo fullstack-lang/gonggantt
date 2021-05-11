@@ -7,6 +7,7 @@ import { LaneService } from '../lane.service'
 
 import { FrontRepoService, FrontRepo } from '../front-repo.service'
 import { MapOfComponents } from '../map-components'
+import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
 
@@ -98,18 +99,21 @@ export class LaneDetailComponent implements OnInit {
 				this.lane.Gantt_LanesDBID = new NullInt64
 				this.lane.Gantt_LanesDBID.Int64 = this.lane.Gantt_Lanes_reverse.ID
 				this.lane.Gantt_LanesDBID.Valid = true
+				this.lane.Gantt_LanesDBID_Index.Valid = true
 				this.lane.Gantt_Lanes_reverse = undefined // very important, otherwise, circular JSON
 			}
 			if (this.lane.Group_GroupLanes_reverse != undefined) {
 				this.lane.Group_GroupLanesDBID = new NullInt64
 				this.lane.Group_GroupLanesDBID.Int64 = this.lane.Group_GroupLanes_reverse.ID
 				this.lane.Group_GroupLanesDBID.Valid = true
+				this.lane.Group_GroupLanesDBID_Index.Valid = true
 				this.lane.Group_GroupLanes_reverse = undefined // very important, otherwise, circular JSON
 			}
 			if (this.lane.Milestone_DiamonfAndTextAnchors_reverse != undefined) {
 				this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
 				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = this.lane.Milestone_DiamonfAndTextAnchors_reverse.ID
 				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
+				this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
 				this.lane.Milestone_DiamonfAndTextAnchors_reverse = undefined // very important, otherwise, circular JSON
 			}
 		}
@@ -129,16 +133,19 @@ export class LaneDetailComponent implements OnInit {
 					this.lane.Gantt_LanesDBID = new NullInt64
 					this.lane.Gantt_LanesDBID.Int64 = id
 					this.lane.Gantt_LanesDBID.Valid = true
+					this.lane.Gantt_LanesDBID_Index.Valid = true
 					break
 				case "Group_GroupLanes":
 					this.lane.Group_GroupLanesDBID = new NullInt64
 					this.lane.Group_GroupLanesDBID.Int64 = id
 					this.lane.Group_GroupLanesDBID.Valid = true
+					this.lane.Group_GroupLanesDBID_Index.Valid = true
 					break
 				case "Milestone_DiamonfAndTextAnchors":
 					this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
 					this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = id
 					this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
+					this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
 					break
 			}
 			this.laneService.postLane(this.lane).subscribe(lane => {
@@ -160,13 +167,39 @@ export class LaneDetailComponent implements OnInit {
 
 		// dialogConfig.disableClose = true;
 		dialogConfig.autoFocus = true;
+		dialogConfig.width = "50%"
+		dialogConfig.height = "50%"
 		dialogConfig.data = {
 			ID: this.lane.ID,
 			ReversePointer: reverseField,
+			OrderingMode: false,
 		};
 		const dialogRef: MatDialogRef<string, any> = this.dialog.open(
 			MapOfComponents.get(AssociatedStruct).get(
 				AssociatedStruct + 'sTableComponent'
+			),
+			dialogConfig
+		);
+
+		dialogRef.afterClosed().subscribe(result => {
+			console.log('The dialog was closed');
+		});
+	}
+
+	openDragAndDropOrdering(AssociatedStruct: string, reverseField: string) {
+
+		const dialogConfig = new MatDialogConfig();
+
+		// dialogConfig.disableClose = true;
+		dialogConfig.autoFocus = true;
+		dialogConfig.data = {
+			ID: this.lane.ID,
+			ReversePointer: reverseField,
+			OrderingMode: true,
+		};
+		const dialogRef: MatDialogRef<string, any> = this.dialog.open(
+			MapOfSortingComponents.get(AssociatedStruct).get(
+				AssociatedStruct + 'SortingComponent'
 			),
 			dialogConfig
 		);

@@ -17,6 +17,7 @@ export class MilestoneDB {
 	// insertion point for other declarations
 	DiamonfAndTextAnchors?: Array<LaneDB>
 	Gantt_MilestonesDBID?: NullInt64
+	Gantt_MilestonesDBID_Index?: NullInt64 // store the index of the milestone instance in Gantt.Milestones
 	Gantt_Milestones_reverse?: GanttDB
 
 }

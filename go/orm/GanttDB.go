@@ -6,15 +6,18 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/jinzhu/gorm"
+
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
-// dummy variable to have the import database/sql wihthout compile failure id no sql is used
+// dummy variable to have the import declaration wihthout compile failure (even if no code needing this import is generated)
 var dummy_Gantt sql.NullBool
 var __Gantt_time__dummyDeclaration time.Duration
+var dummy_Gantt_sort sort.Float64Slice
 
 // GanttAPI is the input in POST API
 //
@@ -298,10 +301,14 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
 				for _, lane := range gantt.Lanes {
+					index := 0
 					if laneDBID, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
 						if laneDB, ok := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDBID]; ok {
 							laneDB.Gantt_LanesDBID.Int64 = int64(ganttDB.ID)
 							laneDB.Gantt_LanesDBID.Valid = true
+							laneDB.Gantt_LanesDBID_Index.Int64 = int64(index)
+							index = index + 1
+							laneDB.Gantt_LanesDBID_Index.Valid = true
 							if q := backRepoGantt.db.Save(&laneDB); q.Error != nil {
 								return q.Error
 							}
@@ -311,10 +318,14 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 				// commit a slice of pointer translates to update reverse pointer to Milestone, i.e.
 				for _, milestone := range gantt.Milestones {
+					index := 0
 					if milestoneDBID, ok := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]; ok {
 						if milestoneDB, ok := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDBID]; ok {
 							milestoneDB.Gantt_MilestonesDBID.Int64 = int64(ganttDB.ID)
 							milestoneDB.Gantt_MilestonesDBID.Valid = true
+							milestoneDB.Gantt_MilestonesDBID_Index.Int64 = int64(index)
+							index = index + 1
+							milestoneDB.Gantt_MilestonesDBID_Index.Valid = true
 							if q := backRepoGantt.db.Save(&milestoneDB); q.Error != nil {
 								return q.Error
 							}
@@ -324,10 +335,14 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 				// commit a slice of pointer translates to update reverse pointer to Group, i.e.
 				for _, group := range gantt.Groups {
+					index := 0
 					if groupDBID, ok := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[group]; ok {
 						if groupDB, ok := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDBID]; ok {
 							groupDB.Gantt_GroupsDBID.Int64 = int64(ganttDB.ID)
 							groupDB.Gantt_GroupsDBID.Valid = true
+							groupDB.Gantt_GroupsDBID_Index.Int64 = int64(index)
+							index = index + 1
+							groupDB.Gantt_GroupsDBID_Index.Valid = true
 							if q := backRepoGantt.db.Save(&groupDB); q.Error != nil {
 								return q.Error
 							}
@@ -460,6 +475,17 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 					gantt.Lanes = append(gantt.Lanes, Lane)
 				}
 			}
+			
+			// sort the array according to the order
+			sort.Slice(gantt.Lanes, func(i, j int) bool {
+				laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[gantt.Lanes[i]]
+				laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[gantt.Lanes[j]]
+
+				laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
+				laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
+
+				return laneDB_i.Gantt_LanesDBID_Index.Int64 < laneDB_j.Gantt_LanesDBID_Index.Int64
+			})
 
 			// parse all MilestoneDB and redeem the array of poiners to Gantt
 			// first reset the slice
@@ -470,6 +496,17 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 					gantt.Milestones = append(gantt.Milestones, Milestone)
 				}
 			}
+			
+			// sort the array according to the order
+			sort.Slice(gantt.Milestones, func(i, j int) bool {
+				milestoneDB_i_ID := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[gantt.Milestones[i]]
+				milestoneDB_j_ID := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[gantt.Milestones[j]]
+
+				milestoneDB_i := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB_i_ID]
+				milestoneDB_j := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB_j_ID]
+
+				return milestoneDB_i.Gantt_MilestonesDBID_Index.Int64 < milestoneDB_j.Gantt_MilestonesDBID_Index.Int64
+			})
 
 			// parse all GroupDB and redeem the array of poiners to Gantt
 			// first reset the slice
@@ -480,6 +517,17 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 					gantt.Groups = append(gantt.Groups, Group)
 				}
 			}
+			
+			// sort the array according to the order
+			sort.Slice(gantt.Groups, func(i, j int) bool {
+				groupDB_i_ID := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[gantt.Groups[i]]
+				groupDB_j_ID := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[gantt.Groups[j]]
+
+				groupDB_i := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDB_i_ID]
+				groupDB_j := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDB_j_ID]
+
+				return groupDB_i.Gantt_GroupsDBID_Index.Int64 < groupDB_j.Gantt_GroupsDBID_Index.Int64
+			})
 
 		}
 	}

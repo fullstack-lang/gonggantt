@@ -6,15 +6,18 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/jinzhu/gorm"
+
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
-// dummy variable to have the import database/sql wihthout compile failure id no sql is used
+// dummy variable to have the import declaration wihthout compile failure (even if no code needing this import is generated)
 var dummy_Lane sql.NullBool
 var __Lane_time__dummyDeclaration time.Duration
+var dummy_Lane_sort sort.Float64Slice
 
 // LaneAPI is the input in POST API
 //
@@ -35,12 +38,15 @@ type LaneAPI struct {
 
 	// Implementation of a reverse ID for field Gantt{}.Lanes []*Lane
 	Gantt_LanesDBID sql.NullInt64
+	Gantt_LanesDBID_Index sql.NullInt64
 
 	// Implementation of a reverse ID for field Group{}.GroupLanes []*Lane
 	Group_GroupLanesDBID sql.NullInt64
+	Group_GroupLanesDBID_Index sql.NullInt64
 
 	// Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
 	Milestone_DiamonfAndTextAnchorsDBID sql.NullInt64
+	Milestone_DiamonfAndTextAnchorsDBID_Index sql.NullInt64
 
 	// end of insertion
 }
@@ -204,10 +210,14 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 
 				// commit a slice of pointer translates to update reverse pointer to Bar, i.e.
 				for _, bar := range lane.Bars {
+					index := 0
 					if barDBID, ok := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[bar]; ok {
 						if barDB, ok := (*backRepo.BackRepoBar.Map_BarDBID_BarDB)[barDBID]; ok {
 							barDB.Lane_BarsDBID.Int64 = int64(laneDB.ID)
 							barDB.Lane_BarsDBID.Valid = true
+							barDB.Lane_BarsDBID_Index.Int64 = int64(index)
+							index = index + 1
+							barDB.Lane_BarsDBID_Index.Valid = true
 							if q := backRepoLane.db.Save(&barDB); q.Error != nil {
 								return q.Error
 							}
@@ -307,6 +317,17 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 					lane.Bars = append(lane.Bars, Bar)
 				}
 			}
+			
+			// sort the array according to the order
+			sort.Slice(lane.Bars, func(i, j int) bool {
+				barDB_i_ID := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[lane.Bars[i]]
+				barDB_j_ID := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[lane.Bars[j]]
+
+				barDB_i := (*backRepo.BackRepoBar.Map_BarDBID_BarDB)[barDB_i_ID]
+				barDB_j := (*backRepo.BackRepoBar.Map_BarDBID_BarDB)[barDB_j_ID]
+
+				return barDB_i.Lane_BarsDBID_Index.Int64 < barDB_j.Lane_BarsDBID_Index.Int64
+			})
 
 		}
 	}

@@ -16,6 +16,7 @@ export class GroupDB {
 	// insertion point for other declarations
 	GroupLanes?: Array<LaneDB>
 	Gantt_GroupsDBID?: NullInt64
+	Gantt_GroupsDBID_Index?: NullInt64 // store the index of the group instance in Gantt.Groups
 	Gantt_Groups_reverse?: GanttDB
 
 }

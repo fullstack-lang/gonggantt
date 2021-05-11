@@ -16,6 +16,7 @@ export class BarDB {
 
 	// insertion point for other declarations
 	Lane_BarsDBID?: NullInt64
+	Lane_BarsDBID_Index?: NullInt64 // store the index of the bar instance in Lane.Bars
 	Lane_Bars_reverse?: LaneDB
 
 }

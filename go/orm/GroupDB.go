@@ -6,15 +6,18 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	"github.com/jinzhu/gorm"
+
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
-// dummy variable to have the import database/sql wihthout compile failure id no sql is used
+// dummy variable to have the import declaration wihthout compile failure (even if no code needing this import is generated)
 var dummy_Group sql.NullBool
 var __Group_time__dummyDeclaration time.Duration
+var dummy_Group_sort sort.Float64Slice
 
 // GroupAPI is the input in POST API
 //
@@ -32,6 +35,7 @@ type GroupAPI struct {
 
 	// Implementation of a reverse ID for field Gantt{}.Groups []*Group
 	Gantt_GroupsDBID sql.NullInt64
+	Gantt_GroupsDBID_Index sql.NullInt64
 
 	// end of insertion
 }
@@ -192,10 +196,14 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
 				for _, lane := range group.GroupLanes {
+					index := 0
 					if laneDBID, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
 						if laneDB, ok := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDBID]; ok {
 							laneDB.Group_GroupLanesDBID.Int64 = int64(groupDB.ID)
 							laneDB.Group_GroupLanesDBID.Valid = true
+							laneDB.Group_GroupLanesDBID_Index.Int64 = int64(index)
+							index = index + 1
+							laneDB.Group_GroupLanesDBID_Index.Valid = true
 							if q := backRepoGroup.db.Save(&laneDB); q.Error != nil {
 								return q.Error
 							}
@@ -293,6 +301,17 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 					group.GroupLanes = append(group.GroupLanes, Lane)
 				}
 			}
+			
+			// sort the array according to the order
+			sort.Slice(group.GroupLanes, func(i, j int) bool {
+				laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[group.GroupLanes[i]]
+				laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[group.GroupLanes[j]]
+
+				laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
+				laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
+
+				return laneDB_i.Group_GroupLanesDBID_Index.Int64 < laneDB_j.Group_GroupLanesDBID_Index.Int64
+			})
 
 		}
 	}

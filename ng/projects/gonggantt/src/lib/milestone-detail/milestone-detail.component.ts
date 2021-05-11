@@ -7,6 +7,7 @@ import { MilestoneService } from '../milestone.service'
 
 import { FrontRepoService, FrontRepo } from '../front-repo.service'
 import { MapOfComponents } from '../map-components'
+import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
 
@@ -98,6 +99,7 @@ export class MilestoneDetailComponent implements OnInit {
 				this.milestone.Gantt_MilestonesDBID = new NullInt64
 				this.milestone.Gantt_MilestonesDBID.Int64 = this.milestone.Gantt_Milestones_reverse.ID
 				this.milestone.Gantt_MilestonesDBID.Valid = true
+				this.milestone.Gantt_MilestonesDBID_Index.Valid = true
 				this.milestone.Gantt_Milestones_reverse = undefined // very important, otherwise, circular JSON
 			}
 		}
@@ -117,6 +119,7 @@ export class MilestoneDetailComponent implements OnInit {
 					this.milestone.Gantt_MilestonesDBID = new NullInt64
 					this.milestone.Gantt_MilestonesDBID.Int64 = id
 					this.milestone.Gantt_MilestonesDBID.Valid = true
+					this.milestone.Gantt_MilestonesDBID_Index.Valid = true
 					break
 			}
 			this.milestoneService.postMilestone(this.milestone).subscribe(milestone => {
@@ -138,13 +141,39 @@ export class MilestoneDetailComponent implements OnInit {
 
 		// dialogConfig.disableClose = true;
 		dialogConfig.autoFocus = true;
+		dialogConfig.width = "50%"
+		dialogConfig.height = "50%"
 		dialogConfig.data = {
 			ID: this.milestone.ID,
 			ReversePointer: reverseField,
+			OrderingMode: false,
 		};
 		const dialogRef: MatDialogRef<string, any> = this.dialog.open(
 			MapOfComponents.get(AssociatedStruct).get(
 				AssociatedStruct + 'sTableComponent'
+			),
+			dialogConfig
+		);
+
+		dialogRef.afterClosed().subscribe(result => {
+			console.log('The dialog was closed');
+		});
+	}
+
+	openDragAndDropOrdering(AssociatedStruct: string, reverseField: string) {
+
+		const dialogConfig = new MatDialogConfig();
+
+		// dialogConfig.disableClose = true;
+		dialogConfig.autoFocus = true;
+		dialogConfig.data = {
+			ID: this.milestone.ID,
+			ReversePointer: reverseField,
+			OrderingMode: true,
+		};
+		const dialogRef: MatDialogRef<string, any> = this.dialog.open(
+			MapOfSortingComponents.get(AssociatedStruct).get(
+				AssociatedStruct + 'SortingComponent'
 			),
 			dialogConfig
 		);

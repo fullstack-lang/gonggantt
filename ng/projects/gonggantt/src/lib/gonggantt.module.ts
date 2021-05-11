@@ -22,6 +22,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatTreeModule } from '@angular/material/tree';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { AngularSplitModule, SplitComponent } from 'angular-split';
 
@@ -32,22 +33,27 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 
 // insertion point for imports 
 import { BarsTableComponent } from './bars-table/bars-table.component'
+import { BarSortingComponent } from './bar-sorting/bar-sorting.component'
 import { BarDetailComponent } from './bar-detail/bar-detail.component'
 import { BarPresentationComponent } from './bar-presentation/bar-presentation.component'
 
 import { GanttsTableComponent } from './gantts-table/gantts-table.component'
+import { GanttSortingComponent } from './gantt-sorting/gantt-sorting.component'
 import { GanttDetailComponent } from './gantt-detail/gantt-detail.component'
 import { GanttPresentationComponent } from './gantt-presentation/gantt-presentation.component'
 
 import { GroupsTableComponent } from './groups-table/groups-table.component'
+import { GroupSortingComponent } from './group-sorting/group-sorting.component'
 import { GroupDetailComponent } from './group-detail/group-detail.component'
 import { GroupPresentationComponent } from './group-presentation/group-presentation.component'
 
 import { LanesTableComponent } from './lanes-table/lanes-table.component'
+import { LaneSortingComponent } from './lane-sorting/lane-sorting.component'
 import { LaneDetailComponent } from './lane-detail/lane-detail.component'
 import { LanePresentationComponent } from './lane-presentation/lane-presentation.component'
 
 import { MilestonesTableComponent } from './milestones-table/milestones-table.component'
+import { MilestoneSortingComponent } from './milestone-sorting/milestone-sorting.component'
 import { MilestoneDetailComponent } from './milestone-detail/milestone-detail.component'
 import { MilestonePresentationComponent } from './milestone-presentation/milestone-presentation.component'
 
@@ -56,22 +62,27 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 	declarations: [
 		// insertion point for declarations 
 		BarsTableComponent,
+		BarSortingComponent,
 		BarDetailComponent,
 		BarPresentationComponent,
 
 		GanttsTableComponent,
+		GanttSortingComponent,
 		GanttDetailComponent,
 		GanttPresentationComponent,
 
 		GroupsTableComponent,
+		GroupSortingComponent,
 		GroupDetailComponent,
 		GroupPresentationComponent,
 
 		LanesTableComponent,
+		LaneSortingComponent,
 		LaneDetailComponent,
 		LanePresentationComponent,
 
 		MilestonesTableComponent,
+		MilestoneSortingComponent,
 		MilestoneDetailComponent,
 		MilestonePresentationComponent,
 
@@ -104,28 +115,34 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 		MatDialogModule,
 		MatGridListModule,
 		MatTreeModule,
+		DragDropModule,
 
 		AngularSplitModule,
 	],
 	exports: [
 		// insertion point for declarations 
 		BarsTableComponent,
+		BarSortingComponent,
 		BarDetailComponent,
 		BarPresentationComponent,
 
 		GanttsTableComponent,
+		GanttSortingComponent,
 		GanttDetailComponent,
 		GanttPresentationComponent,
 
 		GroupsTableComponent,
+		GroupSortingComponent,
 		GroupDetailComponent,
 		GroupPresentationComponent,
 
 		LanesTableComponent,
+		LaneSortingComponent,
 		LaneDetailComponent,
 		LanePresentationComponent,
 
 		MilestonesTableComponent,
+		MilestoneSortingComponent,
 		MilestoneDetailComponent,
 		MilestonePresentationComponent,
 
