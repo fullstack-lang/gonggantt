@@ -9,6 +9,11 @@ definitions:
         type: string
       Name:
         type: string
+      OptionnalColor:
+        description: if not Zero, is taken into account when drawing the bar
+        type: string
+      OptionnalStroke:
+        type: string
       Start:
         format: date-time
         type: string
@@ -144,6 +149,15 @@ definitions:
         type: string
       Name_Data:
         $ref: '#/definitions/NullString'
+      OptionnalColor:
+        description: if not Zero, is taken into account when drawing the bar
+        type: string
+      OptionnalColor_Data:
+        $ref: '#/definitions/NullString'
+      OptionnalStroke:
+        type: string
+      OptionnalStroke_Data:
+        $ref: '#/definitions/NullString'
       Start:
         format: date-time
         type: string
@@ -177,6 +191,15 @@ definitions:
       Name:
         type: string
       Name_Data:
+        $ref: '#/definitions/NullString'
+      OptionnalColor:
+        description: if not Zero, is taken into account when drawing the bar
+        type: string
+      OptionnalColor_Data:
+        $ref: '#/definitions/NullString'
+      OptionnalStroke:
+        type: string
+      OptionnalStroke_Data:
         $ref: '#/definitions/NullString'
       Start:
         format: date-time
@@ -1088,6 +1111,15 @@ responses:
         description: |-
           insertion for fields declaration
           Declation for basic field barDB.Name {{BasicKind}} (to be completed)
+      OptionnalColor:
+        description: if not Zero, is taken into account when drawing the bar
+        type: string
+      OptionnalColor_Data:
+        description: Declation for basic field barDB.OptionnalColor {{BasicKind}} (to be completed)
+      OptionnalStroke:
+        type: string
+      OptionnalStroke_Data:
+        description: Declation for basic field barDB.OptionnalStroke {{BasicKind}} (to be completed)
       Start:
         format: date-time
         type: string

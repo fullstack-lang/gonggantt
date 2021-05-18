@@ -300,14 +300,14 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 				ganttDB.AlignOnStartEndOnYearStart_Data.Valid = true
 
 				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
+				index_Lanes := 0
 				for _, lane := range gantt.Lanes {
-					index := 0
 					if laneDBID, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
 						if laneDB, ok := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDBID]; ok {
 							laneDB.Gantt_LanesDBID.Int64 = int64(ganttDB.ID)
 							laneDB.Gantt_LanesDBID.Valid = true
-							laneDB.Gantt_LanesDBID_Index.Int64 = int64(index)
-							index = index + 1
+							laneDB.Gantt_LanesDBID_Index.Int64 = int64(index_Lanes)
+							index_Lanes = index_Lanes + 1
 							laneDB.Gantt_LanesDBID_Index.Valid = true
 							if q := backRepoGantt.db.Save(&laneDB); q.Error != nil {
 								return q.Error
@@ -317,14 +317,14 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 				}
 
 				// commit a slice of pointer translates to update reverse pointer to Milestone, i.e.
+				index_Milestones := 0
 				for _, milestone := range gantt.Milestones {
-					index := 0
 					if milestoneDBID, ok := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]; ok {
 						if milestoneDB, ok := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDBID]; ok {
 							milestoneDB.Gantt_MilestonesDBID.Int64 = int64(ganttDB.ID)
 							milestoneDB.Gantt_MilestonesDBID.Valid = true
-							milestoneDB.Gantt_MilestonesDBID_Index.Int64 = int64(index)
-							index = index + 1
+							milestoneDB.Gantt_MilestonesDBID_Index.Int64 = int64(index_Milestones)
+							index_Milestones = index_Milestones + 1
 							milestoneDB.Gantt_MilestonesDBID_Index.Valid = true
 							if q := backRepoGantt.db.Save(&milestoneDB); q.Error != nil {
 								return q.Error
@@ -334,14 +334,14 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 				}
 
 				// commit a slice of pointer translates to update reverse pointer to Group, i.e.
+				index_Groups := 0
 				for _, group := range gantt.Groups {
-					index := 0
 					if groupDBID, ok := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[group]; ok {
 						if groupDB, ok := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDBID]; ok {
 							groupDB.Gantt_GroupsDBID.Int64 = int64(ganttDB.ID)
 							groupDB.Gantt_GroupsDBID.Valid = true
-							groupDB.Gantt_GroupsDBID_Index.Int64 = int64(index)
-							index = index + 1
+							groupDB.Gantt_GroupsDBID_Index.Int64 = int64(index_Groups)
+							index_Groups = index_Groups + 1
 							groupDB.Gantt_GroupsDBID_Index.Valid = true
 							if q := backRepoGantt.db.Save(&groupDB); q.Error != nil {
 								return q.Error

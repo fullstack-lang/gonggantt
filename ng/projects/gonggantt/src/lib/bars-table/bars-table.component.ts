@@ -85,6 +85,8 @@ export class BarsTableComponent implements OnInit {
         "Name",
         "Start",
         "End",
+        "OptionnalColor",
+        "OptionnalStroke",
         "Bars",
       ]
     } else {
@@ -92,6 +94,8 @@ export class BarsTableComponent implements OnInit {
         "Name",
         "Start",
         "End",
+        "OptionnalColor",
+        "OptionnalStroke",
         "Bars",
       ]
       this.selection = new SelectionModel<BarDB>(allowMultiSelect, this.initialSelection);

@@ -209,14 +209,14 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 				laneDB.Order_Data.Valid = true
 
 				// commit a slice of pointer translates to update reverse pointer to Bar, i.e.
+				index_Bars := 0
 				for _, bar := range lane.Bars {
-					index := 0
 					if barDBID, ok := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[bar]; ok {
 						if barDB, ok := (*backRepo.BackRepoBar.Map_BarDBID_BarDB)[barDBID]; ok {
 							barDB.Lane_BarsDBID.Int64 = int64(laneDB.ID)
 							barDB.Lane_BarsDBID.Valid = true
-							barDB.Lane_BarsDBID_Index.Int64 = int64(index)
-							index = index + 1
+							barDB.Lane_BarsDBID_Index.Int64 = int64(index_Bars)
+							index_Bars = index_Bars + 1
 							barDB.Lane_BarsDBID_Index.Valid = true
 							if q := backRepoLane.db.Save(&barDB); q.Error != nil {
 								return q.Error

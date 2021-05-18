@@ -3,4 +3,6 @@ export class BarAPI {
 	Name?: string
 	Start?: Date
 	End?: Date
+	OptionnalColor?: string
+	OptionnalStroke?: string
 }

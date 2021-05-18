@@ -195,14 +195,14 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwoInstance(backRepo *BackR
 				groupDB.Name_Data.Valid = true
 
 				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
+				index_GroupLanes := 0
 				for _, lane := range group.GroupLanes {
-					index := 0
 					if laneDBID, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
 						if laneDB, ok := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDBID]; ok {
 							laneDB.Group_GroupLanesDBID.Int64 = int64(groupDB.ID)
 							laneDB.Group_GroupLanesDBID.Valid = true
-							laneDB.Group_GroupLanesDBID_Index.Int64 = int64(index)
-							index = index + 1
+							laneDB.Group_GroupLanesDBID_Index.Int64 = int64(index_GroupLanes)
+							index_GroupLanes = index_GroupLanes + 1
 							laneDB.Group_GroupLanesDBID_Index.Valid = true
 							if q := backRepoGroup.db.Save(&laneDB); q.Error != nil {
 								return q.Error

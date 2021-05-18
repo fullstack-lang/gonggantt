@@ -39,6 +39,12 @@ type BarAPI struct {
 	// Declation for basic field barDB.End
 	End_Data sql.NullTime
 
+	// Declation for basic field barDB.OptionnalColor {{BasicKind}} (to be completed)
+	OptionnalColor_Data sql.NullString
+
+	// Declation for basic field barDB.OptionnalStroke {{BasicKind}} (to be completed)
+	OptionnalStroke_Data sql.NullString
+
 	// Implementation of a reverse ID for field Lane{}.Bars []*Bar
 	Lane_BarsDBID sql.NullInt64
 	Lane_BarsDBID_Index sql.NullInt64
@@ -206,6 +212,12 @@ func (backRepoBar *BackRepoBarStruct) CommitPhaseTwoInstance(backRepo *BackRepoS
 				barDB.End_Data.Time = bar.End
 				barDB.End_Data.Valid = true
 
+				barDB.OptionnalColor_Data.String = bar.OptionnalColor
+				barDB.OptionnalColor_Data.Valid = true
+
+				barDB.OptionnalStroke_Data.String = bar.OptionnalStroke
+				barDB.OptionnalStroke_Data.Valid = true
+
 			}
 		}
 		query := backRepoBar.db.Save(&barDB)
@@ -290,6 +302,10 @@ func (backRepoBar *BackRepoBarStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 			bar.Start = barDB.Start_Data.Time
 
 			bar.End = barDB.End_Data.Time
+
+			bar.OptionnalColor = barDB.OptionnalColor_Data.String
+
+			bar.OptionnalStroke = barDB.OptionnalStroke_Data.String
 
 		}
 	}

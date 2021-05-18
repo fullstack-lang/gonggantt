@@ -76,6 +76,14 @@ func GetBars(c *gin.Context) {
 			bar.End = bar.End_Data.Time
 		}
 
+		if bar.OptionnalColor_Data.Valid {
+			bar.OptionnalColor = bar.OptionnalColor_Data.String
+		}
+
+		if bar.OptionnalStroke_Data.Valid {
+			bar.OptionnalStroke = bar.OptionnalStroke_Data.String
+		}
+
 	}
 
 	c.JSON(http.StatusOK, bars)
@@ -121,6 +129,12 @@ func PostBar(c *gin.Context) {
 
 	barDB.End_Data.Time = input.End
 	barDB.End_Data.Valid = true
+
+	barDB.OptionnalColor_Data.String = input.OptionnalColor
+	barDB.OptionnalColor_Data.Valid = true
+
+	barDB.OptionnalStroke_Data.String = input.OptionnalStroke
+	barDB.OptionnalStroke_Data.Valid = true
 
 	query := db.Create(&barDB)
 	if query.Error != nil {
@@ -173,6 +187,14 @@ func GetBar(c *gin.Context) {
 		bar.End = bar.End_Data.Time
 	}
 
+	if bar.OptionnalColor_Data.Valid {
+		bar.OptionnalColor = bar.OptionnalColor_Data.String
+	}
+
+	if bar.OptionnalStroke_Data.Valid {
+		bar.OptionnalStroke = bar.OptionnalStroke_Data.String
+	}
+
 	c.JSON(http.StatusOK, bar)
 }
 
@@ -219,6 +241,12 @@ func UpdateBar(c *gin.Context) {
 
 	input.End_Data.Time = input.End
 	input.End_Data.Valid = true
+
+	input.OptionnalColor_Data.String = input.OptionnalColor
+	input.OptionnalColor_Data.Valid = true
+
+	input.OptionnalStroke_Data.String = input.OptionnalStroke
+	input.OptionnalStroke_Data.Valid = true
 
 	query = db.Model(&barDB).Updates(input)
 	if query.Error != nil {

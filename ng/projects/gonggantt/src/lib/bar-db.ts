@@ -13,6 +13,8 @@ export class BarDB {
 	Name?: string
 	Start?: Date
 	End?: Date
+	OptionnalColor?: string
+	OptionnalStroke?: string
 
 	// insertion point for other declarations
 	Lane_BarsDBID?: NullInt64

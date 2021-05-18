@@ -6,4 +6,8 @@ type Bar struct {
 	Name  string
 	Start time.Time
 	End   time.Time
+
+	// if not Zero, is taken into account when drawing the bar
+	OptionnalColor  string
+	OptionnalStroke string
 }

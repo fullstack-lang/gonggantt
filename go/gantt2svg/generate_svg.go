@@ -232,8 +232,14 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 			barSVG.Width = (XRightMargin - XLeftLanes) * durationBetweenBarEndAndBarStartRelativeToGanttDuration
 
 			barSVG.Color = "blue"
+			if bar.OptionnalColor != "" {
+				barSVG.Color = bar.OptionnalColor
+			}
 			barSVG.FillOpacity = 0.1
 			barSVG.Stroke = "blue"
+			if bar.OptionnalStroke != "" {
+				barSVG.Stroke = bar.OptionnalStroke
+			}
 			barSVG.StrokeWidth = 0.5
 
 			// bar text
