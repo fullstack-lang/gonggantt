@@ -29,11 +29,15 @@ github.com/fogleman/gg v1.2.1-0.20190220221249-0403632d5b90/go.mod h1:R/bRT+9gY/
 github.com/fogleman/gg v1.3.0/go.mod h1:R/bRT+9gY/C5z7JzPU0zXsXHKM4/ayA+zqcVNZzPa1k=
 github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4IgpuI1SZQ=
 github.com/fullstack-lang/gong v0.0.0-20210426003449-4edd0e96dac3/go.mod h1:ml7gEm9rDAVMWnFJMKgmMIYVnQHUbRubSVzdhemiVQg=
+github.com/fullstack-lang/gong v0.0.0-20210519122217-f203fc912c66/go.mod h1:ml7gEm9rDAVMWnFJMKgmMIYVnQHUbRubSVzdhemiVQg=
 github.com/fullstack-lang/gongdoc v0.0.0-20210521072620-68c1b92c1d71/go.mod h1:+P4HImgozjBPtkTfzbZTkWYKGU08D0YEJC7ssk7aoog=
+github.com/fullstack-lang/gongdoc v0.0.0-20210521141411-754c26ffbceb/go.mod h1:u0KjXVzA5awAhZKoSuKuqUWNs9sAmnHbBkNzyCRQs2E=
 github.com/fullstack-lang/gongsvg v0.0.0-20210505061502-c80cb35f1d48 h1:evjpzTUDYE0vOrOHnX2VM1HgCHJ8bqPLnVUVpETuEbw=
 github.com/fullstack-lang/gongsvg v0.0.0-20210505061502-c80cb35f1d48/go.mod h1:wwPUjo3rAMDzNVaz1rIDXD4dDdvCtSvudACIlLYjqwg=
 github.com/fullstack-lang/gongsvg v0.0.0-20210521072801-e52160ce0cfa h1:ShqEL9b8WcNwF5wDE9e9OnRX+lTNmDpe0ST+8dXBLVc=
 github.com/fullstack-lang/gongsvg v0.0.0-20210521072801-e52160ce0cfa/go.mod h1:VdW5ELS+z9iwmjKRep1z9aYthOxBOH8+UXasDufkpng=
+github.com/fullstack-lang/gongsvg v0.0.0-20210521141745-0223c643fbc4 h1:FqR2tEvhLk3PKcYhYLCSXOTtp4k8fYtkMIJYoc77JgE=
+github.com/fullstack-lang/gongsvg v0.0.0-20210521141745-0223c643fbc4/go.mod h1:qaN7vJEmifGQxFbipTyoj/MABGmuyOjK4KitGllB+8w=
 github.com/gin-contrib/cors v1.3.1 h1:doAsuITavI4IOcd0Y19U4B+O0dNWihRyX//nn4sEmgA=
 github.com/gin-contrib/cors v1.3.1/go.mod h1:jjEJ4268OPZUcU7k9Pm653S7lXUGcqMADzFA61xsmDk=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
