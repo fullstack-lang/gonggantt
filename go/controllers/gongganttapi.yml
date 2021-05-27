@@ -168,7 +168,8 @@ definitions:
     x-go-name: BarAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   barDB:
-    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated
+      field for the API and the GORM ID'
     properties:
       CreatedAt:
         format: date-time
@@ -328,7 +329,8 @@ definitions:
     x-go-name: GanttAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   ganttDB:
-    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated
+      field for the API and the GORM ID'
     properties:
       AlignOnStartEndOnYearStart:
         type: boolean
@@ -474,7 +476,8 @@ definitions:
     x-go-name: GroupAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   groupDB:
-    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated
+      field for the API and the GORM ID'
     properties:
       CreatedAt:
         format: date-time
@@ -542,7 +545,8 @@ definitions:
     x-go-name: LaneAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   laneDB:
-    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated
+      field for the API and the GORM ID'
     properties:
       Bars:
         items:
@@ -615,7 +619,8 @@ definitions:
     x-go-name: MilestoneAPI
     x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   milestoneDB:
-    description: 'It incorporates all fields : from the model, from the generated field for the API and the GORM ID'
+    description: 'It incorporates all fields : from the model, from the generated
+      field for the API and the GORM ID'
     properties:
       CreatedAt:
         format: date-time
@@ -1115,11 +1120,13 @@ responses:
         description: if not Zero, is taken into account when drawing the bar
         type: string
       OptionnalColor_Data:
-        description: Declation for basic field barDB.OptionnalColor {{BasicKind}} (to be completed)
+        description: Declation for basic field barDB.OptionnalColor {{BasicKind}}
+          (to be completed)
       OptionnalStroke:
         type: string
       OptionnalStroke_Data:
-        description: Declation for basic field barDB.OptionnalStroke {{BasicKind}} (to be completed)
+        description: Declation for basic field barDB.OptionnalStroke {{BasicKind}}
+          (to be completed)
       Start:
         format: date-time
         type: string
@@ -1152,7 +1159,8 @@ responses:
         format: double
         type: number
       DateYOffset_Data:
-        description: Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to
+          be completed)
       DeletedAt:
         format: date-time
         type: string
@@ -1164,16 +1172,19 @@ responses:
       Group_Stroke:
         type: string
       Group_Stroke_Data:
-        description: Declation for basic field ganttDB.Group_Stroke {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.Group_Stroke {{BasicKind}}
+          (to be completed)
       Group_StrokeDashArray:
         type: string
       Group_StrokeDashArray_Data:
-        description: Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}}
+          (to be completed)
       Group_StrokeWidth:
         format: double
         type: number
       Group_StrokeWidth_Data:
-        description: Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}}
+          (to be completed)
       Groups:
         description: list of Groups
         items:
@@ -1186,7 +1197,8 @@ responses:
         format: double
         type: number
       LaneHeight_Data:
-        description: Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to
+          be completed)
       Lanes:
         description: List of Lanes
         items:
@@ -1207,7 +1219,8 @@ responses:
         format: double
         type: number
       RatioBarToLaneHeight_Data:
-        description: Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}}
+          (to be completed)
       Start:
         format: date-time
         type: string
@@ -1217,25 +1230,30 @@ responses:
         format: double
         type: number
       TextHeight_Data:
-        description: Declation for basic field ganttDB.TextHeight {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.TextHeight {{BasicKind}} (to
+          be completed)
       TimeLine_Color:
         type: string
       TimeLine_Color_Data:
-        description: Declation for basic field ganttDB.TimeLine_Color {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_Color {{BasicKind}}
+          (to be completed)
       TimeLine_FillOpacity:
         format: double
         type: number
       TimeLine_FillOpacity_Data:
-        description: Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}}
+          (to be completed)
       TimeLine_Stroke:
         type: string
       TimeLine_Stroke_Data:
-        description: Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}}
+          (to be completed)
       TimeLine_StrokeWidth:
         format: double
         type: number
       TimeLine_StrokeWidth_Data:
-        description: Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}}
+          (to be completed)
       UpdatedAt:
         format: date-time
         type: string
@@ -1243,22 +1261,26 @@ responses:
         format: double
         type: number
       XLeftLanes_Data:
-        description: Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to
+          be completed)
       XLeftText:
         format: double
         type: number
       XLeftText_Data:
-        description: Declation for basic field ganttDB.XLeftText {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.XLeftText {{BasicKind}} (to
+          be completed)
       XRightMargin:
         format: double
         type: number
       XRightMargin_Data:
-        description: Declation for basic field ganttDB.XRightMargin {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.XRightMargin {{BasicKind}}
+          (to be completed)
       YTopMargin:
         format: double
         type: number
       YTopMargin_Data:
-        description: Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to
+          be completed)
     schema:
       $ref: '#/definitions/NullBool'
   ganttDBsResponse:
@@ -1341,7 +1363,8 @@ responses:
         format: uint64
         type: integer
       Milestone_DiamonfAndTextAnchorsDBID:
-        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
+        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors
+          []*Lane
       Milestone_DiamonfAndTextAnchorsDBID_Index: {}
       Name:
         type: string
