@@ -49,8 +49,9 @@ type LaneInput struct {
 func GetLanes(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
-	var lanes []orm.LaneDB
-	query := db.Find(&lanes)
+	// source slice
+	var laneDBs []orm.LaneDB
+	query := db.Find(&laneDBs)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -59,22 +60,23 @@ func GetLanes(c *gin.Context) {
 		return
 	}
 
+	// slice that will be transmitted to the front
+	laneAPIs := make([]orm.LaneAPI, 0)
+
 	// for each lane, update fields from the database nullable fields
-	for idx := range lanes {
-		lane := &lanes[idx]
-		_ = lane
+	for idx := range laneDBs {
+		laneDB := &laneDBs[idx]
+		_ = laneDB
+		var laneAPI orm.LaneAPI
+
 		// insertion point for updating fields
-		if lane.Name_Data.Valid {
-			lane.Name = lane.Name_Data.String
-		}
-
-		if lane.Order_Data.Valid {
-			lane.Order = int(lane.Order_Data.Int64)
-		}
-
+		laneAPI.ID = laneDB.ID
+		laneDB.CopyBasicFieldsToLane(&laneAPI.Lane)
+		laneAPI.LanePointersEnconding = laneDB.LanePointersEnconding
+		laneAPIs = append(laneAPIs, laneAPI)
 	}
 
-	c.JSON(http.StatusOK, lanes)
+	c.JSON(http.StatusOK, laneAPIs)
 }
 
 // PostLane
@@ -107,13 +109,8 @@ func PostLane(c *gin.Context) {
 
 	// Create lane
 	laneDB := orm.LaneDB{}
-	laneDB.LaneAPI = input
-	// insertion point for nullable field set
-	laneDB.Name_Data.String = input.Name
-	laneDB.Name_Data.Valid = true
-
-	laneDB.Order_Data.Int64 = int64(input.Order)
-	laneDB.Order_Data.Valid = true
+	laneDB.LanePointersEnconding = input.LanePointersEnconding
+	laneDB.CopyBasicFieldsFromLane(&input.Lane)
 
 	query := db.Create(&laneDB)
 	if query.Error != nil {
@@ -143,9 +140,9 @@ func PostLane(c *gin.Context) {
 func GetLane(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
-	// Get lane in DB
-	var lane orm.LaneDB
-	if err := db.First(&lane, c.Param("id")).Error; err != nil {
+	// Get laneDB in DB
+	var laneDB orm.LaneDB
+	if err := db.First(&laneDB, c.Param("id")).Error; err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -153,16 +150,12 @@ func GetLane(c *gin.Context) {
 		return
 	}
 
-	// insertion point for fields value set from nullable fields
-	if lane.Name_Data.Valid {
-		lane.Name = lane.Name_Data.String
-	}
+	var laneAPI orm.LaneAPI
+	laneAPI.ID = laneDB.ID
+	laneAPI.LanePointersEnconding = laneDB.LanePointersEnconding
+	laneDB.CopyBasicFieldsToLane(&laneAPI.Lane)
 
-	if lane.Order_Data.Valid {
-		lane.Order = int(lane.Order_Data.Int64)
-	}
-
-	c.JSON(http.StatusOK, lane)
+	c.JSON(http.StatusOK, laneAPI)
 }
 
 // UpdateLane
@@ -199,14 +192,10 @@ func UpdateLane(c *gin.Context) {
 	}
 
 	// update
-	// insertion point for nullable field set
-	input.Name_Data.String = input.Name
-	input.Name_Data.Valid = true
+	laneDB.CopyBasicFieldsFromLane(&input.Lane)
+	laneDB.LanePointersEnconding = input.LanePointersEnconding
 
-	input.Order_Data.Int64 = int64(input.Order)
-	input.Order_Data.Valid = true
-
-	query = db.Model(&laneDB).Updates(input)
+	query = db.Model(&laneDB).Updates(laneDB)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest

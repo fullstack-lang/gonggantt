@@ -63,8 +63,6 @@ export class GroupDetailComponent implements OnInit {
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				console.log("front repo GroupPull returned")
-
 				if (id != 0 && association == undefined) {
 					this.group = frontRepo.Groups.get(id)
 				} else {
@@ -94,6 +92,7 @@ export class GroupDetailComponent implements OnInit {
 				this.group.Gantt_GroupsDBID = new NullInt64
 				this.group.Gantt_GroupsDBID.Int64 = this.group.Gantt_Groups_reverse.ID
 				this.group.Gantt_GroupsDBID.Valid = true
+				this.group.Gantt_GroupsDBID_Index = new NullInt64
 				this.group.Gantt_GroupsDBID_Index.Valid = true
 				this.group.Gantt_Groups_reverse = undefined // very important, otherwise, circular JSON
 			}
@@ -104,8 +103,6 @@ export class GroupDetailComponent implements OnInit {
 			this.groupService.updateGroup(this.group)
 				.subscribe(group => {
 					this.groupService.GroupServiceChanged.next("update")
-
-					console.log("group saved")
 				});
 		} else {
 			switch (association) {
@@ -114,6 +111,7 @@ export class GroupDetailComponent implements OnInit {
 					this.group.Gantt_GroupsDBID = new NullInt64
 					this.group.Gantt_GroupsDBID.Int64 = id
 					this.group.Gantt_GroupsDBID.Valid = true
+					this.group.Gantt_GroupsDBID_Index = new NullInt64
 					this.group.Gantt_GroupsDBID_Index.Valid = true
 					break
 			}
@@ -122,7 +120,6 @@ export class GroupDetailComponent implements OnInit {
 				this.groupService.GroupServiceChanged.next("post")
 
 				this.group = {} // reset fields
-				console.log("group added")
 			});
 		}
 	}
@@ -151,7 +148,6 @@ export class GroupDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 
@@ -174,7 +170,6 @@ export class GroupDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 }

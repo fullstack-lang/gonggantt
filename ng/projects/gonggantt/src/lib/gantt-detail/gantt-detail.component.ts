@@ -64,8 +64,6 @@ export class GanttDetailComponent implements OnInit {
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				console.log("front repo GanttPull returned")
-
 				if (id != 0 && association == undefined) {
 					this.gantt = frontRepo.Gantts.get(id)
 				} else {
@@ -100,8 +98,6 @@ export class GanttDetailComponent implements OnInit {
 			this.ganttService.updateGantt(this.gantt)
 				.subscribe(gantt => {
 					this.ganttService.GanttServiceChanged.next("update")
-
-					console.log("gantt saved")
 				});
 		} else {
 			switch (association) {
@@ -112,7 +108,6 @@ export class GanttDetailComponent implements OnInit {
 				this.ganttService.GanttServiceChanged.next("post")
 
 				this.gantt = {} // reset fields
-				console.log("gantt added")
 			});
 		}
 	}
@@ -141,7 +136,6 @@ export class GanttDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 
@@ -164,7 +158,6 @@ export class GanttDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 }

@@ -132,7 +132,6 @@ export class GanttsTableComponent implements OnInit {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
-        console.log("front repo pull returned")
 
         this.gantts = this.frontRepo.Gantts_array;
 
@@ -170,8 +169,6 @@ export class GanttsTableComponent implements OnInit {
     this.ganttService.deleteGantt(ganttID).subscribe(
       gantt => {
         this.ganttService.GanttServiceChanged.next("delete")
-
-        console.log("gantt deleted")
       }
     );
   }
@@ -233,7 +230,6 @@ export class GanttsTableComponent implements OnInit {
     // from selection, set gantt that belong to gantt through Anarrayofb
     this.selection.selected.forEach(
       gantt => {
-        console.log("selection ID " + gantt.ID)
         let ID = +this.dialogData.ID
         gantt[this.dialogData.ReversePointer].Int64 = ID
         gantt[this.dialogData.ReversePointer].Valid = true
@@ -247,7 +243,6 @@ export class GanttsTableComponent implements OnInit {
         this.ganttService.updateGantt(gantt)
           .subscribe(gantt => {
             this.ganttService.GanttServiceChanged.next("update")
-            console.log("gantt saved")
           });
       }
     )

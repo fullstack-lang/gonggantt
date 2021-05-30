@@ -98,7 +98,6 @@ export class GroupsTableComponent implements OnInit {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
-        console.log("front repo pull returned")
 
         this.groups = this.frontRepo.Groups_array;
 
@@ -136,8 +135,6 @@ export class GroupsTableComponent implements OnInit {
     this.groupService.deleteGroup(groupID).subscribe(
       group => {
         this.groupService.GroupServiceChanged.next("delete")
-
-        console.log("group deleted")
       }
     );
   }
@@ -199,7 +196,6 @@ export class GroupsTableComponent implements OnInit {
     // from selection, set group that belong to group through Anarrayofb
     this.selection.selected.forEach(
       group => {
-        console.log("selection ID " + group.ID)
         let ID = +this.dialogData.ID
         group[this.dialogData.ReversePointer].Int64 = ID
         group[this.dialogData.ReversePointer].Valid = true
@@ -213,7 +209,6 @@ export class GroupsTableComponent implements OnInit {
         this.groupService.updateGroup(group)
           .subscribe(group => {
             this.groupService.GroupServiceChanged.next("update")
-            console.log("group saved")
           });
       }
     )

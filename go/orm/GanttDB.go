@@ -3,9 +3,13 @@ package orm
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -27,9 +31,30 @@ var dummy_Gantt_sort sort.Float64Slice
 //
 // swagger:model ganttAPI
 type GanttAPI struct {
+	gorm.Model
+
 	models.Gantt
 
-	// insertion for fields declaration
+	// encoding of pointers
+	GanttPointersEnconding
+}
+
+// GanttPointersEnconding encodes pointers to Struct and
+// reverse pointers of slice of poitners to Struct
+type GanttPointersEnconding struct {
+	// insertion for pointer fields encoding declaration
+}
+
+// GanttDB describes a gantt in the database
+//
+// It incorporates the GORM ID, basic fields from the model (because they can be serialized),
+// the encoded version of pointers
+//
+// swagger:model ganttDB
+type GanttDB struct {
+	gorm.Model
+
+	// insertion for basic fields declaration
 	// Declation for basic field ganttDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
 
@@ -88,18 +113,8 @@ type GanttAPI struct {
 	// provide the sql storage for the boolan
 	AlignOnStartEndOnYearStart_Data sql.NullBool
 
-	// end of insertion
-}
-
-// GanttDB describes a gantt in the database
-//
-// It incorporates all fields : from the model, from the generated field for the API and the GORM ID
-//
-// swagger:model ganttDB
-type GanttDB struct {
-	gorm.Model
-
-	GanttAPI
+	// encoding of pointers
+	GanttPointersEnconding
 }
 
 // GanttDBs arrays ganttDBs
@@ -123,6 +138,13 @@ type BackRepoGanttStruct struct {
 	Map_GanttDBID_GanttPtr *map[uint]*models.Gantt
 
 	db *gorm.DB
+}
+
+// GetGanttDBFromGanttPtr is a handy function to access the back repo instance from the stage instance
+func (backRepoGantt *BackRepoGanttStruct) GetGanttDBFromGanttPtr(gantt *models.Gantt) (ganttDB *GanttDB) {
+	id := (*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt]
+	ganttDB = (*backRepoGantt.Map_GanttDBID_GanttDB)[id]
+	return
 }
 
 // BackRepoGantt.Init set up the BackRepo of the Gantt
@@ -206,7 +228,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseOneInstance(gantt *models.G
 
 	// initiate gantt
 	var ganttDB GanttDB
-	ganttDB.Gantt = *gantt
+	ganttDB.CopyBasicFieldsFromGantt(gantt)
 
 	query := backRepoGantt.db.Create(&ganttDB)
 	if query.Error != nil {
@@ -239,119 +261,66 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 	// fetch matching ganttDB
 	if ganttDB, ok := (*backRepoGantt.Map_GanttDBID_GanttDB)[idx]; ok {
 
-		{
-			{
-				// insertion point for fields commit
-				ganttDB.Name_Data.String = gantt.Name
-				ganttDB.Name_Data.Valid = true
+		ganttDB.CopyBasicFieldsFromGantt(gantt)
 
-				ganttDB.Start_Data.Time = gantt.Start
-				ganttDB.Start_Data.Valid = true
+		// insertion point for translating pointers encodings into actual pointers
+		// This loop encodes the slice of pointers gantt.Lanes into the back repo.
+		// Each back repo instance at the end of the association encode the ID of the association start
+		// into a dedicated field for coding the association. The back repo instance is then saved to the db
+		for idx, laneAssocEnd := range gantt.Lanes {
 
-				ganttDB.End_Data.Time = gantt.End
-				ganttDB.End_Data.Valid = true
+			// get the back repo instance at the association end
+			laneAssocEnd_DB :=
+				backRepo.BackRepoLane.GetLaneDBFromLanePtr( laneAssocEnd)
 
-				ganttDB.LaneHeight_Data.Float64 = gantt.LaneHeight
-				ganttDB.LaneHeight_Data.Valid = true
-
-				ganttDB.RatioBarToLaneHeight_Data.Float64 = gantt.RatioBarToLaneHeight
-				ganttDB.RatioBarToLaneHeight_Data.Valid = true
-
-				ganttDB.YTopMargin_Data.Float64 = gantt.YTopMargin
-				ganttDB.YTopMargin_Data.Valid = true
-
-				ganttDB.XLeftText_Data.Float64 = gantt.XLeftText
-				ganttDB.XLeftText_Data.Valid = true
-
-				ganttDB.TextHeight_Data.Float64 = gantt.TextHeight
-				ganttDB.TextHeight_Data.Valid = true
-
-				ganttDB.XLeftLanes_Data.Float64 = gantt.XLeftLanes
-				ganttDB.XLeftLanes_Data.Valid = true
-
-				ganttDB.XRightMargin_Data.Float64 = gantt.XRightMargin
-				ganttDB.XRightMargin_Data.Valid = true
-
-				ganttDB.TimeLine_Color_Data.String = gantt.TimeLine_Color
-				ganttDB.TimeLine_Color_Data.Valid = true
-
-				ganttDB.TimeLine_FillOpacity_Data.Float64 = gantt.TimeLine_FillOpacity
-				ganttDB.TimeLine_FillOpacity_Data.Valid = true
-
-				ganttDB.TimeLine_Stroke_Data.String = gantt.TimeLine_Stroke
-				ganttDB.TimeLine_Stroke_Data.Valid = true
-
-				ganttDB.TimeLine_StrokeWidth_Data.Float64 = gantt.TimeLine_StrokeWidth
-				ganttDB.TimeLine_StrokeWidth_Data.Valid = true
-
-				ganttDB.Group_Stroke_Data.String = gantt.Group_Stroke
-				ganttDB.Group_Stroke_Data.Valid = true
-
-				ganttDB.Group_StrokeWidth_Data.Float64 = gantt.Group_StrokeWidth
-				ganttDB.Group_StrokeWidth_Data.Valid = true
-
-				ganttDB.Group_StrokeDashArray_Data.String = gantt.Group_StrokeDashArray
-				ganttDB.Group_StrokeDashArray_Data.Valid = true
-
-				ganttDB.DateYOffset_Data.Float64 = gantt.DateYOffset
-				ganttDB.DateYOffset_Data.Valid = true
-
-				ganttDB.AlignOnStartEndOnYearStart_Data.Bool = gantt.AlignOnStartEndOnYearStart
-				ganttDB.AlignOnStartEndOnYearStart_Data.Valid = true
-
-				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
-				index_Lanes := 0
-				for _, lane := range gantt.Lanes {
-					if laneDBID, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
-						if laneDB, ok := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDBID]; ok {
-							laneDB.Gantt_LanesDBID.Int64 = int64(ganttDB.ID)
-							laneDB.Gantt_LanesDBID.Valid = true
-							laneDB.Gantt_LanesDBID_Index.Int64 = int64(index_Lanes)
-							index_Lanes = index_Lanes + 1
-							laneDB.Gantt_LanesDBID_Index.Valid = true
-							if q := backRepoGantt.db.Save(&laneDB); q.Error != nil {
-								return q.Error
-							}
-						}
-					}
-				}
-
-				// commit a slice of pointer translates to update reverse pointer to Milestone, i.e.
-				index_Milestones := 0
-				for _, milestone := range gantt.Milestones {
-					if milestoneDBID, ok := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]; ok {
-						if milestoneDB, ok := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDBID]; ok {
-							milestoneDB.Gantt_MilestonesDBID.Int64 = int64(ganttDB.ID)
-							milestoneDB.Gantt_MilestonesDBID.Valid = true
-							milestoneDB.Gantt_MilestonesDBID_Index.Int64 = int64(index_Milestones)
-							index_Milestones = index_Milestones + 1
-							milestoneDB.Gantt_MilestonesDBID_Index.Valid = true
-							if q := backRepoGantt.db.Save(&milestoneDB); q.Error != nil {
-								return q.Error
-							}
-						}
-					}
-				}
-
-				// commit a slice of pointer translates to update reverse pointer to Group, i.e.
-				index_Groups := 0
-				for _, group := range gantt.Groups {
-					if groupDBID, ok := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[group]; ok {
-						if groupDB, ok := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDBID]; ok {
-							groupDB.Gantt_GroupsDBID.Int64 = int64(ganttDB.ID)
-							groupDB.Gantt_GroupsDBID.Valid = true
-							groupDB.Gantt_GroupsDBID_Index.Int64 = int64(index_Groups)
-							index_Groups = index_Groups + 1
-							groupDB.Gantt_GroupsDBID_Index.Valid = true
-							if q := backRepoGantt.db.Save(&groupDB); q.Error != nil {
-								return q.Error
-							}
-						}
-					}
-				}
-
+			// encode reverse pointer in the association end back repo instance
+			laneAssocEnd_DB.Gantt_LanesDBID.Int64 = int64(ganttDB.ID)
+			laneAssocEnd_DB.Gantt_LanesDBID.Valid = true
+			laneAssocEnd_DB.Gantt_LanesDBID_Index.Int64 = int64(idx)
+			laneAssocEnd_DB.Gantt_LanesDBID_Index.Valid = true
+			if q := backRepoGantt.db.Save(laneAssocEnd_DB); q.Error != nil {
+				return q.Error
 			}
 		}
+
+		// This loop encodes the slice of pointers gantt.Milestones into the back repo.
+		// Each back repo instance at the end of the association encode the ID of the association start
+		// into a dedicated field for coding the association. The back repo instance is then saved to the db
+		for idx, milestoneAssocEnd := range gantt.Milestones {
+
+			// get the back repo instance at the association end
+			milestoneAssocEnd_DB :=
+				backRepo.BackRepoMilestone.GetMilestoneDBFromMilestonePtr( milestoneAssocEnd)
+
+			// encode reverse pointer in the association end back repo instance
+			milestoneAssocEnd_DB.Gantt_MilestonesDBID.Int64 = int64(ganttDB.ID)
+			milestoneAssocEnd_DB.Gantt_MilestonesDBID.Valid = true
+			milestoneAssocEnd_DB.Gantt_MilestonesDBID_Index.Int64 = int64(idx)
+			milestoneAssocEnd_DB.Gantt_MilestonesDBID_Index.Valid = true
+			if q := backRepoGantt.db.Save(milestoneAssocEnd_DB); q.Error != nil {
+				return q.Error
+			}
+		}
+
+		// This loop encodes the slice of pointers gantt.Groups into the back repo.
+		// Each back repo instance at the end of the association encode the ID of the association start
+		// into a dedicated field for coding the association. The back repo instance is then saved to the db
+		for idx, groupAssocEnd := range gantt.Groups {
+
+			// get the back repo instance at the association end
+			groupAssocEnd_DB :=
+				backRepo.BackRepoGroup.GetGroupDBFromGroupPtr( groupAssocEnd)
+
+			// encode reverse pointer in the association end back repo instance
+			groupAssocEnd_DB.Gantt_GroupsDBID.Int64 = int64(ganttDB.ID)
+			groupAssocEnd_DB.Gantt_GroupsDBID.Valid = true
+			groupAssocEnd_DB.Gantt_GroupsDBID_Index.Int64 = int64(idx)
+			groupAssocEnd_DB.Gantt_GroupsDBID_Index.Valid = true
+			if q := backRepoGantt.db.Save(groupAssocEnd_DB); q.Error != nil {
+				return q.Error
+			}
+		}
+
 		query := backRepoGantt.db.Save(&ganttDB)
 		if query.Error != nil {
 			return query.Error
@@ -392,18 +361,23 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 // models version of the ganttDB
 func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOneInstance(ganttDB *GanttDB) (Error error) {
 
-	// if absent, create entries in the backRepoGantt maps.
-	ganttWithNewFieldValues := ganttDB.Gantt
-	if _, ok := (*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]; !ok {
+	gantt, ok := (*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	if !ok {
+		gantt = new(models.Gantt)
 
-		(*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID] = &ganttWithNewFieldValues
-		(*backRepoGantt.Map_GanttPtr_GanttDBID)[&ganttWithNewFieldValues] = ganttDB.ID
+		(*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID] = gantt
+		(*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt] = ganttDB.ID
 
 		// append model store with the new element
-		ganttWithNewFieldValues.Stage()
+		gantt.Stage()
 	}
-	ganttDBWithNewFieldValues := *ganttDB
-	(*backRepoGantt.Map_GanttDBID_GanttDB)[ganttDB.ID] = &ganttDBWithNewFieldValues
+	ganttDB.CopyBasicFieldsToGantt(gantt)
+
+	// preserve pointer to aclassDB. Otherwise, pointer will is recycled and the map of pointers
+	// Map_GanttDBID_GanttDB)[ganttDB hold variable pointers
+	ganttDB_Data := *ganttDB
+	preservedPtrToGantt := &ganttDB_Data
+	(*backRepoGantt.Map_GanttDBID_GanttDB)[ganttDB.ID] = preservedPtrToGantt
 
 	return
 }
@@ -425,112 +399,89 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 
 	gantt := (*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
 	_ = gantt // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
-	{
-		{
-			// insertion point for checkout, i.e. update of fields of stage instance from fields of back repo instances
-			//
-			gantt.Name = ganttDB.Name_Data.String
 
-			gantt.Start = ganttDB.Start_Data.Time
-
-			gantt.End = ganttDB.End_Data.Time
-
-			gantt.LaneHeight = ganttDB.LaneHeight_Data.Float64
-
-			gantt.RatioBarToLaneHeight = ganttDB.RatioBarToLaneHeight_Data.Float64
-
-			gantt.YTopMargin = ganttDB.YTopMargin_Data.Float64
-
-			gantt.XLeftText = ganttDB.XLeftText_Data.Float64
-
-			gantt.TextHeight = ganttDB.TextHeight_Data.Float64
-
-			gantt.XLeftLanes = ganttDB.XLeftLanes_Data.Float64
-
-			gantt.XRightMargin = ganttDB.XRightMargin_Data.Float64
-
-			gantt.TimeLine_Color = ganttDB.TimeLine_Color_Data.String
-
-			gantt.TimeLine_FillOpacity = ganttDB.TimeLine_FillOpacity_Data.Float64
-
-			gantt.TimeLine_Stroke = ganttDB.TimeLine_Stroke_Data.String
-
-			gantt.TimeLine_StrokeWidth = ganttDB.TimeLine_StrokeWidth_Data.Float64
-
-			gantt.Group_Stroke = ganttDB.Group_Stroke_Data.String
-
-			gantt.Group_StrokeWidth = ganttDB.Group_StrokeWidth_Data.Float64
-
-			gantt.Group_StrokeDashArray = ganttDB.Group_StrokeDashArray_Data.String
-
-			gantt.DateYOffset = ganttDB.DateYOffset_Data.Float64
-
-			gantt.AlignOnStartEndOnYearStart = ganttDB.AlignOnStartEndOnYearStart_Data.Bool
-			// parse all LaneDB and redeem the array of poiners to Gantt
-			// first reset the slice
-			gantt.Lanes = gantt.Lanes[:0]
-			for _, LaneDB := range *backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
-				if LaneDB.Gantt_LanesDBID.Int64 == int64(ganttDB.ID) {
-					Lane := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[LaneDB.ID]
-					gantt.Lanes = append(gantt.Lanes, Lane)
-				}
-			}
-			
-			// sort the array according to the order
-			sort.Slice(gantt.Lanes, func(i, j int) bool {
-				laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[gantt.Lanes[i]]
-				laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[gantt.Lanes[j]]
-
-				laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
-				laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
-
-				return laneDB_i.Gantt_LanesDBID_Index.Int64 < laneDB_j.Gantt_LanesDBID_Index.Int64
-			})
-
-			// parse all MilestoneDB and redeem the array of poiners to Gantt
-			// first reset the slice
-			gantt.Milestones = gantt.Milestones[:0]
-			for _, MilestoneDB := range *backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB {
-				if MilestoneDB.Gantt_MilestonesDBID.Int64 == int64(ganttDB.ID) {
-					Milestone := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[MilestoneDB.ID]
-					gantt.Milestones = append(gantt.Milestones, Milestone)
-				}
-			}
-			
-			// sort the array according to the order
-			sort.Slice(gantt.Milestones, func(i, j int) bool {
-				milestoneDB_i_ID := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[gantt.Milestones[i]]
-				milestoneDB_j_ID := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[gantt.Milestones[j]]
-
-				milestoneDB_i := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB_i_ID]
-				milestoneDB_j := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB_j_ID]
-
-				return milestoneDB_i.Gantt_MilestonesDBID_Index.Int64 < milestoneDB_j.Gantt_MilestonesDBID_Index.Int64
-			})
-
-			// parse all GroupDB and redeem the array of poiners to Gantt
-			// first reset the slice
-			gantt.Groups = gantt.Groups[:0]
-			for _, GroupDB := range *backRepo.BackRepoGroup.Map_GroupDBID_GroupDB {
-				if GroupDB.Gantt_GroupsDBID.Int64 == int64(ganttDB.ID) {
-					Group := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[GroupDB.ID]
-					gantt.Groups = append(gantt.Groups, Group)
-				}
-			}
-			
-			// sort the array according to the order
-			sort.Slice(gantt.Groups, func(i, j int) bool {
-				groupDB_i_ID := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[gantt.Groups[i]]
-				groupDB_j_ID := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[gantt.Groups[j]]
-
-				groupDB_i := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDB_i_ID]
-				groupDB_j := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDB_j_ID]
-
-				return groupDB_i.Gantt_GroupsDBID_Index.Int64 < groupDB_j.Gantt_GroupsDBID_Index.Int64
-			})
-
+	// insertion point for checkout of pointer encoding
+	// This loop redeem gantt.Lanes in the stage from the encode in the back repo
+	// It parses all LaneDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// it appends the stage instance
+	// 1. reset the slice
+	gantt.Lanes = gantt.Lanes[:0]
+	// 2. loop all instances in the type in the association end
+	for _, laneDB_AssocEnd := range *backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
+		// 3. Does the ID encoding at the end and the ID at the start matches ?
+		if laneDB_AssocEnd.Gantt_LanesDBID.Int64 == int64(ganttDB.ID) {
+			// 4. fetch the associated instance in the stage
+			lane_AssocEnd := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB_AssocEnd.ID]
+			// 5. append it the association slice
+			gantt.Lanes = append(gantt.Lanes, lane_AssocEnd)
 		}
 	}
+
+	// sort the array according to the order
+	sort.Slice(gantt.Lanes, func(i, j int) bool {
+		laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[gantt.Lanes[i]]
+		laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[gantt.Lanes[j]]
+
+		laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
+		laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
+
+		return laneDB_i.Gantt_LanesDBID_Index.Int64 < laneDB_j.Gantt_LanesDBID_Index.Int64
+	})
+
+	// This loop redeem gantt.Milestones in the stage from the encode in the back repo
+	// It parses all MilestoneDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// it appends the stage instance
+	// 1. reset the slice
+	gantt.Milestones = gantt.Milestones[:0]
+	// 2. loop all instances in the type in the association end
+	for _, milestoneDB_AssocEnd := range *backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB {
+		// 3. Does the ID encoding at the end and the ID at the start matches ?
+		if milestoneDB_AssocEnd.Gantt_MilestonesDBID.Int64 == int64(ganttDB.ID) {
+			// 4. fetch the associated instance in the stage
+			milestone_AssocEnd := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB_AssocEnd.ID]
+			// 5. append it the association slice
+			gantt.Milestones = append(gantt.Milestones, milestone_AssocEnd)
+		}
+	}
+
+	// sort the array according to the order
+	sort.Slice(gantt.Milestones, func(i, j int) bool {
+		milestoneDB_i_ID := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[gantt.Milestones[i]]
+		milestoneDB_j_ID := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[gantt.Milestones[j]]
+
+		milestoneDB_i := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB_i_ID]
+		milestoneDB_j := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB_j_ID]
+
+		return milestoneDB_i.Gantt_MilestonesDBID_Index.Int64 < milestoneDB_j.Gantt_MilestonesDBID_Index.Int64
+	})
+
+	// This loop redeem gantt.Groups in the stage from the encode in the back repo
+	// It parses all GroupDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// it appends the stage instance
+	// 1. reset the slice
+	gantt.Groups = gantt.Groups[:0]
+	// 2. loop all instances in the type in the association end
+	for _, groupDB_AssocEnd := range *backRepo.BackRepoGroup.Map_GroupDBID_GroupDB {
+		// 3. Does the ID encoding at the end and the ID at the start matches ?
+		if groupDB_AssocEnd.Gantt_GroupsDBID.Int64 == int64(ganttDB.ID) {
+			// 4. fetch the associated instance in the stage
+			group_AssocEnd := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB_AssocEnd.ID]
+			// 5. append it the association slice
+			gantt.Groups = append(gantt.Groups, group_AssocEnd)
+		}
+	}
+
+	// sort the array according to the order
+	sort.Slice(gantt.Groups, func(i, j int) bool {
+		groupDB_i_ID := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[gantt.Groups[i]]
+		groupDB_j_ID := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[gantt.Groups[j]]
+
+		groupDB_i := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDB_i_ID]
+		groupDB_j := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDB_j_ID]
+
+		return groupDB_i.Gantt_GroupsDBID_Index.Int64 < groupDB_j.Gantt_GroupsDBID_Index.Int64
+	})
+
 	return
 }
 
@@ -557,5 +508,156 @@ func (backRepo *BackRepoStruct) CheckoutGantt(gantt *models.Gantt) {
 			backRepo.BackRepoGantt.CheckoutPhaseOneInstance(&ganttDB)
 			backRepo.BackRepoGantt.CheckoutPhaseTwoInstance(backRepo, &ganttDB)
 		}
+	}
+}
+
+// CopyBasicFieldsToGanttDB is used to copy basic fields between the Stage or the CRUD to the back repo
+func (ganttDB *GanttDB) CopyBasicFieldsFromGantt(gantt *models.Gantt) {
+	// insertion point for fields commit
+	ganttDB.Name_Data.String = gantt.Name
+	ganttDB.Name_Data.Valid = true
+
+	ganttDB.Start_Data.Time = gantt.Start
+	ganttDB.Start_Data.Valid = true
+
+	ganttDB.End_Data.Time = gantt.End
+	ganttDB.End_Data.Valid = true
+
+	ganttDB.LaneHeight_Data.Float64 = gantt.LaneHeight
+	ganttDB.LaneHeight_Data.Valid = true
+
+	ganttDB.RatioBarToLaneHeight_Data.Float64 = gantt.RatioBarToLaneHeight
+	ganttDB.RatioBarToLaneHeight_Data.Valid = true
+
+	ganttDB.YTopMargin_Data.Float64 = gantt.YTopMargin
+	ganttDB.YTopMargin_Data.Valid = true
+
+	ganttDB.XLeftText_Data.Float64 = gantt.XLeftText
+	ganttDB.XLeftText_Data.Valid = true
+
+	ganttDB.TextHeight_Data.Float64 = gantt.TextHeight
+	ganttDB.TextHeight_Data.Valid = true
+
+	ganttDB.XLeftLanes_Data.Float64 = gantt.XLeftLanes
+	ganttDB.XLeftLanes_Data.Valid = true
+
+	ganttDB.XRightMargin_Data.Float64 = gantt.XRightMargin
+	ganttDB.XRightMargin_Data.Valid = true
+
+	ganttDB.TimeLine_Color_Data.String = gantt.TimeLine_Color
+	ganttDB.TimeLine_Color_Data.Valid = true
+
+	ganttDB.TimeLine_FillOpacity_Data.Float64 = gantt.TimeLine_FillOpacity
+	ganttDB.TimeLine_FillOpacity_Data.Valid = true
+
+	ganttDB.TimeLine_Stroke_Data.String = gantt.TimeLine_Stroke
+	ganttDB.TimeLine_Stroke_Data.Valid = true
+
+	ganttDB.TimeLine_StrokeWidth_Data.Float64 = gantt.TimeLine_StrokeWidth
+	ganttDB.TimeLine_StrokeWidth_Data.Valid = true
+
+	ganttDB.Group_Stroke_Data.String = gantt.Group_Stroke
+	ganttDB.Group_Stroke_Data.Valid = true
+
+	ganttDB.Group_StrokeWidth_Data.Float64 = gantt.Group_StrokeWidth
+	ganttDB.Group_StrokeWidth_Data.Valid = true
+
+	ganttDB.Group_StrokeDashArray_Data.String = gantt.Group_StrokeDashArray
+	ganttDB.Group_StrokeDashArray_Data.Valid = true
+
+	ganttDB.DateYOffset_Data.Float64 = gantt.DateYOffset
+	ganttDB.DateYOffset_Data.Valid = true
+
+	ganttDB.AlignOnStartEndOnYearStart_Data.Bool = gantt.AlignOnStartEndOnYearStart
+	ganttDB.AlignOnStartEndOnYearStart_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToGanttDB is used to copy basic fields between the Stage or the CRUD to the back repo
+func (ganttDB *GanttDB) CopyBasicFieldsToGantt(gantt *models.Gantt) {
+
+	// insertion point for checkout of basic fields (back repo to stage)
+	gantt.Name = ganttDB.Name_Data.String
+	gantt.Start = ganttDB.Start_Data.Time
+	gantt.End = ganttDB.End_Data.Time
+	gantt.LaneHeight = ganttDB.LaneHeight_Data.Float64
+	gantt.RatioBarToLaneHeight = ganttDB.RatioBarToLaneHeight_Data.Float64
+	gantt.YTopMargin = ganttDB.YTopMargin_Data.Float64
+	gantt.XLeftText = ganttDB.XLeftText_Data.Float64
+	gantt.TextHeight = ganttDB.TextHeight_Data.Float64
+	gantt.XLeftLanes = ganttDB.XLeftLanes_Data.Float64
+	gantt.XRightMargin = ganttDB.XRightMargin_Data.Float64
+	gantt.TimeLine_Color = ganttDB.TimeLine_Color_Data.String
+	gantt.TimeLine_FillOpacity = ganttDB.TimeLine_FillOpacity_Data.Float64
+	gantt.TimeLine_Stroke = ganttDB.TimeLine_Stroke_Data.String
+	gantt.TimeLine_StrokeWidth = ganttDB.TimeLine_StrokeWidth_Data.Float64
+	gantt.Group_Stroke = ganttDB.Group_Stroke_Data.String
+	gantt.Group_StrokeWidth = ganttDB.Group_StrokeWidth_Data.Float64
+	gantt.Group_StrokeDashArray = ganttDB.Group_StrokeDashArray_Data.String
+	gantt.DateYOffset = ganttDB.DateYOffset_Data.Float64
+	gantt.AlignOnStartEndOnYearStart = ganttDB.AlignOnStartEndOnYearStart_Data.Bool
+}
+
+// Backup generates a json file from a slice of all GanttDB instances in the backrepo
+func (backRepoGantt *BackRepoGanttStruct) Backup(dirPath string) {
+
+	filename := filepath.Join(dirPath, "GanttDB.json")
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	var forBackup []*GanttDB
+	for _, ganttDB := range *backRepoGantt.Map_GanttDBID_GanttDB {
+		forBackup = append(forBackup, ganttDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	file, err := json.MarshalIndent(forBackup, "", " ")
+
+	if err != nil {
+		log.Panic("Cannot json Gantt ", filename, " ", err.Error())
+	}
+
+	err = ioutil.WriteFile(filename, file, 0644)
+	if err != nil {
+		log.Panic("Cannot write the json Gantt file", err.Error())
+	}
+}
+
+func (backRepoGantt *BackRepoGanttStruct) Restore(dirPath string) {
+
+	filename := filepath.Join(dirPath, "GanttDB.json")
+	jsonFile, err := os.Open(filename)
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		log.Panic("Cannot restore/open the json Gantt file", filename, " ", err.Error())
+	}
+
+	// read our opened jsonFile as a byte array.
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var forRestore []*GanttDB
+
+	err = json.Unmarshal(byteValue, &forRestore)
+
+	// fill up Map_GanttDBID_GanttDB
+	for _, ganttDB := range forRestore {
+
+		ganttDB_ID := ganttDB.ID
+		ganttDB.ID = 0
+		query := backRepoGantt.db.Create(ganttDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		if ganttDB_ID != ganttDB.ID {
+			log.Panicf("ID of Gantt restore ID %d, name %s, has wrong ID %d in DB after create",
+				ganttDB_ID, ganttDB.Name_Data.String, ganttDB.ID)
+		}
+	}
+
+	if err != nil {
+		log.Panic("Cannot restore/unmarshall json Gantt file", err.Error())
 	}
 }

@@ -3,9 +3,13 @@ package orm
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -27,9 +31,35 @@ var dummy_Bar_sort sort.Float64Slice
 //
 // swagger:model barAPI
 type BarAPI struct {
+	gorm.Model
+
 	models.Bar
 
-	// insertion for fields declaration
+	// encoding of pointers
+	BarPointersEnconding
+}
+
+// BarPointersEnconding encodes pointers to Struct and
+// reverse pointers of slice of poitners to Struct
+type BarPointersEnconding struct {
+	// insertion for pointer fields encoding declaration
+	// Implementation of a reverse ID for field Lane{}.Bars []*Bar
+	Lane_BarsDBID sql.NullInt64
+
+	// implementation of the index of the withing the slice
+	Lane_BarsDBID_Index sql.NullInt64
+}
+
+// BarDB describes a bar in the database
+//
+// It incorporates the GORM ID, basic fields from the model (because they can be serialized),
+// the encoded version of pointers
+//
+// swagger:model barDB
+type BarDB struct {
+	gorm.Model
+
+	// insertion for basic fields declaration
 	// Declation for basic field barDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
 
@@ -45,22 +75,8 @@ type BarAPI struct {
 	// Declation for basic field barDB.OptionnalStroke {{BasicKind}} (to be completed)
 	OptionnalStroke_Data sql.NullString
 
-	// Implementation of a reverse ID for field Lane{}.Bars []*Bar
-	Lane_BarsDBID sql.NullInt64
-	Lane_BarsDBID_Index sql.NullInt64
-
-	// end of insertion
-}
-
-// BarDB describes a bar in the database
-//
-// It incorporates all fields : from the model, from the generated field for the API and the GORM ID
-//
-// swagger:model barDB
-type BarDB struct {
-	gorm.Model
-
-	BarAPI
+	// encoding of pointers
+	BarPointersEnconding
 }
 
 // BarDBs arrays barDBs
@@ -84,6 +100,13 @@ type BackRepoBarStruct struct {
 	Map_BarDBID_BarPtr *map[uint]*models.Bar
 
 	db *gorm.DB
+}
+
+// GetBarDBFromBarPtr is a handy function to access the back repo instance from the stage instance
+func (backRepoBar *BackRepoBarStruct) GetBarDBFromBarPtr(bar *models.Bar) (barDB *BarDB) {
+	id := (*backRepoBar.Map_BarPtr_BarDBID)[bar]
+	barDB = (*backRepoBar.Map_BarDBID_BarDB)[id]
+	return
 }
 
 // BackRepoBar.Init set up the BackRepo of the Bar
@@ -167,7 +190,7 @@ func (backRepoBar *BackRepoBarStruct) CommitPhaseOneInstance(bar *models.Bar) (E
 
 	// initiate bar
 	var barDB BarDB
-	barDB.Bar = *bar
+	barDB.CopyBasicFieldsFromBar(bar)
 
 	query := backRepoBar.db.Create(&barDB)
 	if query.Error != nil {
@@ -200,26 +223,9 @@ func (backRepoBar *BackRepoBarStruct) CommitPhaseTwoInstance(backRepo *BackRepoS
 	// fetch matching barDB
 	if barDB, ok := (*backRepoBar.Map_BarDBID_BarDB)[idx]; ok {
 
-		{
-			{
-				// insertion point for fields commit
-				barDB.Name_Data.String = bar.Name
-				barDB.Name_Data.Valid = true
+		barDB.CopyBasicFieldsFromBar(bar)
 
-				barDB.Start_Data.Time = bar.Start
-				barDB.Start_Data.Valid = true
-
-				barDB.End_Data.Time = bar.End
-				barDB.End_Data.Valid = true
-
-				barDB.OptionnalColor_Data.String = bar.OptionnalColor
-				barDB.OptionnalColor_Data.Valid = true
-
-				barDB.OptionnalStroke_Data.String = bar.OptionnalStroke
-				barDB.OptionnalStroke_Data.Valid = true
-
-			}
-		}
+		// insertion point for translating pointers encodings into actual pointers
 		query := backRepoBar.db.Save(&barDB)
 		if query.Error != nil {
 			return query.Error
@@ -260,18 +266,23 @@ func (backRepoBar *BackRepoBarStruct) CheckoutPhaseOne() (Error error) {
 // models version of the barDB
 func (backRepoBar *BackRepoBarStruct) CheckoutPhaseOneInstance(barDB *BarDB) (Error error) {
 
-	// if absent, create entries in the backRepoBar maps.
-	barWithNewFieldValues := barDB.Bar
-	if _, ok := (*backRepoBar.Map_BarDBID_BarPtr)[barDB.ID]; !ok {
+	bar, ok := (*backRepoBar.Map_BarDBID_BarPtr)[barDB.ID]
+	if !ok {
+		bar = new(models.Bar)
 
-		(*backRepoBar.Map_BarDBID_BarPtr)[barDB.ID] = &barWithNewFieldValues
-		(*backRepoBar.Map_BarPtr_BarDBID)[&barWithNewFieldValues] = barDB.ID
+		(*backRepoBar.Map_BarDBID_BarPtr)[barDB.ID] = bar
+		(*backRepoBar.Map_BarPtr_BarDBID)[bar] = barDB.ID
 
 		// append model store with the new element
-		barWithNewFieldValues.Stage()
+		bar.Stage()
 	}
-	barDBWithNewFieldValues := *barDB
-	(*backRepoBar.Map_BarDBID_BarDB)[barDB.ID] = &barDBWithNewFieldValues
+	barDB.CopyBasicFieldsToBar(bar)
+
+	// preserve pointer to aclassDB. Otherwise, pointer will is recycled and the map of pointers
+	// Map_BarDBID_BarDB)[barDB hold variable pointers
+	barDB_Data := *barDB
+	preservedPtrToBar := &barDB_Data
+	(*backRepoBar.Map_BarDBID_BarDB)[barDB.ID] = preservedPtrToBar
 
 	return
 }
@@ -293,22 +304,8 @@ func (backRepoBar *BackRepoBarStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 
 	bar := (*backRepoBar.Map_BarDBID_BarPtr)[barDB.ID]
 	_ = bar // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
-	{
-		{
-			// insertion point for checkout, i.e. update of fields of stage instance from fields of back repo instances
-			//
-			bar.Name = barDB.Name_Data.String
 
-			bar.Start = barDB.Start_Data.Time
-
-			bar.End = barDB.End_Data.Time
-
-			bar.OptionnalColor = barDB.OptionnalColor_Data.String
-
-			bar.OptionnalStroke = barDB.OptionnalStroke_Data.String
-
-		}
-	}
+	// insertion point for checkout of pointer encoding
 	return
 }
 
@@ -335,5 +332,100 @@ func (backRepo *BackRepoStruct) CheckoutBar(bar *models.Bar) {
 			backRepo.BackRepoBar.CheckoutPhaseOneInstance(&barDB)
 			backRepo.BackRepoBar.CheckoutPhaseTwoInstance(backRepo, &barDB)
 		}
+	}
+}
+
+// CopyBasicFieldsToBarDB is used to copy basic fields between the Stage or the CRUD to the back repo
+func (barDB *BarDB) CopyBasicFieldsFromBar(bar *models.Bar) {
+	// insertion point for fields commit
+	barDB.Name_Data.String = bar.Name
+	barDB.Name_Data.Valid = true
+
+	barDB.Start_Data.Time = bar.Start
+	barDB.Start_Data.Valid = true
+
+	barDB.End_Data.Time = bar.End
+	barDB.End_Data.Valid = true
+
+	barDB.OptionnalColor_Data.String = bar.OptionnalColor
+	barDB.OptionnalColor_Data.Valid = true
+
+	barDB.OptionnalStroke_Data.String = bar.OptionnalStroke
+	barDB.OptionnalStroke_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToBarDB is used to copy basic fields between the Stage or the CRUD to the back repo
+func (barDB *BarDB) CopyBasicFieldsToBar(bar *models.Bar) {
+
+	// insertion point for checkout of basic fields (back repo to stage)
+	bar.Name = barDB.Name_Data.String
+	bar.Start = barDB.Start_Data.Time
+	bar.End = barDB.End_Data.Time
+	bar.OptionnalColor = barDB.OptionnalColor_Data.String
+	bar.OptionnalStroke = barDB.OptionnalStroke_Data.String
+}
+
+// Backup generates a json file from a slice of all BarDB instances in the backrepo
+func (backRepoBar *BackRepoBarStruct) Backup(dirPath string) {
+
+	filename := filepath.Join(dirPath, "BarDB.json")
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	var forBackup []*BarDB
+	for _, barDB := range *backRepoBar.Map_BarDBID_BarDB {
+		forBackup = append(forBackup, barDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	file, err := json.MarshalIndent(forBackup, "", " ")
+
+	if err != nil {
+		log.Panic("Cannot json Bar ", filename, " ", err.Error())
+	}
+
+	err = ioutil.WriteFile(filename, file, 0644)
+	if err != nil {
+		log.Panic("Cannot write the json Bar file", err.Error())
+	}
+}
+
+func (backRepoBar *BackRepoBarStruct) Restore(dirPath string) {
+
+	filename := filepath.Join(dirPath, "BarDB.json")
+	jsonFile, err := os.Open(filename)
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		log.Panic("Cannot restore/open the json Bar file", filename, " ", err.Error())
+	}
+
+	// read our opened jsonFile as a byte array.
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var forRestore []*BarDB
+
+	err = json.Unmarshal(byteValue, &forRestore)
+
+	// fill up Map_BarDBID_BarDB
+	for _, barDB := range forRestore {
+
+		barDB_ID := barDB.ID
+		barDB.ID = 0
+		query := backRepoBar.db.Create(barDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		if barDB_ID != barDB.ID {
+			log.Panicf("ID of Bar restore ID %d, name %s, has wrong ID %d in DB after create",
+				barDB_ID, barDB.Name_Data.String, barDB.ID)
+		}
+	}
+
+	if err != nil {
+		log.Panic("Cannot restore/unmarshall json Bar file", err.Error())
 	}
 }

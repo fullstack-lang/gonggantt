@@ -3,9 +3,13 @@ package orm
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -27,39 +31,53 @@ var dummy_Lane_sort sort.Float64Slice
 //
 // swagger:model laneAPI
 type LaneAPI struct {
+	gorm.Model
+
 	models.Lane
 
-	// insertion for fields declaration
+	// encoding of pointers
+	LanePointersEnconding
+}
+
+// LanePointersEnconding encodes pointers to Struct and
+// reverse pointers of slice of poitners to Struct
+type LanePointersEnconding struct {
+	// insertion for pointer fields encoding declaration
+	// Implementation of a reverse ID for field Gantt{}.Lanes []*Lane
+	Gantt_LanesDBID sql.NullInt64
+
+	// implementation of the index of the withing the slice
+	Gantt_LanesDBID_Index sql.NullInt64
+	// Implementation of a reverse ID for field Group{}.GroupLanes []*Lane
+	Group_GroupLanesDBID sql.NullInt64
+
+	// implementation of the index of the withing the slice
+	Group_GroupLanesDBID_Index sql.NullInt64
+	// Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
+	Milestone_DiamonfAndTextAnchorsDBID sql.NullInt64
+
+	// implementation of the index of the withing the slice
+	Milestone_DiamonfAndTextAnchorsDBID_Index sql.NullInt64
+}
+
+// LaneDB describes a lane in the database
+//
+// It incorporates the GORM ID, basic fields from the model (because they can be serialized),
+// the encoded version of pointers
+//
+// swagger:model laneDB
+type LaneDB struct {
+	gorm.Model
+
+	// insertion for basic fields declaration
 	// Declation for basic field laneDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
 
 	// Declation for basic field laneDB.Order {{BasicKind}} (to be completed)
 	Order_Data sql.NullInt64
 
-	// Implementation of a reverse ID for field Gantt{}.Lanes []*Lane
-	Gantt_LanesDBID sql.NullInt64
-	Gantt_LanesDBID_Index sql.NullInt64
-
-	// Implementation of a reverse ID for field Group{}.GroupLanes []*Lane
-	Group_GroupLanesDBID sql.NullInt64
-	Group_GroupLanesDBID_Index sql.NullInt64
-
-	// Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
-	Milestone_DiamonfAndTextAnchorsDBID sql.NullInt64
-	Milestone_DiamonfAndTextAnchorsDBID_Index sql.NullInt64
-
-	// end of insertion
-}
-
-// LaneDB describes a lane in the database
-//
-// It incorporates all fields : from the model, from the generated field for the API and the GORM ID
-//
-// swagger:model laneDB
-type LaneDB struct {
-	gorm.Model
-
-	LaneAPI
+	// encoding of pointers
+	LanePointersEnconding
 }
 
 // LaneDBs arrays laneDBs
@@ -83,6 +101,13 @@ type BackRepoLaneStruct struct {
 	Map_LaneDBID_LanePtr *map[uint]*models.Lane
 
 	db *gorm.DB
+}
+
+// GetLaneDBFromLanePtr is a handy function to access the back repo instance from the stage instance
+func (backRepoLane *BackRepoLaneStruct) GetLaneDBFromLanePtr(lane *models.Lane) (laneDB *LaneDB) {
+	id := (*backRepoLane.Map_LanePtr_LaneDBID)[lane]
+	laneDB = (*backRepoLane.Map_LaneDBID_LaneDB)[id]
+	return
 }
 
 // BackRepoLane.Init set up the BackRepo of the Lane
@@ -166,7 +191,7 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseOneInstance(lane *models.Lane
 
 	// initiate lane
 	var laneDB LaneDB
-	laneDB.Lane = *lane
+	laneDB.CopyBasicFieldsFromLane(lane)
 
 	query := backRepoLane.db.Create(&laneDB)
 	if query.Error != nil {
@@ -199,34 +224,28 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 	// fetch matching laneDB
 	if laneDB, ok := (*backRepoLane.Map_LaneDBID_LaneDB)[idx]; ok {
 
-		{
-			{
-				// insertion point for fields commit
-				laneDB.Name_Data.String = lane.Name
-				laneDB.Name_Data.Valid = true
+		laneDB.CopyBasicFieldsFromLane(lane)
 
-				laneDB.Order_Data.Int64 = int64(lane.Order)
-				laneDB.Order_Data.Valid = true
+		// insertion point for translating pointers encodings into actual pointers
+		// This loop encodes the slice of pointers lane.Bars into the back repo.
+		// Each back repo instance at the end of the association encode the ID of the association start
+		// into a dedicated field for coding the association. The back repo instance is then saved to the db
+		for idx, barAssocEnd := range lane.Bars {
 
-				// commit a slice of pointer translates to update reverse pointer to Bar, i.e.
-				index_Bars := 0
-				for _, bar := range lane.Bars {
-					if barDBID, ok := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[bar]; ok {
-						if barDB, ok := (*backRepo.BackRepoBar.Map_BarDBID_BarDB)[barDBID]; ok {
-							barDB.Lane_BarsDBID.Int64 = int64(laneDB.ID)
-							barDB.Lane_BarsDBID.Valid = true
-							barDB.Lane_BarsDBID_Index.Int64 = int64(index_Bars)
-							index_Bars = index_Bars + 1
-							barDB.Lane_BarsDBID_Index.Valid = true
-							if q := backRepoLane.db.Save(&barDB); q.Error != nil {
-								return q.Error
-							}
-						}
-					}
-				}
+			// get the back repo instance at the association end
+			barAssocEnd_DB :=
+				backRepo.BackRepoBar.GetBarDBFromBarPtr( barAssocEnd)
 
+			// encode reverse pointer in the association end back repo instance
+			barAssocEnd_DB.Lane_BarsDBID.Int64 = int64(laneDB.ID)
+			barAssocEnd_DB.Lane_BarsDBID.Valid = true
+			barAssocEnd_DB.Lane_BarsDBID_Index.Int64 = int64(idx)
+			barAssocEnd_DB.Lane_BarsDBID_Index.Valid = true
+			if q := backRepoLane.db.Save(barAssocEnd_DB); q.Error != nil {
+				return q.Error
 			}
 		}
+
 		query := backRepoLane.db.Save(&laneDB)
 		if query.Error != nil {
 			return query.Error
@@ -267,18 +286,23 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOne() (Error error) {
 // models version of the laneDB
 func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOneInstance(laneDB *LaneDB) (Error error) {
 
-	// if absent, create entries in the backRepoLane maps.
-	laneWithNewFieldValues := laneDB.Lane
-	if _, ok := (*backRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]; !ok {
+	lane, ok := (*backRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+	if !ok {
+		lane = new(models.Lane)
 
-		(*backRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID] = &laneWithNewFieldValues
-		(*backRepoLane.Map_LanePtr_LaneDBID)[&laneWithNewFieldValues] = laneDB.ID
+		(*backRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID] = lane
+		(*backRepoLane.Map_LanePtr_LaneDBID)[lane] = laneDB.ID
 
 		// append model store with the new element
-		laneWithNewFieldValues.Stage()
+		lane.Stage()
 	}
-	laneDBWithNewFieldValues := *laneDB
-	(*backRepoLane.Map_LaneDBID_LaneDB)[laneDB.ID] = &laneDBWithNewFieldValues
+	laneDB.CopyBasicFieldsToLane(lane)
+
+	// preserve pointer to aclassDB. Otherwise, pointer will is recycled and the map of pointers
+	// Map_LaneDBID_LaneDB)[laneDB hold variable pointers
+	laneDB_Data := *laneDB
+	preservedPtrToLane := &laneDB_Data
+	(*backRepoLane.Map_LaneDBID_LaneDB)[laneDB.ID] = preservedPtrToLane
 
 	return
 }
@@ -300,37 +324,35 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 
 	lane := (*backRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
 	_ = lane // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
-	{
-		{
-			// insertion point for checkout, i.e. update of fields of stage instance from fields of back repo instances
-			//
-			lane.Name = laneDB.Name_Data.String
 
-			lane.Order = int(laneDB.Order_Data.Int64)
-
-			// parse all BarDB and redeem the array of poiners to Lane
-			// first reset the slice
-			lane.Bars = lane.Bars[:0]
-			for _, BarDB := range *backRepo.BackRepoBar.Map_BarDBID_BarDB {
-				if BarDB.Lane_BarsDBID.Int64 == int64(laneDB.ID) {
-					Bar := (*backRepo.BackRepoBar.Map_BarDBID_BarPtr)[BarDB.ID]
-					lane.Bars = append(lane.Bars, Bar)
-				}
-			}
-			
-			// sort the array according to the order
-			sort.Slice(lane.Bars, func(i, j int) bool {
-				barDB_i_ID := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[lane.Bars[i]]
-				barDB_j_ID := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[lane.Bars[j]]
-
-				barDB_i := (*backRepo.BackRepoBar.Map_BarDBID_BarDB)[barDB_i_ID]
-				barDB_j := (*backRepo.BackRepoBar.Map_BarDBID_BarDB)[barDB_j_ID]
-
-				return barDB_i.Lane_BarsDBID_Index.Int64 < barDB_j.Lane_BarsDBID_Index.Int64
-			})
-
+	// insertion point for checkout of pointer encoding
+	// This loop redeem lane.Bars in the stage from the encode in the back repo
+	// It parses all BarDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// it appends the stage instance
+	// 1. reset the slice
+	lane.Bars = lane.Bars[:0]
+	// 2. loop all instances in the type in the association end
+	for _, barDB_AssocEnd := range *backRepo.BackRepoBar.Map_BarDBID_BarDB {
+		// 3. Does the ID encoding at the end and the ID at the start matches ?
+		if barDB_AssocEnd.Lane_BarsDBID.Int64 == int64(laneDB.ID) {
+			// 4. fetch the associated instance in the stage
+			bar_AssocEnd := (*backRepo.BackRepoBar.Map_BarDBID_BarPtr)[barDB_AssocEnd.ID]
+			// 5. append it the association slice
+			lane.Bars = append(lane.Bars, bar_AssocEnd)
 		}
 	}
+
+	// sort the array according to the order
+	sort.Slice(lane.Bars, func(i, j int) bool {
+		barDB_i_ID := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[lane.Bars[i]]
+		barDB_j_ID := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[lane.Bars[j]]
+
+		barDB_i := (*backRepo.BackRepoBar.Map_BarDBID_BarDB)[barDB_i_ID]
+		barDB_j := (*backRepo.BackRepoBar.Map_BarDBID_BarDB)[barDB_j_ID]
+
+		return barDB_i.Lane_BarsDBID_Index.Int64 < barDB_j.Lane_BarsDBID_Index.Int64
+	})
+
 	return
 }
 
@@ -357,5 +379,88 @@ func (backRepo *BackRepoStruct) CheckoutLane(lane *models.Lane) {
 			backRepo.BackRepoLane.CheckoutPhaseOneInstance(&laneDB)
 			backRepo.BackRepoLane.CheckoutPhaseTwoInstance(backRepo, &laneDB)
 		}
+	}
+}
+
+// CopyBasicFieldsToLaneDB is used to copy basic fields between the Stage or the CRUD to the back repo
+func (laneDB *LaneDB) CopyBasicFieldsFromLane(lane *models.Lane) {
+	// insertion point for fields commit
+	laneDB.Name_Data.String = lane.Name
+	laneDB.Name_Data.Valid = true
+
+	laneDB.Order_Data.Int64 = int64(lane.Order)
+	laneDB.Order_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToLaneDB is used to copy basic fields between the Stage or the CRUD to the back repo
+func (laneDB *LaneDB) CopyBasicFieldsToLane(lane *models.Lane) {
+
+	// insertion point for checkout of basic fields (back repo to stage)
+	lane.Name = laneDB.Name_Data.String
+	lane.Order = int(laneDB.Order_Data.Int64)
+}
+
+// Backup generates a json file from a slice of all LaneDB instances in the backrepo
+func (backRepoLane *BackRepoLaneStruct) Backup(dirPath string) {
+
+	filename := filepath.Join(dirPath, "LaneDB.json")
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	var forBackup []*LaneDB
+	for _, laneDB := range *backRepoLane.Map_LaneDBID_LaneDB {
+		forBackup = append(forBackup, laneDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	file, err := json.MarshalIndent(forBackup, "", " ")
+
+	if err != nil {
+		log.Panic("Cannot json Lane ", filename, " ", err.Error())
+	}
+
+	err = ioutil.WriteFile(filename, file, 0644)
+	if err != nil {
+		log.Panic("Cannot write the json Lane file", err.Error())
+	}
+}
+
+func (backRepoLane *BackRepoLaneStruct) Restore(dirPath string) {
+
+	filename := filepath.Join(dirPath, "LaneDB.json")
+	jsonFile, err := os.Open(filename)
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		log.Panic("Cannot restore/open the json Lane file", filename, " ", err.Error())
+	}
+
+	// read our opened jsonFile as a byte array.
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var forRestore []*LaneDB
+
+	err = json.Unmarshal(byteValue, &forRestore)
+
+	// fill up Map_LaneDBID_LaneDB
+	for _, laneDB := range forRestore {
+
+		laneDB_ID := laneDB.ID
+		laneDB.ID = 0
+		query := backRepoLane.db.Create(laneDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		if laneDB_ID != laneDB.ID {
+			log.Panicf("ID of Lane restore ID %d, name %s, has wrong ID %d in DB after create",
+				laneDB_ID, laneDB.Name_Data.String, laneDB.ID)
+		}
+	}
+
+	if err != nil {
+		log.Panic("Cannot restore/unmarshall json Lane file", err.Error())
 	}
 }

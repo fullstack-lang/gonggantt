@@ -27,7 +27,7 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	AllModelsStructDeleteCallback AllModelsStructDeleteInterface
 
 	BackRepo BackRepoInterface
-	
+
 	// if set will be called before each commit to the back repo
 	OnInitCommitCallback OnInitCommitInterface
 }
@@ -39,6 +39,8 @@ type OnInitCommitInterface interface {
 type BackRepoInterface interface {
 	Commit(stage *StageStruct)
 	Checkout(stage *StageStruct)
+	Backup(stage *StageStruct, dirPath string)
+	Restore(stage *StageStruct, dirPath string)
 	// insertion point for Commit and Checkout signatures
 	CommitBar(bar *Bar)
 	CheckoutBar(bar *Bar)
@@ -76,6 +78,21 @@ func (stage *StageStruct) Commit() {
 func (stage *StageStruct) Checkout() {
 	if stage.BackRepo != nil {
 		stage.BackRepo.Checkout(stage)
+	}
+}
+
+// backup generates backup files in the dirPath
+func (stage *StageStruct) Backup(dirPath string) {
+	if stage.BackRepo != nil {
+		stage.BackRepo.Backup(stage, dirPath)
+	}
+}
+
+// Restore resets Stage & BackRepo and restores their content from the restore files in dirPath
+// Restore shall be performed only on a new database with rowids at 0 (otherwise, it will panic)
+func (stage *StageStruct) Restore(dirPath string) {
+	if stage.BackRepo != nil {
+		stage.BackRepo.Restore(stage, dirPath)
 	}
 }
 
@@ -594,10 +611,15 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
 	stage.Bars = make(map[*Bar]struct{}, 0)
+
 	stage.Gantts = make(map[*Gantt]struct{}, 0)
+
 	stage.Groups = make(map[*Group]struct{}, 0)
+
 	stage.Lanes = make(map[*Lane]struct{}, 0)
+
 	stage.Milestones = make(map[*Milestone]struct{}, 0)
+
 }
 
 func (stage *StageStruct) Nil() { // insertion point for array nil

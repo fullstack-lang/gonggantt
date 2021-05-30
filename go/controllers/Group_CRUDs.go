@@ -49,8 +49,9 @@ type GroupInput struct {
 func GetGroups(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
-	var groups []orm.GroupDB
-	query := db.Find(&groups)
+	// source slice
+	var groupDBs []orm.GroupDB
+	query := db.Find(&groupDBs)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -59,18 +60,23 @@ func GetGroups(c *gin.Context) {
 		return
 	}
 
-	// for each group, update fields from the database nullable fields
-	for idx := range groups {
-		group := &groups[idx]
-		_ = group
-		// insertion point for updating fields
-		if group.Name_Data.Valid {
-			group.Name = group.Name_Data.String
-		}
+	// slice that will be transmitted to the front
+	groupAPIs := make([]orm.GroupAPI, 0)
 
+	// for each group, update fields from the database nullable fields
+	for idx := range groupDBs {
+		groupDB := &groupDBs[idx]
+		_ = groupDB
+		var groupAPI orm.GroupAPI
+
+		// insertion point for updating fields
+		groupAPI.ID = groupDB.ID
+		groupDB.CopyBasicFieldsToGroup(&groupAPI.Group)
+		groupAPI.GroupPointersEnconding = groupDB.GroupPointersEnconding
+		groupAPIs = append(groupAPIs, groupAPI)
 	}
 
-	c.JSON(http.StatusOK, groups)
+	c.JSON(http.StatusOK, groupAPIs)
 }
 
 // PostGroup
@@ -103,10 +109,8 @@ func PostGroup(c *gin.Context) {
 
 	// Create group
 	groupDB := orm.GroupDB{}
-	groupDB.GroupAPI = input
-	// insertion point for nullable field set
-	groupDB.Name_Data.String = input.Name
-	groupDB.Name_Data.Valid = true
+	groupDB.GroupPointersEnconding = input.GroupPointersEnconding
+	groupDB.CopyBasicFieldsFromGroup(&input.Group)
 
 	query := db.Create(&groupDB)
 	if query.Error != nil {
@@ -136,9 +140,9 @@ func PostGroup(c *gin.Context) {
 func GetGroup(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
-	// Get group in DB
-	var group orm.GroupDB
-	if err := db.First(&group, c.Param("id")).Error; err != nil {
+	// Get groupDB in DB
+	var groupDB orm.GroupDB
+	if err := db.First(&groupDB, c.Param("id")).Error; err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -146,12 +150,12 @@ func GetGroup(c *gin.Context) {
 		return
 	}
 
-	// insertion point for fields value set from nullable fields
-	if group.Name_Data.Valid {
-		group.Name = group.Name_Data.String
-	}
+	var groupAPI orm.GroupAPI
+	groupAPI.ID = groupDB.ID
+	groupAPI.GroupPointersEnconding = groupDB.GroupPointersEnconding
+	groupDB.CopyBasicFieldsToGroup(&groupAPI.Group)
 
-	c.JSON(http.StatusOK, group)
+	c.JSON(http.StatusOK, groupAPI)
 }
 
 // UpdateGroup
@@ -188,11 +192,10 @@ func UpdateGroup(c *gin.Context) {
 	}
 
 	// update
-	// insertion point for nullable field set
-	input.Name_Data.String = input.Name
-	input.Name_Data.Valid = true
+	groupDB.CopyBasicFieldsFromGroup(&input.Group)
+	groupDB.GroupPointersEnconding = input.GroupPointersEnconding
 
-	query = db.Model(&groupDB).Updates(input)
+	query = db.Model(&groupDB).Updates(groupDB)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest

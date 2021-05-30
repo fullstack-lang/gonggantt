@@ -106,7 +106,6 @@ export class BarsTableComponent implements OnInit {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
-        console.log("front repo pull returned")
 
         this.bars = this.frontRepo.Bars_array;
 
@@ -144,8 +143,6 @@ export class BarsTableComponent implements OnInit {
     this.barService.deleteBar(barID).subscribe(
       bar => {
         this.barService.BarServiceChanged.next("delete")
-
-        console.log("bar deleted")
       }
     );
   }
@@ -207,7 +204,6 @@ export class BarsTableComponent implements OnInit {
     // from selection, set bar that belong to bar through Anarrayofb
     this.selection.selected.forEach(
       bar => {
-        console.log("selection ID " + bar.ID)
         let ID = +this.dialogData.ID
         bar[this.dialogData.ReversePointer].Int64 = ID
         bar[this.dialogData.ReversePointer].Valid = true
@@ -221,7 +217,6 @@ export class BarsTableComponent implements OnInit {
         this.barService.updateBar(bar)
           .subscribe(bar => {
             this.barService.BarServiceChanged.next("update")
-            console.log("bar saved")
           });
       }
     )

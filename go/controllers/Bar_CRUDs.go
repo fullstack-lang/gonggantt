@@ -49,8 +49,9 @@ type BarInput struct {
 func GetBars(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
-	var bars []orm.BarDB
-	query := db.Find(&bars)
+	// source slice
+	var barDBs []orm.BarDB
+	query := db.Find(&barDBs)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -59,34 +60,23 @@ func GetBars(c *gin.Context) {
 		return
 	}
 
+	// slice that will be transmitted to the front
+	barAPIs := make([]orm.BarAPI, 0)
+
 	// for each bar, update fields from the database nullable fields
-	for idx := range bars {
-		bar := &bars[idx]
-		_ = bar
+	for idx := range barDBs {
+		barDB := &barDBs[idx]
+		_ = barDB
+		var barAPI orm.BarAPI
+
 		// insertion point for updating fields
-		if bar.Name_Data.Valid {
-			bar.Name = bar.Name_Data.String
-		}
-
-		if bar.Start_Data.Valid {
-			bar.Start = bar.Start_Data.Time
-		}
-
-		if bar.End_Data.Valid {
-			bar.End = bar.End_Data.Time
-		}
-
-		if bar.OptionnalColor_Data.Valid {
-			bar.OptionnalColor = bar.OptionnalColor_Data.String
-		}
-
-		if bar.OptionnalStroke_Data.Valid {
-			bar.OptionnalStroke = bar.OptionnalStroke_Data.String
-		}
-
+		barAPI.ID = barDB.ID
+		barDB.CopyBasicFieldsToBar(&barAPI.Bar)
+		barAPI.BarPointersEnconding = barDB.BarPointersEnconding
+		barAPIs = append(barAPIs, barAPI)
 	}
 
-	c.JSON(http.StatusOK, bars)
+	c.JSON(http.StatusOK, barAPIs)
 }
 
 // PostBar
@@ -119,22 +109,8 @@ func PostBar(c *gin.Context) {
 
 	// Create bar
 	barDB := orm.BarDB{}
-	barDB.BarAPI = input
-	// insertion point for nullable field set
-	barDB.Name_Data.String = input.Name
-	barDB.Name_Data.Valid = true
-
-	barDB.Start_Data.Time = input.Start
-	barDB.Start_Data.Valid = true
-
-	barDB.End_Data.Time = input.End
-	barDB.End_Data.Valid = true
-
-	barDB.OptionnalColor_Data.String = input.OptionnalColor
-	barDB.OptionnalColor_Data.Valid = true
-
-	barDB.OptionnalStroke_Data.String = input.OptionnalStroke
-	barDB.OptionnalStroke_Data.Valid = true
+	barDB.BarPointersEnconding = input.BarPointersEnconding
+	barDB.CopyBasicFieldsFromBar(&input.Bar)
 
 	query := db.Create(&barDB)
 	if query.Error != nil {
@@ -164,9 +140,9 @@ func PostBar(c *gin.Context) {
 func GetBar(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
-	// Get bar in DB
-	var bar orm.BarDB
-	if err := db.First(&bar, c.Param("id")).Error; err != nil {
+	// Get barDB in DB
+	var barDB orm.BarDB
+	if err := db.First(&barDB, c.Param("id")).Error; err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -174,28 +150,12 @@ func GetBar(c *gin.Context) {
 		return
 	}
 
-	// insertion point for fields value set from nullable fields
-	if bar.Name_Data.Valid {
-		bar.Name = bar.Name_Data.String
-	}
+	var barAPI orm.BarAPI
+	barAPI.ID = barDB.ID
+	barAPI.BarPointersEnconding = barDB.BarPointersEnconding
+	barDB.CopyBasicFieldsToBar(&barAPI.Bar)
 
-	if bar.Start_Data.Valid {
-		bar.Start = bar.Start_Data.Time
-	}
-
-	if bar.End_Data.Valid {
-		bar.End = bar.End_Data.Time
-	}
-
-	if bar.OptionnalColor_Data.Valid {
-		bar.OptionnalColor = bar.OptionnalColor_Data.String
-	}
-
-	if bar.OptionnalStroke_Data.Valid {
-		bar.OptionnalStroke = bar.OptionnalStroke_Data.String
-	}
-
-	c.JSON(http.StatusOK, bar)
+	c.JSON(http.StatusOK, barAPI)
 }
 
 // UpdateBar
@@ -232,23 +192,10 @@ func UpdateBar(c *gin.Context) {
 	}
 
 	// update
-	// insertion point for nullable field set
-	input.Name_Data.String = input.Name
-	input.Name_Data.Valid = true
+	barDB.CopyBasicFieldsFromBar(&input.Bar)
+	barDB.BarPointersEnconding = input.BarPointersEnconding
 
-	input.Start_Data.Time = input.Start
-	input.Start_Data.Valid = true
-
-	input.End_Data.Time = input.End
-	input.End_Data.Valid = true
-
-	input.OptionnalColor_Data.String = input.OptionnalColor
-	input.OptionnalColor_Data.Valid = true
-
-	input.OptionnalStroke_Data.String = input.OptionnalStroke
-	input.OptionnalStroke_Data.Valid = true
-
-	query = db.Model(&barDB).Updates(input)
+	query = db.Model(&barDB).Updates(barDB)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest

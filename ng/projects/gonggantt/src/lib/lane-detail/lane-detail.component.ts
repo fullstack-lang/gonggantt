@@ -63,8 +63,6 @@ export class LaneDetailComponent implements OnInit {
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				console.log("front repo LanePull returned")
-
 				if (id != 0 && association == undefined) {
 					this.lane = frontRepo.Lanes.get(id)
 				} else {
@@ -94,6 +92,7 @@ export class LaneDetailComponent implements OnInit {
 				this.lane.Gantt_LanesDBID = new NullInt64
 				this.lane.Gantt_LanesDBID.Int64 = this.lane.Gantt_Lanes_reverse.ID
 				this.lane.Gantt_LanesDBID.Valid = true
+				this.lane.Gantt_LanesDBID_Index = new NullInt64
 				this.lane.Gantt_LanesDBID_Index.Valid = true
 				this.lane.Gantt_Lanes_reverse = undefined // very important, otherwise, circular JSON
 			}
@@ -101,6 +100,7 @@ export class LaneDetailComponent implements OnInit {
 				this.lane.Group_GroupLanesDBID = new NullInt64
 				this.lane.Group_GroupLanesDBID.Int64 = this.lane.Group_GroupLanes_reverse.ID
 				this.lane.Group_GroupLanesDBID.Valid = true
+				this.lane.Group_GroupLanesDBID_Index = new NullInt64
 				this.lane.Group_GroupLanesDBID_Index.Valid = true
 				this.lane.Group_GroupLanes_reverse = undefined // very important, otherwise, circular JSON
 			}
@@ -108,6 +108,7 @@ export class LaneDetailComponent implements OnInit {
 				this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
 				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = this.lane.Milestone_DiamonfAndTextAnchors_reverse.ID
 				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
+				this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index = new NullInt64
 				this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
 				this.lane.Milestone_DiamonfAndTextAnchors_reverse = undefined // very important, otherwise, circular JSON
 			}
@@ -118,8 +119,6 @@ export class LaneDetailComponent implements OnInit {
 			this.laneService.updateLane(this.lane)
 				.subscribe(lane => {
 					this.laneService.LaneServiceChanged.next("update")
-
-					console.log("lane saved")
 				});
 		} else {
 			switch (association) {
@@ -128,18 +127,21 @@ export class LaneDetailComponent implements OnInit {
 					this.lane.Gantt_LanesDBID = new NullInt64
 					this.lane.Gantt_LanesDBID.Int64 = id
 					this.lane.Gantt_LanesDBID.Valid = true
+					this.lane.Gantt_LanesDBID_Index = new NullInt64
 					this.lane.Gantt_LanesDBID_Index.Valid = true
 					break
 				case "Group_GroupLanes":
 					this.lane.Group_GroupLanesDBID = new NullInt64
 					this.lane.Group_GroupLanesDBID.Int64 = id
 					this.lane.Group_GroupLanesDBID.Valid = true
+					this.lane.Group_GroupLanesDBID_Index = new NullInt64
 					this.lane.Group_GroupLanesDBID_Index.Valid = true
 					break
 				case "Milestone_DiamonfAndTextAnchors":
 					this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
 					this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = id
 					this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
+					this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index = new NullInt64
 					this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
 					break
 			}
@@ -148,7 +150,6 @@ export class LaneDetailComponent implements OnInit {
 				this.laneService.LaneServiceChanged.next("post")
 
 				this.lane = {} // reset fields
-				console.log("lane added")
 			});
 		}
 	}
@@ -177,7 +178,6 @@ export class LaneDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 
@@ -200,7 +200,6 @@ export class LaneDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 }

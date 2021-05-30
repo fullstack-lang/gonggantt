@@ -104,7 +104,6 @@ export class LanesTableComponent implements OnInit {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
-        console.log("front repo pull returned")
 
         this.lanes = this.frontRepo.Lanes_array;
 
@@ -142,8 +141,6 @@ export class LanesTableComponent implements OnInit {
     this.laneService.deleteLane(laneID).subscribe(
       lane => {
         this.laneService.LaneServiceChanged.next("delete")
-
-        console.log("lane deleted")
       }
     );
   }
@@ -205,7 +202,6 @@ export class LanesTableComponent implements OnInit {
     // from selection, set lane that belong to lane through Anarrayofb
     this.selection.selected.forEach(
       lane => {
-        console.log("selection ID " + lane.ID)
         let ID = +this.dialogData.ID
         lane[this.dialogData.ReversePointer].Int64 = ID
         lane[this.dialogData.ReversePointer].Valid = true
@@ -219,7 +215,6 @@ export class LanesTableComponent implements OnInit {
         this.laneService.updateLane(lane)
           .subscribe(lane => {
             this.laneService.LaneServiceChanged.next("update")
-            console.log("lane saved")
           });
       }
     )

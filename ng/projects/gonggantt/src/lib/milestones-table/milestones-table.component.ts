@@ -100,7 +100,6 @@ export class MilestonesTableComponent implements OnInit {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
-        console.log("front repo pull returned")
 
         this.milestones = this.frontRepo.Milestones_array;
 
@@ -138,8 +137,6 @@ export class MilestonesTableComponent implements OnInit {
     this.milestoneService.deleteMilestone(milestoneID).subscribe(
       milestone => {
         this.milestoneService.MilestoneServiceChanged.next("delete")
-
-        console.log("milestone deleted")
       }
     );
   }
@@ -201,7 +198,6 @@ export class MilestonesTableComponent implements OnInit {
     // from selection, set milestone that belong to milestone through Anarrayofb
     this.selection.selected.forEach(
       milestone => {
-        console.log("selection ID " + milestone.ID)
         let ID = +this.dialogData.ID
         milestone[this.dialogData.ReversePointer].Int64 = ID
         milestone[this.dialogData.ReversePointer].Valid = true
@@ -215,7 +211,6 @@ export class MilestonesTableComponent implements OnInit {
         this.milestoneService.updateMilestone(milestone)
           .subscribe(milestone => {
             this.milestoneService.MilestoneServiceChanged.next("update")
-            console.log("milestone saved")
           });
       }
     )

@@ -63,8 +63,6 @@ export class MilestoneDetailComponent implements OnInit {
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				console.log("front repo MilestonePull returned")
-
 				if (id != 0 && association == undefined) {
 					this.milestone = frontRepo.Milestones.get(id)
 				} else {
@@ -94,6 +92,7 @@ export class MilestoneDetailComponent implements OnInit {
 				this.milestone.Gantt_MilestonesDBID = new NullInt64
 				this.milestone.Gantt_MilestonesDBID.Int64 = this.milestone.Gantt_Milestones_reverse.ID
 				this.milestone.Gantt_MilestonesDBID.Valid = true
+				this.milestone.Gantt_MilestonesDBID_Index = new NullInt64
 				this.milestone.Gantt_MilestonesDBID_Index.Valid = true
 				this.milestone.Gantt_Milestones_reverse = undefined // very important, otherwise, circular JSON
 			}
@@ -104,8 +103,6 @@ export class MilestoneDetailComponent implements OnInit {
 			this.milestoneService.updateMilestone(this.milestone)
 				.subscribe(milestone => {
 					this.milestoneService.MilestoneServiceChanged.next("update")
-
-					console.log("milestone saved")
 				});
 		} else {
 			switch (association) {
@@ -114,6 +111,7 @@ export class MilestoneDetailComponent implements OnInit {
 					this.milestone.Gantt_MilestonesDBID = new NullInt64
 					this.milestone.Gantt_MilestonesDBID.Int64 = id
 					this.milestone.Gantt_MilestonesDBID.Valid = true
+					this.milestone.Gantt_MilestonesDBID_Index = new NullInt64
 					this.milestone.Gantt_MilestonesDBID_Index.Valid = true
 					break
 			}
@@ -122,7 +120,6 @@ export class MilestoneDetailComponent implements OnInit {
 				this.milestoneService.MilestoneServiceChanged.next("post")
 
 				this.milestone = {} // reset fields
-				console.log("milestone added")
 			});
 		}
 	}
@@ -151,7 +148,6 @@ export class MilestoneDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 
@@ -174,7 +170,6 @@ export class MilestoneDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 }

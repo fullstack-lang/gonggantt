@@ -63,8 +63,6 @@ export class BarDetailComponent implements OnInit {
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				console.log("front repo BarPull returned")
-
 				if (id != 0 && association == undefined) {
 					this.bar = frontRepo.Bars.get(id)
 				} else {
@@ -94,6 +92,7 @@ export class BarDetailComponent implements OnInit {
 				this.bar.Lane_BarsDBID = new NullInt64
 				this.bar.Lane_BarsDBID.Int64 = this.bar.Lane_Bars_reverse.ID
 				this.bar.Lane_BarsDBID.Valid = true
+				this.bar.Lane_BarsDBID_Index = new NullInt64
 				this.bar.Lane_BarsDBID_Index.Valid = true
 				this.bar.Lane_Bars_reverse = undefined // very important, otherwise, circular JSON
 			}
@@ -104,8 +103,6 @@ export class BarDetailComponent implements OnInit {
 			this.barService.updateBar(this.bar)
 				.subscribe(bar => {
 					this.barService.BarServiceChanged.next("update")
-
-					console.log("bar saved")
 				});
 		} else {
 			switch (association) {
@@ -114,6 +111,7 @@ export class BarDetailComponent implements OnInit {
 					this.bar.Lane_BarsDBID = new NullInt64
 					this.bar.Lane_BarsDBID.Int64 = id
 					this.bar.Lane_BarsDBID.Valid = true
+					this.bar.Lane_BarsDBID_Index = new NullInt64
 					this.bar.Lane_BarsDBID_Index.Valid = true
 					break
 			}
@@ -122,7 +120,6 @@ export class BarDetailComponent implements OnInit {
 				this.barService.BarServiceChanged.next("post")
 
 				this.bar = {} // reset fields
-				console.log("bar added")
 			});
 		}
 	}
@@ -151,7 +148,6 @@ export class BarDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 
@@ -174,7 +170,6 @@ export class BarDetailComponent implements OnInit {
 		);
 
 		dialogRef.afterClosed().subscribe(result => {
-			console.log('The dialog was closed');
 		});
 	}
 }

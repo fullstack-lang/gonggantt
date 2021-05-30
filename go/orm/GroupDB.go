@@ -3,9 +3,13 @@ package orm
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -27,28 +31,40 @@ var dummy_Group_sort sort.Float64Slice
 //
 // swagger:model groupAPI
 type GroupAPI struct {
+	gorm.Model
+
 	models.Group
 
-	// insertion for fields declaration
-	// Declation for basic field groupDB.Name {{BasicKind}} (to be completed)
-	Name_Data sql.NullString
+	// encoding of pointers
+	GroupPointersEnconding
+}
 
+// GroupPointersEnconding encodes pointers to Struct and
+// reverse pointers of slice of poitners to Struct
+type GroupPointersEnconding struct {
+	// insertion for pointer fields encoding declaration
 	// Implementation of a reverse ID for field Gantt{}.Groups []*Group
 	Gantt_GroupsDBID sql.NullInt64
-	Gantt_GroupsDBID_Index sql.NullInt64
 
-	// end of insertion
+	// implementation of the index of the withing the slice
+	Gantt_GroupsDBID_Index sql.NullInt64
 }
 
 // GroupDB describes a group in the database
 //
-// It incorporates all fields : from the model, from the generated field for the API and the GORM ID
+// It incorporates the GORM ID, basic fields from the model (because they can be serialized),
+// the encoded version of pointers
 //
 // swagger:model groupDB
 type GroupDB struct {
 	gorm.Model
 
-	GroupAPI
+	// insertion for basic fields declaration
+	// Declation for basic field groupDB.Name {{BasicKind}} (to be completed)
+	Name_Data sql.NullString
+
+	// encoding of pointers
+	GroupPointersEnconding
 }
 
 // GroupDBs arrays groupDBs
@@ -72,6 +88,13 @@ type BackRepoGroupStruct struct {
 	Map_GroupDBID_GroupPtr *map[uint]*models.Group
 
 	db *gorm.DB
+}
+
+// GetGroupDBFromGroupPtr is a handy function to access the back repo instance from the stage instance
+func (backRepoGroup *BackRepoGroupStruct) GetGroupDBFromGroupPtr(group *models.Group) (groupDB *GroupDB) {
+	id := (*backRepoGroup.Map_GroupPtr_GroupDBID)[group]
+	groupDB = (*backRepoGroup.Map_GroupDBID_GroupDB)[id]
+	return
 }
 
 // BackRepoGroup.Init set up the BackRepo of the Group
@@ -155,7 +178,7 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseOneInstance(group *models.G
 
 	// initiate group
 	var groupDB GroupDB
-	groupDB.Group = *group
+	groupDB.CopyBasicFieldsFromGroup(group)
 
 	query := backRepoGroup.db.Create(&groupDB)
 	if query.Error != nil {
@@ -188,31 +211,28 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwoInstance(backRepo *BackR
 	// fetch matching groupDB
 	if groupDB, ok := (*backRepoGroup.Map_GroupDBID_GroupDB)[idx]; ok {
 
-		{
-			{
-				// insertion point for fields commit
-				groupDB.Name_Data.String = group.Name
-				groupDB.Name_Data.Valid = true
+		groupDB.CopyBasicFieldsFromGroup(group)
 
-				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
-				index_GroupLanes := 0
-				for _, lane := range group.GroupLanes {
-					if laneDBID, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
-						if laneDB, ok := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDBID]; ok {
-							laneDB.Group_GroupLanesDBID.Int64 = int64(groupDB.ID)
-							laneDB.Group_GroupLanesDBID.Valid = true
-							laneDB.Group_GroupLanesDBID_Index.Int64 = int64(index_GroupLanes)
-							index_GroupLanes = index_GroupLanes + 1
-							laneDB.Group_GroupLanesDBID_Index.Valid = true
-							if q := backRepoGroup.db.Save(&laneDB); q.Error != nil {
-								return q.Error
-							}
-						}
-					}
-				}
+		// insertion point for translating pointers encodings into actual pointers
+		// This loop encodes the slice of pointers group.GroupLanes into the back repo.
+		// Each back repo instance at the end of the association encode the ID of the association start
+		// into a dedicated field for coding the association. The back repo instance is then saved to the db
+		for idx, laneAssocEnd := range group.GroupLanes {
 
+			// get the back repo instance at the association end
+			laneAssocEnd_DB :=
+				backRepo.BackRepoLane.GetLaneDBFromLanePtr( laneAssocEnd)
+
+			// encode reverse pointer in the association end back repo instance
+			laneAssocEnd_DB.Group_GroupLanesDBID.Int64 = int64(groupDB.ID)
+			laneAssocEnd_DB.Group_GroupLanesDBID.Valid = true
+			laneAssocEnd_DB.Group_GroupLanesDBID_Index.Int64 = int64(idx)
+			laneAssocEnd_DB.Group_GroupLanesDBID_Index.Valid = true
+			if q := backRepoGroup.db.Save(laneAssocEnd_DB); q.Error != nil {
+				return q.Error
 			}
 		}
+
 		query := backRepoGroup.db.Save(&groupDB)
 		if query.Error != nil {
 			return query.Error
@@ -253,18 +273,23 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOne() (Error error) {
 // models version of the groupDB
 func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOneInstance(groupDB *GroupDB) (Error error) {
 
-	// if absent, create entries in the backRepoGroup maps.
-	groupWithNewFieldValues := groupDB.Group
-	if _, ok := (*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]; !ok {
+	group, ok := (*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	if !ok {
+		group = new(models.Group)
 
-		(*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID] = &groupWithNewFieldValues
-		(*backRepoGroup.Map_GroupPtr_GroupDBID)[&groupWithNewFieldValues] = groupDB.ID
+		(*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID] = group
+		(*backRepoGroup.Map_GroupPtr_GroupDBID)[group] = groupDB.ID
 
 		// append model store with the new element
-		groupWithNewFieldValues.Stage()
+		group.Stage()
 	}
-	groupDBWithNewFieldValues := *groupDB
-	(*backRepoGroup.Map_GroupDBID_GroupDB)[groupDB.ID] = &groupDBWithNewFieldValues
+	groupDB.CopyBasicFieldsToGroup(group)
+
+	// preserve pointer to aclassDB. Otherwise, pointer will is recycled and the map of pointers
+	// Map_GroupDBID_GroupDB)[groupDB hold variable pointers
+	groupDB_Data := *groupDB
+	preservedPtrToGroup := &groupDB_Data
+	(*backRepoGroup.Map_GroupDBID_GroupDB)[groupDB.ID] = preservedPtrToGroup
 
 	return
 }
@@ -286,35 +311,35 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 
 	group := (*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
 	_ = group // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
-	{
-		{
-			// insertion point for checkout, i.e. update of fields of stage instance from fields of back repo instances
-			//
-			group.Name = groupDB.Name_Data.String
 
-			// parse all LaneDB and redeem the array of poiners to Group
-			// first reset the slice
-			group.GroupLanes = group.GroupLanes[:0]
-			for _, LaneDB := range *backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
-				if LaneDB.Group_GroupLanesDBID.Int64 == int64(groupDB.ID) {
-					Lane := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[LaneDB.ID]
-					group.GroupLanes = append(group.GroupLanes, Lane)
-				}
-			}
-			
-			// sort the array according to the order
-			sort.Slice(group.GroupLanes, func(i, j int) bool {
-				laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[group.GroupLanes[i]]
-				laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[group.GroupLanes[j]]
-
-				laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
-				laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
-
-				return laneDB_i.Group_GroupLanesDBID_Index.Int64 < laneDB_j.Group_GroupLanesDBID_Index.Int64
-			})
-
+	// insertion point for checkout of pointer encoding
+	// This loop redeem group.GroupLanes in the stage from the encode in the back repo
+	// It parses all LaneDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// it appends the stage instance
+	// 1. reset the slice
+	group.GroupLanes = group.GroupLanes[:0]
+	// 2. loop all instances in the type in the association end
+	for _, laneDB_AssocEnd := range *backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
+		// 3. Does the ID encoding at the end and the ID at the start matches ?
+		if laneDB_AssocEnd.Group_GroupLanesDBID.Int64 == int64(groupDB.ID) {
+			// 4. fetch the associated instance in the stage
+			lane_AssocEnd := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB_AssocEnd.ID]
+			// 5. append it the association slice
+			group.GroupLanes = append(group.GroupLanes, lane_AssocEnd)
 		}
 	}
+
+	// sort the array according to the order
+	sort.Slice(group.GroupLanes, func(i, j int) bool {
+		laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[group.GroupLanes[i]]
+		laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[group.GroupLanes[j]]
+
+		laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
+		laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
+
+		return laneDB_i.Group_GroupLanesDBID_Index.Int64 < laneDB_j.Group_GroupLanesDBID_Index.Int64
+	})
+
 	return
 }
 
@@ -341,5 +366,84 @@ func (backRepo *BackRepoStruct) CheckoutGroup(group *models.Group) {
 			backRepo.BackRepoGroup.CheckoutPhaseOneInstance(&groupDB)
 			backRepo.BackRepoGroup.CheckoutPhaseTwoInstance(backRepo, &groupDB)
 		}
+	}
+}
+
+// CopyBasicFieldsToGroupDB is used to copy basic fields between the Stage or the CRUD to the back repo
+func (groupDB *GroupDB) CopyBasicFieldsFromGroup(group *models.Group) {
+	// insertion point for fields commit
+	groupDB.Name_Data.String = group.Name
+	groupDB.Name_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToGroupDB is used to copy basic fields between the Stage or the CRUD to the back repo
+func (groupDB *GroupDB) CopyBasicFieldsToGroup(group *models.Group) {
+
+	// insertion point for checkout of basic fields (back repo to stage)
+	group.Name = groupDB.Name_Data.String
+}
+
+// Backup generates a json file from a slice of all GroupDB instances in the backrepo
+func (backRepoGroup *BackRepoGroupStruct) Backup(dirPath string) {
+
+	filename := filepath.Join(dirPath, "GroupDB.json")
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	var forBackup []*GroupDB
+	for _, groupDB := range *backRepoGroup.Map_GroupDBID_GroupDB {
+		forBackup = append(forBackup, groupDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	file, err := json.MarshalIndent(forBackup, "", " ")
+
+	if err != nil {
+		log.Panic("Cannot json Group ", filename, " ", err.Error())
+	}
+
+	err = ioutil.WriteFile(filename, file, 0644)
+	if err != nil {
+		log.Panic("Cannot write the json Group file", err.Error())
+	}
+}
+
+func (backRepoGroup *BackRepoGroupStruct) Restore(dirPath string) {
+
+	filename := filepath.Join(dirPath, "GroupDB.json")
+	jsonFile, err := os.Open(filename)
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		log.Panic("Cannot restore/open the json Group file", filename, " ", err.Error())
+	}
+
+	// read our opened jsonFile as a byte array.
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var forRestore []*GroupDB
+
+	err = json.Unmarshal(byteValue, &forRestore)
+
+	// fill up Map_GroupDBID_GroupDB
+	for _, groupDB := range forRestore {
+
+		groupDB_ID := groupDB.ID
+		groupDB.ID = 0
+		query := backRepoGroup.db.Create(groupDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		if groupDB_ID != groupDB.ID {
+			log.Panicf("ID of Group restore ID %d, name %s, has wrong ID %d in DB after create",
+				groupDB_ID, groupDB.Name_Data.String, groupDB.ID)
+		}
+	}
+
+	if err != nil {
+		log.Panic("Cannot restore/unmarshall json Group file", err.Error())
 	}
 }

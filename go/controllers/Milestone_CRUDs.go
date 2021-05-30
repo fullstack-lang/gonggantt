@@ -49,8 +49,9 @@ type MilestoneInput struct {
 func GetMilestones(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
-	var milestones []orm.MilestoneDB
-	query := db.Find(&milestones)
+	// source slice
+	var milestoneDBs []orm.MilestoneDB
+	query := db.Find(&milestoneDBs)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -59,22 +60,23 @@ func GetMilestones(c *gin.Context) {
 		return
 	}
 
+	// slice that will be transmitted to the front
+	milestoneAPIs := make([]orm.MilestoneAPI, 0)
+
 	// for each milestone, update fields from the database nullable fields
-	for idx := range milestones {
-		milestone := &milestones[idx]
-		_ = milestone
+	for idx := range milestoneDBs {
+		milestoneDB := &milestoneDBs[idx]
+		_ = milestoneDB
+		var milestoneAPI orm.MilestoneAPI
+
 		// insertion point for updating fields
-		if milestone.Name_Data.Valid {
-			milestone.Name = milestone.Name_Data.String
-		}
-
-		if milestone.Date_Data.Valid {
-			milestone.Date = milestone.Date_Data.Time
-		}
-
+		milestoneAPI.ID = milestoneDB.ID
+		milestoneDB.CopyBasicFieldsToMilestone(&milestoneAPI.Milestone)
+		milestoneAPI.MilestonePointersEnconding = milestoneDB.MilestonePointersEnconding
+		milestoneAPIs = append(milestoneAPIs, milestoneAPI)
 	}
 
-	c.JSON(http.StatusOK, milestones)
+	c.JSON(http.StatusOK, milestoneAPIs)
 }
 
 // PostMilestone
@@ -107,13 +109,8 @@ func PostMilestone(c *gin.Context) {
 
 	// Create milestone
 	milestoneDB := orm.MilestoneDB{}
-	milestoneDB.MilestoneAPI = input
-	// insertion point for nullable field set
-	milestoneDB.Name_Data.String = input.Name
-	milestoneDB.Name_Data.Valid = true
-
-	milestoneDB.Date_Data.Time = input.Date
-	milestoneDB.Date_Data.Valid = true
+	milestoneDB.MilestonePointersEnconding = input.MilestonePointersEnconding
+	milestoneDB.CopyBasicFieldsFromMilestone(&input.Milestone)
 
 	query := db.Create(&milestoneDB)
 	if query.Error != nil {
@@ -143,9 +140,9 @@ func PostMilestone(c *gin.Context) {
 func GetMilestone(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 
-	// Get milestone in DB
-	var milestone orm.MilestoneDB
-	if err := db.First(&milestone, c.Param("id")).Error; err != nil {
+	// Get milestoneDB in DB
+	var milestoneDB orm.MilestoneDB
+	if err := db.First(&milestoneDB, c.Param("id")).Error; err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -153,16 +150,12 @@ func GetMilestone(c *gin.Context) {
 		return
 	}
 
-	// insertion point for fields value set from nullable fields
-	if milestone.Name_Data.Valid {
-		milestone.Name = milestone.Name_Data.String
-	}
+	var milestoneAPI orm.MilestoneAPI
+	milestoneAPI.ID = milestoneDB.ID
+	milestoneAPI.MilestonePointersEnconding = milestoneDB.MilestonePointersEnconding
+	milestoneDB.CopyBasicFieldsToMilestone(&milestoneAPI.Milestone)
 
-	if milestone.Date_Data.Valid {
-		milestone.Date = milestone.Date_Data.Time
-	}
-
-	c.JSON(http.StatusOK, milestone)
+	c.JSON(http.StatusOK, milestoneAPI)
 }
 
 // UpdateMilestone
@@ -199,14 +192,10 @@ func UpdateMilestone(c *gin.Context) {
 	}
 
 	// update
-	// insertion point for nullable field set
-	input.Name_Data.String = input.Name
-	input.Name_Data.Valid = true
+	milestoneDB.CopyBasicFieldsFromMilestone(&input.Milestone)
+	milestoneDB.MilestonePointersEnconding = input.MilestonePointersEnconding
 
-	input.Date_Data.Time = input.Date
-	input.Date_Data.Valid = true
-
-	query = db.Model(&milestoneDB).Updates(input)
+	query = db.Model(&milestoneDB).Updates(milestoneDB)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest

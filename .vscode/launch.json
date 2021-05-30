@@ -29,8 +29,21 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": [
-            ]
+            "args": []
+        },
+        {
+            "name": "Launch firefox localhost:4200",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "url": "http://localhost:4200/",
+            "webRoot": "${workspaceFolder}/ng",
+            "pathMappings": [
+                {
+                    "url": "webpack:///projects",
+                    "path": "${workspaceFolder}/ng/projects"
+                }
+            ],
         },
     ]
 }

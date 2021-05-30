@@ -34,6 +34,18 @@
 			"group": "build"
 		},
 		{
+			"label": "01 - gongc -backendOnly",
+			"type": "shell",
+			"options": {
+				"cwd": "go/models"
+			},
+			"command": "gongc",
+			"args": [
+				"-backendOnly"
+			],
+			"group": "build"
+		},
+		{
 			"label": "01 - gongc & run",
 			"type": "shell",
 			"options": {

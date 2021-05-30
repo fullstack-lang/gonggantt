@@ -3,9 +3,13 @@ package orm
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -27,31 +31,43 @@ var dummy_Milestone_sort sort.Float64Slice
 //
 // swagger:model milestoneAPI
 type MilestoneAPI struct {
+	gorm.Model
+
 	models.Milestone
 
-	// insertion for fields declaration
+	// encoding of pointers
+	MilestonePointersEnconding
+}
+
+// MilestonePointersEnconding encodes pointers to Struct and
+// reverse pointers of slice of poitners to Struct
+type MilestonePointersEnconding struct {
+	// insertion for pointer fields encoding declaration
+	// Implementation of a reverse ID for field Gantt{}.Milestones []*Milestone
+	Gantt_MilestonesDBID sql.NullInt64
+
+	// implementation of the index of the withing the slice
+	Gantt_MilestonesDBID_Index sql.NullInt64
+}
+
+// MilestoneDB describes a milestone in the database
+//
+// It incorporates the GORM ID, basic fields from the model (because they can be serialized),
+// the encoded version of pointers
+//
+// swagger:model milestoneDB
+type MilestoneDB struct {
+	gorm.Model
+
+	// insertion for basic fields declaration
 	// Declation for basic field milestoneDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
 
 	// Declation for basic field milestoneDB.Date
 	Date_Data sql.NullTime
 
-	// Implementation of a reverse ID for field Gantt{}.Milestones []*Milestone
-	Gantt_MilestonesDBID sql.NullInt64
-	Gantt_MilestonesDBID_Index sql.NullInt64
-
-	// end of insertion
-}
-
-// MilestoneDB describes a milestone in the database
-//
-// It incorporates all fields : from the model, from the generated field for the API and the GORM ID
-//
-// swagger:model milestoneDB
-type MilestoneDB struct {
-	gorm.Model
-
-	MilestoneAPI
+	// encoding of pointers
+	MilestonePointersEnconding
 }
 
 // MilestoneDBs arrays milestoneDBs
@@ -75,6 +91,13 @@ type BackRepoMilestoneStruct struct {
 	Map_MilestoneDBID_MilestonePtr *map[uint]*models.Milestone
 
 	db *gorm.DB
+}
+
+// GetMilestoneDBFromMilestonePtr is a handy function to access the back repo instance from the stage instance
+func (backRepoMilestone *BackRepoMilestoneStruct) GetMilestoneDBFromMilestonePtr(milestone *models.Milestone) (milestoneDB *MilestoneDB) {
+	id := (*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]
+	milestoneDB = (*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[id]
+	return
 }
 
 // BackRepoMilestone.Init set up the BackRepo of the Milestone
@@ -158,7 +181,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseOneInstance(milesto
 
 	// initiate milestone
 	var milestoneDB MilestoneDB
-	milestoneDB.Milestone = *milestone
+	milestoneDB.CopyBasicFieldsFromMilestone(milestone)
 
 	query := backRepoMilestone.db.Create(&milestoneDB)
 	if query.Error != nil {
@@ -191,34 +214,28 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 	// fetch matching milestoneDB
 	if milestoneDB, ok := (*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[idx]; ok {
 
-		{
-			{
-				// insertion point for fields commit
-				milestoneDB.Name_Data.String = milestone.Name
-				milestoneDB.Name_Data.Valid = true
+		milestoneDB.CopyBasicFieldsFromMilestone(milestone)
 
-				milestoneDB.Date_Data.Time = milestone.Date
-				milestoneDB.Date_Data.Valid = true
+		// insertion point for translating pointers encodings into actual pointers
+		// This loop encodes the slice of pointers milestone.DiamonfAndTextAnchors into the back repo.
+		// Each back repo instance at the end of the association encode the ID of the association start
+		// into a dedicated field for coding the association. The back repo instance is then saved to the db
+		for idx, laneAssocEnd := range milestone.DiamonfAndTextAnchors {
 
-				// commit a slice of pointer translates to update reverse pointer to Lane, i.e.
-				index_DiamonfAndTextAnchors := 0
-				for _, lane := range milestone.DiamonfAndTextAnchors {
-					if laneDBID, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
-						if laneDB, ok := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDBID]; ok {
-							laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64 = int64(milestoneDB.ID)
-							laneDB.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
-							laneDB.Milestone_DiamonfAndTextAnchorsDBID_Index.Int64 = int64(index_DiamonfAndTextAnchors)
-							index_DiamonfAndTextAnchors = index_DiamonfAndTextAnchors + 1
-							laneDB.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
-							if q := backRepoMilestone.db.Save(&laneDB); q.Error != nil {
-								return q.Error
-							}
-						}
-					}
-				}
+			// get the back repo instance at the association end
+			laneAssocEnd_DB :=
+				backRepo.BackRepoLane.GetLaneDBFromLanePtr( laneAssocEnd)
 
+			// encode reverse pointer in the association end back repo instance
+			laneAssocEnd_DB.Milestone_DiamonfAndTextAnchorsDBID.Int64 = int64(milestoneDB.ID)
+			laneAssocEnd_DB.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
+			laneAssocEnd_DB.Milestone_DiamonfAndTextAnchorsDBID_Index.Int64 = int64(idx)
+			laneAssocEnd_DB.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
+			if q := backRepoMilestone.db.Save(laneAssocEnd_DB); q.Error != nil {
+				return q.Error
 			}
 		}
+
 		query := backRepoMilestone.db.Save(&milestoneDB)
 		if query.Error != nil {
 			return query.Error
@@ -259,18 +276,23 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error erro
 // models version of the milestoneDB
 func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOneInstance(milestoneDB *MilestoneDB) (Error error) {
 
-	// if absent, create entries in the backRepoMilestone maps.
-	milestoneWithNewFieldValues := milestoneDB.Milestone
-	if _, ok := (*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]; !ok {
+	milestone, ok := (*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	if !ok {
+		milestone = new(models.Milestone)
 
-		(*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID] = &milestoneWithNewFieldValues
-		(*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[&milestoneWithNewFieldValues] = milestoneDB.ID
+		(*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID] = milestone
+		(*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone] = milestoneDB.ID
 
 		// append model store with the new element
-		milestoneWithNewFieldValues.Stage()
+		milestone.Stage()
 	}
-	milestoneDBWithNewFieldValues := *milestoneDB
-	(*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB.ID] = &milestoneDBWithNewFieldValues
+	milestoneDB.CopyBasicFieldsToMilestone(milestone)
+
+	// preserve pointer to aclassDB. Otherwise, pointer will is recycled and the map of pointers
+	// Map_MilestoneDBID_MilestoneDB)[milestoneDB hold variable pointers
+	milestoneDB_Data := *milestoneDB
+	preservedPtrToMilestone := &milestoneDB_Data
+	(*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB.ID] = preservedPtrToMilestone
 
 	return
 }
@@ -292,37 +314,35 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwoInstance(backR
 
 	milestone := (*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
 	_ = milestone // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
-	{
-		{
-			// insertion point for checkout, i.e. update of fields of stage instance from fields of back repo instances
-			//
-			milestone.Name = milestoneDB.Name_Data.String
 
-			milestone.Date = milestoneDB.Date_Data.Time
-
-			// parse all LaneDB and redeem the array of poiners to Milestone
-			// first reset the slice
-			milestone.DiamonfAndTextAnchors = milestone.DiamonfAndTextAnchors[:0]
-			for _, LaneDB := range *backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
-				if LaneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64 == int64(milestoneDB.ID) {
-					Lane := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[LaneDB.ID]
-					milestone.DiamonfAndTextAnchors = append(milestone.DiamonfAndTextAnchors, Lane)
-				}
-			}
-			
-			// sort the array according to the order
-			sort.Slice(milestone.DiamonfAndTextAnchors, func(i, j int) bool {
-				laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[milestone.DiamonfAndTextAnchors[i]]
-				laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[milestone.DiamonfAndTextAnchors[j]]
-
-				laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
-				laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
-
-				return laneDB_i.Milestone_DiamonfAndTextAnchorsDBID_Index.Int64 < laneDB_j.Milestone_DiamonfAndTextAnchorsDBID_Index.Int64
-			})
-
+	// insertion point for checkout of pointer encoding
+	// This loop redeem milestone.DiamonfAndTextAnchors in the stage from the encode in the back repo
+	// It parses all LaneDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// it appends the stage instance
+	// 1. reset the slice
+	milestone.DiamonfAndTextAnchors = milestone.DiamonfAndTextAnchors[:0]
+	// 2. loop all instances in the type in the association end
+	for _, laneDB_AssocEnd := range *backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
+		// 3. Does the ID encoding at the end and the ID at the start matches ?
+		if laneDB_AssocEnd.Milestone_DiamonfAndTextAnchorsDBID.Int64 == int64(milestoneDB.ID) {
+			// 4. fetch the associated instance in the stage
+			lane_AssocEnd := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB_AssocEnd.ID]
+			// 5. append it the association slice
+			milestone.DiamonfAndTextAnchors = append(milestone.DiamonfAndTextAnchors, lane_AssocEnd)
 		}
 	}
+
+	// sort the array according to the order
+	sort.Slice(milestone.DiamonfAndTextAnchors, func(i, j int) bool {
+		laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[milestone.DiamonfAndTextAnchors[i]]
+		laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[milestone.DiamonfAndTextAnchors[j]]
+
+		laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
+		laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
+
+		return laneDB_i.Milestone_DiamonfAndTextAnchorsDBID_Index.Int64 < laneDB_j.Milestone_DiamonfAndTextAnchorsDBID_Index.Int64
+	})
+
 	return
 }
 
@@ -349,5 +369,88 @@ func (backRepo *BackRepoStruct) CheckoutMilestone(milestone *models.Milestone) {
 			backRepo.BackRepoMilestone.CheckoutPhaseOneInstance(&milestoneDB)
 			backRepo.BackRepoMilestone.CheckoutPhaseTwoInstance(backRepo, &milestoneDB)
 		}
+	}
+}
+
+// CopyBasicFieldsToMilestoneDB is used to copy basic fields between the Stage or the CRUD to the back repo
+func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestone(milestone *models.Milestone) {
+	// insertion point for fields commit
+	milestoneDB.Name_Data.String = milestone.Name
+	milestoneDB.Name_Data.Valid = true
+
+	milestoneDB.Date_Data.Time = milestone.Date
+	milestoneDB.Date_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToMilestoneDB is used to copy basic fields between the Stage or the CRUD to the back repo
+func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestone(milestone *models.Milestone) {
+
+	// insertion point for checkout of basic fields (back repo to stage)
+	milestone.Name = milestoneDB.Name_Data.String
+	milestone.Date = milestoneDB.Date_Data.Time
+}
+
+// Backup generates a json file from a slice of all MilestoneDB instances in the backrepo
+func (backRepoMilestone *BackRepoMilestoneStruct) Backup(dirPath string) {
+
+	filename := filepath.Join(dirPath, "MilestoneDB.json")
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	var forBackup []*MilestoneDB
+	for _, milestoneDB := range *backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
+		forBackup = append(forBackup, milestoneDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	file, err := json.MarshalIndent(forBackup, "", " ")
+
+	if err != nil {
+		log.Panic("Cannot json Milestone ", filename, " ", err.Error())
+	}
+
+	err = ioutil.WriteFile(filename, file, 0644)
+	if err != nil {
+		log.Panic("Cannot write the json Milestone file", err.Error())
+	}
+}
+
+func (backRepoMilestone *BackRepoMilestoneStruct) Restore(dirPath string) {
+
+	filename := filepath.Join(dirPath, "MilestoneDB.json")
+	jsonFile, err := os.Open(filename)
+	// if we os.Open returns an error then handle it
+	if err != nil {
+		log.Panic("Cannot restore/open the json Milestone file", filename, " ", err.Error())
+	}
+
+	// read our opened jsonFile as a byte array.
+	byteValue, _ := ioutil.ReadAll(jsonFile)
+
+	var forRestore []*MilestoneDB
+
+	err = json.Unmarshal(byteValue, &forRestore)
+
+	// fill up Map_MilestoneDBID_MilestoneDB
+	for _, milestoneDB := range forRestore {
+
+		milestoneDB_ID := milestoneDB.ID
+		milestoneDB.ID = 0
+		query := backRepoMilestone.db.Create(milestoneDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		if milestoneDB_ID != milestoneDB.ID {
+			log.Panicf("ID of Milestone restore ID %d, name %s, has wrong ID %d in DB after create",
+				milestoneDB_ID, milestoneDB.Name_Data.String, milestoneDB.ID)
+		}
+	}
+
+	if err != nil {
+		log.Panic("Cannot restore/unmarshall json Milestone file", err.Error())
 	}
 }
