@@ -27,6 +27,9 @@ var (
 	logDBFlag  = flag.Bool("logDB", false, "log mode for db")
 	logGINFlag = flag.Bool("logGIN", false, "log mode for gin")
 	apiFlag    = flag.Bool("api", false, "it true, use api controllers instead of default controllers")
+
+	backupFlag  = flag.Bool("backup", false, "read database file, generate backup and exits")
+	restoreFlag = flag.Bool("restore", false, "generate restore and exits")
 )
 
 func main() {
@@ -36,6 +39,32 @@ func main() {
 
 	// parse program arguments
 	flag.Parse()
+
+	if *backupFlag {
+
+		// setup GORM
+		db := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
+		// mandatory, otherwise, bizarre errors occurs
+		db.DB().SetMaxOpenConns(1)
+		gonggantt_orm.AutoMigrate(db)
+		gonggantt_orm.BackRepo.Init(db)
+		gonggantt_models.Stage.Checkout()
+		gonggantt_models.Stage.Backup("bckp")
+
+		return
+	}
+	if *restoreFlag {
+
+		// setup GORM
+		db := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
+		// mandatory, otherwise, bizarre errors occurs
+		db.DB().SetMaxOpenConns(1)
+		gonggantt_orm.AutoMigrate(db)
+		gonggantt_orm.BackRepo.Init(db)
+		gonggantt_models.Stage.Restore("bckp")
+
+		return
+	}
 
 	// setup controlers
 	if !*logGINFlag {
