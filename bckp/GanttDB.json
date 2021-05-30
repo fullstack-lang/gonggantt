@@ -1,0 +1,84 @@
+[
+ {
+  "ID": 1,
+  "CreatedAt": "2021-05-05T03:04:13.741374+02:00",
+  "UpdatedAt": "2021-05-07T11:11:32.8894351+02:00",
+  "DeletedAt": null,
+  "Name_Data": {
+   "String": "Test",
+   "Valid": true
+  },
+  "Start_Data": {
+   "Time": "2020-01-01T00:00:00Z",
+   "Valid": true
+  },
+  "End_Data": {
+   "Time": "2025-01-01T00:00:00Z",
+   "Valid": true
+  },
+  "LaneHeight_Data": {
+   "Float64": 80,
+   "Valid": true
+  },
+  "RatioBarToLaneHeight_Data": {
+   "Float64": 0.7,
+   "Valid": true
+  },
+  "YTopMargin_Data": {
+   "Float64": 10,
+   "Valid": true
+  },
+  "XLeftText_Data": {
+   "Float64": 8,
+   "Valid": true
+  },
+  "TextHeight_Data": {
+   "Float64": 16,
+   "Valid": true
+  },
+  "XLeftLanes_Data": {
+   "Float64": 150,
+   "Valid": true
+  },
+  "XRightMargin_Data": {
+   "Float64": 800,
+   "Valid": true
+  },
+  "TimeLine_Color_Data": {
+   "String": "\"black\"",
+   "Valid": true
+  },
+  "TimeLine_FillOpacity_Data": {
+   "Float64": 1,
+   "Valid": true
+  },
+  "TimeLine_Stroke_Data": {
+   "String": "\"black\"",
+   "Valid": true
+  },
+  "TimeLine_StrokeWidth_Data": {
+   "Float64": 1,
+   "Valid": true
+  },
+  "Group_Stroke_Data": {
+   "String": "blue",
+   "Valid": true
+  },
+  "Group_StrokeWidth_Data": {
+   "Float64": 0.3,
+   "Valid": true
+  },
+  "Group_StrokeDashArray_Data": {
+   "String": "",
+   "Valid": true
+  },
+  "DateYOffset_Data": {
+   "Float64": 20,
+   "Valid": true
+  },
+  "AlignOnStartEndOnYearStart_Data": {
+   "Bool": true,
+   "Valid": true
+  }
+ }
+]
