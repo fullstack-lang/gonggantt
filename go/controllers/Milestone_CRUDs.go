@@ -9,7 +9,6 @@ import (
 	"github.com/fullstack-lang/gonggantt/go/orm"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 // declaration in order to justify use of the models import
@@ -47,8 +46,8 @@ type MilestoneInput struct {
 //    default: genericError
 //        200: milestoneDBsResponse
 func GetMilestones(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
+	db := orm.BackRepo.BackRepoMilestone.GetDB()
+	
 	// source slice
 	var milestoneDBs []orm.MilestoneDB
 	query := db.Find(&milestoneDBs)
@@ -93,7 +92,7 @@ func GetMilestones(c *gin.Context) {
 //     Responses:
 //       200: milestoneDBResponse
 func PostMilestone(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoMilestone.GetDB()
 
 	// Validate input
 	var input orm.MilestoneAPI
@@ -138,7 +137,7 @@ func PostMilestone(c *gin.Context) {
 //    default: genericError
 //        200: milestoneDBResponse
 func GetMilestone(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoMilestone.GetDB()
 
 	// Get milestoneDB in DB
 	var milestoneDB orm.MilestoneDB
@@ -168,7 +167,7 @@ func GetMilestone(c *gin.Context) {
 //    default: genericError
 //        200: milestoneDBResponse
 func UpdateMilestone(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoMilestone.GetDB()
 
 	// Get model if exist
 	var milestoneDB orm.MilestoneDB
@@ -221,7 +220,7 @@ func UpdateMilestone(c *gin.Context) {
 // Responses:
 //    default: genericError
 func DeleteMilestone(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoMilestone.GetDB()
 
 	// Get model if exist
 	var milestoneDB orm.MilestoneDB

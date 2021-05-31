@@ -103,6 +103,10 @@ type BackRepoLaneStruct struct {
 	db *gorm.DB
 }
 
+func (backRepoLane *BackRepoLaneStruct) GetDB() *gorm.DB {
+	return backRepoLane.db
+}
+
 // GetLaneDBFromLanePtr is a handy function to access the back repo instance from the stage instance
 func (backRepoLane *BackRepoLaneStruct) GetLaneDBFromLanePtr(lane *models.Lane) (laneDB *LaneDB) {
 	id := (*backRepoLane.Map_LanePtr_LaneDBID)[lane]

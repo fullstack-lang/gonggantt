@@ -9,7 +9,6 @@ import (
 	"github.com/fullstack-lang/gonggantt/go/orm"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 // declaration in order to justify use of the models import
@@ -47,8 +46,8 @@ type LaneInput struct {
 //    default: genericError
 //        200: laneDBsResponse
 func GetLanes(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
+	db := orm.BackRepo.BackRepoLane.GetDB()
+	
 	// source slice
 	var laneDBs []orm.LaneDB
 	query := db.Find(&laneDBs)
@@ -93,7 +92,7 @@ func GetLanes(c *gin.Context) {
 //     Responses:
 //       200: laneDBResponse
 func PostLane(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoLane.GetDB()
 
 	// Validate input
 	var input orm.LaneAPI
@@ -138,7 +137,7 @@ func PostLane(c *gin.Context) {
 //    default: genericError
 //        200: laneDBResponse
 func GetLane(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoLane.GetDB()
 
 	// Get laneDB in DB
 	var laneDB orm.LaneDB
@@ -168,7 +167,7 @@ func GetLane(c *gin.Context) {
 //    default: genericError
 //        200: laneDBResponse
 func UpdateLane(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoLane.GetDB()
 
 	// Get model if exist
 	var laneDB orm.LaneDB
@@ -221,7 +220,7 @@ func UpdateLane(c *gin.Context) {
 // Responses:
 //    default: genericError
 func DeleteLane(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoLane.GetDB()
 
 	// Get model if exist
 	var laneDB orm.LaneDB

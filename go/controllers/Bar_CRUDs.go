@@ -9,7 +9,6 @@ import (
 	"github.com/fullstack-lang/gonggantt/go/orm"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 // declaration in order to justify use of the models import
@@ -47,8 +46,8 @@ type BarInput struct {
 //    default: genericError
 //        200: barDBsResponse
 func GetBars(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
+	db := orm.BackRepo.BackRepoBar.GetDB()
+	
 	// source slice
 	var barDBs []orm.BarDB
 	query := db.Find(&barDBs)
@@ -93,7 +92,7 @@ func GetBars(c *gin.Context) {
 //     Responses:
 //       200: barDBResponse
 func PostBar(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoBar.GetDB()
 
 	// Validate input
 	var input orm.BarAPI
@@ -138,7 +137,7 @@ func PostBar(c *gin.Context) {
 //    default: genericError
 //        200: barDBResponse
 func GetBar(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoBar.GetDB()
 
 	// Get barDB in DB
 	var barDB orm.BarDB
@@ -168,7 +167,7 @@ func GetBar(c *gin.Context) {
 //    default: genericError
 //        200: barDBResponse
 func UpdateBar(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoBar.GetDB()
 
 	// Get model if exist
 	var barDB orm.BarDB
@@ -221,7 +220,7 @@ func UpdateBar(c *gin.Context) {
 // Responses:
 //    default: genericError
 func DeleteBar(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoBar.GetDB()
 
 	// Get model if exist
 	var barDB orm.BarDB

@@ -102,6 +102,10 @@ type BackRepoBarStruct struct {
 	db *gorm.DB
 }
 
+func (backRepoBar *BackRepoBarStruct) GetDB() *gorm.DB {
+	return backRepoBar.db
+}
+
 // GetBarDBFromBarPtr is a handy function to access the back repo instance from the stage instance
 func (backRepoBar *BackRepoBarStruct) GetBarDBFromBarPtr(bar *models.Bar) (barDB *BarDB) {
 	id := (*backRepoBar.Map_BarPtr_BarDBID)[bar]

@@ -9,7 +9,6 @@ import (
 	"github.com/fullstack-lang/gonggantt/go/orm"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 // declaration in order to justify use of the models import
@@ -47,8 +46,8 @@ type GanttInput struct {
 //    default: genericError
 //        200: ganttDBsResponse
 func GetGantts(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
+	db := orm.BackRepo.BackRepoGantt.GetDB()
+	
 	// source slice
 	var ganttDBs []orm.GanttDB
 	query := db.Find(&ganttDBs)
@@ -93,7 +92,7 @@ func GetGantts(c *gin.Context) {
 //     Responses:
 //       200: ganttDBResponse
 func PostGantt(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoGantt.GetDB()
 
 	// Validate input
 	var input orm.GanttAPI
@@ -138,7 +137,7 @@ func PostGantt(c *gin.Context) {
 //    default: genericError
 //        200: ganttDBResponse
 func GetGantt(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoGantt.GetDB()
 
 	// Get ganttDB in DB
 	var ganttDB orm.GanttDB
@@ -168,7 +167,7 @@ func GetGantt(c *gin.Context) {
 //    default: genericError
 //        200: ganttDBResponse
 func UpdateGantt(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoGantt.GetDB()
 
 	// Get model if exist
 	var ganttDB orm.GanttDB
@@ -221,7 +220,7 @@ func UpdateGantt(c *gin.Context) {
 // Responses:
 //    default: genericError
 func DeleteGantt(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoGantt.GetDB()
 
 	// Get model if exist
 	var ganttDB orm.GanttDB

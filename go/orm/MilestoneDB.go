@@ -93,6 +93,10 @@ type BackRepoMilestoneStruct struct {
 	db *gorm.DB
 }
 
+func (backRepoMilestone *BackRepoMilestoneStruct) GetDB() *gorm.DB {
+	return backRepoMilestone.db
+}
+
 // GetMilestoneDBFromMilestonePtr is a handy function to access the back repo instance from the stage instance
 func (backRepoMilestone *BackRepoMilestoneStruct) GetMilestoneDBFromMilestonePtr(milestone *models.Milestone) (milestoneDB *MilestoneDB) {
 	id := (*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]

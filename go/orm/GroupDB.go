@@ -90,6 +90,10 @@ type BackRepoGroupStruct struct {
 	db *gorm.DB
 }
 
+func (backRepoGroup *BackRepoGroupStruct) GetDB() *gorm.DB {
+	return backRepoGroup.db
+}
+
 // GetGroupDBFromGroupPtr is a handy function to access the back repo instance from the stage instance
 func (backRepoGroup *BackRepoGroupStruct) GetGroupDBFromGroupPtr(group *models.Group) (groupDB *GroupDB) {
 	id := (*backRepoGroup.Map_GroupPtr_GroupDBID)[group]

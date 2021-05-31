@@ -140,6 +140,10 @@ type BackRepoGanttStruct struct {
 	db *gorm.DB
 }
 
+func (backRepoGantt *BackRepoGanttStruct) GetDB() *gorm.DB {
+	return backRepoGantt.db
+}
+
 // GetGanttDBFromGanttPtr is a handy function to access the back repo instance from the stage instance
 func (backRepoGantt *BackRepoGanttStruct) GetGanttDBFromGanttPtr(gantt *models.Gantt) (ganttDB *GanttDB) {
 	id := (*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt]

@@ -14,9 +14,10 @@ import (
 	"github.com/gin-gonic/gin"
 
 	gonggantt_controllers "github.com/fullstack-lang/gonggantt/go/controllers"
-	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
+
+	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
 	gongsvg_controllers "github.com/fullstack-lang/gongsvg/go/controllers"
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
@@ -82,18 +83,12 @@ func main() {
 	// add gongsvg database
 	gongsvg_orm.AutoMigrate(db)
 
-	// Provide db variable to controllers
-	r.Use(func(c *gin.Context) {
-		c.Set("db", db) // a gin Context can have a map of variable that is set up at runtime
-		c.Next()
-	})
-
-	gonggantt_controllers.RegisterControllers(r)
-	gongsvg_controllers.RegisterControllers(r)
-
 	// init all back repositories
 	gonggantt_orm.BackRepo.Init(db)
 	gongsvg_orm.BackRepo.Init(db)
+
+	gonggantt_controllers.RegisterControllers(r)
+	gongsvg_controllers.RegisterControllers(r)
 
 	// plug the svg generator on the OnInitCommit callback
 	gonggantt_models.Stage.OnInitCommitCallback = &gantt2svg.GanttToSVGTranformerSingloton

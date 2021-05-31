@@ -9,7 +9,6 @@ import (
 	"github.com/fullstack-lang/gonggantt/go/orm"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 // declaration in order to justify use of the models import
@@ -47,8 +46,8 @@ type GroupInput struct {
 //    default: genericError
 //        200: groupDBsResponse
 func GetGroups(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
-
+	db := orm.BackRepo.BackRepoGroup.GetDB()
+	
 	// source slice
 	var groupDBs []orm.GroupDB
 	query := db.Find(&groupDBs)
@@ -93,7 +92,7 @@ func GetGroups(c *gin.Context) {
 //     Responses:
 //       200: groupDBResponse
 func PostGroup(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoGroup.GetDB()
 
 	// Validate input
 	var input orm.GroupAPI
@@ -138,7 +137,7 @@ func PostGroup(c *gin.Context) {
 //    default: genericError
 //        200: groupDBResponse
 func GetGroup(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoGroup.GetDB()
 
 	// Get groupDB in DB
 	var groupDB orm.GroupDB
@@ -168,7 +167,7 @@ func GetGroup(c *gin.Context) {
 //    default: genericError
 //        200: groupDBResponse
 func UpdateGroup(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoGroup.GetDB()
 
 	// Get model if exist
 	var groupDB orm.GroupDB
@@ -221,7 +220,7 @@ func UpdateGroup(c *gin.Context) {
 // Responses:
 //    default: genericError
 func DeleteGroup(c *gin.Context) {
-	db := c.MustGet("db").(*gorm.DB)
+	db := orm.BackRepo.BackRepoGroup.GetDB()
 
 	// Get model if exist
 	var groupDB orm.GroupDB
