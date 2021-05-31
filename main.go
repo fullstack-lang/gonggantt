@@ -75,17 +75,20 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
-	// setup GORM
-	db := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
+	//
+	// gonggantt
+	db_inFile := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
 	// mandatory, otherwise, bizarre errors occurs
-	db.DB().SetMaxOpenConns(1)
+	db_inFile.DB().SetMaxOpenConns(1)
+	gonggantt_orm.BackRepo.Init(db_inFile)
 
-	// add gongsvg database
-	gongsvg_orm.AutoMigrate(db)
-
-	// init all back repositories
-	gonggantt_orm.BackRepo.Init(db)
-	gongsvg_orm.BackRepo.Init(db)
+	//
+	// gongsvg database
+	//
+	db_inMemory := gongsvg_orm.SetupModels(*logDBFlag, ":memory:")
+	// mandatory, otherwise, bizarre errors occurs
+	db_inMemory.DB().SetMaxOpenConns(1)
+	gongsvg_orm.BackRepo.Init(db_inMemory)
 
 	gonggantt_controllers.RegisterControllers(r)
 	gongsvg_controllers.RegisterControllers(r)
