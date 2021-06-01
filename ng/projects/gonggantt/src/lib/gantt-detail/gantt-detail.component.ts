@@ -160,4 +160,10 @@ export class GanttDetailComponent implements OnInit {
 		dialogRef.afterClosed().subscribe(result => {
 		});
 	}
+
+	fillUpNameIfEmpty(event) {
+		if (this.gantt.Name == undefined) {
+			this.gantt.Name = event.value.Name		
+		}
+	}
 }

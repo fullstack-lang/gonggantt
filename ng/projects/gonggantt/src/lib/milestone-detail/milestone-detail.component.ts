@@ -172,4 +172,10 @@ export class MilestoneDetailComponent implements OnInit {
 		dialogRef.afterClosed().subscribe(result => {
 		});
 	}
+
+	fillUpNameIfEmpty(event) {
+		if (this.milestone.Name == undefined) {
+			this.milestone.Name = event.value.Name		
+		}
+	}
 }

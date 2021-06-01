@@ -108,12 +108,29 @@ func (backRepo *BackRepoStruct) Restore(stage *models.StageStruct, dirPath strin
 	models.Stage.Commit()
 	models.Stage.Reset()
 	models.Stage.Checkout()
+
+	//
+	// restauration first phase (create DB instance with new IDs)
+	//
+
 	// insertion point for per struct backup
-	backRepo.BackRepoBar.Restore(dirPath)
-	backRepo.BackRepoGantt.Restore(dirPath)
-	backRepo.BackRepoGroup.Restore(dirPath)
-	backRepo.BackRepoLane.Restore(dirPath)
-	backRepo.BackRepoMilestone.Restore(dirPath)
+	backRepo.BackRepoBar.RestorePhaseOne(dirPath)
+	backRepo.BackRepoGantt.RestorePhaseOne(dirPath)
+	backRepo.BackRepoGroup.RestorePhaseOne(dirPath)
+	backRepo.BackRepoLane.RestorePhaseOne(dirPath)
+	backRepo.BackRepoMilestone.RestorePhaseOne(dirPath)
+
+	//
+	// restauration second phase (reindex pointers with the new ID)
+	//
+	
+	// insertion point for per struct backup
+	backRepo.BackRepoBar.RestorePhaseTwo()
+	backRepo.BackRepoGantt.RestorePhaseTwo()
+	backRepo.BackRepoGroup.RestorePhaseTwo()
+	backRepo.BackRepoLane.RestorePhaseTwo()
+	backRepo.BackRepoMilestone.RestorePhaseTwo()
+
 	models.Stage.Checkout()
 }
 

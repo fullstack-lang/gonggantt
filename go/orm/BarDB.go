@@ -282,7 +282,7 @@ func (backRepoBar *BackRepoBarStruct) CheckoutPhaseOneInstance(barDB *BarDB) (Er
 	}
 	barDB.CopyBasicFieldsToBar(bar)
 
-	// preserve pointer to aclassDB. Otherwise, pointer will is recycled and the map of pointers
+	// preserve pointer to barDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_BarDBID_BarDB)[barDB hold variable pointers
 	barDB_Data := *barDB
 	preservedPtrToBar := &barDB_Data
@@ -377,7 +377,7 @@ func (backRepoBar *BackRepoBarStruct) Backup(dirPath string) {
 
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
-	var forBackup []*BarDB
+	forBackup := make([]*BarDB, 0)
 	for _, barDB := range *backRepoBar.Map_BarDBID_BarDB {
 		forBackup = append(forBackup, barDB)
 	}
@@ -398,7 +398,13 @@ func (backRepoBar *BackRepoBarStruct) Backup(dirPath string) {
 	}
 }
 
-func (backRepoBar *BackRepoBarStruct) Restore(dirPath string) {
+// RestorePhaseOne read the file "BarDB.json" in dirPath that stores an array
+// of BarDB and stores it in the database
+// the map BackRepoBarid_atBckpTime_newID is updated accordingly
+func (backRepoBar *BackRepoBarStruct) RestorePhaseOne(dirPath string) {
+
+	// resets the map
+	BackRepoBarid_atBckpTime_newID = make(map[uint]uint)
 
 	filename := filepath.Join(dirPath, "BarDB.json")
 	jsonFile, err := os.Open(filename)
@@ -417,19 +423,46 @@ func (backRepoBar *BackRepoBarStruct) Restore(dirPath string) {
 	// fill up Map_BarDBID_BarDB
 	for _, barDB := range forRestore {
 
-		barDB_ID := barDB.ID
+		barDB_ID_atBackupTime := barDB.ID
 		barDB.ID = 0
 		query := backRepoBar.db.Create(barDB)
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		if barDB_ID != barDB.ID {
-			log.Panicf("ID of Bar restore ID %d, name %s, has wrong ID %d in DB after create",
-				barDB_ID, barDB.Name_Data.String, barDB.ID)
-		}
+		(*backRepoBar.Map_BarDBID_BarDB)[barDB.ID] = barDB
+		BackRepoBarid_atBckpTime_newID[barDB_ID_atBackupTime] = barDB.ID
 	}
 
 	if err != nil {
 		log.Panic("Cannot restore/unmarshall json Bar file", err.Error())
 	}
 }
+
+// RestorePhaseTwo uses all map BackRepo<Bar>id_atBckpTime_newID
+// to compute new index
+func (backRepoBar *BackRepoBarStruct) RestorePhaseTwo() {
+
+	for _, barDB := range (*backRepoBar.Map_BarDBID_BarDB) {
+
+		// next line of code is to avert unused variable compilation error
+		_ = barDB
+
+		// insertion point for reindexing pointers encoding
+		// This reindex bar.Bars
+		if barDB.Lane_BarsDBID.Int64 != 0 {
+			barDB.Lane_BarsDBID.Int64 = 
+				int64(BackRepoLaneid_atBckpTime_newID[uint(barDB.Lane_BarsDBID.Int64)])
+		}
+
+		// update databse with new index encoding
+		query := backRepoBar.db.Model(barDB).Updates(*barDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+	}
+
+}
+
+// this field is used during the restauration process.
+// it stores the ID at the backup time and is used for renumbering
+var BackRepoBarid_atBckpTime_newID map[uint]uint

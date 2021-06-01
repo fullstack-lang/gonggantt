@@ -172,4 +172,10 @@ export class BarDetailComponent implements OnInit {
 		dialogRef.afterClosed().subscribe(result => {
 		});
 	}
+
+	fillUpNameIfEmpty(event) {
+		if (this.bar.Name == undefined) {
+			this.bar.Name = event.value.Name		
+		}
+	}
 }

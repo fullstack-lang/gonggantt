@@ -202,4 +202,10 @@ export class LaneDetailComponent implements OnInit {
 		dialogRef.afterClosed().subscribe(result => {
 		});
 	}
+
+	fillUpNameIfEmpty(event) {
+		if (this.lane.Name == undefined) {
+			this.lane.Name = event.value.Name		
+		}
+	}
 }

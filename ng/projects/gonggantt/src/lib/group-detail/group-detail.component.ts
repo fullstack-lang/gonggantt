@@ -172,4 +172,10 @@ export class GroupDetailComponent implements OnInit {
 		dialogRef.afterClosed().subscribe(result => {
 		});
 	}
+
+	fillUpNameIfEmpty(event) {
+		if (this.group.Name == undefined) {
+			this.group.Name = event.value.Name		
+		}
+	}
 }

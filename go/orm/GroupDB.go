@@ -289,7 +289,7 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOneInstance(groupDB *Grou
 	}
 	groupDB.CopyBasicFieldsToGroup(group)
 
-	// preserve pointer to aclassDB. Otherwise, pointer will is recycled and the map of pointers
+	// preserve pointer to groupDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_GroupDBID_GroupDB)[groupDB hold variable pointers
 	groupDB_Data := *groupDB
 	preservedPtrToGroup := &groupDB_Data
@@ -395,7 +395,7 @@ func (backRepoGroup *BackRepoGroupStruct) Backup(dirPath string) {
 
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
-	var forBackup []*GroupDB
+	forBackup := make([]*GroupDB, 0)
 	for _, groupDB := range *backRepoGroup.Map_GroupDBID_GroupDB {
 		forBackup = append(forBackup, groupDB)
 	}
@@ -416,7 +416,13 @@ func (backRepoGroup *BackRepoGroupStruct) Backup(dirPath string) {
 	}
 }
 
-func (backRepoGroup *BackRepoGroupStruct) Restore(dirPath string) {
+// RestorePhaseOne read the file "GroupDB.json" in dirPath that stores an array
+// of GroupDB and stores it in the database
+// the map BackRepoGroupid_atBckpTime_newID is updated accordingly
+func (backRepoGroup *BackRepoGroupStruct) RestorePhaseOne(dirPath string) {
+
+	// resets the map
+	BackRepoGroupid_atBckpTime_newID = make(map[uint]uint)
 
 	filename := filepath.Join(dirPath, "GroupDB.json")
 	jsonFile, err := os.Open(filename)
@@ -435,19 +441,46 @@ func (backRepoGroup *BackRepoGroupStruct) Restore(dirPath string) {
 	// fill up Map_GroupDBID_GroupDB
 	for _, groupDB := range forRestore {
 
-		groupDB_ID := groupDB.ID
+		groupDB_ID_atBackupTime := groupDB.ID
 		groupDB.ID = 0
 		query := backRepoGroup.db.Create(groupDB)
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		if groupDB_ID != groupDB.ID {
-			log.Panicf("ID of Group restore ID %d, name %s, has wrong ID %d in DB after create",
-				groupDB_ID, groupDB.Name_Data.String, groupDB.ID)
-		}
+		(*backRepoGroup.Map_GroupDBID_GroupDB)[groupDB.ID] = groupDB
+		BackRepoGroupid_atBckpTime_newID[groupDB_ID_atBackupTime] = groupDB.ID
 	}
 
 	if err != nil {
 		log.Panic("Cannot restore/unmarshall json Group file", err.Error())
 	}
 }
+
+// RestorePhaseTwo uses all map BackRepo<Group>id_atBckpTime_newID
+// to compute new index
+func (backRepoGroup *BackRepoGroupStruct) RestorePhaseTwo() {
+
+	for _, groupDB := range (*backRepoGroup.Map_GroupDBID_GroupDB) {
+
+		// next line of code is to avert unused variable compilation error
+		_ = groupDB
+
+		// insertion point for reindexing pointers encoding
+		// This reindex group.Groups
+		if groupDB.Gantt_GroupsDBID.Int64 != 0 {
+			groupDB.Gantt_GroupsDBID.Int64 = 
+				int64(BackRepoGanttid_atBckpTime_newID[uint(groupDB.Gantt_GroupsDBID.Int64)])
+		}
+
+		// update databse with new index encoding
+		query := backRepoGroup.db.Model(groupDB).Updates(*groupDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+	}
+
+}
+
+// this field is used during the restauration process.
+// it stores the ID at the backup time and is used for renumbering
+var BackRepoGroupid_atBckpTime_newID map[uint]uint

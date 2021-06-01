@@ -377,7 +377,7 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOneInstance(ganttDB *Gant
 	}
 	ganttDB.CopyBasicFieldsToGantt(gantt)
 
-	// preserve pointer to aclassDB. Otherwise, pointer will is recycled and the map of pointers
+	// preserve pointer to ganttDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_GanttDBID_GanttDB)[ganttDB hold variable pointers
 	ganttDB_Data := *ganttDB
 	preservedPtrToGantt := &ganttDB_Data
@@ -609,7 +609,7 @@ func (backRepoGantt *BackRepoGanttStruct) Backup(dirPath string) {
 
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
-	var forBackup []*GanttDB
+	forBackup := make([]*GanttDB, 0)
 	for _, ganttDB := range *backRepoGantt.Map_GanttDBID_GanttDB {
 		forBackup = append(forBackup, ganttDB)
 	}
@@ -630,7 +630,13 @@ func (backRepoGantt *BackRepoGanttStruct) Backup(dirPath string) {
 	}
 }
 
-func (backRepoGantt *BackRepoGanttStruct) Restore(dirPath string) {
+// RestorePhaseOne read the file "GanttDB.json" in dirPath that stores an array
+// of GanttDB and stores it in the database
+// the map BackRepoGanttid_atBckpTime_newID is updated accordingly
+func (backRepoGantt *BackRepoGanttStruct) RestorePhaseOne(dirPath string) {
+
+	// resets the map
+	BackRepoGanttid_atBckpTime_newID = make(map[uint]uint)
 
 	filename := filepath.Join(dirPath, "GanttDB.json")
 	jsonFile, err := os.Open(filename)
@@ -649,19 +655,40 @@ func (backRepoGantt *BackRepoGanttStruct) Restore(dirPath string) {
 	// fill up Map_GanttDBID_GanttDB
 	for _, ganttDB := range forRestore {
 
-		ganttDB_ID := ganttDB.ID
+		ganttDB_ID_atBackupTime := ganttDB.ID
 		ganttDB.ID = 0
 		query := backRepoGantt.db.Create(ganttDB)
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		if ganttDB_ID != ganttDB.ID {
-			log.Panicf("ID of Gantt restore ID %d, name %s, has wrong ID %d in DB after create",
-				ganttDB_ID, ganttDB.Name_Data.String, ganttDB.ID)
-		}
+		(*backRepoGantt.Map_GanttDBID_GanttDB)[ganttDB.ID] = ganttDB
+		BackRepoGanttid_atBckpTime_newID[ganttDB_ID_atBackupTime] = ganttDB.ID
 	}
 
 	if err != nil {
 		log.Panic("Cannot restore/unmarshall json Gantt file", err.Error())
 	}
 }
+
+// RestorePhaseTwo uses all map BackRepo<Gantt>id_atBckpTime_newID
+// to compute new index
+func (backRepoGantt *BackRepoGanttStruct) RestorePhaseTwo() {
+
+	for _, ganttDB := range (*backRepoGantt.Map_GanttDBID_GanttDB) {
+
+		// next line of code is to avert unused variable compilation error
+		_ = ganttDB
+
+		// insertion point for reindexing pointers encoding
+		// update databse with new index encoding
+		query := backRepoGantt.db.Model(ganttDB).Updates(*ganttDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+	}
+
+}
+
+// this field is used during the restauration process.
+// it stores the ID at the backup time and is used for renumbering
+var BackRepoGanttid_atBckpTime_newID map[uint]uint

@@ -302,7 +302,7 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOneInstance(laneDB *LaneDB)
 	}
 	laneDB.CopyBasicFieldsToLane(lane)
 
-	// preserve pointer to aclassDB. Otherwise, pointer will is recycled and the map of pointers
+	// preserve pointer to laneDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_LaneDBID_LaneDB)[laneDB hold variable pointers
 	laneDB_Data := *laneDB
 	preservedPtrToLane := &laneDB_Data
@@ -412,7 +412,7 @@ func (backRepoLane *BackRepoLaneStruct) Backup(dirPath string) {
 
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
-	var forBackup []*LaneDB
+	forBackup := make([]*LaneDB, 0)
 	for _, laneDB := range *backRepoLane.Map_LaneDBID_LaneDB {
 		forBackup = append(forBackup, laneDB)
 	}
@@ -433,7 +433,13 @@ func (backRepoLane *BackRepoLaneStruct) Backup(dirPath string) {
 	}
 }
 
-func (backRepoLane *BackRepoLaneStruct) Restore(dirPath string) {
+// RestorePhaseOne read the file "LaneDB.json" in dirPath that stores an array
+// of LaneDB and stores it in the database
+// the map BackRepoLaneid_atBckpTime_newID is updated accordingly
+func (backRepoLane *BackRepoLaneStruct) RestorePhaseOne(dirPath string) {
+
+	// resets the map
+	BackRepoLaneid_atBckpTime_newID = make(map[uint]uint)
 
 	filename := filepath.Join(dirPath, "LaneDB.json")
 	jsonFile, err := os.Open(filename)
@@ -452,19 +458,58 @@ func (backRepoLane *BackRepoLaneStruct) Restore(dirPath string) {
 	// fill up Map_LaneDBID_LaneDB
 	for _, laneDB := range forRestore {
 
-		laneDB_ID := laneDB.ID
+		laneDB_ID_atBackupTime := laneDB.ID
 		laneDB.ID = 0
 		query := backRepoLane.db.Create(laneDB)
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		if laneDB_ID != laneDB.ID {
-			log.Panicf("ID of Lane restore ID %d, name %s, has wrong ID %d in DB after create",
-				laneDB_ID, laneDB.Name_Data.String, laneDB.ID)
-		}
+		(*backRepoLane.Map_LaneDBID_LaneDB)[laneDB.ID] = laneDB
+		BackRepoLaneid_atBckpTime_newID[laneDB_ID_atBackupTime] = laneDB.ID
 	}
 
 	if err != nil {
 		log.Panic("Cannot restore/unmarshall json Lane file", err.Error())
 	}
 }
+
+// RestorePhaseTwo uses all map BackRepo<Lane>id_atBckpTime_newID
+// to compute new index
+func (backRepoLane *BackRepoLaneStruct) RestorePhaseTwo() {
+
+	for _, laneDB := range (*backRepoLane.Map_LaneDBID_LaneDB) {
+
+		// next line of code is to avert unused variable compilation error
+		_ = laneDB
+
+		// insertion point for reindexing pointers encoding
+		// This reindex lane.Lanes
+		if laneDB.Gantt_LanesDBID.Int64 != 0 {
+			laneDB.Gantt_LanesDBID.Int64 = 
+				int64(BackRepoGanttid_atBckpTime_newID[uint(laneDB.Gantt_LanesDBID.Int64)])
+		}
+
+		// This reindex lane.GroupLanes
+		if laneDB.Group_GroupLanesDBID.Int64 != 0 {
+			laneDB.Group_GroupLanesDBID.Int64 = 
+				int64(BackRepoGroupid_atBckpTime_newID[uint(laneDB.Group_GroupLanesDBID.Int64)])
+		}
+
+		// This reindex lane.DiamonfAndTextAnchors
+		if laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64 != 0 {
+			laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64 = 
+				int64(BackRepoMilestoneid_atBckpTime_newID[uint(laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64)])
+		}
+
+		// update databse with new index encoding
+		query := backRepoLane.db.Model(laneDB).Updates(*laneDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+	}
+
+}
+
+// this field is used during the restauration process.
+// it stores the ID at the backup time and is used for renumbering
+var BackRepoLaneid_atBckpTime_newID map[uint]uint
