@@ -13,7 +13,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+
+	"github.com/tealeg/xlsx/v3"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
@@ -126,6 +128,78 @@ type GanttDBs []GanttDB
 type GanttDBResponse struct {
 	GanttDB
 }
+
+// GanttWOP is a Gantt without pointers
+// it holds the same basic fields but pointers are encoded into uint
+type GanttWOP struct {
+	ID int
+
+	// insertion for WOP basic fields
+
+	Name string
+
+	Start time.Time
+
+	End time.Time
+
+	LaneHeight float64
+
+	RatioBarToLaneHeight float64
+
+	YTopMargin float64
+
+	XLeftText float64
+
+	TextHeight float64
+
+	XLeftLanes float64
+
+	XRightMargin float64
+
+	TimeLine_Color string
+
+	TimeLine_FillOpacity float64
+
+	TimeLine_Stroke string
+
+	TimeLine_StrokeWidth float64
+
+	Group_Stroke string
+
+	Group_StrokeWidth float64
+
+	Group_StrokeDashArray string
+
+	DateYOffset float64
+
+	AlignOnStartEndOnYearStart bool
+	// insertion for WOP pointer fields
+}
+
+var Gantt_Fields = []string{
+	// insertion for WOP basic fields
+	"ID",
+	"Name",
+	"Start",
+	"End",
+	"LaneHeight",
+	"RatioBarToLaneHeight",
+	"YTopMargin",
+	"XLeftText",
+	"TextHeight",
+	"XLeftLanes",
+	"XRightMargin",
+	"TimeLine_Color",
+	"TimeLine_FillOpacity",
+	"TimeLine_Stroke",
+	"TimeLine_StrokeWidth",
+	"Group_Stroke",
+	"Group_StrokeWidth",
+	"Group_StrokeDashArray",
+	"DateYOffset",
+	"AlignOnStartEndOnYearStart",
+}
+
 
 type BackRepoGanttStruct struct {
 	// stores GanttDB according to their gorm ID
@@ -373,6 +447,7 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOneInstance(ganttDB *Gant
 		(*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt] = ganttDB.ID
 
 		// append model store with the new element
+		gantt.Name = ganttDB.Name_Data.String
 		gantt.Stage()
 	}
 	ganttDB.CopyBasicFieldsToGantt(gantt)
@@ -515,7 +590,7 @@ func (backRepo *BackRepoStruct) CheckoutGantt(gantt *models.Gantt) {
 	}
 }
 
-// CopyBasicFieldsToGanttDB is used to copy basic fields between the Stage or the CRUD to the back repo
+// CopyBasicFieldsFromGantt
 func (ganttDB *GanttDB) CopyBasicFieldsFromGantt(gantt *models.Gantt) {
 	// insertion point for fields commit
 	ganttDB.Name_Data.String = gantt.Name
@@ -577,9 +652,95 @@ func (ganttDB *GanttDB) CopyBasicFieldsFromGantt(gantt *models.Gantt) {
 
 }
 
-// CopyBasicFieldsToGanttDB is used to copy basic fields between the Stage or the CRUD to the back repo
-func (ganttDB *GanttDB) CopyBasicFieldsToGantt(gantt *models.Gantt) {
+// CopyBasicFieldsFromGanttWOP
+func (ganttDB *GanttDB) CopyBasicFieldsFromGanttWOP(gantt *GanttWOP) {
+	// insertion point for fields commit
+	ganttDB.Name_Data.String = gantt.Name
+	ganttDB.Name_Data.Valid = true
 
+	ganttDB.Start_Data.Time = gantt.Start
+	ganttDB.Start_Data.Valid = true
+
+	ganttDB.End_Data.Time = gantt.End
+	ganttDB.End_Data.Valid = true
+
+	ganttDB.LaneHeight_Data.Float64 = gantt.LaneHeight
+	ganttDB.LaneHeight_Data.Valid = true
+
+	ganttDB.RatioBarToLaneHeight_Data.Float64 = gantt.RatioBarToLaneHeight
+	ganttDB.RatioBarToLaneHeight_Data.Valid = true
+
+	ganttDB.YTopMargin_Data.Float64 = gantt.YTopMargin
+	ganttDB.YTopMargin_Data.Valid = true
+
+	ganttDB.XLeftText_Data.Float64 = gantt.XLeftText
+	ganttDB.XLeftText_Data.Valid = true
+
+	ganttDB.TextHeight_Data.Float64 = gantt.TextHeight
+	ganttDB.TextHeight_Data.Valid = true
+
+	ganttDB.XLeftLanes_Data.Float64 = gantt.XLeftLanes
+	ganttDB.XLeftLanes_Data.Valid = true
+
+	ganttDB.XRightMargin_Data.Float64 = gantt.XRightMargin
+	ganttDB.XRightMargin_Data.Valid = true
+
+	ganttDB.TimeLine_Color_Data.String = gantt.TimeLine_Color
+	ganttDB.TimeLine_Color_Data.Valid = true
+
+	ganttDB.TimeLine_FillOpacity_Data.Float64 = gantt.TimeLine_FillOpacity
+	ganttDB.TimeLine_FillOpacity_Data.Valid = true
+
+	ganttDB.TimeLine_Stroke_Data.String = gantt.TimeLine_Stroke
+	ganttDB.TimeLine_Stroke_Data.Valid = true
+
+	ganttDB.TimeLine_StrokeWidth_Data.Float64 = gantt.TimeLine_StrokeWidth
+	ganttDB.TimeLine_StrokeWidth_Data.Valid = true
+
+	ganttDB.Group_Stroke_Data.String = gantt.Group_Stroke
+	ganttDB.Group_Stroke_Data.Valid = true
+
+	ganttDB.Group_StrokeWidth_Data.Float64 = gantt.Group_StrokeWidth
+	ganttDB.Group_StrokeWidth_Data.Valid = true
+
+	ganttDB.Group_StrokeDashArray_Data.String = gantt.Group_StrokeDashArray
+	ganttDB.Group_StrokeDashArray_Data.Valid = true
+
+	ganttDB.DateYOffset_Data.Float64 = gantt.DateYOffset
+	ganttDB.DateYOffset_Data.Valid = true
+
+	ganttDB.AlignOnStartEndOnYearStart_Data.Bool = gantt.AlignOnStartEndOnYearStart
+	ganttDB.AlignOnStartEndOnYearStart_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToGantt
+func (ganttDB *GanttDB) CopyBasicFieldsToGantt(gantt *models.Gantt) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	gantt.Name = ganttDB.Name_Data.String
+	gantt.Start = ganttDB.Start_Data.Time
+	gantt.End = ganttDB.End_Data.Time
+	gantt.LaneHeight = ganttDB.LaneHeight_Data.Float64
+	gantt.RatioBarToLaneHeight = ganttDB.RatioBarToLaneHeight_Data.Float64
+	gantt.YTopMargin = ganttDB.YTopMargin_Data.Float64
+	gantt.XLeftText = ganttDB.XLeftText_Data.Float64
+	gantt.TextHeight = ganttDB.TextHeight_Data.Float64
+	gantt.XLeftLanes = ganttDB.XLeftLanes_Data.Float64
+	gantt.XRightMargin = ganttDB.XRightMargin_Data.Float64
+	gantt.TimeLine_Color = ganttDB.TimeLine_Color_Data.String
+	gantt.TimeLine_FillOpacity = ganttDB.TimeLine_FillOpacity_Data.Float64
+	gantt.TimeLine_Stroke = ganttDB.TimeLine_Stroke_Data.String
+	gantt.TimeLine_StrokeWidth = ganttDB.TimeLine_StrokeWidth_Data.Float64
+	gantt.Group_Stroke = ganttDB.Group_Stroke_Data.String
+	gantt.Group_StrokeWidth = ganttDB.Group_StrokeWidth_Data.Float64
+	gantt.Group_StrokeDashArray = ganttDB.Group_StrokeDashArray_Data.String
+	gantt.DateYOffset = ganttDB.DateYOffset_Data.Float64
+	gantt.AlignOnStartEndOnYearStart = ganttDB.AlignOnStartEndOnYearStart_Data.Bool
+}
+
+// CopyBasicFieldsToGanttWOP
+func (ganttDB *GanttDB) CopyBasicFieldsToGanttWOP(gantt *GanttWOP) {
+	gantt.ID = int(ganttDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
 	gantt.Name = ganttDB.Name_Data.String
 	gantt.Start = ganttDB.Start_Data.Time
@@ -627,6 +788,38 @@ func (backRepoGantt *BackRepoGanttStruct) Backup(dirPath string) {
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
 		log.Panic("Cannot write the json Gantt file", err.Error())
+	}
+}
+
+// Backup generates a json file from a slice of all GanttDB instances in the backrepo
+func (backRepoGantt *BackRepoGanttStruct) BackupXL(file *xlsx.File) {
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	forBackup := make([]*GanttDB, 0)
+	for _, ganttDB := range *backRepoGantt.Map_GanttDBID_GanttDB {
+		forBackup = append(forBackup, ganttDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	sh, err := file.AddSheet("Gantt")
+	if err != nil {
+		log.Panic("Cannot add XL file", err.Error())
+	}
+	_ = sh
+
+	row := sh.AddRow()
+	row.WriteSlice(&Gantt_Fields, -1)
+	for _, ganttDB := range forBackup {
+
+		var ganttWOP GanttWOP
+		ganttDB.CopyBasicFieldsToGanttWOP(&ganttWOP)
+
+		row := sh.AddRow()
+		row.WriteStruct(&ganttWOP, -1)
 	}
 }
 

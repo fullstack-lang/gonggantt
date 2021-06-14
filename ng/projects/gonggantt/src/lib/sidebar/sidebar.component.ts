@@ -648,7 +648,7 @@ export class SidebarComponent implements OnInit {
   setTableRouterOutlet(path: string) {
     this.router.navigate([{
       outlets: {
-        table: [path]
+        github_com_fullstack_lang_gonggantt_go_table: ["github_com_fullstack_lang_gonggantt_go-" + path]
       }
     }]);
   }
@@ -662,7 +662,7 @@ export class SidebarComponent implements OnInit {
     if (type == GongNodeType.STRUCT) {
       this.router.navigate([{
         outlets: {
-          table: [path.toLowerCase()]
+          github_com_fullstack_lang_gonggantt_go_table: ["github_com_fullstack_lang_gonggantt_go-" + path.toLowerCase()]
         }
       }]);
     }
@@ -670,7 +670,7 @@ export class SidebarComponent implements OnInit {
     if (type == GongNodeType.INSTANCE) {
       this.router.navigate([{
         outlets: {
-          presentation: [structName.toLowerCase() + "-presentation", id]
+          github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + structName.toLowerCase() + "-presentation", id]
         }
       }]);
     }
@@ -679,7 +679,7 @@ export class SidebarComponent implements OnInit {
   setEditorRouterOutlet(path) {
     this.router.navigate([{
       outlets: {
-        editor: [path.toLowerCase()]
+        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + path.toLowerCase()]
       }
     }]);
   }
@@ -687,7 +687,7 @@ export class SidebarComponent implements OnInit {
   setEditorSpecialRouterOutlet( node: GongFlatNode) {
     this.router.navigate([{
       outlets: {
-        editor: [node.associatedStructName.toLowerCase() + "-adder", node.id, node.structName + "_" + node.name]
+        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + node.associatedStructName.toLowerCase() + "-adder", node.id, node.structName + "_" + node.name]
       }
     }]);
   }

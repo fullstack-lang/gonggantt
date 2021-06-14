@@ -13,7 +13,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+
+	"github.com/tealeg/xlsx/v3"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
@@ -89,6 +91,27 @@ type LaneDBs []LaneDB
 type LaneDBResponse struct {
 	LaneDB
 }
+
+// LaneWOP is a Lane without pointers
+// it holds the same basic fields but pointers are encoded into uint
+type LaneWOP struct {
+	ID int
+
+	// insertion for WOP basic fields
+
+	Name string
+
+	Order int
+	// insertion for WOP pointer fields
+}
+
+var Lane_Fields = []string{
+	// insertion for WOP basic fields
+	"ID",
+	"Name",
+	"Order",
+}
+
 
 type BackRepoLaneStruct struct {
 	// stores LaneDB according to their gorm ID
@@ -298,6 +321,7 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOneInstance(laneDB *LaneDB)
 		(*backRepoLane.Map_LanePtr_LaneDBID)[lane] = laneDB.ID
 
 		// append model store with the new element
+		lane.Name = laneDB.Name_Data.String
 		lane.Stage()
 	}
 	laneDB.CopyBasicFieldsToLane(lane)
@@ -386,7 +410,7 @@ func (backRepo *BackRepoStruct) CheckoutLane(lane *models.Lane) {
 	}
 }
 
-// CopyBasicFieldsToLaneDB is used to copy basic fields between the Stage or the CRUD to the back repo
+// CopyBasicFieldsFromLane
 func (laneDB *LaneDB) CopyBasicFieldsFromLane(lane *models.Lane) {
 	// insertion point for fields commit
 	laneDB.Name_Data.String = lane.Name
@@ -397,9 +421,27 @@ func (laneDB *LaneDB) CopyBasicFieldsFromLane(lane *models.Lane) {
 
 }
 
-// CopyBasicFieldsToLaneDB is used to copy basic fields between the Stage or the CRUD to the back repo
-func (laneDB *LaneDB) CopyBasicFieldsToLane(lane *models.Lane) {
+// CopyBasicFieldsFromLaneWOP
+func (laneDB *LaneDB) CopyBasicFieldsFromLaneWOP(lane *LaneWOP) {
+	// insertion point for fields commit
+	laneDB.Name_Data.String = lane.Name
+	laneDB.Name_Data.Valid = true
 
+	laneDB.Order_Data.Int64 = int64(lane.Order)
+	laneDB.Order_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToLane
+func (laneDB *LaneDB) CopyBasicFieldsToLane(lane *models.Lane) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	lane.Name = laneDB.Name_Data.String
+	lane.Order = int(laneDB.Order_Data.Int64)
+}
+
+// CopyBasicFieldsToLaneWOP
+func (laneDB *LaneDB) CopyBasicFieldsToLaneWOP(lane *LaneWOP) {
+	lane.ID = int(laneDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
 	lane.Name = laneDB.Name_Data.String
 	lane.Order = int(laneDB.Order_Data.Int64)
@@ -430,6 +472,38 @@ func (backRepoLane *BackRepoLaneStruct) Backup(dirPath string) {
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
 		log.Panic("Cannot write the json Lane file", err.Error())
+	}
+}
+
+// Backup generates a json file from a slice of all LaneDB instances in the backrepo
+func (backRepoLane *BackRepoLaneStruct) BackupXL(file *xlsx.File) {
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	forBackup := make([]*LaneDB, 0)
+	for _, laneDB := range *backRepoLane.Map_LaneDBID_LaneDB {
+		forBackup = append(forBackup, laneDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	sh, err := file.AddSheet("Lane")
+	if err != nil {
+		log.Panic("Cannot add XL file", err.Error())
+	}
+	_ = sh
+
+	row := sh.AddRow()
+	row.WriteSlice(&Lane_Fields, -1)
+	for _, laneDB := range forBackup {
+
+		var laneWOP LaneWOP
+		laneDB.CopyBasicFieldsToLaneWOP(&laneWOP)
+
+		row := sh.AddRow()
+		row.WriteStruct(&laneWOP, -1)
 	}
 }
 

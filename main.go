@@ -45,8 +45,6 @@ func main() {
 
 		// setup GORM
 		db := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
-		// mandatory, otherwise, bizarre errors occurs
-		db.DB().SetMaxOpenConns(1)
 		gonggantt_orm.AutoMigrate(db)
 		gonggantt_orm.BackRepo.Init(db)
 		gonggantt_models.Stage.Checkout()
@@ -58,8 +56,6 @@ func main() {
 
 		// setup GORM
 		db := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
-		// mandatory, otherwise, bizarre errors occurs
-		db.DB().SetMaxOpenConns(1)
 		gonggantt_orm.AutoMigrate(db)
 		gonggantt_orm.BackRepo.Init(db)
 		gonggantt_models.Stage.Restore("bckp")
@@ -78,8 +74,6 @@ func main() {
 	//
 	// gonggantt
 	db_inFile := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
-	// mandatory, otherwise, bizarre errors occurs
-	db_inFile.DB().SetMaxOpenConns(1)
 	gonggantt_orm.BackRepo.Init(db_inFile)
 
 	//

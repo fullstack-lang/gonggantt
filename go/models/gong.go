@@ -13,14 +13,19 @@ var __member __void
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
 	Bars map[*Bar]struct{}
+	Bars_mapString map[string]*Bar
 
 	Gantts map[*Gantt]struct{}
+	Gantts_mapString map[string]*Gantt
 
 	Groups map[*Group]struct{}
+	Groups_mapString map[string]*Group
 
 	Lanes map[*Lane]struct{}
+	Lanes_mapString map[string]*Lane
 
 	Milestones map[*Milestone]struct{}
+	Milestones_mapString map[string]*Milestone
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
 
@@ -41,6 +46,8 @@ type BackRepoInterface interface {
 	Checkout(stage *StageStruct)
 	Backup(stage *StageStruct, dirPath string)
 	Restore(stage *StageStruct, dirPath string)
+	BackupXL(stage *StageStruct, dirPath string)
+	RestoreXL(stage *StageStruct, dirPath string)
 	// insertion point for Commit and Checkout signatures
 	CommitBar(bar *Bar)
 	CheckoutBar(bar *Bar)
@@ -58,15 +65,21 @@ type BackRepoInterface interface {
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
 	Bars: make(map[*Bar]struct{}, 0),
+	Bars_mapString: make(map[string]*Bar, 0),
 
 	Gantts: make(map[*Gantt]struct{}, 0),
+	Gantts_mapString: make(map[string]*Gantt, 0),
 
 	Groups: make(map[*Group]struct{}, 0),
+	Groups_mapString: make(map[string]*Group, 0),
 
 	Lanes: make(map[*Lane]struct{}, 0),
+	Lanes_mapString: make(map[string]*Lane, 0),
 
 	Milestones: make(map[*Milestone]struct{}, 0),
+	Milestones_mapString: make(map[string]*Milestone, 0),
 
+	// end of insertion point
 }
 
 func (stage *StageStruct) Commit() {
@@ -89,10 +102,23 @@ func (stage *StageStruct) Backup(dirPath string) {
 }
 
 // Restore resets Stage & BackRepo and restores their content from the restore files in dirPath
-// Restore shall be performed only on a new database with rowids at 0 (otherwise, it will panic)
 func (stage *StageStruct) Restore(dirPath string) {
 	if stage.BackRepo != nil {
 		stage.BackRepo.Restore(stage, dirPath)
+	}
+}
+
+// backup generates backup files in the dirPath
+func (stage *StageStruct) BackupXL(dirPath string) {
+	if stage.BackRepo != nil {
+		stage.BackRepo.BackupXL(stage, dirPath)
+	}
+}
+
+// Restore resets Stage & BackRepo and restores their content from the restore files in dirPath
+func (stage *StageStruct) RestoreXL(dirPath string) {
+	if stage.BackRepo != nil {
+		stage.BackRepo.RestoreXL(stage, dirPath)
 	}
 }
 
@@ -112,12 +138,15 @@ func (stage *StageStruct) getBarOrderedStructWithNameField() []*Bar {
 // Stage puts bar to the model stage
 func (bar *Bar) Stage() *Bar {
 	Stage.Bars[bar] = __member
+	Stage.Bars_mapString[bar.Name] = bar
+	
 	return bar
 }
 
 // Unstage removes bar off the model stage
 func (bar *Bar) Unstage() *Bar {
 	delete(Stage.Bars, bar)
+	delete(Stage.Bars_mapString, bar.Name)
 	return bar
 }
 
@@ -211,12 +240,15 @@ func (stage *StageStruct) getGanttOrderedStructWithNameField() []*Gantt {
 // Stage puts gantt to the model stage
 func (gantt *Gantt) Stage() *Gantt {
 	Stage.Gantts[gantt] = __member
+	Stage.Gantts_mapString[gantt.Name] = gantt
+	
 	return gantt
 }
 
 // Unstage removes gantt off the model stage
 func (gantt *Gantt) Unstage() *Gantt {
 	delete(Stage.Gantts, gantt)
+	delete(Stage.Gantts_mapString, gantt.Name)
 	return gantt
 }
 
@@ -310,12 +342,15 @@ func (stage *StageStruct) getGroupOrderedStructWithNameField() []*Group {
 // Stage puts group to the model stage
 func (group *Group) Stage() *Group {
 	Stage.Groups[group] = __member
+	Stage.Groups_mapString[group.Name] = group
+	
 	return group
 }
 
 // Unstage removes group off the model stage
 func (group *Group) Unstage() *Group {
 	delete(Stage.Groups, group)
+	delete(Stage.Groups_mapString, group.Name)
 	return group
 }
 
@@ -409,12 +444,15 @@ func (stage *StageStruct) getLaneOrderedStructWithNameField() []*Lane {
 // Stage puts lane to the model stage
 func (lane *Lane) Stage() *Lane {
 	Stage.Lanes[lane] = __member
+	Stage.Lanes_mapString[lane.Name] = lane
+	
 	return lane
 }
 
 // Unstage removes lane off the model stage
 func (lane *Lane) Unstage() *Lane {
 	delete(Stage.Lanes, lane)
+	delete(Stage.Lanes_mapString, lane.Name)
 	return lane
 }
 
@@ -508,12 +546,15 @@ func (stage *StageStruct) getMilestoneOrderedStructWithNameField() []*Milestone 
 // Stage puts milestone to the model stage
 func (milestone *Milestone) Stage() *Milestone {
 	Stage.Milestones[milestone] = __member
+	Stage.Milestones_mapString[milestone.Name] = milestone
+	
 	return milestone
 }
 
 // Unstage removes milestone off the model stage
 func (milestone *Milestone) Unstage() *Milestone {
 	delete(Stage.Milestones, milestone)
+	delete(Stage.Milestones_mapString, milestone.Name)
 	return milestone
 }
 
@@ -611,21 +652,36 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
 	stage.Bars = make(map[*Bar]struct{}, 0)
+	stage.Bars_mapString = make(map[string]*Bar, 0)
 
 	stage.Gantts = make(map[*Gantt]struct{}, 0)
+	stage.Gantts_mapString = make(map[string]*Gantt, 0)
 
 	stage.Groups = make(map[*Group]struct{}, 0)
+	stage.Groups_mapString = make(map[string]*Group, 0)
 
 	stage.Lanes = make(map[*Lane]struct{}, 0)
+	stage.Lanes_mapString = make(map[string]*Lane, 0)
 
 	stage.Milestones = make(map[*Milestone]struct{}, 0)
+	stage.Milestones_mapString = make(map[string]*Milestone, 0)
 
 }
 
 func (stage *StageStruct) Nil() { // insertion point for array nil
 	stage.Bars = nil
+	stage.Bars_mapString = nil
+
 	stage.Gantts = nil
+	stage.Gantts_mapString = nil
+
 	stage.Groups = nil
+	stage.Groups_mapString = nil
+
 	stage.Lanes = nil
+	stage.Lanes_mapString = nil
+
 	stage.Milestones = nil
+	stage.Milestones_mapString = nil
+
 }

@@ -20,7 +20,7 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 // generated table component
 @Component({
-  selector: 'app-bars-table',
+  selector: 'app-barstable',
   templateUrl: './bars-table.component.html',
   styleUrls: ['./bars-table.component.css'],
 })
@@ -47,6 +47,39 @@ export class BarsTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
+
+	// enable sorting on all fields (including pointers and reverse pointer)
+	this.matTableDataSource.sortingDataAccessor = (barDB: BarDB, property: string) => {
+		switch (property) {
+				// insertion point for specific sorting accessor
+				case 'Bars':
+					return this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)?.Name;
+
+				default:
+					return BarDB[property];
+		}
+	}; 
+
+	// enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
+	this.matTableDataSource.filterPredicate = (barDB: BarDB, filter: string) => {
+
+		// filtering is based on finding a lower case filter into a concatenated string
+		// the barDB properties
+		let mergedContent = ""
+
+		// insertion point for merging of fields
+		mergedContent += barDB.Name.toLowerCase()
+		mergedContent += barDB.OptionnalColor.toLowerCase()
+		mergedContent += barDB.OptionnalStroke.toLowerCase()
+		if (barDB.Lane_BarsDBID.Int64 != 0) {
+        	mergedContent += this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)?.Name.toLowerCase()
+    	}
+
+
+		let isSelected = mergedContent.includes(filter.toLowerCase())
+		return isSelected
+	};
+
     this.matTableDataSource.sort = this.sort;
     this.matTableDataSource.paginator = this.paginator;
   }
@@ -153,14 +186,14 @@ export class BarsTableComponent implements OnInit {
 
   // display bar in router
   displayBarInRouter(barID: number) {
-    this.router.navigate(["bar-display", barID])
+    this.router.navigate(["github_com_fullstack_lang_gonggantt_go-" + "bar-display", barID])
   }
 
   // set editor outlet
   setEditorRouterOutlet(barID: number) {
     this.router.navigate([{
       outlets: {
-        editor: ["bar-detail", barID]
+        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "bar-detail", barID]
       }
     }]);
   }
@@ -169,7 +202,7 @@ export class BarsTableComponent implements OnInit {
   setPresentationRouterOutlet(barID: number) {
     this.router.navigate([{
       outlets: {
-        presentation: ["bar-presentation", barID]
+        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "bar-presentation", barID]
       }
     }]);
   }

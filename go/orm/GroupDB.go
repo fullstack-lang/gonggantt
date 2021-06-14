@@ -13,7 +13,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+
+	"github.com/tealeg/xlsx/v3"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
@@ -76,6 +78,24 @@ type GroupDBs []GroupDB
 type GroupDBResponse struct {
 	GroupDB
 }
+
+// GroupWOP is a Group without pointers
+// it holds the same basic fields but pointers are encoded into uint
+type GroupWOP struct {
+	ID int
+
+	// insertion for WOP basic fields
+
+	Name string
+	// insertion for WOP pointer fields
+}
+
+var Group_Fields = []string{
+	// insertion for WOP basic fields
+	"ID",
+	"Name",
+}
+
 
 type BackRepoGroupStruct struct {
 	// stores GroupDB according to their gorm ID
@@ -285,6 +305,7 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOneInstance(groupDB *Grou
 		(*backRepoGroup.Map_GroupPtr_GroupDBID)[group] = groupDB.ID
 
 		// append model store with the new element
+		group.Name = groupDB.Name_Data.String
 		group.Stage()
 	}
 	groupDB.CopyBasicFieldsToGroup(group)
@@ -373,7 +394,7 @@ func (backRepo *BackRepoStruct) CheckoutGroup(group *models.Group) {
 	}
 }
 
-// CopyBasicFieldsToGroupDB is used to copy basic fields between the Stage or the CRUD to the back repo
+// CopyBasicFieldsFromGroup
 func (groupDB *GroupDB) CopyBasicFieldsFromGroup(group *models.Group) {
 	// insertion point for fields commit
 	groupDB.Name_Data.String = group.Name
@@ -381,9 +402,23 @@ func (groupDB *GroupDB) CopyBasicFieldsFromGroup(group *models.Group) {
 
 }
 
-// CopyBasicFieldsToGroupDB is used to copy basic fields between the Stage or the CRUD to the back repo
-func (groupDB *GroupDB) CopyBasicFieldsToGroup(group *models.Group) {
+// CopyBasicFieldsFromGroupWOP
+func (groupDB *GroupDB) CopyBasicFieldsFromGroupWOP(group *GroupWOP) {
+	// insertion point for fields commit
+	groupDB.Name_Data.String = group.Name
+	groupDB.Name_Data.Valid = true
 
+}
+
+// CopyBasicFieldsToGroup
+func (groupDB *GroupDB) CopyBasicFieldsToGroup(group *models.Group) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	group.Name = groupDB.Name_Data.String
+}
+
+// CopyBasicFieldsToGroupWOP
+func (groupDB *GroupDB) CopyBasicFieldsToGroupWOP(group *GroupWOP) {
+	group.ID = int(groupDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
 	group.Name = groupDB.Name_Data.String
 }
@@ -413,6 +448,38 @@ func (backRepoGroup *BackRepoGroupStruct) Backup(dirPath string) {
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
 		log.Panic("Cannot write the json Group file", err.Error())
+	}
+}
+
+// Backup generates a json file from a slice of all GroupDB instances in the backrepo
+func (backRepoGroup *BackRepoGroupStruct) BackupXL(file *xlsx.File) {
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	forBackup := make([]*GroupDB, 0)
+	for _, groupDB := range *backRepoGroup.Map_GroupDBID_GroupDB {
+		forBackup = append(forBackup, groupDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	sh, err := file.AddSheet("Group")
+	if err != nil {
+		log.Panic("Cannot add XL file", err.Error())
+	}
+	_ = sh
+
+	row := sh.AddRow()
+	row.WriteSlice(&Group_Fields, -1)
+	for _, groupDB := range forBackup {
+
+		var groupWOP GroupWOP
+		groupDB.CopyBasicFieldsToGroupWOP(&groupWOP)
+
+		row := sh.AddRow()
+		row.WriteStruct(&groupWOP, -1)
 	}
 }
 

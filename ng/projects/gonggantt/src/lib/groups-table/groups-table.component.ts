@@ -20,7 +20,7 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 // generated table component
 @Component({
-  selector: 'app-groups-table',
+  selector: 'app-groupstable',
   templateUrl: './groups-table.component.html',
   styleUrls: ['./groups-table.component.css'],
 })
@@ -47,6 +47,37 @@ export class GroupsTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
+
+	// enable sorting on all fields (including pointers and reverse pointer)
+	this.matTableDataSource.sortingDataAccessor = (groupDB: GroupDB, property: string) => {
+		switch (property) {
+				// insertion point for specific sorting accessor
+				case 'Groups':
+					return this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64)?.Name;
+
+				default:
+					return GroupDB[property];
+		}
+	}; 
+
+	// enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
+	this.matTableDataSource.filterPredicate = (groupDB: GroupDB, filter: string) => {
+
+		// filtering is based on finding a lower case filter into a concatenated string
+		// the groupDB properties
+		let mergedContent = ""
+
+		// insertion point for merging of fields
+		mergedContent += groupDB.Name.toLowerCase()
+		if (groupDB.Gantt_GroupsDBID.Int64 != 0) {
+        	mergedContent += this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64)?.Name.toLowerCase()
+    	}
+
+
+		let isSelected = mergedContent.includes(filter.toLowerCase())
+		return isSelected
+	};
+
     this.matTableDataSource.sort = this.sort;
     this.matTableDataSource.paginator = this.paginator;
   }
@@ -145,14 +176,14 @@ export class GroupsTableComponent implements OnInit {
 
   // display group in router
   displayGroupInRouter(groupID: number) {
-    this.router.navigate(["group-display", groupID])
+    this.router.navigate(["github_com_fullstack_lang_gonggantt_go-" + "group-display", groupID])
   }
 
   // set editor outlet
   setEditorRouterOutlet(groupID: number) {
     this.router.navigate([{
       outlets: {
-        editor: ["group-detail", groupID]
+        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "group-detail", groupID]
       }
     }]);
   }
@@ -161,7 +192,7 @@ export class GroupsTableComponent implements OnInit {
   setPresentationRouterOutlet(groupID: number) {
     this.router.navigate([{
       outlets: {
-        presentation: ["group-presentation", groupID]
+        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "group-presentation", groupID]
       }
     }]);
   }

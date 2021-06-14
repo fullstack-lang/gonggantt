@@ -20,7 +20,7 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 // generated table component
 @Component({
-  selector: 'app-gantts-table',
+  selector: 'app-ganttstable',
   templateUrl: './gantts-table.component.html',
   styleUrls: ['./gantts-table.component.css'],
 })
@@ -47,6 +47,45 @@ export class GanttsTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
+
+	// enable sorting on all fields (including pointers and reverse pointer)
+	this.matTableDataSource.sortingDataAccessor = (ganttDB: GanttDB, property: string) => {
+		switch (property) {
+				// insertion point for specific sorting accessor
+				default:
+					return GanttDB[property];
+		}
+	}; 
+
+	// enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
+	this.matTableDataSource.filterPredicate = (ganttDB: GanttDB, filter: string) => {
+
+		// filtering is based on finding a lower case filter into a concatenated string
+		// the ganttDB properties
+		let mergedContent = ""
+
+		// insertion point for merging of fields
+		mergedContent += ganttDB.Name.toLowerCase()
+		mergedContent += ganttDB.LaneHeight.toString()
+		mergedContent += ganttDB.RatioBarToLaneHeight.toString()
+		mergedContent += ganttDB.YTopMargin.toString()
+		mergedContent += ganttDB.XLeftText.toString()
+		mergedContent += ganttDB.TextHeight.toString()
+		mergedContent += ganttDB.XLeftLanes.toString()
+		mergedContent += ganttDB.XRightMargin.toString()
+		mergedContent += ganttDB.TimeLine_Color.toLowerCase()
+		mergedContent += ganttDB.TimeLine_FillOpacity.toString()
+		mergedContent += ganttDB.TimeLine_Stroke.toLowerCase()
+		mergedContent += ganttDB.TimeLine_StrokeWidth.toString()
+		mergedContent += ganttDB.Group_Stroke.toLowerCase()
+		mergedContent += ganttDB.Group_StrokeWidth.toString()
+		mergedContent += ganttDB.Group_StrokeDashArray.toLowerCase()
+		mergedContent += ganttDB.DateYOffset.toString()
+
+		let isSelected = mergedContent.includes(filter.toLowerCase())
+		return isSelected
+	};
+
     this.matTableDataSource.sort = this.sort;
     this.matTableDataSource.paginator = this.paginator;
   }
@@ -179,14 +218,14 @@ export class GanttsTableComponent implements OnInit {
 
   // display gantt in router
   displayGanttInRouter(ganttID: number) {
-    this.router.navigate(["gantt-display", ganttID])
+    this.router.navigate(["github_com_fullstack_lang_gonggantt_go-" + "gantt-display", ganttID])
   }
 
   // set editor outlet
   setEditorRouterOutlet(ganttID: number) {
     this.router.navigate([{
       outlets: {
-        editor: ["gantt-detail", ganttID]
+        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "gantt-detail", ganttID]
       }
     }]);
   }
@@ -195,7 +234,7 @@ export class GanttsTableComponent implements OnInit {
   setPresentationRouterOutlet(ganttID: number) {
     this.router.navigate([{
       outlets: {
-        presentation: ["gantt-presentation", ganttID]
+        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "gantt-presentation", ganttID]
       }
     }]);
   }

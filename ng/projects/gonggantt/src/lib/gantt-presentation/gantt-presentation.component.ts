@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
 import { GanttDB } from '../gantt-db'
 import { GanttService } from '../gantt.service'
+
+import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
@@ -25,9 +27,13 @@ export class GanttPresentationComponent implements OnInit {
 	dataSource = ELEMENT_DATA;
 
 	gantt: GanttDB;
+
+	// front repo
+	frontRepo: FrontRepo
  
 	constructor(
 		private ganttService: GanttService,
+		private frontRepoService: FrontRepoService,
 		private route: ActivatedRoute,
 		private router: Router,
 	) {
@@ -51,22 +57,22 @@ export class GanttPresentationComponent implements OnInit {
 
 	getGantt(): void {
 		const id = +this.route.snapshot.paramMap.get('id');
-		this.ganttService.getGantt(id)
-			.subscribe(
-				gantt => {
-					this.gantt = gantt
+		this.frontRepoService.pull().subscribe(
+			frontRepo => {
+				this.frontRepo = frontRepo
 
-					// insertion point for recovery of durations
+				this.gantt = this.frontRepo.Gantts.get(id)
 
-				}
-			);
+				// insertion point for recovery of durations
+			}
+		);
 	}
 
 	// set presentation outlet
 	setPresentationRouterOutlet(structName: string, ID: number) {
 		this.router.navigate([{
 			outlets: {
-				presentation: [structName + "-presentation", ID]
+				github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + structName + "-presentation", ID]
 			}
 		}]);
 	}
@@ -75,7 +81,7 @@ export class GanttPresentationComponent implements OnInit {
 	setEditorRouterOutlet(ID: number) {
 		this.router.navigate([{
 			outlets: {
-				editor: ["gantt-detail", ID]
+				github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "gantt-detail", ID]
 			}
 		}]);
 	}

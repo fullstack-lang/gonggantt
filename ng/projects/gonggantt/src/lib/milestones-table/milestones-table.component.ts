@@ -20,7 +20,7 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 // generated table component
 @Component({
-  selector: 'app-milestones-table',
+  selector: 'app-milestonestable',
   templateUrl: './milestones-table.component.html',
   styleUrls: ['./milestones-table.component.css'],
 })
@@ -47,6 +47,37 @@ export class MilestonesTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
+
+	// enable sorting on all fields (including pointers and reverse pointer)
+	this.matTableDataSource.sortingDataAccessor = (milestoneDB: MilestoneDB, property: string) => {
+		switch (property) {
+				// insertion point for specific sorting accessor
+				case 'Milestones':
+					return this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64)?.Name;
+
+				default:
+					return MilestoneDB[property];
+		}
+	}; 
+
+	// enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
+	this.matTableDataSource.filterPredicate = (milestoneDB: MilestoneDB, filter: string) => {
+
+		// filtering is based on finding a lower case filter into a concatenated string
+		// the milestoneDB properties
+		let mergedContent = ""
+
+		// insertion point for merging of fields
+		mergedContent += milestoneDB.Name.toLowerCase()
+		if (milestoneDB.Gantt_MilestonesDBID.Int64 != 0) {
+        	mergedContent += this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64)?.Name.toLowerCase()
+    	}
+
+
+		let isSelected = mergedContent.includes(filter.toLowerCase())
+		return isSelected
+	};
+
     this.matTableDataSource.sort = this.sort;
     this.matTableDataSource.paginator = this.paginator;
   }
@@ -147,14 +178,14 @@ export class MilestonesTableComponent implements OnInit {
 
   // display milestone in router
   displayMilestoneInRouter(milestoneID: number) {
-    this.router.navigate(["milestone-display", milestoneID])
+    this.router.navigate(["github_com_fullstack_lang_gonggantt_go-" + "milestone-display", milestoneID])
   }
 
   // set editor outlet
   setEditorRouterOutlet(milestoneID: number) {
     this.router.navigate([{
       outlets: {
-        editor: ["milestone-detail", milestoneID]
+        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "milestone-detail", milestoneID]
       }
     }]);
   }
@@ -163,7 +194,7 @@ export class MilestonesTableComponent implements OnInit {
   setPresentationRouterOutlet(milestoneID: number) {
     this.router.navigate([{
       outlets: {
-        presentation: ["milestone-presentation", milestoneID]
+        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "milestone-presentation", milestoneID]
       }
     }]);
   }

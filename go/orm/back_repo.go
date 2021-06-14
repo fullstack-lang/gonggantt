@@ -2,11 +2,18 @@
 package orm
 
 import (
+	"bufio"
+	"bytes"
+	"io/ioutil"
+	"log"
 	"os"
+	"path/filepath"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
+
+	"github.com/tealeg/xlsx/v3"
 )
 
 // BackRepoStruct supports callback functions
@@ -103,6 +110,32 @@ func (backRepo *BackRepoStruct) Backup(stage *models.StageStruct, dirPath string
 	backRepo.BackRepoMilestone.Backup(dirPath)
 }
 
+// Backup in XL the BackRepoStruct
+func (backRepo *BackRepoStruct) BackupXL(stage *models.StageStruct, dirPath string) {
+	os.Mkdir(dirPath, os.ModePerm)
+
+	// open an existing file
+	file := xlsx.NewFile()
+
+	// insertion point for per struct backup
+	backRepo.BackRepoBar.BackupXL(file)
+	backRepo.BackRepoGantt.BackupXL(file)
+	backRepo.BackRepoGroup.BackupXL(file)
+	backRepo.BackRepoLane.BackupXL(file)
+	backRepo.BackRepoMilestone.BackupXL(file)
+
+	var b bytes.Buffer
+	writer := bufio.NewWriter(&b)
+	file.Write(writer)
+	theBytes := b.Bytes()
+
+	filename := filepath.Join(dirPath, "bckp.xlsx")
+	err := ioutil.WriteFile(filename, theBytes, 0644)
+	if err != nil {
+		log.Panic("Cannot write the XL file", err.Error())
+	}
+}
+
 // Restore the database into the back repo
 func (backRepo *BackRepoStruct) Restore(stage *models.StageStruct, dirPath string) {
 	models.Stage.Commit()
@@ -134,3 +167,6 @@ func (backRepo *BackRepoStruct) Restore(stage *models.StageStruct, dirPath strin
 	models.Stage.Checkout()
 }
 
+// Restore the database into the back repo
+func (backRepo *BackRepoStruct) RestoreXL(stage *models.StageStruct, dirPath string) {
+}

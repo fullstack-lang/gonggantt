@@ -13,7 +13,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+
+	"github.com/tealeg/xlsx/v3"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
@@ -88,6 +90,36 @@ type BarDBs []BarDB
 type BarDBResponse struct {
 	BarDB
 }
+
+// BarWOP is a Bar without pointers
+// it holds the same basic fields but pointers are encoded into uint
+type BarWOP struct {
+	ID int
+
+	// insertion for WOP basic fields
+
+	Name string
+
+	Start time.Time
+
+	End time.Time
+
+	OptionnalColor string
+
+	OptionnalStroke string
+	// insertion for WOP pointer fields
+}
+
+var Bar_Fields = []string{
+	// insertion for WOP basic fields
+	"ID",
+	"Name",
+	"Start",
+	"End",
+	"OptionnalColor",
+	"OptionnalStroke",
+}
+
 
 type BackRepoBarStruct struct {
 	// stores BarDB according to their gorm ID
@@ -278,6 +310,7 @@ func (backRepoBar *BackRepoBarStruct) CheckoutPhaseOneInstance(barDB *BarDB) (Er
 		(*backRepoBar.Map_BarPtr_BarDBID)[bar] = barDB.ID
 
 		// append model store with the new element
+		bar.Name = barDB.Name_Data.String
 		bar.Stage()
 	}
 	barDB.CopyBasicFieldsToBar(bar)
@@ -339,7 +372,7 @@ func (backRepo *BackRepoStruct) CheckoutBar(bar *models.Bar) {
 	}
 }
 
-// CopyBasicFieldsToBarDB is used to copy basic fields between the Stage or the CRUD to the back repo
+// CopyBasicFieldsFromBar
 func (barDB *BarDB) CopyBasicFieldsFromBar(bar *models.Bar) {
 	// insertion point for fields commit
 	barDB.Name_Data.String = bar.Name
@@ -359,9 +392,39 @@ func (barDB *BarDB) CopyBasicFieldsFromBar(bar *models.Bar) {
 
 }
 
-// CopyBasicFieldsToBarDB is used to copy basic fields between the Stage or the CRUD to the back repo
-func (barDB *BarDB) CopyBasicFieldsToBar(bar *models.Bar) {
+// CopyBasicFieldsFromBarWOP
+func (barDB *BarDB) CopyBasicFieldsFromBarWOP(bar *BarWOP) {
+	// insertion point for fields commit
+	barDB.Name_Data.String = bar.Name
+	barDB.Name_Data.Valid = true
 
+	barDB.Start_Data.Time = bar.Start
+	barDB.Start_Data.Valid = true
+
+	barDB.End_Data.Time = bar.End
+	barDB.End_Data.Valid = true
+
+	barDB.OptionnalColor_Data.String = bar.OptionnalColor
+	barDB.OptionnalColor_Data.Valid = true
+
+	barDB.OptionnalStroke_Data.String = bar.OptionnalStroke
+	barDB.OptionnalStroke_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToBar
+func (barDB *BarDB) CopyBasicFieldsToBar(bar *models.Bar) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	bar.Name = barDB.Name_Data.String
+	bar.Start = barDB.Start_Data.Time
+	bar.End = barDB.End_Data.Time
+	bar.OptionnalColor = barDB.OptionnalColor_Data.String
+	bar.OptionnalStroke = barDB.OptionnalStroke_Data.String
+}
+
+// CopyBasicFieldsToBarWOP
+func (barDB *BarDB) CopyBasicFieldsToBarWOP(bar *BarWOP) {
+	bar.ID = int(barDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
 	bar.Name = barDB.Name_Data.String
 	bar.Start = barDB.Start_Data.Time
@@ -395,6 +458,38 @@ func (backRepoBar *BackRepoBarStruct) Backup(dirPath string) {
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
 		log.Panic("Cannot write the json Bar file", err.Error())
+	}
+}
+
+// Backup generates a json file from a slice of all BarDB instances in the backrepo
+func (backRepoBar *BackRepoBarStruct) BackupXL(file *xlsx.File) {
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	forBackup := make([]*BarDB, 0)
+	for _, barDB := range *backRepoBar.Map_BarDBID_BarDB {
+		forBackup = append(forBackup, barDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	sh, err := file.AddSheet("Bar")
+	if err != nil {
+		log.Panic("Cannot add XL file", err.Error())
+	}
+	_ = sh
+
+	row := sh.AddRow()
+	row.WriteSlice(&Bar_Fields, -1)
+	for _, barDB := range forBackup {
+
+		var barWOP BarWOP
+		barDB.CopyBasicFieldsToBarWOP(&barWOP)
+
+		row := sh.AddRow()
+		row.WriteStruct(&barWOP, -1)
 	}
 }
 

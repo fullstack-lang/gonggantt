@@ -13,7 +13,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
+
+	"github.com/tealeg/xlsx/v3"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
@@ -79,6 +81,27 @@ type MilestoneDBs []MilestoneDB
 type MilestoneDBResponse struct {
 	MilestoneDB
 }
+
+// MilestoneWOP is a Milestone without pointers
+// it holds the same basic fields but pointers are encoded into uint
+type MilestoneWOP struct {
+	ID int
+
+	// insertion for WOP basic fields
+
+	Name string
+
+	Date time.Time
+	// insertion for WOP pointer fields
+}
+
+var Milestone_Fields = []string{
+	// insertion for WOP basic fields
+	"ID",
+	"Name",
+	"Date",
+}
+
 
 type BackRepoMilestoneStruct struct {
 	// stores MilestoneDB according to their gorm ID
@@ -288,6 +311,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOneInstance(miles
 		(*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone] = milestoneDB.ID
 
 		// append model store with the new element
+		milestone.Name = milestoneDB.Name_Data.String
 		milestone.Stage()
 	}
 	milestoneDB.CopyBasicFieldsToMilestone(milestone)
@@ -376,7 +400,7 @@ func (backRepo *BackRepoStruct) CheckoutMilestone(milestone *models.Milestone) {
 	}
 }
 
-// CopyBasicFieldsToMilestoneDB is used to copy basic fields between the Stage or the CRUD to the back repo
+// CopyBasicFieldsFromMilestone
 func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestone(milestone *models.Milestone) {
 	// insertion point for fields commit
 	milestoneDB.Name_Data.String = milestone.Name
@@ -387,9 +411,27 @@ func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestone(milestone *models.M
 
 }
 
-// CopyBasicFieldsToMilestoneDB is used to copy basic fields between the Stage or the CRUD to the back repo
-func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestone(milestone *models.Milestone) {
+// CopyBasicFieldsFromMilestoneWOP
+func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestoneWOP(milestone *MilestoneWOP) {
+	// insertion point for fields commit
+	milestoneDB.Name_Data.String = milestone.Name
+	milestoneDB.Name_Data.Valid = true
 
+	milestoneDB.Date_Data.Time = milestone.Date
+	milestoneDB.Date_Data.Valid = true
+
+}
+
+// CopyBasicFieldsToMilestone
+func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestone(milestone *models.Milestone) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	milestone.Name = milestoneDB.Name_Data.String
+	milestone.Date = milestoneDB.Date_Data.Time
+}
+
+// CopyBasicFieldsToMilestoneWOP
+func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestoneWOP(milestone *MilestoneWOP) {
+	milestone.ID = int(milestoneDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
 	milestone.Name = milestoneDB.Name_Data.String
 	milestone.Date = milestoneDB.Date_Data.Time
@@ -420,6 +462,38 @@ func (backRepoMilestone *BackRepoMilestoneStruct) Backup(dirPath string) {
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
 		log.Panic("Cannot write the json Milestone file", err.Error())
+	}
+}
+
+// Backup generates a json file from a slice of all MilestoneDB instances in the backrepo
+func (backRepoMilestone *BackRepoMilestoneStruct) BackupXL(file *xlsx.File) {
+
+	// organize the map into an array with increasing IDs, in order to have repoductible
+	// backup file
+	forBackup := make([]*MilestoneDB, 0)
+	for _, milestoneDB := range *backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
+		forBackup = append(forBackup, milestoneDB)
+	}
+
+	sort.Slice(forBackup[:], func(i, j int) bool {
+		return forBackup[i].ID < forBackup[j].ID
+	})
+
+	sh, err := file.AddSheet("Milestone")
+	if err != nil {
+		log.Panic("Cannot add XL file", err.Error())
+	}
+	_ = sh
+
+	row := sh.AddRow()
+	row.WriteSlice(&Milestone_Fields, -1)
+	for _, milestoneDB := range forBackup {
+
+		var milestoneWOP MilestoneWOP
+		milestoneDB.CopyBasicFieldsToMilestoneWOP(&milestoneWOP)
+
+		row := sh.AddRow()
+		row.WriteStruct(&milestoneWOP, -1)
 	}
 }
 

@@ -20,7 +20,7 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 
 // generated table component
 @Component({
-  selector: 'app-lanes-table',
+  selector: 'app-lanestable',
   templateUrl: './lanes-table.component.html',
   styleUrls: ['./lanes-table.component.css'],
 })
@@ -47,6 +47,52 @@ export class LanesTableComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngAfterViewInit() {
+
+	// enable sorting on all fields (including pointers and reverse pointer)
+	this.matTableDataSource.sortingDataAccessor = (laneDB: LaneDB, property: string) => {
+		switch (property) {
+				// insertion point for specific sorting accessor
+				case 'Lanes':
+					return this.frontRepo.Gantts.get(laneDB.Gantt_LanesDBID.Int64)?.Name;
+
+				case 'GroupLanes':
+					return this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64)?.Name;
+
+				case 'DiamonfAndTextAnchors':
+					return this.frontRepo.Milestones.get(laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64)?.Name;
+
+				default:
+					return LaneDB[property];
+		}
+	}; 
+
+	// enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
+	this.matTableDataSource.filterPredicate = (laneDB: LaneDB, filter: string) => {
+
+		// filtering is based on finding a lower case filter into a concatenated string
+		// the laneDB properties
+		let mergedContent = ""
+
+		// insertion point for merging of fields
+		mergedContent += laneDB.Name.toLowerCase()
+		mergedContent += laneDB.Order.toString()
+		if (laneDB.Gantt_LanesDBID.Int64 != 0) {
+        	mergedContent += this.frontRepo.Gantts.get(laneDB.Gantt_LanesDBID.Int64)?.Name.toLowerCase()
+    	}
+
+		if (laneDB.Group_GroupLanesDBID.Int64 != 0) {
+        	mergedContent += this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64)?.Name.toLowerCase()
+    	}
+
+		if (laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64 != 0) {
+        	mergedContent += this.frontRepo.Milestones.get(laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64)?.Name.toLowerCase()
+    	}
+
+
+		let isSelected = mergedContent.includes(filter.toLowerCase())
+		return isSelected
+	};
+
     this.matTableDataSource.sort = this.sort;
     this.matTableDataSource.paginator = this.paginator;
   }
@@ -151,14 +197,14 @@ export class LanesTableComponent implements OnInit {
 
   // display lane in router
   displayLaneInRouter(laneID: number) {
-    this.router.navigate(["lane-display", laneID])
+    this.router.navigate(["github_com_fullstack_lang_gonggantt_go-" + "lane-display", laneID])
   }
 
   // set editor outlet
   setEditorRouterOutlet(laneID: number) {
     this.router.navigate([{
       outlets: {
-        editor: ["lane-detail", laneID]
+        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "lane-detail", laneID]
       }
     }]);
   }
@@ -167,7 +213,7 @@ export class LanesTableComponent implements OnInit {
   setPresentationRouterOutlet(laneID: number) {
     this.router.navigate([{
       outlets: {
-        presentation: ["lane-presentation", laneID]
+        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "lane-presentation", laneID]
       }
     }]);
   }
