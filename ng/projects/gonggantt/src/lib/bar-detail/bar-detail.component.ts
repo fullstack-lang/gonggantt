@@ -89,10 +89,14 @@ export class BarDetailComponent implements OnInit {
 		if (association == undefined) {
 			// insertion point for translation/nullation of each pointers
 			if (this.bar.Lane_Bars_reverse != undefined) {
-				this.bar.Lane_BarsDBID = new NullInt64
+				if (this.bar.Lane_BarsDBID == undefined) {
+					this.bar.Lane_BarsDBID = new NullInt64
+				}
 				this.bar.Lane_BarsDBID.Int64 = this.bar.Lane_Bars_reverse.ID
 				this.bar.Lane_BarsDBID.Valid = true
-				this.bar.Lane_BarsDBID_Index = new NullInt64
+				if (this.bar.Lane_BarsDBID_Index == undefined) {
+					this.bar.Lane_BarsDBID_Index = new NullInt64
+				}
 				this.bar.Lane_BarsDBID_Index.Valid = true
 				this.bar.Lane_Bars_reverse = undefined // very important, otherwise, circular JSON
 			}

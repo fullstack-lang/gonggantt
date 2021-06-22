@@ -89,10 +89,14 @@ export class GroupDetailComponent implements OnInit {
 		if (association == undefined) {
 			// insertion point for translation/nullation of each pointers
 			if (this.group.Gantt_Groups_reverse != undefined) {
-				this.group.Gantt_GroupsDBID = new NullInt64
+				if (this.group.Gantt_GroupsDBID == undefined) {
+					this.group.Gantt_GroupsDBID = new NullInt64
+				}
 				this.group.Gantt_GroupsDBID.Int64 = this.group.Gantt_Groups_reverse.ID
 				this.group.Gantt_GroupsDBID.Valid = true
-				this.group.Gantt_GroupsDBID_Index = new NullInt64
+				if (this.group.Gantt_GroupsDBID_Index == undefined) {
+					this.group.Gantt_GroupsDBID_Index = new NullInt64
+				}
 				this.group.Gantt_GroupsDBID_Index.Valid = true
 				this.group.Gantt_Groups_reverse = undefined // very important, otherwise, circular JSON
 			}

@@ -12,19 +12,19 @@ var __member __void
 // StageStruct enables storage of staged instances
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
-	Bars map[*Bar]struct{}
+	Bars           map[*Bar]struct{}
 	Bars_mapString map[string]*Bar
 
-	Gantts map[*Gantt]struct{}
+	Gantts           map[*Gantt]struct{}
 	Gantts_mapString map[string]*Gantt
 
-	Groups map[*Group]struct{}
+	Groups           map[*Group]struct{}
 	Groups_mapString map[string]*Group
 
-	Lanes map[*Lane]struct{}
+	Lanes           map[*Lane]struct{}
 	Lanes_mapString map[string]*Lane
 
-	Milestones map[*Milestone]struct{}
+	Milestones           map[*Milestone]struct{}
 	Milestones_mapString map[string]*Milestone
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
@@ -60,23 +60,24 @@ type BackRepoInterface interface {
 	CommitMilestone(milestone *Milestone)
 	CheckoutMilestone(milestone *Milestone)
 	GetLastCommitNb() uint
+	GetLastPushFromFrontNb() uint
 }
 
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
-	Bars: make(map[*Bar]struct{}, 0),
+	Bars:           make(map[*Bar]struct{}, 0),
 	Bars_mapString: make(map[string]*Bar, 0),
 
-	Gantts: make(map[*Gantt]struct{}, 0),
+	Gantts:           make(map[*Gantt]struct{}, 0),
 	Gantts_mapString: make(map[string]*Gantt, 0),
 
-	Groups: make(map[*Group]struct{}, 0),
+	Groups:           make(map[*Group]struct{}, 0),
 	Groups_mapString: make(map[string]*Group, 0),
 
-	Lanes: make(map[*Lane]struct{}, 0),
+	Lanes:           make(map[*Lane]struct{}, 0),
 	Lanes_mapString: make(map[string]*Lane, 0),
 
-	Milestones: make(map[*Milestone]struct{}, 0),
+	Milestones:           make(map[*Milestone]struct{}, 0),
 	Milestones_mapString: make(map[string]*Milestone, 0),
 
 	// end of insertion point
@@ -139,7 +140,7 @@ func (stage *StageStruct) getBarOrderedStructWithNameField() []*Bar {
 func (bar *Bar) Stage() *Bar {
 	Stage.Bars[bar] = __member
 	Stage.Bars_mapString[bar.Name] = bar
-	
+
 	return bar
 }
 
@@ -241,7 +242,7 @@ func (stage *StageStruct) getGanttOrderedStructWithNameField() []*Gantt {
 func (gantt *Gantt) Stage() *Gantt {
 	Stage.Gantts[gantt] = __member
 	Stage.Gantts_mapString[gantt.Name] = gantt
-	
+
 	return gantt
 }
 
@@ -343,7 +344,7 @@ func (stage *StageStruct) getGroupOrderedStructWithNameField() []*Group {
 func (group *Group) Stage() *Group {
 	Stage.Groups[group] = __member
 	Stage.Groups_mapString[group.Name] = group
-	
+
 	return group
 }
 
@@ -445,7 +446,7 @@ func (stage *StageStruct) getLaneOrderedStructWithNameField() []*Lane {
 func (lane *Lane) Stage() *Lane {
 	Stage.Lanes[lane] = __member
 	Stage.Lanes_mapString[lane.Name] = lane
-	
+
 	return lane
 }
 
@@ -547,7 +548,7 @@ func (stage *StageStruct) getMilestoneOrderedStructWithNameField() []*Milestone 
 func (milestone *Milestone) Stage() *Milestone {
 	Stage.Milestones[milestone] = __member
 	Stage.Milestones_mapString[milestone.Name] = milestone
-	
+
 	return milestone
 }
 

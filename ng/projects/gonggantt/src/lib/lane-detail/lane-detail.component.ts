@@ -89,26 +89,38 @@ export class LaneDetailComponent implements OnInit {
 		if (association == undefined) {
 			// insertion point for translation/nullation of each pointers
 			if (this.lane.Gantt_Lanes_reverse != undefined) {
-				this.lane.Gantt_LanesDBID = new NullInt64
+				if (this.lane.Gantt_LanesDBID == undefined) {
+					this.lane.Gantt_LanesDBID = new NullInt64
+				}
 				this.lane.Gantt_LanesDBID.Int64 = this.lane.Gantt_Lanes_reverse.ID
 				this.lane.Gantt_LanesDBID.Valid = true
-				this.lane.Gantt_LanesDBID_Index = new NullInt64
+				if (this.lane.Gantt_LanesDBID_Index == undefined) {
+					this.lane.Gantt_LanesDBID_Index = new NullInt64
+				}
 				this.lane.Gantt_LanesDBID_Index.Valid = true
 				this.lane.Gantt_Lanes_reverse = undefined // very important, otherwise, circular JSON
 			}
 			if (this.lane.Group_GroupLanes_reverse != undefined) {
-				this.lane.Group_GroupLanesDBID = new NullInt64
+				if (this.lane.Group_GroupLanesDBID == undefined) {
+					this.lane.Group_GroupLanesDBID = new NullInt64
+				}
 				this.lane.Group_GroupLanesDBID.Int64 = this.lane.Group_GroupLanes_reverse.ID
 				this.lane.Group_GroupLanesDBID.Valid = true
-				this.lane.Group_GroupLanesDBID_Index = new NullInt64
+				if (this.lane.Group_GroupLanesDBID_Index == undefined) {
+					this.lane.Group_GroupLanesDBID_Index = new NullInt64
+				}
 				this.lane.Group_GroupLanesDBID_Index.Valid = true
 				this.lane.Group_GroupLanes_reverse = undefined // very important, otherwise, circular JSON
 			}
 			if (this.lane.Milestone_DiamonfAndTextAnchors_reverse != undefined) {
-				this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
+				if (this.lane.Milestone_DiamonfAndTextAnchorsDBID == undefined) {
+					this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
+				}
 				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = this.lane.Milestone_DiamonfAndTextAnchors_reverse.ID
 				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
-				this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index = new NullInt64
+				if (this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index == undefined) {
+					this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index = new NullInt64
+				}
 				this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
 				this.lane.Milestone_DiamonfAndTextAnchors_reverse = undefined // very important, otherwise, circular JSON
 			}

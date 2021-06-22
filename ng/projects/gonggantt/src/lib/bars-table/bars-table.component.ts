@@ -52,6 +52,21 @@ export class BarsTableComponent implements OnInit {
 	this.matTableDataSource.sortingDataAccessor = (barDB: BarDB, property: string) => {
 		switch (property) {
 				// insertion point for specific sorting accessor
+			case 'Name':
+				return barDB.Name;
+
+			case 'Start':
+				return barDB.Start;
+
+			case 'End':
+				return barDB.End;
+
+			case 'OptionnalColor':
+				return barDB.OptionnalColor;
+
+			case 'OptionnalStroke':
+				return barDB.OptionnalStroke;
+
 				case 'Bars':
 					return this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)?.Name;
 

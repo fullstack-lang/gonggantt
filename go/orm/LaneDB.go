@@ -92,7 +92,7 @@ type LaneDBResponse struct {
 	LaneDB
 }
 
-// LaneWOP is a Lane without pointers
+// LaneWOP is a Lane without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type LaneWOP struct {
 	ID int
@@ -111,7 +111,6 @@ var Lane_Fields = []string{
 	"Name",
 	"Order",
 }
-
 
 type BackRepoLaneStruct struct {
 	// stores LaneDB according to their gorm ID
@@ -261,7 +260,7 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 
 			// get the back repo instance at the association end
 			barAssocEnd_DB :=
-				backRepo.BackRepoBar.GetBarDBFromBarPtr( barAssocEnd)
+				backRepo.BackRepoBar.GetBarDBFromBarPtr(barAssocEnd)
 
 			// encode reverse pointer in the association end back repo instance
 			barAssocEnd_DB.Lane_BarsDBID.Int64 = int64(laneDB.ID)
@@ -289,9 +288,8 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 
 // BackRepoLane.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
-// Phase One is the creation of instance in the stage
-//
-// NOTE: the is supposed to have been reset before
+// Phase One will result in having instances on the stage aligned with the back repo
+// pointers are not initialized yet (this is for pahse two)
 //
 func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOne() (Error error) {
 
@@ -301,9 +299,34 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOne() (Error error) {
 		return query.Error
 	}
 
+	// list of instances to be removed
+	// start from the initial map on the stage and remove instances that have been checked out
+	laneInstancesToBeRemovedFromTheStage := make(map[*models.Lane]struct{})
+	for key, value := range models.Stage.Lanes {
+		laneInstancesToBeRemovedFromTheStage[key] = value
+	}
+
 	// copy orm objects to the the map
 	for _, laneDB := range laneDBArray {
 		backRepoLane.CheckoutPhaseOneInstance(&laneDB)
+
+		// do not remove this instance from the stage, therefore
+		// remove instance from the list of instances to be be removed from the stage
+		lane, ok := (*backRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+		if ok {
+			delete(laneInstancesToBeRemovedFromTheStage, lane)
+		}
+	}
+
+	// remove from stage and back repo's 3 maps all lanes that are not in the checkout
+	for lane := range laneInstancesToBeRemovedFromTheStage {
+		lane.Unstage()
+
+		// remove instance from the back repo 3 maps
+		laneID := (*backRepoLane.Map_LanePtr_LaneDBID)[lane]
+		delete((*backRepoLane.Map_LanePtr_LaneDBID), lane)
+		delete((*backRepoLane.Map_LaneDBID_LaneDB), laneID)
+		delete((*backRepoLane.Map_LaneDBID_LanePtr), laneID)
 	}
 
 	return
@@ -551,7 +574,7 @@ func (backRepoLane *BackRepoLaneStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoLane *BackRepoLaneStruct) RestorePhaseTwo() {
 
-	for _, laneDB := range (*backRepoLane.Map_LaneDBID_LaneDB) {
+	for _, laneDB := range *backRepoLane.Map_LaneDBID_LaneDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = laneDB
@@ -559,19 +582,19 @@ func (backRepoLane *BackRepoLaneStruct) RestorePhaseTwo() {
 		// insertion point for reindexing pointers encoding
 		// This reindex lane.Lanes
 		if laneDB.Gantt_LanesDBID.Int64 != 0 {
-			laneDB.Gantt_LanesDBID.Int64 = 
+			laneDB.Gantt_LanesDBID.Int64 =
 				int64(BackRepoGanttid_atBckpTime_newID[uint(laneDB.Gantt_LanesDBID.Int64)])
 		}
 
 		// This reindex lane.GroupLanes
 		if laneDB.Group_GroupLanesDBID.Int64 != 0 {
-			laneDB.Group_GroupLanesDBID.Int64 = 
+			laneDB.Group_GroupLanesDBID.Int64 =
 				int64(BackRepoGroupid_atBckpTime_newID[uint(laneDB.Group_GroupLanesDBID.Int64)])
 		}
 
 		// This reindex lane.DiamonfAndTextAnchors
 		if laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64 != 0 {
-			laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64 = 
+			laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64 =
 				int64(BackRepoMilestoneid_atBckpTime_newID[uint(laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64)])
 		}
 

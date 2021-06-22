@@ -79,7 +79,7 @@ type GroupDBResponse struct {
 	GroupDB
 }
 
-// GroupWOP is a Group without pointers
+// GroupWOP is a Group without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type GroupWOP struct {
 	ID int
@@ -95,7 +95,6 @@ var Group_Fields = []string{
 	"ID",
 	"Name",
 }
-
 
 type BackRepoGroupStruct struct {
 	// stores GroupDB according to their gorm ID
@@ -245,7 +244,7 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 			// get the back repo instance at the association end
 			laneAssocEnd_DB :=
-				backRepo.BackRepoLane.GetLaneDBFromLanePtr( laneAssocEnd)
+				backRepo.BackRepoLane.GetLaneDBFromLanePtr(laneAssocEnd)
 
 			// encode reverse pointer in the association end back repo instance
 			laneAssocEnd_DB.Group_GroupLanesDBID.Int64 = int64(groupDB.ID)
@@ -273,9 +272,8 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 // BackRepoGroup.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
-// Phase One is the creation of instance in the stage
-//
-// NOTE: the is supposed to have been reset before
+// Phase One will result in having instances on the stage aligned with the back repo
+// pointers are not initialized yet (this is for pahse two)
 //
 func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOne() (Error error) {
 
@@ -285,9 +283,34 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOne() (Error error) {
 		return query.Error
 	}
 
+	// list of instances to be removed
+	// start from the initial map on the stage and remove instances that have been checked out
+	groupInstancesToBeRemovedFromTheStage := make(map[*models.Group]struct{})
+	for key, value := range models.Stage.Groups {
+		groupInstancesToBeRemovedFromTheStage[key] = value
+	}
+
 	// copy orm objects to the the map
 	for _, groupDB := range groupDBArray {
 		backRepoGroup.CheckoutPhaseOneInstance(&groupDB)
+
+		// do not remove this instance from the stage, therefore
+		// remove instance from the list of instances to be be removed from the stage
+		group, ok := (*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+		if ok {
+			delete(groupInstancesToBeRemovedFromTheStage, group)
+		}
+	}
+
+	// remove from stage and back repo's 3 maps all groups that are not in the checkout
+	for group := range groupInstancesToBeRemovedFromTheStage {
+		group.Unstage()
+
+		// remove instance from the back repo 3 maps
+		groupID := (*backRepoGroup.Map_GroupPtr_GroupDBID)[group]
+		delete((*backRepoGroup.Map_GroupPtr_GroupDBID), group)
+		delete((*backRepoGroup.Map_GroupDBID_GroupDB), groupID)
+		delete((*backRepoGroup.Map_GroupDBID_GroupPtr), groupID)
 	}
 
 	return
@@ -527,7 +550,7 @@ func (backRepoGroup *BackRepoGroupStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoGroup *BackRepoGroupStruct) RestorePhaseTwo() {
 
-	for _, groupDB := range (*backRepoGroup.Map_GroupDBID_GroupDB) {
+	for _, groupDB := range *backRepoGroup.Map_GroupDBID_GroupDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = groupDB
@@ -535,7 +558,7 @@ func (backRepoGroup *BackRepoGroupStruct) RestorePhaseTwo() {
 		// insertion point for reindexing pointers encoding
 		// This reindex group.Groups
 		if groupDB.Gantt_GroupsDBID.Int64 != 0 {
-			groupDB.Gantt_GroupsDBID.Int64 = 
+			groupDB.Gantt_GroupsDBID.Int64 =
 				int64(BackRepoGanttid_atBckpTime_newID[uint(groupDB.Gantt_GroupsDBID.Int64)])
 		}
 

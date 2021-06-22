@@ -129,7 +129,7 @@ type GanttDBResponse struct {
 	GanttDB
 }
 
-// GanttWOP is a Gantt without pointers
+// GanttWOP is a Gantt without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type GanttWOP struct {
 	ID int
@@ -199,7 +199,6 @@ var Gantt_Fields = []string{
 	"DateYOffset",
 	"AlignOnStartEndOnYearStart",
 }
-
 
 type BackRepoGanttStruct struct {
 	// stores GanttDB according to their gorm ID
@@ -349,7 +348,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 			// get the back repo instance at the association end
 			laneAssocEnd_DB :=
-				backRepo.BackRepoLane.GetLaneDBFromLanePtr( laneAssocEnd)
+				backRepo.BackRepoLane.GetLaneDBFromLanePtr(laneAssocEnd)
 
 			// encode reverse pointer in the association end back repo instance
 			laneAssocEnd_DB.Gantt_LanesDBID.Int64 = int64(ganttDB.ID)
@@ -368,7 +367,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 			// get the back repo instance at the association end
 			milestoneAssocEnd_DB :=
-				backRepo.BackRepoMilestone.GetMilestoneDBFromMilestonePtr( milestoneAssocEnd)
+				backRepo.BackRepoMilestone.GetMilestoneDBFromMilestonePtr(milestoneAssocEnd)
 
 			// encode reverse pointer in the association end back repo instance
 			milestoneAssocEnd_DB.Gantt_MilestonesDBID.Int64 = int64(ganttDB.ID)
@@ -387,7 +386,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 			// get the back repo instance at the association end
 			groupAssocEnd_DB :=
-				backRepo.BackRepoGroup.GetGroupDBFromGroupPtr( groupAssocEnd)
+				backRepo.BackRepoGroup.GetGroupDBFromGroupPtr(groupAssocEnd)
 
 			// encode reverse pointer in the association end back repo instance
 			groupAssocEnd_DB.Gantt_GroupsDBID.Int64 = int64(ganttDB.ID)
@@ -415,9 +414,8 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 // BackRepoGantt.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
-// Phase One is the creation of instance in the stage
-//
-// NOTE: the is supposed to have been reset before
+// Phase One will result in having instances on the stage aligned with the back repo
+// pointers are not initialized yet (this is for pahse two)
 //
 func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 
@@ -427,9 +425,34 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 		return query.Error
 	}
 
+	// list of instances to be removed
+	// start from the initial map on the stage and remove instances that have been checked out
+	ganttInstancesToBeRemovedFromTheStage := make(map[*models.Gantt]struct{})
+	for key, value := range models.Stage.Gantts {
+		ganttInstancesToBeRemovedFromTheStage[key] = value
+	}
+
 	// copy orm objects to the the map
 	for _, ganttDB := range ganttDBArray {
 		backRepoGantt.CheckoutPhaseOneInstance(&ganttDB)
+
+		// do not remove this instance from the stage, therefore
+		// remove instance from the list of instances to be be removed from the stage
+		gantt, ok := (*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+		if ok {
+			delete(ganttInstancesToBeRemovedFromTheStage, gantt)
+		}
+	}
+
+	// remove from stage and back repo's 3 maps all gantts that are not in the checkout
+	for gantt := range ganttInstancesToBeRemovedFromTheStage {
+		gantt.Unstage()
+
+		// remove instance from the back repo 3 maps
+		ganttID := (*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt]
+		delete((*backRepoGantt.Map_GanttPtr_GanttDBID), gantt)
+		delete((*backRepoGantt.Map_GanttDBID_GanttDB), ganttID)
+		delete((*backRepoGantt.Map_GanttDBID_GanttPtr), ganttID)
 	}
 
 	return
@@ -867,7 +890,7 @@ func (backRepoGantt *BackRepoGanttStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoGantt *BackRepoGanttStruct) RestorePhaseTwo() {
 
-	for _, ganttDB := range (*backRepoGantt.Map_GanttDBID_GanttDB) {
+	for _, ganttDB := range *backRepoGantt.Map_GanttDBID_GanttDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = ganttDB

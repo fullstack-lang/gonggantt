@@ -91,7 +91,7 @@ type BarDBResponse struct {
 	BarDB
 }
 
-// BarWOP is a Bar without pointers
+// BarWOP is a Bar without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type BarWOP struct {
 	ID int
@@ -119,7 +119,6 @@ var Bar_Fields = []string{
 	"OptionnalColor",
 	"OptionnalStroke",
 }
-
 
 type BackRepoBarStruct struct {
 	// stores BarDB according to their gorm ID
@@ -278,9 +277,8 @@ func (backRepoBar *BackRepoBarStruct) CommitPhaseTwoInstance(backRepo *BackRepoS
 
 // BackRepoBar.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
-// Phase One is the creation of instance in the stage
-//
-// NOTE: the is supposed to have been reset before
+// Phase One will result in having instances on the stage aligned with the back repo
+// pointers are not initialized yet (this is for pahse two)
 //
 func (backRepoBar *BackRepoBarStruct) CheckoutPhaseOne() (Error error) {
 
@@ -290,9 +288,34 @@ func (backRepoBar *BackRepoBarStruct) CheckoutPhaseOne() (Error error) {
 		return query.Error
 	}
 
+	// list of instances to be removed
+	// start from the initial map on the stage and remove instances that have been checked out
+	barInstancesToBeRemovedFromTheStage := make(map[*models.Bar]struct{})
+	for key, value := range models.Stage.Bars {
+		barInstancesToBeRemovedFromTheStage[key] = value
+	}
+
 	// copy orm objects to the the map
 	for _, barDB := range barDBArray {
 		backRepoBar.CheckoutPhaseOneInstance(&barDB)
+
+		// do not remove this instance from the stage, therefore
+		// remove instance from the list of instances to be be removed from the stage
+		bar, ok := (*backRepoBar.Map_BarDBID_BarPtr)[barDB.ID]
+		if ok {
+			delete(barInstancesToBeRemovedFromTheStage, bar)
+		}
+	}
+
+	// remove from stage and back repo's 3 maps all bars that are not in the checkout
+	for bar := range barInstancesToBeRemovedFromTheStage {
+		bar.Unstage()
+
+		// remove instance from the back repo 3 maps
+		barID := (*backRepoBar.Map_BarPtr_BarDBID)[bar]
+		delete((*backRepoBar.Map_BarPtr_BarDBID), bar)
+		delete((*backRepoBar.Map_BarDBID_BarDB), barID)
+		delete((*backRepoBar.Map_BarDBID_BarPtr), barID)
 	}
 
 	return
@@ -537,7 +560,7 @@ func (backRepoBar *BackRepoBarStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoBar *BackRepoBarStruct) RestorePhaseTwo() {
 
-	for _, barDB := range (*backRepoBar.Map_BarDBID_BarDB) {
+	for _, barDB := range *backRepoBar.Map_BarDBID_BarDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = barDB
@@ -545,7 +568,7 @@ func (backRepoBar *BackRepoBarStruct) RestorePhaseTwo() {
 		// insertion point for reindexing pointers encoding
 		// This reindex bar.Bars
 		if barDB.Lane_BarsDBID.Int64 != 0 {
-			barDB.Lane_BarsDBID.Int64 = 
+			barDB.Lane_BarsDBID.Int64 =
 				int64(BackRepoLaneid_atBckpTime_newID[uint(barDB.Lane_BarsDBID.Int64)])
 		}
 

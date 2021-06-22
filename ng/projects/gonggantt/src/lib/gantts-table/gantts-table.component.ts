@@ -52,6 +52,63 @@ export class GanttsTableComponent implements OnInit {
 	this.matTableDataSource.sortingDataAccessor = (ganttDB: GanttDB, property: string) => {
 		switch (property) {
 				// insertion point for specific sorting accessor
+			case 'Name':
+				return ganttDB.Name;
+
+			case 'Start':
+				return ganttDB.Start;
+
+			case 'End':
+				return ganttDB.End;
+
+			case 'LaneHeight':
+				return ganttDB.LaneHeight;
+
+			case 'RatioBarToLaneHeight':
+				return ganttDB.RatioBarToLaneHeight;
+
+			case 'YTopMargin':
+				return ganttDB.YTopMargin;
+
+			case 'XLeftText':
+				return ganttDB.XLeftText;
+
+			case 'TextHeight':
+				return ganttDB.TextHeight;
+
+			case 'XLeftLanes':
+				return ganttDB.XLeftLanes;
+
+			case 'XRightMargin':
+				return ganttDB.XRightMargin;
+
+			case 'TimeLine_Color':
+				return ganttDB.TimeLine_Color;
+
+			case 'TimeLine_FillOpacity':
+				return ganttDB.TimeLine_FillOpacity;
+
+			case 'TimeLine_Stroke':
+				return ganttDB.TimeLine_Stroke;
+
+			case 'TimeLine_StrokeWidth':
+				return ganttDB.TimeLine_StrokeWidth;
+
+			case 'Group_Stroke':
+				return ganttDB.Group_Stroke;
+
+			case 'Group_StrokeWidth':
+				return ganttDB.Group_StrokeWidth;
+
+			case 'Group_StrokeDashArray':
+				return ganttDB.Group_StrokeDashArray;
+
+			case 'DateYOffset':
+				return ganttDB.DateYOffset;
+
+			case 'AlignOnStartEndOnYearStart':
+				return ganttDB.AlignOnStartEndOnYearStart;
+
 				default:
 					return GanttDB[property];
 		}

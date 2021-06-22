@@ -89,10 +89,14 @@ export class MilestoneDetailComponent implements OnInit {
 		if (association == undefined) {
 			// insertion point for translation/nullation of each pointers
 			if (this.milestone.Gantt_Milestones_reverse != undefined) {
-				this.milestone.Gantt_MilestonesDBID = new NullInt64
+				if (this.milestone.Gantt_MilestonesDBID == undefined) {
+					this.milestone.Gantt_MilestonesDBID = new NullInt64
+				}
 				this.milestone.Gantt_MilestonesDBID.Int64 = this.milestone.Gantt_Milestones_reverse.ID
 				this.milestone.Gantt_MilestonesDBID.Valid = true
-				this.milestone.Gantt_MilestonesDBID_Index = new NullInt64
+				if (this.milestone.Gantt_MilestonesDBID_Index == undefined) {
+					this.milestone.Gantt_MilestonesDBID_Index = new NullInt64
+				}
 				this.milestone.Gantt_MilestonesDBID_Index.Valid = true
 				this.milestone.Gantt_Milestones_reverse = undefined // very important, otherwise, circular JSON
 			}

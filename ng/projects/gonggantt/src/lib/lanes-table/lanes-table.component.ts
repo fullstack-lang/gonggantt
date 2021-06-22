@@ -52,6 +52,12 @@ export class LanesTableComponent implements OnInit {
 	this.matTableDataSource.sortingDataAccessor = (laneDB: LaneDB, property: string) => {
 		switch (property) {
 				// insertion point for specific sorting accessor
+			case 'Name':
+				return laneDB.Name;
+
+			case 'Order':
+				return laneDB.Order;
+
 				case 'Lanes':
 					return this.frontRepo.Gantts.get(laneDB.Gantt_LanesDBID.Int64)?.Name;
 

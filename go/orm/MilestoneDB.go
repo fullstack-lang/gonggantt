@@ -82,7 +82,7 @@ type MilestoneDBResponse struct {
 	MilestoneDB
 }
 
-// MilestoneWOP is a Milestone without pointers
+// MilestoneWOP is a Milestone without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type MilestoneWOP struct {
 	ID int
@@ -101,7 +101,6 @@ var Milestone_Fields = []string{
 	"Name",
 	"Date",
 }
-
 
 type BackRepoMilestoneStruct struct {
 	// stores MilestoneDB according to their gorm ID
@@ -251,7 +250,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 
 			// get the back repo instance at the association end
 			laneAssocEnd_DB :=
-				backRepo.BackRepoLane.GetLaneDBFromLanePtr( laneAssocEnd)
+				backRepo.BackRepoLane.GetLaneDBFromLanePtr(laneAssocEnd)
 
 			// encode reverse pointer in the association end back repo instance
 			laneAssocEnd_DB.Milestone_DiamonfAndTextAnchorsDBID.Int64 = int64(milestoneDB.ID)
@@ -279,9 +278,8 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 
 // BackRepoMilestone.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
-// Phase One is the creation of instance in the stage
-//
-// NOTE: the is supposed to have been reset before
+// Phase One will result in having instances on the stage aligned with the back repo
+// pointers are not initialized yet (this is for pahse two)
 //
 func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error error) {
 
@@ -291,9 +289,34 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error erro
 		return query.Error
 	}
 
+	// list of instances to be removed
+	// start from the initial map on the stage and remove instances that have been checked out
+	milestoneInstancesToBeRemovedFromTheStage := make(map[*models.Milestone]struct{})
+	for key, value := range models.Stage.Milestones {
+		milestoneInstancesToBeRemovedFromTheStage[key] = value
+	}
+
 	// copy orm objects to the the map
 	for _, milestoneDB := range milestoneDBArray {
 		backRepoMilestone.CheckoutPhaseOneInstance(&milestoneDB)
+
+		// do not remove this instance from the stage, therefore
+		// remove instance from the list of instances to be be removed from the stage
+		milestone, ok := (*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+		if ok {
+			delete(milestoneInstancesToBeRemovedFromTheStage, milestone)
+		}
+	}
+
+	// remove from stage and back repo's 3 maps all milestones that are not in the checkout
+	for milestone := range milestoneInstancesToBeRemovedFromTheStage {
+		milestone.Unstage()
+
+		// remove instance from the back repo 3 maps
+		milestoneID := (*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]
+		delete((*backRepoMilestone.Map_MilestonePtr_MilestoneDBID), milestone)
+		delete((*backRepoMilestone.Map_MilestoneDBID_MilestoneDB), milestoneID)
+		delete((*backRepoMilestone.Map_MilestoneDBID_MilestonePtr), milestoneID)
 	}
 
 	return
@@ -541,7 +564,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseOne(dirPath string
 // to compute new index
 func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseTwo() {
 
-	for _, milestoneDB := range (*backRepoMilestone.Map_MilestoneDBID_MilestoneDB) {
+	for _, milestoneDB := range *backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = milestoneDB
@@ -549,7 +572,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseTwo() {
 		// insertion point for reindexing pointers encoding
 		// This reindex milestone.Milestones
 		if milestoneDB.Gantt_MilestonesDBID.Int64 != 0 {
-			milestoneDB.Gantt_MilestonesDBID.Int64 = 
+			milestoneDB.Gantt_MilestonesDBID.Int64 =
 				int64(BackRepoGanttid_atBckpTime_newID[uint(milestoneDB.Gantt_MilestonesDBID.Int64)])
 		}
 

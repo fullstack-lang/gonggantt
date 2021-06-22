@@ -52,6 +52,12 @@ export class MilestonesTableComponent implements OnInit {
 	this.matTableDataSource.sortingDataAccessor = (milestoneDB: MilestoneDB, property: string) => {
 		switch (property) {
 				// insertion point for specific sorting accessor
+			case 'Name':
+				return milestoneDB.Name;
+
+			case 'Date':
+				return milestoneDB.Date;
+
 				case 'Milestones':
 					return this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64)?.Name;
 

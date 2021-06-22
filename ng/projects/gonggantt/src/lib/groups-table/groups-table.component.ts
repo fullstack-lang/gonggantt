@@ -52,6 +52,9 @@ export class GroupsTableComponent implements OnInit {
 	this.matTableDataSource.sortingDataAccessor = (groupDB: GroupDB, property: string) => {
 		switch (property) {
 				// insertion point for specific sorting accessor
+			case 'Name':
+				return groupDB.Name;
+
 				case 'Groups':
 					return this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64)?.Name;
 
