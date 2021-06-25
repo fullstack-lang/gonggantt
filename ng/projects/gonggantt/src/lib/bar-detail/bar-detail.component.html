@@ -1,65 +1,90 @@
-<div *ngIf="bar" class="details">
+<form *ngIf="bar" class="details">
     <h1 class="details__title">bar</h1>
     <!-- insertion point for fields specific code -->
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.Name">
             </mat-form-field>
-        </form>
-    </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('Name')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("Name")' mat-form-field class="detail-full-width">
+        <mat-label>Name</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.Name"></textarea>
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>Start</mat-label>
-                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.Start">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>Start</mat-label>
+        <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.Start">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>End</mat-label>
-                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.End">
-            </mat-form-field>
-        </form>
-    </div>
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+    <mat-form-field class="detail-full-width">
+        <mat-label>End</mat-label>
+        <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.End">
+    </mat-form-field>
+
+    <mat-grid-list *ngIf='!isATextArea("OptionnalColor")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>OptionnalColor</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.OptionnalColor">
             </mat-form-field>
-        </form>
-    </div>
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('OptionnalColor')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("OptionnalColor")' mat-form-field class="detail-full-width">
+        <mat-label>OptionnalColor</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.OptionnalColor"></textarea>
+    </mat-form-field>
+
+    <mat-grid-list *ngIf='!isATextArea("OptionnalStroke")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>OptionnalStroke</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.OptionnalStroke">
             </mat-form-field>
-        </form>
-    </div>
-    <div class="details__item">
-    <mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('OptionnalStroke')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("OptionnalStroke")' mat-form-field class="detail-full-width">
+        <mat-label>OptionnalStroke</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.OptionnalStroke"></textarea>
+    </mat-form-field>
+
+    <mat-form-field class="detail-full-width">
         <mat-label><- Bars</mat-label>
-        <mat-select [(ngModel)]="bar.Lane_Bars_reverse">
+        <mat-select [compareWith]="compareObjects" [(ngModel)]="bar.Lane_Bars_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let lane of frontRepo.Lanes_array" [value]="lane">
                 {{lane.Name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
-</div>
     <div class="details__save">
         <button mat-raised-button color="primary" (click)="save()">
 			Save bar
 		</button>
     </div>
-</div>
+</form>

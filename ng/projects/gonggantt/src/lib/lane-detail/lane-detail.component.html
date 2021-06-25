@@ -1,24 +1,32 @@
-<div *ngIf="lane" class="details">
+<form *ngIf="lane" class="details">
     <h1 class="details__title">lane</h1>
     <!-- insertion point for fields specific code -->
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="lane.Name">
             </mat-form-field>
-        </form>
-    </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('Name')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("Name")' mat-form-field class="detail-full-width">
+        <mat-label>Name</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="lane.Name"></textarea>
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>Order</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="lane.Order">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>Order</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="lane.Order" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <mat-grid-list cols="2" rowHeight="6:1">
         <mat-grid-tile>
             <div style="width: 100vw; text-align: right;">
@@ -36,42 +44,36 @@
             </div>
         </mat-grid-tile>
     </mat-grid-list>
-    <div class="details__item">
-    <mat-form-field>
+    <mat-form-field class="detail-full-width">
         <mat-label><- Lanes</mat-label>
-        <mat-select [(ngModel)]="lane.Gantt_Lanes_reverse">
+        <mat-select [compareWith]="compareObjects" [(ngModel)]="lane.Gantt_Lanes_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let gantt of frontRepo.Gantts_array" [value]="gantt">
                 {{gantt.Name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
-</div>
-    <div class="details__item">
-    <mat-form-field>
+    <mat-form-field class="detail-full-width">
         <mat-label><- GroupLanes</mat-label>
-        <mat-select [(ngModel)]="lane.Group_GroupLanes_reverse">
+        <mat-select [compareWith]="compareObjects" [(ngModel)]="lane.Group_GroupLanes_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let group of frontRepo.Groups_array" [value]="group">
                 {{group.Name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
-</div>
-    <div class="details__item">
-    <mat-form-field>
+    <mat-form-field class="detail-full-width">
         <mat-label><- DiamonfAndTextAnchors</mat-label>
-        <mat-select [(ngModel)]="lane.Milestone_DiamonfAndTextAnchors_reverse">
+        <mat-select [compareWith]="compareObjects" [(ngModel)]="lane.Milestone_DiamonfAndTextAnchors_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let milestone of frontRepo.Milestones_array" [value]="milestone">
                 {{milestone.Name}}
             </mat-option>
         </mat-select>
     </mat-form-field>
-</div>
     <div class="details__save">
         <button mat-raised-button color="primary" (click)="save()">
 			Save lane
 		</button>
     </div>
-</div>
+</form>

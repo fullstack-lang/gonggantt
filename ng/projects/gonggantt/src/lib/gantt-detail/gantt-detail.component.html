@@ -1,174 +1,187 @@
-<div *ngIf="gantt" class="details">
+<form *ngIf="gantt" class="details">
     <h1 class="details__title">gantt</h1>
     <!-- insertion point for fields specific code -->
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Name">
             </mat-form-field>
-        </form>
-    </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('Name')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("Name")' mat-form-field class="detail-full-width">
+        <mat-label>Name</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Name"></textarea>
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>Start</mat-label>
-                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Start">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>Start</mat-label>
+        <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Start">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>End</mat-label>
-                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.End">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>End</mat-label>
+        <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.End">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>LaneHeight</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.LaneHeight">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>LaneHeight</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.LaneHeight" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>RatioBarToLaneHeight</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.RatioBarToLaneHeight">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>RatioBarToLaneHeight</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.RatioBarToLaneHeight" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>YTopMargin</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.YTopMargin">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>YTopMargin</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.YTopMargin" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>XLeftText</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XLeftText">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>XLeftText</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XLeftText" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>TextHeight</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TextHeight">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>TextHeight</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TextHeight" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>XLeftLanes</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XLeftLanes">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>XLeftLanes</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XLeftLanes" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>XRightMargin</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XRightMargin">
-            </mat-form-field>
-        </form>
-    </div>
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+    <mat-form-field class="detail-full-width">
+        <mat-label>XRightMargin</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XRightMargin" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
+    <mat-grid-list *ngIf='!isATextArea("TimeLine_Color")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TimeLine_Color</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_Color">
             </mat-form-field>
-        </form>
-    </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('TimeLine_Color')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("TimeLine_Color")' mat-form-field class="detail-full-width">
+        <mat-label>TimeLine_Color</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_Color"></textarea>
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>TimeLine_FillOpacity</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_FillOpacity">
-            </mat-form-field>
-        </form>
-    </div>
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+    <mat-form-field class="detail-full-width">
+        <mat-label>TimeLine_FillOpacity</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_FillOpacity" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
+    <mat-grid-list *ngIf='!isATextArea("TimeLine_Stroke")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TimeLine_Stroke</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_Stroke">
             </mat-form-field>
-        </form>
-    </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('TimeLine_Stroke')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("TimeLine_Stroke")' mat-form-field class="detail-full-width">
+        <mat-label>TimeLine_Stroke</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_Stroke"></textarea>
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>TimeLine_StrokeWidth</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_StrokeWidth">
-            </mat-form-field>
-        </form>
-    </div>
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+    <mat-form-field class="detail-full-width">
+        <mat-label>TimeLine_StrokeWidth</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_StrokeWidth" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
+    <mat-grid-list *ngIf='!isATextArea("Group_Stroke")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Group_Stroke</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_Stroke">
             </mat-form-field>
-        </form>
-    </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('Group_Stroke')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("Group_Stroke")' mat-form-field class="detail-full-width">
+        <mat-label>Group_Stroke</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_Stroke"></textarea>
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>Group_StrokeWidth</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_StrokeWidth">
-            </mat-form-field>
-        </form>
-    </div>
-    <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
+    <mat-form-field class="detail-full-width">
+        <mat-label>Group_StrokeWidth</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_StrokeWidth" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
+    <mat-grid-list *ngIf='!isATextArea("Group_StrokeDashArray")' cols="4" rowHeight="6:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Group_StrokeDashArray</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_StrokeDashArray">
             </mat-form-field>
-        </form>
-    </div>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('Group_StrokeDashArray')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("Group_StrokeDashArray")' mat-form-field class="detail-full-width">
+        <mat-label>Group_StrokeDashArray</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_StrokeDashArray"></textarea>
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-form-field>
-                <mat-label>DateYOffset</mat-label>
-                <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.DateYOffset">
-            </mat-form-field>
-        </form>
-    </div>
+    <mat-form-field class="detail-full-width">
+        <mat-label>DateYOffset</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.DateYOffset" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <!-- -->
-    <div class="details__item">
-        <form>
-            <mat-checkbox [formControl]="AlignOnStartEndOnYearStartFormControl">AlignOnStartEndOnYearStart</mat-checkbox>
-        </form>
-    </div>
+    <mat-checkbox [formControl]="AlignOnStartEndOnYearStartFormControl">AlignOnStartEndOnYearStart</mat-checkbox>
+
     <mat-grid-list cols="2" rowHeight="6:1">
         <mat-grid-tile>
             <div style="width: 100vw; text-align: right;">
@@ -225,4 +238,4 @@
 			Save gantt
 		</button>
     </div>
-</div>
+</form>
