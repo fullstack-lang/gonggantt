@@ -17,6 +17,15 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 
 import { NullInt64 } from '../front-repo.service'
 
+// BarDetailComponent is initilizaed from different routes
+// BarDetailComponentState detail different cases 
+enum BarDetailComponentState {
+	CREATE_INSTANCE,
+	UPDATE_INSTANCE,
+	// insertion point for declarations of enum values of state
+	CREATE_INSTANCE_WITH_ASSOCIATION_Lane_Bars_SET,
+}
+
 @Component({
 	selector: 'app-bar-detail',
 	templateUrl: './bar-detail.component.html',
@@ -37,6 +46,17 @@ export class BarDetailComponent implements OnInit {
 	// if true, it is inputed with a <textarea ...> </textarea>
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
+	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
+	state: BarDetailComponentState
+
+	// in UDPATE state, if is the id of the instance to update
+	// in CREATE state with one association set, this is the id of the associated instance
+	id: number
+
+	// in CREATE state with one association set, this is the id of the associated instance
+	originStruct: string
+	originStructFieldName: string
+
 	constructor(
 		private barService: BarService,
 		private frontRepoService: FrontRepoService,
@@ -47,6 +67,31 @@ export class BarDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+
+		// compute state
+		this.id = +this.route.snapshot.paramMap.get('id');
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+
+		const association = this.route.snapshot.paramMap.get('association');
+		if (this.id == 0) {
+			this.state = BarDetailComponentState.CREATE_INSTANCE
+		} else {
+			if (this.originStruct == undefined) {
+				this.state = BarDetailComponentState.UPDATE_INSTANCE
+			} else {
+				switch (this.originStructFieldName) {
+					// insertion point for state computation
+					case "Bars":
+						console.log("Bar" + " is instanciated with back pointer to instance " + this.id + " Lane association Bars")
+						this.state = BarDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Lane_Bars_SET
+						break;
+					default:
+						console.log(this.originStructFieldName + " is unkown association")
+				}
+			}
+		}
+
 		this.getBar()
 
 		// observable for changes in structs
@@ -62,16 +107,25 @@ export class BarDetailComponent implements OnInit {
 	}
 
 	getBar(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				if (id != 0 && association == undefined) {
-					this.bar = frontRepo.Bars.get(id)
-				} else {
-					this.bar = new (BarDB)
+
+				switch (this.state) {
+					case BarDetailComponentState.CREATE_INSTANCE:
+						this.bar = new (BarDB)
+						break;
+					case BarDetailComponentState.UPDATE_INSTANCE:
+						this.bar = frontRepo.Bars.get(this.id)
+						break;
+					// insertion point for init of association field
+					case BarDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Lane_Bars_SET:
+						this.bar = new (BarDB)
+						this.bar.Lane_Bars_reverse = frontRepo.Lanes.get(this.id)
+						break;
+					default:
+						console.log(this.state + " is unkown state")
 				}
 
 				// insertion point for recovery of form controls value for bool fields
@@ -82,8 +136,6 @@ export class BarDetailComponent implements OnInit {
 	}
 
 	save(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		// some fields needs to be translated into serializable forms
 		// pointers fields, after the translation, are nulled in order to perform serialization
@@ -91,45 +143,33 @@ export class BarDetailComponent implements OnInit {
 		// insertion point for translation/nullation of each field
 
 		// save from the front pointer space to the non pointer space for serialization
-		if (association == undefined) {
-			// insertion point for translation/nullation of each pointers
-			if (this.bar.Lane_Bars_reverse != undefined) {
-				if (this.bar.Lane_BarsDBID == undefined) {
-					this.bar.Lane_BarsDBID = new NullInt64
-				}
-				this.bar.Lane_BarsDBID.Int64 = this.bar.Lane_Bars_reverse.ID
-				this.bar.Lane_BarsDBID.Valid = true
-				if (this.bar.Lane_BarsDBID_Index == undefined) {
-					this.bar.Lane_BarsDBID_Index = new NullInt64
-				}
-				this.bar.Lane_BarsDBID_Index.Valid = true
-				this.bar.Lane_Bars_reverse = undefined // very important, otherwise, circular JSON
+
+		// insertion point for translation/nullation of each pointers
+		if (this.bar.Lane_Bars_reverse != undefined) {
+			if (this.bar.Lane_BarsDBID == undefined) {
+				this.bar.Lane_BarsDBID = new NullInt64
 			}
+			this.bar.Lane_BarsDBID.Int64 = this.bar.Lane_Bars_reverse.ID
+			this.bar.Lane_BarsDBID.Valid = true
+			if (this.bar.Lane_BarsDBID_Index == undefined) {
+				this.bar.Lane_BarsDBID_Index = new NullInt64
+			}
+			this.bar.Lane_BarsDBID_Index.Valid = true
+			this.bar.Lane_Bars_reverse = undefined // very important, otherwise, circular JSON
 		}
 
-		if (id != 0 && association == undefined) {
-
-			this.barService.updateBar(this.bar)
-				.subscribe(bar => {
-					this.barService.BarServiceChanged.next("update")
+		switch (this.state) {
+			case BarDetailComponentState.UPDATE_INSTANCE:
+				this.barService.updateBar(this.bar)
+					.subscribe(bar => {
+						this.barService.BarServiceChanged.next("update")
+					});
+				break;
+			default:
+				this.barService.postBar(this.bar).subscribe(bar => {
+					this.barService.BarServiceChanged.next("post")
+					this.bar = {} // reset fields
 				});
-		} else {
-			switch (association) {
-				// insertion point for saving value of ONE_MANY association reverse pointer
-				case "Lane_Bars":
-					this.bar.Lane_BarsDBID = new NullInt64
-					this.bar.Lane_BarsDBID.Int64 = id
-					this.bar.Lane_BarsDBID.Valid = true
-					this.bar.Lane_BarsDBID_Index = new NullInt64
-					this.bar.Lane_BarsDBID_Index.Valid = true
-					break
-			}
-			this.barService.postBar(this.bar).subscribe(bar => {
-
-				this.barService.BarServiceChanged.next("post")
-
-				this.bar = {} // reset fields
-			});
 		}
 	}
 

@@ -17,6 +17,17 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 
 import { NullInt64 } from '../front-repo.service'
 
+// LaneDetailComponent is initilizaed from different routes
+// LaneDetailComponentState detail different cases 
+enum LaneDetailComponentState {
+	CREATE_INSTANCE,
+	UPDATE_INSTANCE,
+	// insertion point for declarations of enum values of state
+	CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Lanes_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Group_GroupLanes_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_DiamonfAndTextAnchors_SET,
+}
+
 @Component({
 	selector: 'app-lane-detail',
 	templateUrl: './lane-detail.component.html',
@@ -37,6 +48,17 @@ export class LaneDetailComponent implements OnInit {
 	// if true, it is inputed with a <textarea ...> </textarea>
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
+	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
+	state: LaneDetailComponentState
+
+	// in UDPATE state, if is the id of the instance to update
+	// in CREATE state with one association set, this is the id of the associated instance
+	id: number
+
+	// in CREATE state with one association set, this is the id of the associated instance
+	originStruct: string
+	originStructFieldName: string
+
 	constructor(
 		private laneService: LaneService,
 		private frontRepoService: FrontRepoService,
@@ -47,6 +69,39 @@ export class LaneDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+
+		// compute state
+		this.id = +this.route.snapshot.paramMap.get('id');
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+
+		const association = this.route.snapshot.paramMap.get('association');
+		if (this.id == 0) {
+			this.state = LaneDetailComponentState.CREATE_INSTANCE
+		} else {
+			if (this.originStruct == undefined) {
+				this.state = LaneDetailComponentState.UPDATE_INSTANCE
+			} else {
+				switch (this.originStructFieldName) {
+					// insertion point for state computation
+					case "Lanes":
+						console.log("Lane" + " is instanciated with back pointer to instance " + this.id + " Gantt association Lanes")
+						this.state = LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Lanes_SET
+						break;
+					case "GroupLanes":
+						console.log("Lane" + " is instanciated with back pointer to instance " + this.id + " Group association GroupLanes")
+						this.state = LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Group_GroupLanes_SET
+						break;
+					case "DiamonfAndTextAnchors":
+						console.log("Lane" + " is instanciated with back pointer to instance " + this.id + " Milestone association DiamonfAndTextAnchors")
+						this.state = LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_DiamonfAndTextAnchors_SET
+						break;
+					default:
+						console.log(this.originStructFieldName + " is unkown association")
+				}
+			}
+		}
+
 		this.getLane()
 
 		// observable for changes in structs
@@ -62,16 +117,33 @@ export class LaneDetailComponent implements OnInit {
 	}
 
 	getLane(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				if (id != 0 && association == undefined) {
-					this.lane = frontRepo.Lanes.get(id)
-				} else {
-					this.lane = new (LaneDB)
+
+				switch (this.state) {
+					case LaneDetailComponentState.CREATE_INSTANCE:
+						this.lane = new (LaneDB)
+						break;
+					case LaneDetailComponentState.UPDATE_INSTANCE:
+						this.lane = frontRepo.Lanes.get(this.id)
+						break;
+					// insertion point for init of association field
+					case LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Lanes_SET:
+						this.lane = new (LaneDB)
+						this.lane.Gantt_Lanes_reverse = frontRepo.Gantts.get(this.id)
+						break;
+					case LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Group_GroupLanes_SET:
+						this.lane = new (LaneDB)
+						this.lane.Group_GroupLanes_reverse = frontRepo.Groups.get(this.id)
+						break;
+					case LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_DiamonfAndTextAnchors_SET:
+						this.lane = new (LaneDB)
+						this.lane.Milestone_DiamonfAndTextAnchors_reverse = frontRepo.Milestones.get(this.id)
+						break;
+					default:
+						console.log(this.state + " is unkown state")
 				}
 
 				// insertion point for recovery of form controls value for bool fields
@@ -82,8 +154,6 @@ export class LaneDetailComponent implements OnInit {
 	}
 
 	save(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		// some fields needs to be translated into serializable forms
 		// pointers fields, after the translation, are nulled in order to perform serialization
@@ -91,83 +161,57 @@ export class LaneDetailComponent implements OnInit {
 		// insertion point for translation/nullation of each field
 
 		// save from the front pointer space to the non pointer space for serialization
-		if (association == undefined) {
-			// insertion point for translation/nullation of each pointers
-			if (this.lane.Gantt_Lanes_reverse != undefined) {
-				if (this.lane.Gantt_LanesDBID == undefined) {
-					this.lane.Gantt_LanesDBID = new NullInt64
-				}
-				this.lane.Gantt_LanesDBID.Int64 = this.lane.Gantt_Lanes_reverse.ID
-				this.lane.Gantt_LanesDBID.Valid = true
-				if (this.lane.Gantt_LanesDBID_Index == undefined) {
-					this.lane.Gantt_LanesDBID_Index = new NullInt64
-				}
-				this.lane.Gantt_LanesDBID_Index.Valid = true
-				this.lane.Gantt_Lanes_reverse = undefined // very important, otherwise, circular JSON
+
+		// insertion point for translation/nullation of each pointers
+		if (this.lane.Gantt_Lanes_reverse != undefined) {
+			if (this.lane.Gantt_LanesDBID == undefined) {
+				this.lane.Gantt_LanesDBID = new NullInt64
 			}
-			if (this.lane.Group_GroupLanes_reverse != undefined) {
-				if (this.lane.Group_GroupLanesDBID == undefined) {
-					this.lane.Group_GroupLanesDBID = new NullInt64
-				}
-				this.lane.Group_GroupLanesDBID.Int64 = this.lane.Group_GroupLanes_reverse.ID
-				this.lane.Group_GroupLanesDBID.Valid = true
-				if (this.lane.Group_GroupLanesDBID_Index == undefined) {
-					this.lane.Group_GroupLanesDBID_Index = new NullInt64
-				}
-				this.lane.Group_GroupLanesDBID_Index.Valid = true
-				this.lane.Group_GroupLanes_reverse = undefined // very important, otherwise, circular JSON
+			this.lane.Gantt_LanesDBID.Int64 = this.lane.Gantt_Lanes_reverse.ID
+			this.lane.Gantt_LanesDBID.Valid = true
+			if (this.lane.Gantt_LanesDBID_Index == undefined) {
+				this.lane.Gantt_LanesDBID_Index = new NullInt64
 			}
-			if (this.lane.Milestone_DiamonfAndTextAnchors_reverse != undefined) {
-				if (this.lane.Milestone_DiamonfAndTextAnchorsDBID == undefined) {
-					this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
-				}
-				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = this.lane.Milestone_DiamonfAndTextAnchors_reverse.ID
-				this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
-				if (this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index == undefined) {
-					this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index = new NullInt64
-				}
-				this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
-				this.lane.Milestone_DiamonfAndTextAnchors_reverse = undefined // very important, otherwise, circular JSON
+			this.lane.Gantt_LanesDBID_Index.Valid = true
+			this.lane.Gantt_Lanes_reverse = undefined // very important, otherwise, circular JSON
+		}
+		if (this.lane.Group_GroupLanes_reverse != undefined) {
+			if (this.lane.Group_GroupLanesDBID == undefined) {
+				this.lane.Group_GroupLanesDBID = new NullInt64
 			}
+			this.lane.Group_GroupLanesDBID.Int64 = this.lane.Group_GroupLanes_reverse.ID
+			this.lane.Group_GroupLanesDBID.Valid = true
+			if (this.lane.Group_GroupLanesDBID_Index == undefined) {
+				this.lane.Group_GroupLanesDBID_Index = new NullInt64
+			}
+			this.lane.Group_GroupLanesDBID_Index.Valid = true
+			this.lane.Group_GroupLanes_reverse = undefined // very important, otherwise, circular JSON
+		}
+		if (this.lane.Milestone_DiamonfAndTextAnchors_reverse != undefined) {
+			if (this.lane.Milestone_DiamonfAndTextAnchorsDBID == undefined) {
+				this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
+			}
+			this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = this.lane.Milestone_DiamonfAndTextAnchors_reverse.ID
+			this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
+			if (this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index == undefined) {
+				this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index = new NullInt64
+			}
+			this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
+			this.lane.Milestone_DiamonfAndTextAnchors_reverse = undefined // very important, otherwise, circular JSON
 		}
 
-		if (id != 0 && association == undefined) {
-
-			this.laneService.updateLane(this.lane)
-				.subscribe(lane => {
-					this.laneService.LaneServiceChanged.next("update")
+		switch (this.state) {
+			case LaneDetailComponentState.UPDATE_INSTANCE:
+				this.laneService.updateLane(this.lane)
+					.subscribe(lane => {
+						this.laneService.LaneServiceChanged.next("update")
+					});
+				break;
+			default:
+				this.laneService.postLane(this.lane).subscribe(lane => {
+					this.laneService.LaneServiceChanged.next("post")
+					this.lane = {} // reset fields
 				});
-		} else {
-			switch (association) {
-				// insertion point for saving value of ONE_MANY association reverse pointer
-				case "Gantt_Lanes":
-					this.lane.Gantt_LanesDBID = new NullInt64
-					this.lane.Gantt_LanesDBID.Int64 = id
-					this.lane.Gantt_LanesDBID.Valid = true
-					this.lane.Gantt_LanesDBID_Index = new NullInt64
-					this.lane.Gantt_LanesDBID_Index.Valid = true
-					break
-				case "Group_GroupLanes":
-					this.lane.Group_GroupLanesDBID = new NullInt64
-					this.lane.Group_GroupLanesDBID.Int64 = id
-					this.lane.Group_GroupLanesDBID.Valid = true
-					this.lane.Group_GroupLanesDBID_Index = new NullInt64
-					this.lane.Group_GroupLanesDBID_Index.Valid = true
-					break
-				case "Milestone_DiamonfAndTextAnchors":
-					this.lane.Milestone_DiamonfAndTextAnchorsDBID = new NullInt64
-					this.lane.Milestone_DiamonfAndTextAnchorsDBID.Int64 = id
-					this.lane.Milestone_DiamonfAndTextAnchorsDBID.Valid = true
-					this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index = new NullInt64
-					this.lane.Milestone_DiamonfAndTextAnchorsDBID_Index.Valid = true
-					break
-			}
-			this.laneService.postLane(this.lane).subscribe(lane => {
-
-				this.laneService.LaneServiceChanged.next("post")
-
-				this.lane = {} // reset fields
-			});
 		}
 	}
 

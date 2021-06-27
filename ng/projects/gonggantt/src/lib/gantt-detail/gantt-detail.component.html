@@ -1,8 +1,8 @@
 <form *ngIf="gantt" class="details">
-    <h1 class="details__title">gantt</h1>
+    <h2 class="details__title">gantt</h2>
     <!-- insertion point for fields specific code -->
-    <mat-grid-list *ngIf='!isATextArea("Name")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Name">
@@ -75,8 +75,8 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XRightMargin" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("TimeLine_Color")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("TimeLine_Color")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TimeLine_Color</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_Color">
@@ -101,8 +101,8 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_FillOpacity" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("TimeLine_Stroke")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("TimeLine_Stroke")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TimeLine_Stroke</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_Stroke">
@@ -127,8 +127,8 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_StrokeWidth" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("Group_Stroke")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("Group_Stroke")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Group_Stroke</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_Stroke">
@@ -153,8 +153,8 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_StrokeWidth" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("Group_StrokeDashArray")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("Group_StrokeDashArray")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Group_StrokeDashArray</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_StrokeDashArray">
@@ -182,55 +182,43 @@
     <!-- -->
     <mat-checkbox [formControl]="AlignOnStartEndOnYearStartFormControl">AlignOnStartEndOnYearStart</mat-checkbox>
 
-    <mat-grid-list cols="2" rowHeight="6:1">
-        <mat-grid-tile>
-            <div style="width: 100vw; text-align: right;">
-                <button mat-raised-button
-                    (click)="openReverseSelection('Lane', 'Gantt_LanesDBID')">Lanes</button>
-            </div>
+    <mat-grid-list cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
+            <button mat-raised-button
+                (click)="openReverseSelection('Lane', 'Gantt_LanesDBID')">Lanes</button>
         </mat-grid-tile>
         <mat-grid-tile>
-            <div style="width: 100vw; text-align: left;">
-                <button mat-raised-button (click)="openDragAndDropOrdering('Lane', 'Gantt_LanesDBID')">
-                    <mat-icon>
-                        shuffle
-                    </mat-icon>
-                </button>
-            </div>
+            <button mat-raised-button (click)="openDragAndDropOrdering('Lane', 'Gantt_LanesDBID')">
+                <mat-icon>
+                    shuffle
+                </mat-icon>
+            </button>
         </mat-grid-tile>
     </mat-grid-list>
-    <mat-grid-list cols="2" rowHeight="6:1">
-        <mat-grid-tile>
-            <div style="width: 100vw; text-align: right;">
-                <button mat-raised-button
-                    (click)="openReverseSelection('Milestone', 'Gantt_MilestonesDBID')">Milestones</button>
-            </div>
+    <mat-grid-list cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
+            <button mat-raised-button
+                (click)="openReverseSelection('Milestone', 'Gantt_MilestonesDBID')">Milestones</button>
         </mat-grid-tile>
         <mat-grid-tile>
-            <div style="width: 100vw; text-align: left;">
-                <button mat-raised-button (click)="openDragAndDropOrdering('Milestone', 'Gantt_MilestonesDBID')">
-                    <mat-icon>
-                        shuffle
-                    </mat-icon>
-                </button>
-            </div>
+            <button mat-raised-button (click)="openDragAndDropOrdering('Milestone', 'Gantt_MilestonesDBID')">
+                <mat-icon>
+                    shuffle
+                </mat-icon>
+            </button>
         </mat-grid-tile>
     </mat-grid-list>
-    <mat-grid-list cols="2" rowHeight="6:1">
-        <mat-grid-tile>
-            <div style="width: 100vw; text-align: right;">
-                <button mat-raised-button
-                    (click)="openReverseSelection('Group', 'Gantt_GroupsDBID')">Groups</button>
-            </div>
+    <mat-grid-list cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
+            <button mat-raised-button
+                (click)="openReverseSelection('Group', 'Gantt_GroupsDBID')">Groups</button>
         </mat-grid-tile>
         <mat-grid-tile>
-            <div style="width: 100vw; text-align: left;">
-                <button mat-raised-button (click)="openDragAndDropOrdering('Group', 'Gantt_GroupsDBID')">
-                    <mat-icon>
-                        shuffle
-                    </mat-icon>
-                </button>
-            </div>
+            <button mat-raised-button (click)="openDragAndDropOrdering('Group', 'Gantt_GroupsDBID')">
+                <mat-icon>
+                    shuffle
+                </mat-icon>
+            </button>
         </mat-grid-tile>
     </mat-grid-list>
     <div class="details__save">

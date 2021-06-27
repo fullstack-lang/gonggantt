@@ -17,6 +17,15 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 
 import { NullInt64 } from '../front-repo.service'
 
+// MilestoneDetailComponent is initilizaed from different routes
+// MilestoneDetailComponentState detail different cases 
+enum MilestoneDetailComponentState {
+	CREATE_INSTANCE,
+	UPDATE_INSTANCE,
+	// insertion point for declarations of enum values of state
+	CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Milestones_SET,
+}
+
 @Component({
 	selector: 'app-milestone-detail',
 	templateUrl: './milestone-detail.component.html',
@@ -37,6 +46,17 @@ export class MilestoneDetailComponent implements OnInit {
 	// if true, it is inputed with a <textarea ...> </textarea>
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
+	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
+	state: MilestoneDetailComponentState
+
+	// in UDPATE state, if is the id of the instance to update
+	// in CREATE state with one association set, this is the id of the associated instance
+	id: number
+
+	// in CREATE state with one association set, this is the id of the associated instance
+	originStruct: string
+	originStructFieldName: string
+
 	constructor(
 		private milestoneService: MilestoneService,
 		private frontRepoService: FrontRepoService,
@@ -47,6 +67,31 @@ export class MilestoneDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+
+		// compute state
+		this.id = +this.route.snapshot.paramMap.get('id');
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+
+		const association = this.route.snapshot.paramMap.get('association');
+		if (this.id == 0) {
+			this.state = MilestoneDetailComponentState.CREATE_INSTANCE
+		} else {
+			if (this.originStruct == undefined) {
+				this.state = MilestoneDetailComponentState.UPDATE_INSTANCE
+			} else {
+				switch (this.originStructFieldName) {
+					// insertion point for state computation
+					case "Milestones":
+						console.log("Milestone" + " is instanciated with back pointer to instance " + this.id + " Gantt association Milestones")
+						this.state = MilestoneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Milestones_SET
+						break;
+					default:
+						console.log(this.originStructFieldName + " is unkown association")
+				}
+			}
+		}
+
 		this.getMilestone()
 
 		// observable for changes in structs
@@ -62,16 +107,25 @@ export class MilestoneDetailComponent implements OnInit {
 	}
 
 	getMilestone(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				if (id != 0 && association == undefined) {
-					this.milestone = frontRepo.Milestones.get(id)
-				} else {
-					this.milestone = new (MilestoneDB)
+
+				switch (this.state) {
+					case MilestoneDetailComponentState.CREATE_INSTANCE:
+						this.milestone = new (MilestoneDB)
+						break;
+					case MilestoneDetailComponentState.UPDATE_INSTANCE:
+						this.milestone = frontRepo.Milestones.get(this.id)
+						break;
+					// insertion point for init of association field
+					case MilestoneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Milestones_SET:
+						this.milestone = new (MilestoneDB)
+						this.milestone.Gantt_Milestones_reverse = frontRepo.Gantts.get(this.id)
+						break;
+					default:
+						console.log(this.state + " is unkown state")
 				}
 
 				// insertion point for recovery of form controls value for bool fields
@@ -82,8 +136,6 @@ export class MilestoneDetailComponent implements OnInit {
 	}
 
 	save(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		// some fields needs to be translated into serializable forms
 		// pointers fields, after the translation, are nulled in order to perform serialization
@@ -91,45 +143,33 @@ export class MilestoneDetailComponent implements OnInit {
 		// insertion point for translation/nullation of each field
 
 		// save from the front pointer space to the non pointer space for serialization
-		if (association == undefined) {
-			// insertion point for translation/nullation of each pointers
-			if (this.milestone.Gantt_Milestones_reverse != undefined) {
-				if (this.milestone.Gantt_MilestonesDBID == undefined) {
-					this.milestone.Gantt_MilestonesDBID = new NullInt64
-				}
-				this.milestone.Gantt_MilestonesDBID.Int64 = this.milestone.Gantt_Milestones_reverse.ID
-				this.milestone.Gantt_MilestonesDBID.Valid = true
-				if (this.milestone.Gantt_MilestonesDBID_Index == undefined) {
-					this.milestone.Gantt_MilestonesDBID_Index = new NullInt64
-				}
-				this.milestone.Gantt_MilestonesDBID_Index.Valid = true
-				this.milestone.Gantt_Milestones_reverse = undefined // very important, otherwise, circular JSON
+
+		// insertion point for translation/nullation of each pointers
+		if (this.milestone.Gantt_Milestones_reverse != undefined) {
+			if (this.milestone.Gantt_MilestonesDBID == undefined) {
+				this.milestone.Gantt_MilestonesDBID = new NullInt64
 			}
+			this.milestone.Gantt_MilestonesDBID.Int64 = this.milestone.Gantt_Milestones_reverse.ID
+			this.milestone.Gantt_MilestonesDBID.Valid = true
+			if (this.milestone.Gantt_MilestonesDBID_Index == undefined) {
+				this.milestone.Gantt_MilestonesDBID_Index = new NullInt64
+			}
+			this.milestone.Gantt_MilestonesDBID_Index.Valid = true
+			this.milestone.Gantt_Milestones_reverse = undefined // very important, otherwise, circular JSON
 		}
 
-		if (id != 0 && association == undefined) {
-
-			this.milestoneService.updateMilestone(this.milestone)
-				.subscribe(milestone => {
-					this.milestoneService.MilestoneServiceChanged.next("update")
+		switch (this.state) {
+			case MilestoneDetailComponentState.UPDATE_INSTANCE:
+				this.milestoneService.updateMilestone(this.milestone)
+					.subscribe(milestone => {
+						this.milestoneService.MilestoneServiceChanged.next("update")
+					});
+				break;
+			default:
+				this.milestoneService.postMilestone(this.milestone).subscribe(milestone => {
+					this.milestoneService.MilestoneServiceChanged.next("post")
+					this.milestone = {} // reset fields
 				});
-		} else {
-			switch (association) {
-				// insertion point for saving value of ONE_MANY association reverse pointer
-				case "Gantt_Milestones":
-					this.milestone.Gantt_MilestonesDBID = new NullInt64
-					this.milestone.Gantt_MilestonesDBID.Int64 = id
-					this.milestone.Gantt_MilestonesDBID.Valid = true
-					this.milestone.Gantt_MilestonesDBID_Index = new NullInt64
-					this.milestone.Gantt_MilestonesDBID_Index.Valid = true
-					break
-			}
-			this.milestoneService.postMilestone(this.milestone).subscribe(milestone => {
-
-				this.milestoneService.MilestoneServiceChanged.next("post")
-
-				this.milestone = {} // reset fields
-			});
 		}
 	}
 

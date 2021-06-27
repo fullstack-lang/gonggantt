@@ -17,6 +17,14 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 
 import { NullInt64 } from '../front-repo.service'
 
+// GanttDetailComponent is initilizaed from different routes
+// GanttDetailComponentState detail different cases 
+enum GanttDetailComponentState {
+	CREATE_INSTANCE,
+	UPDATE_INSTANCE,
+	// insertion point for declarations of enum values of state
+}
+
 @Component({
 	selector: 'app-gantt-detail',
 	templateUrl: './gantt-detail.component.html',
@@ -38,6 +46,17 @@ export class GanttDetailComponent implements OnInit {
 	// if true, it is inputed with a <textarea ...> </textarea>
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
+	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
+	state: GanttDetailComponentState
+
+	// in UDPATE state, if is the id of the instance to update
+	// in CREATE state with one association set, this is the id of the associated instance
+	id: number
+
+	// in CREATE state with one association set, this is the id of the associated instance
+	originStruct: string
+	originStructFieldName: string
+
 	constructor(
 		private ganttService: GanttService,
 		private frontRepoService: FrontRepoService,
@@ -48,6 +67,27 @@ export class GanttDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+
+		// compute state
+		this.id = +this.route.snapshot.paramMap.get('id');
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+
+		const association = this.route.snapshot.paramMap.get('association');
+		if (this.id == 0) {
+			this.state = GanttDetailComponentState.CREATE_INSTANCE
+		} else {
+			if (this.originStruct == undefined) {
+				this.state = GanttDetailComponentState.UPDATE_INSTANCE
+			} else {
+				switch (this.originStructFieldName) {
+					// insertion point for state computation
+					default:
+						console.log(this.originStructFieldName + " is unkown association")
+				}
+			}
+		}
+
 		this.getGantt()
 
 		// observable for changes in structs
@@ -63,16 +103,21 @@ export class GanttDetailComponent implements OnInit {
 	}
 
 	getGantt(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				if (id != 0 && association == undefined) {
-					this.gantt = frontRepo.Gantts.get(id)
-				} else {
-					this.gantt = new (GanttDB)
+
+				switch (this.state) {
+					case GanttDetailComponentState.CREATE_INSTANCE:
+						this.gantt = new (GanttDB)
+						break;
+					case GanttDetailComponentState.UPDATE_INSTANCE:
+						this.gantt = frontRepo.Gantts.get(this.id)
+						break;
+					// insertion point for init of association field
+					default:
+						console.log(this.state + " is unkown state")
 				}
 
 				// insertion point for recovery of form controls value for bool fields
@@ -84,8 +129,6 @@ export class GanttDetailComponent implements OnInit {
 	}
 
 	save(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		// some fields needs to be translated into serializable forms
 		// pointers fields, after the translation, are nulled in order to perform serialization
@@ -94,26 +137,21 @@ export class GanttDetailComponent implements OnInit {
 		this.gantt.AlignOnStartEndOnYearStart = this.AlignOnStartEndOnYearStartFormControl.value
 
 		// save from the front pointer space to the non pointer space for serialization
-		if (association == undefined) {
-			// insertion point for translation/nullation of each pointers
-		}
 
-		if (id != 0 && association == undefined) {
+		// insertion point for translation/nullation of each pointers
 
-			this.ganttService.updateGantt(this.gantt)
-				.subscribe(gantt => {
-					this.ganttService.GanttServiceChanged.next("update")
+		switch (this.state) {
+			case GanttDetailComponentState.UPDATE_INSTANCE:
+				this.ganttService.updateGantt(this.gantt)
+					.subscribe(gantt => {
+						this.ganttService.GanttServiceChanged.next("update")
+					});
+				break;
+			default:
+				this.ganttService.postGantt(this.gantt).subscribe(gantt => {
+					this.ganttService.GanttServiceChanged.next("post")
+					this.gantt = {} // reset fields
 				});
-		} else {
-			switch (association) {
-				// insertion point for saving value of ONE_MANY association reverse pointer
-			}
-			this.ganttService.postGantt(this.gantt).subscribe(gantt => {
-
-				this.ganttService.GanttServiceChanged.next("post")
-
-				this.gantt = {} // reset fields
-			});
 		}
 	}
 

@@ -1,8 +1,8 @@
 <form *ngIf="bar" class="details">
-    <h1 class="details__title">bar</h1>
+    <h2 class="details__title">bar</h2>
     <!-- insertion point for fields specific code -->
-    <mat-grid-list *ngIf='!isATextArea("Name")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.Name">
@@ -33,8 +33,8 @@
         <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.End">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("OptionnalColor")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("OptionnalColor")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>OptionnalColor</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.OptionnalColor">
@@ -53,8 +53,8 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.OptionnalColor"></textarea>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("OptionnalStroke")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("OptionnalStroke")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>OptionnalStroke</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.OptionnalStroke">
@@ -74,7 +74,7 @@
     </mat-form-field>
 
     <mat-form-field class="detail-full-width">
-        <mat-label><- Bars</mat-label>
+        <mat-label>(Lane) Bars</mat-label>
         <mat-select [compareWith]="compareObjects" [(ngModel)]="bar.Lane_Bars_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let lane of frontRepo.Lanes_array" [value]="lane">

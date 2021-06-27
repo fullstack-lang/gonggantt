@@ -1,8 +1,8 @@
 <form *ngIf="lane" class="details">
-    <h1 class="details__title">lane</h1>
+    <h2 class="details__title">lane</h2>
     <!-- insertion point for fields specific code -->
-    <mat-grid-list *ngIf='!isATextArea("Name")' cols="4" rowHeight="6:1">
-        <mat-grid-tile [colspan]="3">
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="lane.Name">
@@ -27,25 +27,21 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="lane.Order" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list cols="2" rowHeight="6:1">
-        <mat-grid-tile>
-            <div style="width: 100vw; text-align: right;">
-                <button mat-raised-button
-                    (click)="openReverseSelection('Bar', 'Lane_BarsDBID')">Bars</button>
-            </div>
+    <mat-grid-list cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="4">
+            <button mat-raised-button
+                (click)="openReverseSelection('Bar', 'Lane_BarsDBID')">Bars</button>
         </mat-grid-tile>
         <mat-grid-tile>
-            <div style="width: 100vw; text-align: left;">
-                <button mat-raised-button (click)="openDragAndDropOrdering('Bar', 'Lane_BarsDBID')">
-                    <mat-icon>
-                        shuffle
-                    </mat-icon>
-                </button>
-            </div>
+            <button mat-raised-button (click)="openDragAndDropOrdering('Bar', 'Lane_BarsDBID')">
+                <mat-icon>
+                    shuffle
+                </mat-icon>
+            </button>
         </mat-grid-tile>
     </mat-grid-list>
     <mat-form-field class="detail-full-width">
-        <mat-label><- Lanes</mat-label>
+        <mat-label>(Gantt) Lanes</mat-label>
         <mat-select [compareWith]="compareObjects" [(ngModel)]="lane.Gantt_Lanes_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let gantt of frontRepo.Gantts_array" [value]="gantt">
@@ -54,7 +50,7 @@
         </mat-select>
     </mat-form-field>
     <mat-form-field class="detail-full-width">
-        <mat-label><- GroupLanes</mat-label>
+        <mat-label>(Group) GroupLanes</mat-label>
         <mat-select [compareWith]="compareObjects" [(ngModel)]="lane.Group_GroupLanes_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let group of frontRepo.Groups_array" [value]="group">
@@ -63,7 +59,7 @@
         </mat-select>
     </mat-form-field>
     <mat-form-field class="detail-full-width">
-        <mat-label><- DiamonfAndTextAnchors</mat-label>
+        <mat-label>(Milestone) DiamonfAndTextAnchors</mat-label>
         <mat-select [compareWith]="compareObjects" [(ngModel)]="lane.Milestone_DiamonfAndTextAnchors_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let milestone of frontRepo.Milestones_array" [value]="milestone">

@@ -17,6 +17,15 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 
 import { NullInt64 } from '../front-repo.service'
 
+// GroupDetailComponent is initilizaed from different routes
+// GroupDetailComponentState detail different cases 
+enum GroupDetailComponentState {
+	CREATE_INSTANCE,
+	UPDATE_INSTANCE,
+	// insertion point for declarations of enum values of state
+	CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Groups_SET,
+}
+
 @Component({
 	selector: 'app-group-detail',
 	templateUrl: './group-detail.component.html',
@@ -37,6 +46,17 @@ export class GroupDetailComponent implements OnInit {
 	// if true, it is inputed with a <textarea ...> </textarea>
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
+	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
+	state: GroupDetailComponentState
+
+	// in UDPATE state, if is the id of the instance to update
+	// in CREATE state with one association set, this is the id of the associated instance
+	id: number
+
+	// in CREATE state with one association set, this is the id of the associated instance
+	originStruct: string
+	originStructFieldName: string
+
 	constructor(
 		private groupService: GroupService,
 		private frontRepoService: FrontRepoService,
@@ -47,6 +67,31 @@ export class GroupDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+
+		// compute state
+		this.id = +this.route.snapshot.paramMap.get('id');
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+
+		const association = this.route.snapshot.paramMap.get('association');
+		if (this.id == 0) {
+			this.state = GroupDetailComponentState.CREATE_INSTANCE
+		} else {
+			if (this.originStruct == undefined) {
+				this.state = GroupDetailComponentState.UPDATE_INSTANCE
+			} else {
+				switch (this.originStructFieldName) {
+					// insertion point for state computation
+					case "Groups":
+						console.log("Group" + " is instanciated with back pointer to instance " + this.id + " Gantt association Groups")
+						this.state = GroupDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Groups_SET
+						break;
+					default:
+						console.log(this.originStructFieldName + " is unkown association")
+				}
+			}
+		}
+
 		this.getGroup()
 
 		// observable for changes in structs
@@ -62,16 +107,25 @@ export class GroupDetailComponent implements OnInit {
 	}
 
 	getGroup(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
-				if (id != 0 && association == undefined) {
-					this.group = frontRepo.Groups.get(id)
-				} else {
-					this.group = new (GroupDB)
+
+				switch (this.state) {
+					case GroupDetailComponentState.CREATE_INSTANCE:
+						this.group = new (GroupDB)
+						break;
+					case GroupDetailComponentState.UPDATE_INSTANCE:
+						this.group = frontRepo.Groups.get(this.id)
+						break;
+					// insertion point for init of association field
+					case GroupDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Groups_SET:
+						this.group = new (GroupDB)
+						this.group.Gantt_Groups_reverse = frontRepo.Gantts.get(this.id)
+						break;
+					default:
+						console.log(this.state + " is unkown state")
 				}
 
 				// insertion point for recovery of form controls value for bool fields
@@ -82,8 +136,6 @@ export class GroupDetailComponent implements OnInit {
 	}
 
 	save(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
-		const association = this.route.snapshot.paramMap.get('association');
 
 		// some fields needs to be translated into serializable forms
 		// pointers fields, after the translation, are nulled in order to perform serialization
@@ -91,45 +143,33 @@ export class GroupDetailComponent implements OnInit {
 		// insertion point for translation/nullation of each field
 
 		// save from the front pointer space to the non pointer space for serialization
-		if (association == undefined) {
-			// insertion point for translation/nullation of each pointers
-			if (this.group.Gantt_Groups_reverse != undefined) {
-				if (this.group.Gantt_GroupsDBID == undefined) {
-					this.group.Gantt_GroupsDBID = new NullInt64
-				}
-				this.group.Gantt_GroupsDBID.Int64 = this.group.Gantt_Groups_reverse.ID
-				this.group.Gantt_GroupsDBID.Valid = true
-				if (this.group.Gantt_GroupsDBID_Index == undefined) {
-					this.group.Gantt_GroupsDBID_Index = new NullInt64
-				}
-				this.group.Gantt_GroupsDBID_Index.Valid = true
-				this.group.Gantt_Groups_reverse = undefined // very important, otherwise, circular JSON
+
+		// insertion point for translation/nullation of each pointers
+		if (this.group.Gantt_Groups_reverse != undefined) {
+			if (this.group.Gantt_GroupsDBID == undefined) {
+				this.group.Gantt_GroupsDBID = new NullInt64
 			}
+			this.group.Gantt_GroupsDBID.Int64 = this.group.Gantt_Groups_reverse.ID
+			this.group.Gantt_GroupsDBID.Valid = true
+			if (this.group.Gantt_GroupsDBID_Index == undefined) {
+				this.group.Gantt_GroupsDBID_Index = new NullInt64
+			}
+			this.group.Gantt_GroupsDBID_Index.Valid = true
+			this.group.Gantt_Groups_reverse = undefined // very important, otherwise, circular JSON
 		}
 
-		if (id != 0 && association == undefined) {
-
-			this.groupService.updateGroup(this.group)
-				.subscribe(group => {
-					this.groupService.GroupServiceChanged.next("update")
+		switch (this.state) {
+			case GroupDetailComponentState.UPDATE_INSTANCE:
+				this.groupService.updateGroup(this.group)
+					.subscribe(group => {
+						this.groupService.GroupServiceChanged.next("update")
+					});
+				break;
+			default:
+				this.groupService.postGroup(this.group).subscribe(group => {
+					this.groupService.GroupServiceChanged.next("post")
+					this.group = {} // reset fields
 				});
-		} else {
-			switch (association) {
-				// insertion point for saving value of ONE_MANY association reverse pointer
-				case "Gantt_Groups":
-					this.group.Gantt_GroupsDBID = new NullInt64
-					this.group.Gantt_GroupsDBID.Int64 = id
-					this.group.Gantt_GroupsDBID.Valid = true
-					this.group.Gantt_GroupsDBID_Index = new NullInt64
-					this.group.Gantt_GroupsDBID_Index.Valid = true
-					break
-			}
-			this.groupService.postGroup(this.group).subscribe(group => {
-
-				this.groupService.GroupServiceChanged.next("post")
-
-				this.group = {} // reset fields
-			});
 		}
 	}
 

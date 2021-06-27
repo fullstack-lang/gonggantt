@@ -37,6 +37,7 @@ interface GongNode {
   children?: GongNode[];
   type: GongNodeType;
   structName: string;
+  associationField: string;
   associatedStructName: string;
   id: number;
   uniqueIdPerStack: number;
@@ -52,6 +53,7 @@ interface GongFlatNode {
   level: number;
   type: GongNodeType;
   structName: string;
+  associationField: string;
   associatedStructName: string;
   id: number;
   uniqueIdPerStack: number;
@@ -86,6 +88,7 @@ export class SidebarComponent implements OnInit {
       level: level,
       type: node.type,
       structName: node.structName,
+      associationField: node.associationField,
       associatedStructName: node.associatedStructName,
       id: node.id,
       uniqueIdPerStack: node.uniqueIdPerStack,
@@ -235,6 +238,7 @@ export class SidebarComponent implements OnInit {
         id: 0,
         uniqueIdPerStack: 13 * nonInstanceNodeId,
         structName: "Bar",
+        associationField: "",
         associatedStructName: "",
         children: new Array<GongNode>()
       }
@@ -259,6 +263,7 @@ export class SidebarComponent implements OnInit {
             id: barDB.ID,
             uniqueIdPerStack: getBarUniqueID(barDB.ID),
             structName: "Bar",
+            associationField: "",
             associatedStructName: "",
             children: new Array<GongNode>()
           }
@@ -277,6 +282,7 @@ export class SidebarComponent implements OnInit {
         id: 0,
         uniqueIdPerStack: 13 * nonInstanceNodeId,
         structName: "Gantt",
+        associationField: "",
         associatedStructName: "",
         children: new Array<GongNode>()
       }
@@ -301,6 +307,7 @@ export class SidebarComponent implements OnInit {
             id: ganttDB.ID,
             uniqueIdPerStack: getGanttUniqueID(ganttDB.ID),
             structName: "Gantt",
+            associationField: "",
             associatedStructName: "",
             children: new Array<GongNode>()
           }
@@ -316,6 +323,7 @@ export class SidebarComponent implements OnInit {
             id: ganttDB.ID,
             uniqueIdPerStack: 19 * nonInstanceNodeId,
             structName: "Gantt",
+            associationField: "Lanes",
             associatedStructName: "Lane",
             children: new Array<GongNode>()
           }
@@ -331,6 +339,7 @@ export class SidebarComponent implements OnInit {
                 7 * getGanttUniqueID(ganttDB.ID)
                 + 11 * getLaneUniqueID(laneDB.ID),
               structName: "Lane",
+              associationField: "",
               associatedStructName: "",
               children: new Array<GongNode>()
             }
@@ -346,6 +355,7 @@ export class SidebarComponent implements OnInit {
             id: ganttDB.ID,
             uniqueIdPerStack: 19 * nonInstanceNodeId,
             structName: "Gantt",
+            associationField: "Milestones",
             associatedStructName: "Milestone",
             children: new Array<GongNode>()
           }
@@ -361,6 +371,7 @@ export class SidebarComponent implements OnInit {
                 7 * getGanttUniqueID(ganttDB.ID)
                 + 11 * getMilestoneUniqueID(milestoneDB.ID),
               structName: "Milestone",
+              associationField: "",
               associatedStructName: "",
               children: new Array<GongNode>()
             }
@@ -376,6 +387,7 @@ export class SidebarComponent implements OnInit {
             id: ganttDB.ID,
             uniqueIdPerStack: 19 * nonInstanceNodeId,
             structName: "Gantt",
+            associationField: "Groups",
             associatedStructName: "Group",
             children: new Array<GongNode>()
           }
@@ -391,6 +403,7 @@ export class SidebarComponent implements OnInit {
                 7 * getGanttUniqueID(ganttDB.ID)
                 + 11 * getGroupUniqueID(groupDB.ID),
               structName: "Group",
+              associationField: "",
               associatedStructName: "",
               children: new Array<GongNode>()
             }
@@ -409,6 +422,7 @@ export class SidebarComponent implements OnInit {
         id: 0,
         uniqueIdPerStack: 13 * nonInstanceNodeId,
         structName: "Group",
+        associationField: "",
         associatedStructName: "",
         children: new Array<GongNode>()
       }
@@ -433,6 +447,7 @@ export class SidebarComponent implements OnInit {
             id: groupDB.ID,
             uniqueIdPerStack: getGroupUniqueID(groupDB.ID),
             structName: "Group",
+            associationField: "",
             associatedStructName: "",
             children: new Array<GongNode>()
           }
@@ -448,6 +463,7 @@ export class SidebarComponent implements OnInit {
             id: groupDB.ID,
             uniqueIdPerStack: 19 * nonInstanceNodeId,
             structName: "Group",
+            associationField: "GroupLanes",
             associatedStructName: "Lane",
             children: new Array<GongNode>()
           }
@@ -463,6 +479,7 @@ export class SidebarComponent implements OnInit {
                 7 * getGroupUniqueID(groupDB.ID)
                 + 11 * getLaneUniqueID(laneDB.ID),
               structName: "Lane",
+              associationField: "",
               associatedStructName: "",
               children: new Array<GongNode>()
             }
@@ -481,6 +498,7 @@ export class SidebarComponent implements OnInit {
         id: 0,
         uniqueIdPerStack: 13 * nonInstanceNodeId,
         structName: "Lane",
+        associationField: "",
         associatedStructName: "",
         children: new Array<GongNode>()
       }
@@ -505,6 +523,7 @@ export class SidebarComponent implements OnInit {
             id: laneDB.ID,
             uniqueIdPerStack: getLaneUniqueID(laneDB.ID),
             structName: "Lane",
+            associationField: "",
             associatedStructName: "",
             children: new Array<GongNode>()
           }
@@ -520,6 +539,7 @@ export class SidebarComponent implements OnInit {
             id: laneDB.ID,
             uniqueIdPerStack: 19 * nonInstanceNodeId,
             structName: "Lane",
+            associationField: "Bars",
             associatedStructName: "Bar",
             children: new Array<GongNode>()
           }
@@ -535,6 +555,7 @@ export class SidebarComponent implements OnInit {
                 7 * getLaneUniqueID(laneDB.ID)
                 + 11 * getBarUniqueID(barDB.ID),
               structName: "Bar",
+              associationField: "",
               associatedStructName: "",
               children: new Array<GongNode>()
             }
@@ -553,6 +574,7 @@ export class SidebarComponent implements OnInit {
         id: 0,
         uniqueIdPerStack: 13 * nonInstanceNodeId,
         structName: "Milestone",
+        associationField: "",
         associatedStructName: "",
         children: new Array<GongNode>()
       }
@@ -577,6 +599,7 @@ export class SidebarComponent implements OnInit {
             id: milestoneDB.ID,
             uniqueIdPerStack: getMilestoneUniqueID(milestoneDB.ID),
             structName: "Milestone",
+            associationField: "",
             associatedStructName: "",
             children: new Array<GongNode>()
           }
@@ -592,6 +615,7 @@ export class SidebarComponent implements OnInit {
             id: milestoneDB.ID,
             uniqueIdPerStack: 19 * nonInstanceNodeId,
             structName: "Milestone",
+            associationField: "DiamonfAndTextAnchors",
             associatedStructName: "Lane",
             children: new Array<GongNode>()
           }
@@ -607,6 +631,7 @@ export class SidebarComponent implements OnInit {
                 7 * getMilestoneUniqueID(milestoneDB.ID)
                 + 11 * getLaneUniqueID(laneDB.ID),
               structName: "Lane",
+              associationField: "",
               associatedStructName: "",
               children: new Array<GongNode>()
             }
@@ -687,7 +712,7 @@ export class SidebarComponent implements OnInit {
   setEditorSpecialRouterOutlet( node: GongFlatNode) {
     this.router.navigate([{
       outlets: {
-        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + node.associatedStructName.toLowerCase() + "-adder", node.id, node.structName + "_" + node.name]
+        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + node.associatedStructName.toLowerCase() + "-adder", node.id, node.structName, node.associationField]
       }
     }]);
   }
