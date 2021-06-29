@@ -17,6 +17,9 @@ type Gantt struct {
 	XLeftLanes   float64
 	XRightMargin float64
 
+	ArrowLengthToTheRightOfStartBar float64
+	ArrowTipLenght                  float64
+
 	TimeLine_Color       string
 	TimeLine_FillOpacity float64
 	TimeLine_Stroke      string
@@ -38,6 +41,9 @@ type Gantt struct {
 
 	// list of Groups
 	Groups []*Group
+
+	// list of Arrows
+	Arrows []*Arrow
 }
 
 func (gantt *Gantt) ComputeStartAndEndDate() {

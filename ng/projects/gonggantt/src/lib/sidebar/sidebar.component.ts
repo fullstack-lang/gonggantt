@@ -8,6 +8,8 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 import { CommitNbService } from '../commitnb.service'
 
 // insertion point for per struct import code
+import { ArrowService } from '../arrow.service'
+import { getArrowUniqueID } from '../front-repo.service'
 import { BarService } from '../bar.service'
 import { getBarUniqueID } from '../front-repo.service'
 import { GanttService } from '../gantt.service'
@@ -153,6 +155,7 @@ export class SidebarComponent implements OnInit {
     private commitNbService: CommitNbService,
 
     // insertion point for per struct service declaration
+    private arrowService: ArrowService,
     private barService: BarService,
     private ganttService: GanttService,
     private groupService: GroupService,
@@ -164,6 +167,14 @@ export class SidebarComponent implements OnInit {
     this.refresh()
 
     // insertion point for per struct observable for refresh trigger
+    // observable for changes in structs
+    this.arrowService.ArrowServiceChanged.subscribe(
+      message => {
+        if (message == "post" || message == "update" || message == "delete") {
+          this.refresh()
+        }
+      }
+    )
     // observable for changes in structs
     this.barService.BarServiceChanged.subscribe(
       message => {
@@ -229,6 +240,120 @@ export class SidebarComponent implements OnInit {
       this.gongNodeTree = new Array<GongNode>();
 
       // insertion point for per struct tree construction
+      /**
+      * fill up the Arrow part of the mat tree
+      */
+      let arrowGongNodeStruct: GongNode = {
+        name: "Arrow",
+        type: GongNodeType.STRUCT,
+        id: 0,
+        uniqueIdPerStack: 13 * nonInstanceNodeId,
+        structName: "Arrow",
+        associationField: "",
+        associatedStructName: "",
+        children: new Array<GongNode>()
+      }
+      nonInstanceNodeId = nonInstanceNodeId + 1
+      this.gongNodeTree.push(arrowGongNodeStruct)
+
+      this.frontRepo.Arrows_array.sort((t1, t2) => {
+        if (t1.Name > t2.Name) {
+          return 1;
+        }
+        if (t1.Name < t2.Name) {
+          return -1;
+        }
+        return 0;
+      });
+
+      this.frontRepo.Arrows_array.forEach(
+        arrowDB => {
+          let arrowGongNodeInstance: GongNode = {
+            name: arrowDB.Name,
+            type: GongNodeType.INSTANCE,
+            id: arrowDB.ID,
+            uniqueIdPerStack: getArrowUniqueID(arrowDB.ID),
+            structName: "Arrow",
+            associationField: "",
+            associatedStructName: "",
+            children: new Array<GongNode>()
+          }
+          arrowGongNodeStruct.children.push(arrowGongNodeInstance)
+
+          // insertion point for per field code
+          /**
+          * let append a node for the association From
+          */
+          let FromGongNodeAssociation: GongNode = {
+            name: "(Bar) From",
+            type: GongNodeType.ONE__ZERO_ONE_ASSOCIATION,
+            id: arrowDB.ID,
+            uniqueIdPerStack: 17 * nonInstanceNodeId,
+            structName: "Arrow",
+            associationField: "From",
+            associatedStructName: "Bar",
+            children: new Array<GongNode>()
+          }
+          nonInstanceNodeId = nonInstanceNodeId + 1
+          arrowGongNodeInstance.children.push(FromGongNodeAssociation)
+
+          /**
+            * let append a node for the instance behind the asssociation From
+            */
+          if (arrowDB.From != undefined) {
+            let arrowGongNodeInstance_From: GongNode = {
+              name: arrowDB.From.Name,
+              type: GongNodeType.INSTANCE,
+              id: arrowDB.From.ID,
+              uniqueIdPerStack: // godel numbering (thank you kurt)
+                3 * getArrowUniqueID(arrowDB.ID)
+                + 5 * getBarUniqueID(arrowDB.From.ID),
+              structName: "Bar",
+              associationField: "",
+              associatedStructName: "",
+              children: new Array<GongNode>()
+            }
+            FromGongNodeAssociation.children.push(arrowGongNodeInstance_From)
+          }
+
+          /**
+          * let append a node for the association To
+          */
+          let ToGongNodeAssociation: GongNode = {
+            name: "(Bar) To",
+            type: GongNodeType.ONE__ZERO_ONE_ASSOCIATION,
+            id: arrowDB.ID,
+            uniqueIdPerStack: 17 * nonInstanceNodeId,
+            structName: "Arrow",
+            associationField: "To",
+            associatedStructName: "Bar",
+            children: new Array<GongNode>()
+          }
+          nonInstanceNodeId = nonInstanceNodeId + 1
+          arrowGongNodeInstance.children.push(ToGongNodeAssociation)
+
+          /**
+            * let append a node for the instance behind the asssociation To
+            */
+          if (arrowDB.To != undefined) {
+            let arrowGongNodeInstance_To: GongNode = {
+              name: arrowDB.To.Name,
+              type: GongNodeType.INSTANCE,
+              id: arrowDB.To.ID,
+              uniqueIdPerStack: // godel numbering (thank you kurt)
+                3 * getArrowUniqueID(arrowDB.ID)
+                + 5 * getBarUniqueID(arrowDB.To.ID),
+              structName: "Bar",
+              associationField: "",
+              associatedStructName: "",
+              children: new Array<GongNode>()
+            }
+            ToGongNodeAssociation.children.push(arrowGongNodeInstance_To)
+          }
+
+        }
+      )
+
       /**
       * fill up the Bar part of the mat tree
       */
@@ -408,6 +533,38 @@ export class SidebarComponent implements OnInit {
               children: new Array<GongNode>()
             }
             GroupsGongNodeAssociation.children.push(groupNode)
+          })
+
+          /**
+          * let append a node for the slide of pointer Arrows
+          */
+          let ArrowsGongNodeAssociation: GongNode = {
+            name: "(Arrow) Arrows",
+            type: GongNodeType.ONE__ZERO_MANY_ASSOCIATION,
+            id: ganttDB.ID,
+            uniqueIdPerStack: 19 * nonInstanceNodeId,
+            structName: "Gantt",
+            associationField: "Arrows",
+            associatedStructName: "Arrow",
+            children: new Array<GongNode>()
+          }
+          nonInstanceNodeId = nonInstanceNodeId + 1
+          ganttGongNodeInstance.children.push(ArrowsGongNodeAssociation)
+
+          ganttDB.Arrows?.forEach(arrowDB => {
+            let arrowNode: GongNode = {
+              name: arrowDB.Name,
+              type: GongNodeType.INSTANCE,
+              id: arrowDB.ID,
+              uniqueIdPerStack: // godel numbering (thank you kurt)
+                7 * getGanttUniqueID(ganttDB.ID)
+                + 11 * getArrowUniqueID(arrowDB.ID),
+              structName: "Arrow",
+              associationField: "",
+              associatedStructName: "",
+              children: new Array<GongNode>()
+            }
+            ArrowsGongNodeAssociation.children.push(arrowNode)
           })
 
         }

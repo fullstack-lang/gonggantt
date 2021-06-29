@@ -13,6 +13,13 @@ export * from './lib/commitnb.service'
 export * from './lib/push_from_front_nb.service'
 
 
+export * from './lib/arrow-detail/arrow-detail.component'
+export * from './lib/arrow-presentation/arrow-presentation.component'
+export * from './lib/arrows-table/arrows-table.component'
+export * from './lib/arrow-db'
+export * from './lib/arrow-api'
+export * from './lib/arrow.service'
+
 export * from './lib/bar-detail/bar-detail.component'
 export * from './lib/bar-presentation/bar-presentation.component'
 export * from './lib/bars-table/bars-table.component'

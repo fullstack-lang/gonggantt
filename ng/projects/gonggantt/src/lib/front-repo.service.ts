@@ -4,6 +4,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, combineLatest } from 'rxjs';
 
 // insertion point sub template for services imports 
+import { ArrowDB } from './arrow-db'
+import { ArrowService } from './arrow.service'
+
 import { BarDB } from './bar-db'
 import { BarService } from './bar.service'
 
@@ -22,6 +25,9 @@ import { MilestoneService } from './milestone.service'
 
 // FrontRepo stores all instances in a front repository (design pattern repository)
 export class FrontRepo { // insertion point sub template 
+  Arrows_array = new Array<ArrowDB>(); // array of repo instances
+  Arrows = new Map<number, ArrowDB>(); // map of repo instances
+  Arrows_batch = new Map<number, ArrowDB>(); // same but only in last GET (for finding repo instances to delete)
   Bars_array = new Array<BarDB>(); // array of repo instances
   Bars = new Map<number, BarDB>(); // map of repo instances
   Bars_batch = new Map<number, BarDB>(); // same but only in last GET (for finding repo instances to delete)
@@ -101,6 +107,7 @@ export class FrontRepoService {
 
   constructor(
     private http: HttpClient, // insertion point sub template 
+    private arrowService: ArrowService,
     private barService: BarService,
     private ganttService: GanttService,
     private groupService: GroupService,
@@ -130,12 +137,14 @@ export class FrontRepoService {
 
   // typing of observable can be messy in typescript. Therefore, one force the type
   observableFrontRepo: [ // insertion point sub template 
+    Observable<ArrowDB[]>,
     Observable<BarDB[]>,
     Observable<GanttDB[]>,
     Observable<GroupDB[]>,
     Observable<LaneDB[]>,
     Observable<MilestoneDB[]>,
   ] = [ // insertion point sub template 
+      this.arrowService.getArrows(),
       this.barService.getBars(),
       this.ganttService.getGantts(),
       this.groupService.getGroups(),
@@ -156,6 +165,7 @@ export class FrontRepoService {
           this.observableFrontRepo
         ).subscribe(
           ([ // insertion point sub template for declarations 
+            arrows_,
             bars_,
             gantts_,
             groups_,
@@ -164,6 +174,8 @@ export class FrontRepoService {
           ]) => {
             // Typing can be messy with many items. Therefore, type casting is necessary here
             // insertion point sub template for type casting 
+            var arrows: ArrowDB[]
+            arrows = arrows_
             var bars: BarDB[]
             bars = bars_
             var gantts: GanttDB[]
@@ -178,6 +190,39 @@ export class FrontRepoService {
             // 
             // First Step: init map of instances
             // insertion point sub template for init 
+            // init the array
+            FrontRepoSingloton.Arrows_array = arrows
+
+            // clear the map that counts Arrow in the GET
+            FrontRepoSingloton.Arrows_batch.clear()
+
+            arrows.forEach(
+              arrow => {
+                FrontRepoSingloton.Arrows.set(arrow.ID, arrow)
+                FrontRepoSingloton.Arrows_batch.set(arrow.ID, arrow)
+              }
+            )
+
+            // clear arrows that are absent from the batch
+            FrontRepoSingloton.Arrows.forEach(
+              arrow => {
+                if (FrontRepoSingloton.Arrows_batch.get(arrow.ID) == undefined) {
+                  FrontRepoSingloton.Arrows.delete(arrow.ID)
+                }
+              }
+            )
+
+            // sort Arrows_array array
+            FrontRepoSingloton.Arrows_array.sort((t1, t2) => {
+              if (t1.Name > t2.Name) {
+                return 1;
+              }
+              if (t1.Name < t2.Name) {
+                return -1;
+              }
+              return 0;
+            });
+
             // init the array
             FrontRepoSingloton.Bars_array = bars
 
@@ -347,6 +392,40 @@ export class FrontRepoService {
             // 
             // Second Step: redeem pointers between instances (thanks to maps in the First Step)
             // insertion point sub template for redeem 
+            arrows.forEach(
+              arrow => {
+                // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
+                // insertion point for pointer field From redeeming
+                {
+                  let _bar = FrontRepoSingloton.Bars.get(arrow.FromID.Int64)
+                  if (_bar) {
+                    arrow.From = _bar
+                  }
+                }
+                // insertion point for pointer field To redeeming
+                {
+                  let _bar = FrontRepoSingloton.Bars.get(arrow.ToID.Int64)
+                  if (_bar) {
+                    arrow.To = _bar
+                  }
+                }
+
+                // insertion point for redeeming ONE-MANY associations
+                // insertion point for slice of pointer field Gantt.Arrows redeeming
+                {
+                  let _gantt = FrontRepoSingloton.Gantts.get(arrow.Gantt_ArrowsDBID.Int64)
+                  if (_gantt) {
+                    if (_gantt.Arrows == undefined) {
+                      _gantt.Arrows = new Array<ArrowDB>()
+                    }
+                    _gantt.Arrows.push(arrow)
+                    if (arrow.Gantt_Arrows_reverse == undefined) {
+                      arrow.Gantt_Arrows_reverse = _gantt
+                    }
+                  }
+                }
+              }
+            )
             bars.forEach(
               bar => {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
@@ -470,6 +549,84 @@ export class FrontRepoService {
   }
 
   // insertion point for pull per struct 
+
+  // ArrowPull performs a GET on Arrow of the stack and redeem association pointers 
+  ArrowPull(): Observable<FrontRepo> {
+    return new Observable<FrontRepo>(
+      (observer) => {
+        combineLatest([
+          this.arrowService.getArrows()
+        ]).subscribe(
+          ([ // insertion point sub template 
+            arrows,
+          ]) => {
+            // init the array
+            FrontRepoSingloton.Arrows_array = arrows
+
+            // clear the map that counts Arrow in the GET
+            FrontRepoSingloton.Arrows_batch.clear()
+
+            // 
+            // First Step: init map of instances
+            // insertion point sub template 
+            arrows.forEach(
+              arrow => {
+                FrontRepoSingloton.Arrows.set(arrow.ID, arrow)
+                FrontRepoSingloton.Arrows_batch.set(arrow.ID, arrow)
+
+                // insertion point for redeeming ONE/ZERO-ONE associations
+                // insertion point for pointer field From redeeming
+                {
+                  let _bar = FrontRepoSingloton.Bars.get(arrow.FromID.Int64)
+                  if (_bar) {
+                    arrow.From = _bar
+                  }
+                }
+                // insertion point for pointer field To redeeming
+                {
+                  let _bar = FrontRepoSingloton.Bars.get(arrow.ToID.Int64)
+                  if (_bar) {
+                    arrow.To = _bar
+                  }
+                }
+
+                // insertion point for redeeming ONE-MANY associations
+                // insertion point for slice of pointer field Gantt.Arrows redeeming
+                {
+                  let _gantt = FrontRepoSingloton.Gantts.get(arrow.Gantt_ArrowsDBID.Int64)
+                  if (_gantt) {
+                    if (_gantt.Arrows == undefined) {
+                      _gantt.Arrows = new Array<ArrowDB>()
+                    }
+                    _gantt.Arrows.push(arrow)
+                    if (arrow.Gantt_Arrows_reverse == undefined) {
+                      arrow.Gantt_Arrows_reverse = _gantt
+                    }
+                  }
+                }
+              }
+            )
+
+            // clear arrows that are absent from the GET
+            FrontRepoSingloton.Arrows.forEach(
+              arrow => {
+                if (FrontRepoSingloton.Arrows_batch.get(arrow.ID) == undefined) {
+                  FrontRepoSingloton.Arrows.delete(arrow.ID)
+                }
+              }
+            )
+
+            // 
+            // Second Step: redeem pointers between instances (thanks to maps in the First Step)
+            // insertion point sub template 
+
+            // hand over control flow to observer
+            observer.next(FrontRepoSingloton)
+          }
+        )
+      }
+    )
+  }
 
   // BarPull performs a GET on Bar of the stack and redeem association pointers 
   BarPull(): Observable<FrontRepo> {
@@ -806,18 +963,21 @@ export class FrontRepoService {
 }
 
 // insertion point for get unique ID per struct 
-export function getBarUniqueID(id: number): number {
+export function getArrowUniqueID(id: number): number {
   return 31 * id
 }
-export function getGanttUniqueID(id: number): number {
+export function getBarUniqueID(id: number): number {
   return 37 * id
 }
-export function getGroupUniqueID(id: number): number {
+export function getGanttUniqueID(id: number): number {
   return 41 * id
 }
-export function getLaneUniqueID(id: number): number {
+export function getGroupUniqueID(id: number): number {
   return 43 * id
 }
-export function getMilestoneUniqueID(id: number): number {
+export function getLaneUniqueID(id: number): number {
   return 47 * id
+}
+export function getMilestoneUniqueID(id: number): number {
+  return 53 * id
 }

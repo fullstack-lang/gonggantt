@@ -10,6 +10,8 @@ export class GanttAPI {
 	TextHeight?: number
 	XLeftLanes?: number
 	XRightMargin?: number
+	ArrowLengthToTheRightOfStartBar?: number
+	ArrowTipLenght?: number
 	TimeLine_Color?: string
 	TimeLine_FillOpacity?: number
 	TimeLine_Stroke?: string

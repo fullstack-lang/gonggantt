@@ -177,6 +177,9 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 	})
 
 	laneIndex := 0
+
+	// prepare a map of bar to barSVG
+	mapBar_BarSVG := make(map[*gonggantt_models.Bar]*gongsvg_models.Rect)
 	for _, lane := range ganttToRender.Lanes {
 
 		laneSVG := new(gongsvg_models.Rect).Stage()
@@ -213,6 +216,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		//
 		for _, bar := range lane.Bars {
 			barSVG := new(gongsvg_models.Rect).Stage()
+			mapBar_BarSVG[bar] = barSVG
 			svg.Rects = append(svg.Rects, barSVG)
 			barSVG.Name = bar.Name
 
@@ -307,6 +311,29 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 			milestoneText.FillOpacity = 1.0
 			svg.Texts = append(svg.Texts, milestoneText)
 		}
+	}
+
+	//
+	// Arrows, for each arrow, draw five lines,
+	//
+	// start : middle of the end of the "Start" bar on
+	//
+	for _, arrow := range ganttToRender.Arrows {
+
+		startBar := mapBar_BarSVG[arrow.From]
+		endBar := mapBar_BarSVG[arrow.To]
+
+		generate_arrow(
+			svg,
+			startBar.X+startBar.Width,
+			endBar.X,
+			startBar.Y+barHeigth/2.0,
+			endBar.Y+barHeigth/2.0,
+			ganttToRender.ArrowLengthToTheRightOfStartBar,
+			ganttToRender.ArrowTipLenght,
+			arrow.Name,
+			arrow.OptionnalColor,
+			arrow.OptionnalStroke)
 	}
 
 	//

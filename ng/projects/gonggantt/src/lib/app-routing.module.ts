@@ -2,6 +2,10 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 // insertion point for imports
+import { ArrowsTableComponent } from './arrows-table/arrows-table.component'
+import { ArrowDetailComponent } from './arrow-detail/arrow-detail.component'
+import { ArrowPresentationComponent } from './arrow-presentation/arrow-presentation.component'
+
 import { BarsTableComponent } from './bars-table/bars-table.component'
 import { BarDetailComponent } from './bar-detail/bar-detail.component'
 import { BarPresentationComponent } from './bar-presentation/bar-presentation.component'
@@ -24,6 +28,13 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 
 
 const routes: Routes = [ // insertion point for routes declarations
+	{ path: 'github_com_fullstack_lang_gonggantt_go-arrows', component: ArrowsTableComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_table' },
+	{ path: 'github_com_fullstack_lang_gonggantt_go-arrow-adder', component: ArrowDetailComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_editor' },
+	{ path: 'github_com_fullstack_lang_gonggantt_go-arrow-adder/:id/:originStruct/:originStructFieldName', component: ArrowDetailComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_editor' },
+	{ path: 'github_com_fullstack_lang_gonggantt_go-arrow-detail/:id', component: ArrowDetailComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_editor' },
+	{ path: 'github_com_fullstack_lang_gonggantt_go-arrow-presentation/:id', component: ArrowPresentationComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_presentation' },
+	{ path: 'github_com_fullstack_lang_gonggantt_go-arrow-presentation-special/:id', component: ArrowPresentationComponent, outlet: 'github_com_fullstack_lang_gonggantt_goarrowpres' },
+
 	{ path: 'github_com_fullstack_lang_gonggantt_go-bars', component: BarsTableComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_table' },
 	{ path: 'github_com_fullstack_lang_gonggantt_go-bar-adder', component: BarDetailComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_editor' },
 	{ path: 'github_com_fullstack_lang_gonggantt_go-bar-adder/:id/:originStruct/:originStructFieldName', component: BarDetailComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_editor' },

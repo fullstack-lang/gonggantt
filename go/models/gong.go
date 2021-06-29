@@ -12,6 +12,9 @@ var __member __void
 // StageStruct enables storage of staged instances
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
+	Arrows           map[*Arrow]struct{}
+	Arrows_mapString map[string]*Arrow
+
 	Bars           map[*Bar]struct{}
 	Bars_mapString map[string]*Bar
 
@@ -49,6 +52,8 @@ type BackRepoInterface interface {
 	BackupXL(stage *StageStruct, dirPath string)
 	RestoreXL(stage *StageStruct, dirPath string)
 	// insertion point for Commit and Checkout signatures
+	CommitArrow(arrow *Arrow)
+	CheckoutArrow(arrow *Arrow)
 	CommitBar(bar *Bar)
 	CheckoutBar(bar *Bar)
 	CommitGantt(gantt *Gantt)
@@ -65,6 +70,9 @@ type BackRepoInterface interface {
 
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
+	Arrows:           make(map[*Arrow]struct{}, 0),
+	Arrows_mapString: make(map[string]*Arrow, 0),
+
 	Bars:           make(map[*Bar]struct{}, 0),
 	Bars_mapString: make(map[string]*Bar, 0),
 
@@ -124,6 +132,108 @@ func (stage *StageStruct) RestoreXL(dirPath string) {
 }
 
 // insertion point for cumulative sub template with model space calls
+func (stage *StageStruct) getArrowOrderedStructWithNameField() []*Arrow {
+	// have alphabetical order generation
+	arrowOrdered := []*Arrow{}
+	for arrow := range stage.Arrows {
+		arrowOrdered = append(arrowOrdered, arrow)
+	}
+	sort.Slice(arrowOrdered[:], func(i, j int) bool {
+		return arrowOrdered[i].Name < arrowOrdered[j].Name
+	})
+	return arrowOrdered
+}
+
+// Stage puts arrow to the model stage
+func (arrow *Arrow) Stage() *Arrow {
+	Stage.Arrows[arrow] = __member
+	Stage.Arrows_mapString[arrow.Name] = arrow
+
+	return arrow
+}
+
+// Unstage removes arrow off the model stage
+func (arrow *Arrow) Unstage() *Arrow {
+	delete(Stage.Arrows, arrow)
+	delete(Stage.Arrows_mapString, arrow.Name)
+	return arrow
+}
+
+// commit arrow to the back repo (if it is already staged)
+func (arrow *Arrow) Commit() *Arrow {
+	if _, ok := Stage.Arrows[arrow]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CommitArrow(arrow)
+		}
+	}
+	return arrow
+}
+
+// Checkout arrow to the back repo (if it is already staged)
+func (arrow *Arrow) Checkout() *Arrow {
+	if _, ok := Stage.Arrows[arrow]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CheckoutArrow(arrow)
+		}
+	}
+	return arrow
+}
+
+//
+// Legacy, to be deleted
+//
+
+// StageCopy appends a copy of arrow to the model stage
+func (arrow *Arrow) StageCopy() *Arrow {
+	_arrow := new(Arrow)
+	*_arrow = *arrow
+	_arrow.Stage()
+	return _arrow
+}
+
+// StageAndCommit appends arrow to the model stage and commit to the orm repo
+func (arrow *Arrow) StageAndCommit() *Arrow {
+	arrow.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMArrow(arrow)
+	}
+	return arrow
+}
+
+// DeleteStageAndCommit appends arrow to the model stage and commit to the orm repo
+func (arrow *Arrow) DeleteStageAndCommit() *Arrow {
+	arrow.Unstage()
+	DeleteORMArrow(arrow)
+	return arrow
+}
+
+// StageCopyAndCommit appends a copy of arrow to the model stage and commit to the orm repo
+func (arrow *Arrow) StageCopyAndCommit() *Arrow {
+	_arrow := new(Arrow)
+	*_arrow = *arrow
+	_arrow.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMArrow(arrow)
+	}
+	return _arrow
+}
+
+// CreateORMArrow enables dynamic staging of a Arrow instance
+func CreateORMArrow(arrow *Arrow) {
+	arrow.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMArrow(arrow)
+	}
+}
+
+// DeleteORMArrow enables dynamic staging of a Arrow instance
+func DeleteORMArrow(arrow *Arrow) {
+	arrow.Unstage()
+	if Stage.AllModelsStructDeleteCallback != nil {
+		Stage.AllModelsStructDeleteCallback.DeleteORMArrow(arrow)
+	}
+}
+
 func (stage *StageStruct) getBarOrderedStructWithNameField() []*Bar {
 	// have alphabetical order generation
 	barOrdered := []*Bar{}
@@ -636,6 +746,7 @@ func DeleteORMMilestone(milestone *Milestone) {
 
 // swagger:ignore
 type AllModelsStructCreateInterface interface { // insertion point for Callbacks on creation
+	CreateORMArrow(Arrow *Arrow)
 	CreateORMBar(Bar *Bar)
 	CreateORMGantt(Gantt *Gantt)
 	CreateORMGroup(Group *Group)
@@ -644,6 +755,7 @@ type AllModelsStructCreateInterface interface { // insertion point for Callbacks
 }
 
 type AllModelsStructDeleteInterface interface { // insertion point for Callbacks on deletion
+	DeleteORMArrow(Arrow *Arrow)
 	DeleteORMBar(Bar *Bar)
 	DeleteORMGantt(Gantt *Gantt)
 	DeleteORMGroup(Group *Group)
@@ -652,6 +764,9 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 }
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
+	stage.Arrows = make(map[*Arrow]struct{}, 0)
+	stage.Arrows_mapString = make(map[string]*Arrow, 0)
+
 	stage.Bars = make(map[*Bar]struct{}, 0)
 	stage.Bars_mapString = make(map[string]*Bar, 0)
 
@@ -670,6 +785,9 @@ func (stage *StageStruct) Reset() { // insertion point for array reset
 }
 
 func (stage *StageStruct) Nil() { // insertion point for array nil
+	stage.Arrows = nil
+	stage.Arrows_mapString = nil
+
 	stage.Bars = nil
 	stage.Bars_mapString = nil
 

@@ -90,6 +90,12 @@ export class GanttsTableComponent implements OnInit {
         case 'XRightMargin':
           return ganttDB.XRightMargin;
 
+        case 'ArrowLengthToTheRightOfStartBar':
+          return ganttDB.ArrowLengthToTheRightOfStartBar;
+
+        case 'ArrowTipLenght':
+          return ganttDB.ArrowTipLenght;
+
         case 'TimeLine_Color':
           return ganttDB.TimeLine_Color;
 
@@ -138,6 +144,8 @@ export class GanttsTableComponent implements OnInit {
       mergedContent += ganttDB.TextHeight.toString()
       mergedContent += ganttDB.XLeftLanes.toString()
       mergedContent += ganttDB.XRightMargin.toString()
+      mergedContent += ganttDB.ArrowLengthToTheRightOfStartBar.toString()
+      mergedContent += ganttDB.ArrowTipLenght.toString()
       mergedContent += ganttDB.TimeLine_Color.toLowerCase()
       mergedContent += ganttDB.TimeLine_FillOpacity.toString()
       mergedContent += ganttDB.TimeLine_Stroke.toLowerCase()
@@ -206,6 +214,8 @@ export class GanttsTableComponent implements OnInit {
         "TextHeight",
         "XLeftLanes",
         "XRightMargin",
+        "ArrowLengthToTheRightOfStartBar",
+        "ArrowTipLenght",
         "TimeLine_Color",
         "TimeLine_FillOpacity",
         "TimeLine_Stroke",
@@ -228,6 +238,8 @@ export class GanttsTableComponent implements OnInit {
         "TextHeight",
         "XLeftLanes",
         "XRightMargin",
+        "ArrowLengthToTheRightOfStartBar",
+        "ArrowTipLenght",
         "TimeLine_Color",
         "TimeLine_FillOpacity",
         "TimeLine_Stroke",
