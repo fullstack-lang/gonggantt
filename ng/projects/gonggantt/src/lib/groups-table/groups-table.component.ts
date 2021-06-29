@@ -7,7 +7,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatButton } from '@angular/material/button'
 
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog'
-import { DialogData } from '../front-repo.service'
+import { DialogData, FrontRepoService, FrontRepo, NullInt64, SelectionMode } from '../front-repo.service'
 import { SelectionModel } from '@angular/cdk/collections';
 
 const allowMultiSelect = true;
@@ -16,7 +16,13 @@ import { Router, RouterState } from '@angular/router';
 import { GroupDB } from '../group-db'
 import { GroupService } from '../group.service'
 
-import { FrontRepoService, FrontRepo } from '../front-repo.service'
+// TableComponent is initilizaed from different routes
+// TableComponentMode detail different cases 
+enum TableComponentMode {
+  DISPLAY_MODE,
+  ONE_MANY_ASSOCIATION_MODE,
+  MANY_MANY_ASSOCIATION_MODE,
+}
 
 // generated table component
 @Component({
@@ -26,6 +32,9 @@ import { FrontRepoService, FrontRepo } from '../front-repo.service'
 })
 export class GroupsTableComponent implements OnInit {
 
+  // mode at invocation
+  mode: TableComponentMode
+
   // used if the component is called as a selection component of Group instances
   selection: SelectionModel<GroupDB>;
   initialSelection = new Array<GroupDB>();
@@ -33,7 +42,6 @@ export class GroupsTableComponent implements OnInit {
   // the data source for the table
   groups: GroupDB[];
   matTableDataSource: MatTableDataSource<GroupDB>
-
 
   // front repo, that will be referenced by this.groups
   frontRepo: FrontRepo
@@ -48,38 +56,38 @@ export class GroupsTableComponent implements OnInit {
 
   ngAfterViewInit() {
 
-	// enable sorting on all fields (including pointers and reverse pointer)
-	this.matTableDataSource.sortingDataAccessor = (groupDB: GroupDB, property: string) => {
-		switch (property) {
-				// insertion point for specific sorting accessor
-			case 'Name':
-				return groupDB.Name;
+    // enable sorting on all fields (including pointers and reverse pointer)
+    this.matTableDataSource.sortingDataAccessor = (groupDB: GroupDB, property: string) => {
+      switch (property) {
+        // insertion point for specific sorting accessor
+        case 'Name':
+          return groupDB.Name;
 
-				case 'Groups':
-					return this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64)?.Name;
+        case 'Groups':
+          return this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64)?.Name;
 
-				default:
-					return GroupDB[property];
-		}
-	}; 
+        default:
+          return GroupDB[property];
+      }
+    };
 
-	// enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
-	this.matTableDataSource.filterPredicate = (groupDB: GroupDB, filter: string) => {
+    // enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
+    this.matTableDataSource.filterPredicate = (groupDB: GroupDB, filter: string) => {
 
-		// filtering is based on finding a lower case filter into a concatenated string
-		// the groupDB properties
-		let mergedContent = ""
+      // filtering is based on finding a lower case filter into a concatenated string
+      // the groupDB properties
+      let mergedContent = ""
 
-		// insertion point for merging of fields
-		mergedContent += groupDB.Name.toLowerCase()
-		if (groupDB.Gantt_GroupsDBID.Int64 != 0) {
-        	mergedContent += this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64)?.Name.toLowerCase()
-    	}
+      // insertion point for merging of fields
+      mergedContent += groupDB.Name.toLowerCase()
+      if (groupDB.Gantt_GroupsDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64)?.Name.toLowerCase()
+      }
 
 
-		let isSelected = mergedContent.includes(filter.toLowerCase())
-		return isSelected
-	};
+      let isSelected = mergedContent.includes(filter.toLowerCase())
+      return isSelected
+    };
 
     this.matTableDataSource.sort = this.sort;
     this.matTableDataSource.paginator = this.paginator;
@@ -100,6 +108,22 @@ export class GroupsTableComponent implements OnInit {
 
     private router: Router,
   ) {
+
+    // compute mode
+    if (dialogData == undefined) {
+      this.mode = TableComponentMode.DISPLAY_MODE
+    } else {
+      switch (dialogData.SelectionMode) {
+        case SelectionMode.ONE_MANY_ASSOCIATION_MODE:
+          this.mode = TableComponentMode.ONE_MANY_ASSOCIATION_MODE
+          break
+        case SelectionMode.MANY_MANY_ASSOCIATION_MODE:
+          this.mode = TableComponentMode.MANY_MANY_ASSOCIATION_MODE
+          break
+        default:
+      }
+    }
+
     // observable for changes in structs
     this.groupService.GroupServiceChanged.subscribe(
       message => {
@@ -108,7 +132,7 @@ export class GroupsTableComponent implements OnInit {
         }
       }
     )
-    if (dialogData == undefined) {
+    if (this.mode == TableComponentMode.DISPLAY_MODE) {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
         "Groups",
@@ -138,7 +162,7 @@ export class GroupsTableComponent implements OnInit {
         // insertion point for variables Recoveries
 
         // in case the component is called as a selection component
-        if (this.dialogData != undefined) {
+        if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           this.groups.forEach(
             group => {
               let ID = this.dialogData.ID
@@ -148,6 +172,20 @@ export class GroupsTableComponent implements OnInit {
               }
             }
           )
+          this.selection = new SelectionModel<GroupDB>(allowMultiSelect, this.initialSelection);
+        }
+
+        if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
+
+          let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s"]
+          let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)
+
+          if (sourceInstance[this.dialogData.SourceField]) {
+            for (let associationInstance of sourceInstance[this.dialogData.SourceField]) {
+              let group = associationInstance[this.dialogData.IntermediateStructField]
+              this.initialSelection.push(group)
+            }
+          }
           this.selection = new SelectionModel<GroupDB>(allowMultiSelect, this.initialSelection);
         }
 
@@ -216,36 +254,106 @@ export class GroupsTableComponent implements OnInit {
 
   save() {
 
-    let toUpdate = new Set<GroupDB>()
+    if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
 
-    // reset all initial selection of group that belong to group through Anarrayofb
-    this.initialSelection.forEach(
-      group => {
-        group[this.dialogData.ReversePointer].Int64 = 0
-        group[this.dialogData.ReversePointer].Valid = true
-        toUpdate.add(group)
-      }
-    )
+      let toUpdate = new Set<GroupDB>()
 
-    // from selection, set group that belong to group through Anarrayofb
-    this.selection.selected.forEach(
-      group => {
-        let ID = +this.dialogData.ID
-        group[this.dialogData.ReversePointer].Int64 = ID
-        group[this.dialogData.ReversePointer].Valid = true
-        toUpdate.add(group)
-      }
-    )
+      // reset all initial selection of group that belong to group
+      this.initialSelection.forEach(
+        group => {
+          group[this.dialogData.ReversePointer].Int64 = 0
+          group[this.dialogData.ReversePointer].Valid = true
+          toUpdate.add(group)
+        }
+      )
 
-    // update all group (only update selection & initial selection)
-    toUpdate.forEach(
-      group => {
-        this.groupService.updateGroup(group)
-          .subscribe(group => {
-            this.groupService.GroupServiceChanged.next("update")
-          });
+      // from selection, set group that belong to group
+      this.selection.selected.forEach(
+        group => {
+          let ID = +this.dialogData.ID
+          group[this.dialogData.ReversePointer].Int64 = ID
+          group[this.dialogData.ReversePointer].Valid = true
+          toUpdate.add(group)
+        }
+      )
+
+      // update all group (only update selection & initial selection)
+      toUpdate.forEach(
+        group => {
+          this.groupService.updateGroup(group)
+            .subscribe(group => {
+              this.groupService.GroupServiceChanged.next("update")
+            });
+        }
+      )
+    }
+
+    if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
+
+      let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s"]
+      let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)
+
+      // First, parse all instance of the association struct and remove the instance
+      // that have unselect
+      let unselectedGroup = new Set<number>()
+      for (let group of this.initialSelection) {
+        if (this.selection.selected.includes(group)) {
+          // console.log("group " + group.Name + " is still selected")
+        } else {
+          console.log("group " + group.Name + " has been unselected")
+          unselectedGroup.add(group.ID)
+          console.log("is unselected " + unselectedGroup.has(group.ID))
+        }
       }
-    )
+
+      // delete the association instance
+      if (sourceInstance[this.dialogData.SourceField]) {
+        for (let associationInstance of sourceInstance[this.dialogData.SourceField]) {
+          let group = associationInstance[this.dialogData.IntermediateStructField]
+          if (unselectedGroup.has(group.ID)) {
+
+            this.frontRepoService.deleteService( this.dialogData.IntermediateStruct, associationInstance )
+          }
+        }
+      }
+
+      // is the source array is emptyn create it
+      if (sourceInstance[this.dialogData.SourceField] == undefined) {
+        sourceInstance[this.dialogData.SourceField] = new Array<any>()
+      }
+
+      // second, parse all instance of the selected
+      if (sourceInstance[this.dialogData.SourceField]) {
+        this.selection.selected.forEach(
+          group => {
+            if (!this.initialSelection.includes(group)) {
+              // console.log("group " + group.Name + " has been added to the selection")
+
+              let associationInstance = {
+                Name: sourceInstance["Name"] + "-" + group.Name,
+              }
+
+              associationInstance[this.dialogData.IntermediateStructField+"ID"] = new NullInt64
+              associationInstance[this.dialogData.IntermediateStructField+"ID"].Int64 = group.ID
+              associationInstance[this.dialogData.IntermediateStructField+"ID"].Valid = true
+
+              associationInstance[this.dialogData.SourceStruct + "_" + this.dialogData.SourceField + "DBID"] = new NullInt64
+              associationInstance[this.dialogData.SourceStruct + "_" + this.dialogData.SourceField + "DBID"].Int64 = sourceInstance["ID"]
+              associationInstance[this.dialogData.SourceStruct + "_" + this.dialogData.SourceField + "DBID"].Valid = true
+
+              this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
+
+            } else {
+              // console.log("group " + group.Name + " is still selected")
+            }
+          }
+        )
+      }
+
+      // this.selection = new SelectionModel<GroupDB>(allowMultiSelect, this.initialSelection);
+    }
+
+    // why pizza ?
     this.dialogRef.close('Pizza!');
   }
 }

@@ -46,16 +46,45 @@ export const FrontRepoSingloton = new (FrontRepo)
 
 // define the type of nullable Int64 in order to support back pointers IDs
 export class NullInt64 {
-    Int64: number
-    Valid: boolean
+  Int64: number
+  Valid: boolean
 }
 
-// define the interface for information that is forwarded from the calling instance to 
+// the table component is called in different ways
+//
+// DISPLAY or ASSOCIATION MODE
+//
+// in ASSOCIATION MODE, it is invoked within a diaglo and a Dialog Data item is used to
+// configure the component
+// DialogData define the interface for information that is forwarded from the calling instance to 
 // the select table
-export interface DialogData {
+export class DialogData {
   ID: number; // ID of the calling instance
+
+  // the reverse pointer is the name of the generated field on the destination
+  // struct of the ONE-MANY association
   ReversePointer: string; // field of {{Structname}} that serve as reverse pointer
   OrderingMode: boolean; // if true, this is for ordering items
+
+  // there are different selection mode : ONE_MANY or MANY_MANY
+  SelectionMode: SelectionMode;
+
+  // used if SelectionMode is MANY_MANY_ASSOCIATION_MODE
+  //
+  // In Gong, a MANY-MANY association is implemented as a ONE-ZERO/ONE followed by a ONE_MANY association
+  // 
+  // in the MANY_MANY_ASSOCIATION_MODE case, we need also the Struct and the FieldName that are
+  // at the end of the ONE-MANY association
+  SourceStruct: string;  // The "Aclass"
+  SourceField: string; // the "AnarrayofbUse"
+  IntermediateStruct: string; // the "AclassBclassUse" 
+  IntermediateStructField: string; // the "Bclass" as field
+  NextAssociationStruct: string; // the "Bclass"
+}
+
+export enum SelectionMode {
+  ONE_MANY_ASSOCIATION_MODE = "ONE_MANY_ASSOCIATION_MODE",
+  MANY_MANY_ASSOCIATION_MODE = "MANY_MANY_ASSOCIATION_MODE",
 }
 
 //
@@ -78,6 +107,26 @@ export class FrontRepoService {
     private laneService: LaneService,
     private milestoneService: MilestoneService,
   ) { }
+
+  // postService provides a post function for each struct name
+  postService(structName: string, instanceToBePosted: any) {
+    let service = this[structName.toLowerCase() + "Service"]
+    service["post" + structName](instanceToBePosted).subscribe(
+      instance => {
+        service[structName + "ServiceChanged"].next("post")
+      }
+    );
+  }
+
+  // deleteService provides a delete function for each struct name
+  deleteService(structName: string, instanceToBeDeleted: any) {
+    let service = this[structName.toLowerCase() + "Service"]
+    service["delete" + structName](instanceToBeDeleted).subscribe(
+      instance => {
+        service[structName + "ServiceChanged"].next("delete")
+      }
+    );
+  }
 
   // typing of observable can be messy in typescript. Therefore, one force the type
   observableFrontRepo: [ // insertion point sub template 
@@ -134,14 +183,14 @@ export class FrontRepoService {
 
             // clear the map that counts Bar in the GET
             FrontRepoSingloton.Bars_batch.clear()
-            
+
             bars.forEach(
               bar => {
                 FrontRepoSingloton.Bars.set(bar.ID, bar)
                 FrontRepoSingloton.Bars_batch.set(bar.ID, bar)
               }
             )
-            
+
             // clear bars that are absent from the batch
             FrontRepoSingloton.Bars.forEach(
               bar => {
@@ -150,7 +199,7 @@ export class FrontRepoService {
                 }
               }
             )
-            
+
             // sort Bars_array array
             FrontRepoSingloton.Bars_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
@@ -161,20 +210,20 @@ export class FrontRepoService {
               }
               return 0;
             });
-            
+
             // init the array
             FrontRepoSingloton.Gantts_array = gantts
 
             // clear the map that counts Gantt in the GET
             FrontRepoSingloton.Gantts_batch.clear()
-            
+
             gantts.forEach(
               gantt => {
                 FrontRepoSingloton.Gantts.set(gantt.ID, gantt)
                 FrontRepoSingloton.Gantts_batch.set(gantt.ID, gantt)
               }
             )
-            
+
             // clear gantts that are absent from the batch
             FrontRepoSingloton.Gantts.forEach(
               gantt => {
@@ -183,7 +232,7 @@ export class FrontRepoService {
                 }
               }
             )
-            
+
             // sort Gantts_array array
             FrontRepoSingloton.Gantts_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
@@ -194,20 +243,20 @@ export class FrontRepoService {
               }
               return 0;
             });
-            
+
             // init the array
             FrontRepoSingloton.Groups_array = groups
 
             // clear the map that counts Group in the GET
             FrontRepoSingloton.Groups_batch.clear()
-            
+
             groups.forEach(
               group => {
                 FrontRepoSingloton.Groups.set(group.ID, group)
                 FrontRepoSingloton.Groups_batch.set(group.ID, group)
               }
             )
-            
+
             // clear groups that are absent from the batch
             FrontRepoSingloton.Groups.forEach(
               group => {
@@ -216,7 +265,7 @@ export class FrontRepoService {
                 }
               }
             )
-            
+
             // sort Groups_array array
             FrontRepoSingloton.Groups_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
@@ -227,20 +276,20 @@ export class FrontRepoService {
               }
               return 0;
             });
-            
+
             // init the array
             FrontRepoSingloton.Lanes_array = lanes
 
             // clear the map that counts Lane in the GET
             FrontRepoSingloton.Lanes_batch.clear()
-            
+
             lanes.forEach(
               lane => {
                 FrontRepoSingloton.Lanes.set(lane.ID, lane)
                 FrontRepoSingloton.Lanes_batch.set(lane.ID, lane)
               }
             )
-            
+
             // clear lanes that are absent from the batch
             FrontRepoSingloton.Lanes.forEach(
               lane => {
@@ -249,7 +298,7 @@ export class FrontRepoService {
                 }
               }
             )
-            
+
             // sort Lanes_array array
             FrontRepoSingloton.Lanes_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
@@ -260,20 +309,20 @@ export class FrontRepoService {
               }
               return 0;
             });
-            
+
             // init the array
             FrontRepoSingloton.Milestones_array = milestones
 
             // clear the map that counts Milestone in the GET
             FrontRepoSingloton.Milestones_batch.clear()
-            
+
             milestones.forEach(
               milestone => {
                 FrontRepoSingloton.Milestones.set(milestone.ID, milestone)
                 FrontRepoSingloton.Milestones_batch.set(milestone.ID, milestone)
               }
             )
-            
+
             // clear milestones that are absent from the batch
             FrontRepoSingloton.Milestones.forEach(
               milestone => {
@@ -282,7 +331,7 @@ export class FrontRepoService {
                 }
               }
             )
-            
+
             // sort Milestones_array array
             FrontRepoSingloton.Milestones_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
@@ -293,7 +342,7 @@ export class FrontRepoService {
               }
               return 0;
             });
-            
+
 
             // 
             // Second Step: redeem pointers between instances (thanks to maps in the First Step)
@@ -446,9 +495,9 @@ export class FrontRepoService {
                 FrontRepoSingloton.Bars.set(bar.ID, bar)
                 FrontRepoSingloton.Bars_batch.set(bar.ID, bar)
 
-                // insertion point for redeeming ONE/ZERO-ONE associations 
+                // insertion point for redeeming ONE/ZERO-ONE associations
 
-                // insertion point for redeeming ONE-MANY associations 
+                // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Lane.Bars redeeming
                 {
                   let _lane = FrontRepoSingloton.Lanes.get(bar.Lane_BarsDBID.Int64)
@@ -510,9 +559,9 @@ export class FrontRepoService {
                 FrontRepoSingloton.Gantts.set(gantt.ID, gantt)
                 FrontRepoSingloton.Gantts_batch.set(gantt.ID, gantt)
 
-                // insertion point for redeeming ONE/ZERO-ONE associations 
+                // insertion point for redeeming ONE/ZERO-ONE associations
 
-                // insertion point for redeeming ONE-MANY associations 
+                // insertion point for redeeming ONE-MANY associations
               }
             )
 
@@ -561,9 +610,9 @@ export class FrontRepoService {
                 FrontRepoSingloton.Groups.set(group.ID, group)
                 FrontRepoSingloton.Groups_batch.set(group.ID, group)
 
-                // insertion point for redeeming ONE/ZERO-ONE associations 
+                // insertion point for redeeming ONE/ZERO-ONE associations
 
-                // insertion point for redeeming ONE-MANY associations 
+                // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Groups redeeming
                 {
                   let _gantt = FrontRepoSingloton.Gantts.get(group.Gantt_GroupsDBID.Int64)
@@ -625,9 +674,9 @@ export class FrontRepoService {
                 FrontRepoSingloton.Lanes.set(lane.ID, lane)
                 FrontRepoSingloton.Lanes_batch.set(lane.ID, lane)
 
-                // insertion point for redeeming ONE/ZERO-ONE associations 
+                // insertion point for redeeming ONE/ZERO-ONE associations
 
-                // insertion point for redeeming ONE-MANY associations 
+                // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Lanes redeeming
                 {
                   let _gantt = FrontRepoSingloton.Gantts.get(lane.Gantt_LanesDBID.Int64)
@@ -715,9 +764,9 @@ export class FrontRepoService {
                 FrontRepoSingloton.Milestones.set(milestone.ID, milestone)
                 FrontRepoSingloton.Milestones_batch.set(milestone.ID, milestone)
 
-                // insertion point for redeeming ONE/ZERO-ONE associations 
+                // insertion point for redeeming ONE/ZERO-ONE associations
 
-                // insertion point for redeeming ONE-MANY associations 
+                // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Milestones redeeming
                 {
                   let _gantt = FrontRepoSingloton.Gantts.get(milestone.Gantt_MilestonesDBID.Int64)

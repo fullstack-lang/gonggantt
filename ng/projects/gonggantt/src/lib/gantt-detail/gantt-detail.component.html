@@ -2,7 +2,7 @@
     <h2 class="details__title">gantt</h2>
     <!-- insertion point for fields specific code -->
     <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
+        <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Name">
@@ -76,7 +76,7 @@
     </mat-form-field>
 
     <mat-grid-list *ngIf='!isATextArea("TimeLine_Color")' cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
+        <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TimeLine_Color</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_Color">
@@ -102,7 +102,7 @@
     </mat-form-field>
 
     <mat-grid-list *ngIf='!isATextArea("TimeLine_Stroke")' cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
+        <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TimeLine_Stroke</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_Stroke">
@@ -128,7 +128,7 @@
     </mat-form-field>
 
     <mat-grid-list *ngIf='!isATextArea("Group_Stroke")' cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
+        <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Group_Stroke</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_Stroke">
@@ -154,7 +154,7 @@
     </mat-form-field>
 
     <mat-grid-list *ngIf='!isATextArea("Group_StrokeDashArray")' cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
+        <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Group_StrokeDashArray</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_StrokeDashArray">
@@ -183,10 +183,10 @@
     <mat-checkbox [formControl]="AlignOnStartEndOnYearStartFormControl">AlignOnStartEndOnYearStart</mat-checkbox>
 
     <mat-grid-list cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
-            <button mat-raised-button
-                (click)="openReverseSelection('Lane', 'Gantt_LanesDBID')">Lanes</button>
+        <mat-grid-tile [colspan]="3">
+            <button mat-raised-button (click)="openReverseSelection('Lane', 'Gantt_LanesDBID', 'ONE_MANY_ASSOCIATION_MODE', '', '', '')">Lanes</button>
         </mat-grid-tile>
+        <!-- insertion point for the button of the MANY_MANY association-->
         <mat-grid-tile>
             <button mat-raised-button (click)="openDragAndDropOrdering('Lane', 'Gantt_LanesDBID')">
                 <mat-icon>
@@ -196,10 +196,10 @@
         </mat-grid-tile>
     </mat-grid-list>
     <mat-grid-list cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
-            <button mat-raised-button
-                (click)="openReverseSelection('Milestone', 'Gantt_MilestonesDBID')">Milestones</button>
+        <mat-grid-tile [colspan]="3">
+            <button mat-raised-button (click)="openReverseSelection('Milestone', 'Gantt_MilestonesDBID', 'ONE_MANY_ASSOCIATION_MODE', '', '', '')">Milestones</button>
         </mat-grid-tile>
+        <!-- insertion point for the button of the MANY_MANY association-->
         <mat-grid-tile>
             <button mat-raised-button (click)="openDragAndDropOrdering('Milestone', 'Gantt_MilestonesDBID')">
                 <mat-icon>
@@ -209,10 +209,10 @@
         </mat-grid-tile>
     </mat-grid-list>
     <mat-grid-list cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
-            <button mat-raised-button
-                (click)="openReverseSelection('Group', 'Gantt_GroupsDBID')">Groups</button>
+        <mat-grid-tile [colspan]="3">
+            <button mat-raised-button (click)="openReverseSelection('Group', 'Gantt_GroupsDBID', 'ONE_MANY_ASSOCIATION_MODE', '', '', '')">Groups</button>
         </mat-grid-tile>
+        <!-- insertion point for the button of the MANY_MANY association-->
         <mat-grid-tile>
             <button mat-raised-button (click)="openDragAndDropOrdering('Group', 'Gantt_GroupsDBID')">
                 <mat-icon>
@@ -223,7 +223,7 @@
     </mat-grid-list>
     <div class="details__save">
         <button mat-raised-button color="primary" (click)="save()">
-			Save gantt
-		</button>
+            Save gantt
+        </button>
     </div>
 </form>

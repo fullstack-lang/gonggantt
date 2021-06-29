@@ -2,7 +2,7 @@
     <h2 class="details__title">lane</h2>
     <!-- insertion point for fields specific code -->
     <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
+        <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
                 <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="lane.Name">
@@ -28,10 +28,10 @@
     </mat-form-field>
 
     <mat-grid-list cols="5" rowHeight="2:1">
-        <mat-grid-tile [colspan]="4">
-            <button mat-raised-button
-                (click)="openReverseSelection('Bar', 'Lane_BarsDBID')">Bars</button>
+        <mat-grid-tile [colspan]="3">
+            <button mat-raised-button (click)="openReverseSelection('Bar', 'Lane_BarsDBID', 'ONE_MANY_ASSOCIATION_MODE', '', '', '')">Bars</button>
         </mat-grid-tile>
+        <!-- insertion point for the button of the MANY_MANY association-->
         <mat-grid-tile>
             <button mat-raised-button (click)="openDragAndDropOrdering('Bar', 'Lane_BarsDBID')">
                 <mat-icon>
@@ -69,7 +69,7 @@
     </mat-form-field>
     <div class="details__save">
         <button mat-raised-button color="primary" (click)="save()">
-			Save lane
-		</button>
+            Save lane
+        </button>
     </div>
 </form>
