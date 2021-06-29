@@ -2,6 +2,21 @@ basePath: /api/github.com/fullstack-lang/gonggantt/go/v1
 consumes:
 - application/json
 definitions:
+  Arrow:
+    properties:
+      From:
+        $ref: '#/definitions/Bar'
+      Name:
+        type: string
+      OptionnalColor:
+        description: if not Zero, is taken into account when drawing the bar
+        type: string
+      OptionnalStroke:
+        type: string
+      To:
+        $ref: '#/definitions/Bar'
+    type: object
+    x-go-package: github.com/fullstack-lang/gonggantt/go/models
   Bar:
     properties:
       End:
@@ -132,6 +147,80 @@ definitions:
     title: NullTime represents a time.Time that may be null.
     type: object
     x-go-package: database/sql
+  arrowAPI:
+    description: |-
+      for POST, API, one needs the fields of the model as well as the fields
+      from associations ("Has One" and "Has Many") that are generated to
+      fullfill the ORM requirements for associations
+    properties:
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        $ref: '#/definitions/DeletedAt'
+      From:
+        $ref: '#/definitions/Bar'
+      FromID:
+        $ref: '#/definitions/NullInt64'
+      Gantt_ArrowsDBID:
+        $ref: '#/definitions/NullInt64'
+      Gantt_ArrowsDBID_Index:
+        $ref: '#/definitions/NullInt64'
+      ID:
+        format: uint64
+        type: integer
+      Name:
+        type: string
+      OptionnalColor:
+        description: if not Zero, is taken into account when drawing the bar
+        type: string
+      OptionnalStroke:
+        type: string
+      To:
+        $ref: '#/definitions/Bar'
+      ToID:
+        $ref: '#/definitions/NullInt64'
+      UpdatedAt:
+        format: date-time
+        type: string
+    title: ArrowAPI is the input in POST API
+    type: object
+    x-go-name: ArrowAPI
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
+  arrowDB:
+    description: |-
+      It incorporates the GORM ID, basic fields from the model (because they can be serialized),
+      the encoded version of pointers
+    properties:
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt:
+        $ref: '#/definitions/DeletedAt'
+      FromID:
+        $ref: '#/definitions/NullInt64'
+      Gantt_ArrowsDBID:
+        $ref: '#/definitions/NullInt64'
+      Gantt_ArrowsDBID_Index:
+        $ref: '#/definitions/NullInt64'
+      ID:
+        format: uint64
+        type: integer
+      Name_Data:
+        $ref: '#/definitions/NullString'
+      OptionnalColor_Data:
+        $ref: '#/definitions/NullString'
+      OptionnalStroke_Data:
+        $ref: '#/definitions/NullString'
+      ToID:
+        $ref: '#/definitions/NullInt64'
+      UpdatedAt:
+        format: date-time
+        type: string
+    title: ArrowDB describes a arrow in the database
+    type: object
+    x-go-name: ArrowDB
+    x-go-package: github.com/fullstack-lang/gonggantt/go/orm
   barAPI:
     description: |-
       for POST, API, one needs the fields of the model as well as the fields
@@ -212,6 +301,17 @@ definitions:
     properties:
       AlignOnStartEndOnYearStart:
         type: boolean
+      ArrowLengthToTheRightOfStartBar:
+        format: double
+        type: number
+      ArrowTipLenght:
+        format: double
+        type: number
+      Arrows:
+        description: list of Arrows
+        items:
+          $ref: '#/definitions/Arrow'
+        type: array
       CreatedAt:
         format: date-time
         type: string
@@ -298,6 +398,10 @@ definitions:
     properties:
       AlignOnStartEndOnYearStart_Data:
         $ref: '#/definitions/NullBool'
+      ArrowLengthToTheRightOfStartBar_Data:
+        $ref: '#/definitions/NullFloat64'
+      ArrowTipLenght_Data:
+        $ref: '#/definitions/NullFloat64'
       CreatedAt:
         format: date-time
         type: string
@@ -555,6 +659,90 @@ info:
   title: gonggantt backend API
   version: "0.1"
 paths:
+  /arrows:
+    get:
+      description: Get all arrows
+      operationId: getArrows
+      responses:
+        "200":
+          $ref: '#/responses/arrowDBsResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - arrows
+    post:
+      consumes:
+      - application/json
+      description: Creates a arrow
+      operationId: postArrow
+      parameters:
+      - description: The Arrow to submit or modify
+        in: body
+        name: Arrow
+        schema:
+          $ref: '#/definitions/arrowAPI'
+      produces:
+      - application/json
+      responses:
+        "200":
+          $ref: '#/responses/arrowDBResponse'
+      tags:
+      - arrows
+  /arrows/{ID}:
+    delete:
+      description: Delete a arrow
+      operationId: deleteArrow
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - arrows
+    get:
+      operationId: getArrow
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      responses:
+        "200":
+          $ref: '#/responses/arrowDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      summary: Gets the details for a arrow.
+      tags:
+      - arrows
+    patch:
+      description: Update a arrow
+      operationId: updateArrow
+      parameters:
+      - description: The ID of the order
+        format: int64
+        in: path
+        name: ID
+        required: true
+        type: integer
+      - description: The Arrow to submit or modify
+        in: body
+        name: Arrow
+        schema:
+          $ref: '#/definitions/arrowAPI'
+      responses:
+        "200":
+          $ref: '#/responses/arrowDBResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - arrows
   /bars:
     get:
       description: Get all bars
@@ -988,6 +1176,48 @@ paths:
 produces:
 - application/json
 responses:
+  arrowDBResponse:
+    description: ArrowDBResponse provides response
+    headers:
+      CreatedAt:
+        format: date-time
+        type: string
+      DeletedAt: {}
+      FromID:
+        description: |-
+          insertion for pointer fields encoding declaration
+          field From is a pointer to another Struct (optional or 0..1)
+          This field is generated into another field to enable AS ONE association
+      Gantt_ArrowsDBID:
+        description: Implementation of a reverse ID for field Gantt{}.Arrows []*Arrow
+      Gantt_ArrowsDBID_Index:
+        description: implementation of the index of the withing the slice
+      ID:
+        format: uint64
+        type: integer
+      Name_Data:
+        description: |-
+          insertion for basic fields declaration
+          Declation for basic field arrowDB.Name {{BasicKind}} (to be completed)
+      OptionnalColor_Data:
+        description: Declation for basic field arrowDB.OptionnalColor {{BasicKind}} (to be completed)
+      OptionnalStroke_Data:
+        description: Declation for basic field arrowDB.OptionnalStroke {{BasicKind}} (to be completed)
+      ToID:
+        description: |-
+          field To is a pointer to another Struct (optional or 0..1)
+          This field is generated into another field to enable AS ONE association
+      UpdatedAt:
+        format: date-time
+        type: string
+    schema:
+      $ref: '#/definitions/NullInt64'
+  arrowDBsResponse:
+    description: ArrowDBs arrays arrowDBs
+    schema:
+      items:
+        $ref: '#/definitions/arrowDB'
+      type: array
   barDBResponse:
     description: BarDBResponse provides response
     headers:
@@ -1011,11 +1241,9 @@ responses:
           insertion for basic fields declaration
           Declation for basic field barDB.Name {{BasicKind}} (to be completed)
       OptionnalColor_Data:
-        description: Declation for basic field barDB.OptionnalColor {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field barDB.OptionnalColor {{BasicKind}} (to be completed)
       OptionnalStroke_Data:
-        description: Declation for basic field barDB.OptionnalStroke {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field barDB.OptionnalStroke {{BasicKind}} (to be completed)
       Start_Data:
         description: Declation for basic field barDB.Start
       UpdatedAt:
@@ -1036,69 +1264,58 @@ responses:
         description: |-
           Declation for basic field ganttDB.AlignOnStartEndOnYearStart bool (to be completed)
           provide the sql storage for the boolan
+      ArrowLengthToTheRightOfStartBar_Data:
+        description: Declation for basic field ganttDB.ArrowLengthToTheRightOfStartBar {{BasicKind}} (to be completed)
+      ArrowTipLenght_Data:
+        description: Declation for basic field ganttDB.ArrowTipLenght {{BasicKind}} (to be completed)
       CreatedAt:
         format: date-time
         type: string
       DateYOffset_Data:
-        description: Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to be completed)
       DeletedAt: {}
       End_Data:
         description: Declation for basic field ganttDB.End
       Group_Stroke_Data:
-        description: Declation for basic field ganttDB.Group_Stroke {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.Group_Stroke {{BasicKind}} (to be completed)
       Group_StrokeDashArray_Data:
-        description: Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}} (to be completed)
       Group_StrokeWidth_Data:
-        description: Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}} (to be completed)
       ID:
         format: uint64
         type: integer
       LaneHeight_Data:
-        description: Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to be completed)
       Name_Data:
         description: |-
           insertion for basic fields declaration
           Declation for basic field ganttDB.Name {{BasicKind}} (to be completed)
       RatioBarToLaneHeight_Data:
-        description: Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}} (to be completed)
       Start_Data:
         description: Declation for basic field ganttDB.Start
       TextHeight_Data:
-        description: Declation for basic field ganttDB.TextHeight {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.TextHeight {{BasicKind}} (to be completed)
       TimeLine_Color_Data:
-        description: Declation for basic field ganttDB.TimeLine_Color {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_Color {{BasicKind}} (to be completed)
       TimeLine_FillOpacity_Data:
-        description: Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}} (to be completed)
       TimeLine_Stroke_Data:
-        description: Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}} (to be completed)
       TimeLine_StrokeWidth_Data:
-        description: Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}} (to be completed)
       UpdatedAt:
         format: date-time
         type: string
       XLeftLanes_Data:
-        description: Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to be completed)
       XLeftText_Data:
-        description: Declation for basic field ganttDB.XLeftText {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.XLeftText {{BasicKind}} (to be completed)
       XRightMargin_Data:
-        description: Declation for basic field ganttDB.XRightMargin {{BasicKind}}
-          (to be completed)
+        description: Declation for basic field ganttDB.XRightMargin {{BasicKind}} (to be completed)
       YTopMargin_Data:
-        description: Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to
-          be completed)
+        description: Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to be completed)
     schema:
       $ref: '#/definitions/NullBool'
   ganttDBsResponse:
@@ -1173,8 +1390,7 @@ responses:
         format: uint64
         type: integer
       Milestone_DiamonfAndTextAnchorsDBID:
-        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors
-          []*Lane
+        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
       Milestone_DiamonfAndTextAnchorsDBID_Index:
         description: implementation of the index of the withing the slice
       Name_Data:

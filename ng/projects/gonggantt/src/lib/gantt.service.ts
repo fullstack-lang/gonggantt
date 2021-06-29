@@ -59,6 +59,7 @@ export class GanttService {
     ganttdb.Lanes = []
     ganttdb.Milestones = []
     ganttdb.Groups = []
+    ganttdb.Arrows = []
 
 		return this.http.post<GanttDB>(this.ganttsUrl, ganttdb, this.httpOptions).pipe(
 			tap(_ => {
@@ -89,6 +90,7 @@ export class GanttService {
     ganttdb.Lanes = []
     ganttdb.Milestones = []
     ganttdb.Groups = []
+    ganttdb.Arrows = []
 
     return this.http.put(url, ganttdb, this.httpOptions).pipe(
       tap(_ => {

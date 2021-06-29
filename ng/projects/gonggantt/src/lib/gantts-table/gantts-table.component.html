@@ -89,6 +89,20 @@
             </td>
         </ng-container>
         <!-- -->
+        <ng-container matColumnDef="ArrowLengthToTheRightOfStartBar">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ArrowLengthToTheRightOfStartBar </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.ArrowLengthToTheRightOfStartBar.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="ArrowTipLenght">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ArrowTipLenght </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.ArrowTipLenght.toPrecision(5)}}
+            </td>
+        </ng-container>
+        <!-- -->
         <ng-container matColumnDef="TimeLine_Color">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> TimeLine_Color </th>
             <td mat-cell *matCellDef="let Gantt">

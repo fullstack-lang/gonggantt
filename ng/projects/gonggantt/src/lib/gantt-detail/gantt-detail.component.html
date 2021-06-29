@@ -75,6 +75,18 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.XRightMargin" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
+    <!-- -->
+    <mat-form-field class="detail-full-width">
+        <mat-label>ArrowLengthToTheRightOfStartBar</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.ArrowLengthToTheRightOfStartBar" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
+    <!-- -->
+    <mat-form-field class="detail-full-width">
+        <mat-label>ArrowTipLenght</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.ArrowTipLenght" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <mat-grid-list *ngIf='!isATextArea("TimeLine_Color")' cols="5" rowHeight="2:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
@@ -215,6 +227,19 @@
         <!-- insertion point for the button of the MANY_MANY association-->
         <mat-grid-tile>
             <button mat-raised-button (click)="openDragAndDropOrdering('Group', 'Gantt_GroupsDBID')">
+                <mat-icon>
+                    shuffle
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-grid-list cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="3">
+            <button mat-raised-button (click)="openReverseSelection('Arrow', 'Gantt_ArrowsDBID', 'ONE_MANY_ASSOCIATION_MODE', '', '', '')">Arrows</button>
+        </mat-grid-tile>
+        <!-- insertion point for the button of the MANY_MANY association-->
+        <mat-grid-tile>
+            <button mat-raised-button (click)="openDragAndDropOrdering('Arrow', 'Gantt_ArrowsDBID')">
                 <mat-icon>
                     shuffle
                 </mat-icon>

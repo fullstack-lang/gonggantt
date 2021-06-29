@@ -87,6 +87,12 @@ type GanttDB struct {
 	// Declation for basic field ganttDB.XRightMargin {{BasicKind}} (to be completed)
 	XRightMargin_Data sql.NullFloat64
 
+	// Declation for basic field ganttDB.ArrowLengthToTheRightOfStartBar {{BasicKind}} (to be completed)
+	ArrowLengthToTheRightOfStartBar_Data sql.NullFloat64
+
+	// Declation for basic field ganttDB.ArrowTipLenght {{BasicKind}} (to be completed)
+	ArrowTipLenght_Data sql.NullFloat64
+
 	// Declation for basic field ganttDB.TimeLine_Color {{BasicKind}} (to be completed)
 	TimeLine_Color_Data sql.NullString
 
@@ -156,6 +162,10 @@ type GanttWOP struct {
 
 	XRightMargin float64
 
+	ArrowLengthToTheRightOfStartBar float64
+
+	ArrowTipLenght float64
+
 	TimeLine_Color string
 
 	TimeLine_FillOpacity float64
@@ -189,6 +199,8 @@ var Gantt_Fields = []string{
 	"TextHeight",
 	"XLeftLanes",
 	"XRightMargin",
+	"ArrowLengthToTheRightOfStartBar",
+	"ArrowTipLenght",
 	"TimeLine_Color",
 	"TimeLine_FillOpacity",
 	"TimeLine_Stroke",
@@ -398,6 +410,25 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 			}
 		}
 
+		// This loop encodes the slice of pointers gantt.Arrows into the back repo.
+		// Each back repo instance at the end of the association encode the ID of the association start
+		// into a dedicated field for coding the association. The back repo instance is then saved to the db
+		for idx, arrowAssocEnd := range gantt.Arrows {
+
+			// get the back repo instance at the association end
+			arrowAssocEnd_DB :=
+				backRepo.BackRepoArrow.GetArrowDBFromArrowPtr(arrowAssocEnd)
+
+			// encode reverse pointer in the association end back repo instance
+			arrowAssocEnd_DB.Gantt_ArrowsDBID.Int64 = int64(ganttDB.ID)
+			arrowAssocEnd_DB.Gantt_ArrowsDBID.Valid = true
+			arrowAssocEnd_DB.Gantt_ArrowsDBID_Index.Int64 = int64(idx)
+			arrowAssocEnd_DB.Gantt_ArrowsDBID_Index.Valid = true
+			if q := backRepoGantt.db.Save(arrowAssocEnd_DB); q.Error != nil {
+				return q.Error
+			}
+		}
+
 		query := backRepoGantt.db.Save(&ganttDB)
 		if query.Error != nil {
 			return query.Error
@@ -584,6 +615,33 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 		return groupDB_i.Gantt_GroupsDBID_Index.Int64 < groupDB_j.Gantt_GroupsDBID_Index.Int64
 	})
 
+	// This loop redeem gantt.Arrows in the stage from the encode in the back repo
+	// It parses all ArrowDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// it appends the stage instance
+	// 1. reset the slice
+	gantt.Arrows = gantt.Arrows[:0]
+	// 2. loop all instances in the type in the association end
+	for _, arrowDB_AssocEnd := range *backRepo.BackRepoArrow.Map_ArrowDBID_ArrowDB {
+		// 3. Does the ID encoding at the end and the ID at the start matches ?
+		if arrowDB_AssocEnd.Gantt_ArrowsDBID.Int64 == int64(ganttDB.ID) {
+			// 4. fetch the associated instance in the stage
+			arrow_AssocEnd := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB_AssocEnd.ID]
+			// 5. append it the association slice
+			gantt.Arrows = append(gantt.Arrows, arrow_AssocEnd)
+		}
+	}
+
+	// sort the array according to the order
+	sort.Slice(gantt.Arrows, func(i, j int) bool {
+		arrowDB_i_ID := (*backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID)[gantt.Arrows[i]]
+		arrowDB_j_ID := (*backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID)[gantt.Arrows[j]]
+
+		arrowDB_i := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowDB)[arrowDB_i_ID]
+		arrowDB_j := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowDB)[arrowDB_j_ID]
+
+		return arrowDB_i.Gantt_ArrowsDBID_Index.Int64 < arrowDB_j.Gantt_ArrowsDBID_Index.Int64
+	})
+
 	return
 }
 
@@ -645,6 +703,12 @@ func (ganttDB *GanttDB) CopyBasicFieldsFromGantt(gantt *models.Gantt) {
 
 	ganttDB.XRightMargin_Data.Float64 = gantt.XRightMargin
 	ganttDB.XRightMargin_Data.Valid = true
+
+	ganttDB.ArrowLengthToTheRightOfStartBar_Data.Float64 = gantt.ArrowLengthToTheRightOfStartBar
+	ganttDB.ArrowLengthToTheRightOfStartBar_Data.Valid = true
+
+	ganttDB.ArrowTipLenght_Data.Float64 = gantt.ArrowTipLenght
+	ganttDB.ArrowTipLenght_Data.Valid = true
 
 	ganttDB.TimeLine_Color_Data.String = gantt.TimeLine_Color
 	ganttDB.TimeLine_Color_Data.Valid = true
@@ -708,6 +772,12 @@ func (ganttDB *GanttDB) CopyBasicFieldsFromGanttWOP(gantt *GanttWOP) {
 	ganttDB.XRightMargin_Data.Float64 = gantt.XRightMargin
 	ganttDB.XRightMargin_Data.Valid = true
 
+	ganttDB.ArrowLengthToTheRightOfStartBar_Data.Float64 = gantt.ArrowLengthToTheRightOfStartBar
+	ganttDB.ArrowLengthToTheRightOfStartBar_Data.Valid = true
+
+	ganttDB.ArrowTipLenght_Data.Float64 = gantt.ArrowTipLenght
+	ganttDB.ArrowTipLenght_Data.Valid = true
+
 	ganttDB.TimeLine_Color_Data.String = gantt.TimeLine_Color
 	ganttDB.TimeLine_Color_Data.Valid = true
 
@@ -750,6 +820,8 @@ func (ganttDB *GanttDB) CopyBasicFieldsToGantt(gantt *models.Gantt) {
 	gantt.TextHeight = ganttDB.TextHeight_Data.Float64
 	gantt.XLeftLanes = ganttDB.XLeftLanes_Data.Float64
 	gantt.XRightMargin = ganttDB.XRightMargin_Data.Float64
+	gantt.ArrowLengthToTheRightOfStartBar = ganttDB.ArrowLengthToTheRightOfStartBar_Data.Float64
+	gantt.ArrowTipLenght = ganttDB.ArrowTipLenght_Data.Float64
 	gantt.TimeLine_Color = ganttDB.TimeLine_Color_Data.String
 	gantt.TimeLine_FillOpacity = ganttDB.TimeLine_FillOpacity_Data.Float64
 	gantt.TimeLine_Stroke = ganttDB.TimeLine_Stroke_Data.String
@@ -775,6 +847,8 @@ func (ganttDB *GanttDB) CopyBasicFieldsToGanttWOP(gantt *GanttWOP) {
 	gantt.TextHeight = ganttDB.TextHeight_Data.Float64
 	gantt.XLeftLanes = ganttDB.XLeftLanes_Data.Float64
 	gantt.XRightMargin = ganttDB.XRightMargin_Data.Float64
+	gantt.ArrowLengthToTheRightOfStartBar = ganttDB.ArrowLengthToTheRightOfStartBar_Data.Float64
+	gantt.ArrowTipLenght = ganttDB.ArrowTipLenght_Data.Float64
 	gantt.TimeLine_Color = ganttDB.TimeLine_Color_Data.String
 	gantt.TimeLine_FillOpacity = ganttDB.TimeLine_FillOpacity_Data.Float64
 	gantt.TimeLine_Stroke = ganttDB.TimeLine_Stroke_Data.String

@@ -32,6 +32,11 @@ import { SplitterComponent } from './splitter/splitter.component'
 import { SidebarComponent } from './sidebar/sidebar.component';
 
 // insertion point for imports 
+import { ArrowsTableComponent } from './arrows-table/arrows-table.component'
+import { ArrowSortingComponent } from './arrow-sorting/arrow-sorting.component'
+import { ArrowDetailComponent } from './arrow-detail/arrow-detail.component'
+import { ArrowPresentationComponent } from './arrow-presentation/arrow-presentation.component'
+
 import { BarsTableComponent } from './bars-table/bars-table.component'
 import { BarSortingComponent } from './bar-sorting/bar-sorting.component'
 import { BarDetailComponent } from './bar-detail/bar-detail.component'
@@ -61,6 +66,11 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 @NgModule({
 	declarations: [
 		// insertion point for declarations 
+		ArrowsTableComponent,
+		ArrowSortingComponent,
+		ArrowDetailComponent,
+		ArrowPresentationComponent,
+
 		BarsTableComponent,
 		BarSortingComponent,
 		BarDetailComponent,
@@ -121,6 +131,11 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 	],
 	exports: [
 		// insertion point for declarations 
+		ArrowsTableComponent,
+		ArrowSortingComponent,
+		ArrowDetailComponent,
+		ArrowPresentationComponent,
+
 		BarsTableComponent,
 		BarSortingComponent,
 		BarDetailComponent,
