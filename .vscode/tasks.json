@@ -58,10 +58,16 @@
 			"group": "build"
 		},
 		{
-			"label": "00 - go get -d github.com/fullstack-lang/gongsvg",
+			"label": "00 - go get -d github.com/fullstack-lang/gongsvg@HEAD",
 			"type": "shell",
 			"group": "build",
-			"command": "go get -d github.com/fullstack-lang/gongsvg@main"
+			"command": "go get -d github.com/fullstack-lang/gongsvg@HEAD"
+		},
+		{
+			"label": "00 - go get -d github.com/fullstack-lang/gongdoc@HEAD",
+			"type": "shell",
+			"group": "build",
+			"command": "go get -d github.com/fullstack-lang/gongdoc@HEAD"
 		},
 	]
 }

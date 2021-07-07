@@ -81,7 +81,14 @@ func main() {
 	//
 	db_inMemory := gongsvg_orm.SetupModels(*logDBFlag, ":memory:")
 	// mandatory, otherwise, bizarre errors occurs
-	db_inMemory.DB().SetMaxOpenConns(1)
+
+	// since gongsim is a multi threaded application. It is important to set up
+	// only one open connexion at a time
+	dbDB, err := db_inMemory.DB()
+	if err != nil {
+		panic("cannot access DB of db" + err.Error())
+	}
+	dbDB.SetMaxOpenConns(1)
 	gongsvg_orm.BackRepo.Init(db_inMemory)
 
 	gonggantt_controllers.RegisterControllers(r)
