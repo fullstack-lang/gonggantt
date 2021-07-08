@@ -33,7 +33,7 @@
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="Milestones">
+        <ng-container matColumnDef="Gantt_Milestones">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (Gantt) Milestones </th>
             <td mat-cell *matCellDef="let milestone">
                 {{frontRepo.Gantts.get(milestone.Gantt_MilestonesDBID.Int64)?.Name}}

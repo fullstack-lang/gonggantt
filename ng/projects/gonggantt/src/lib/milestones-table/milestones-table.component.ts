@@ -66,7 +66,7 @@ export class MilestonesTableComponent implements OnInit {
         case 'Date':
           return milestoneDB.Date;
 
-        case 'Milestones':
+        case 'Gantt_Milestones':
           return this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64)?.Name;
 
         default:
@@ -139,13 +139,13 @@ export class MilestonesTableComponent implements OnInit {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
         "Date",
-        "Milestones",
+        "Gantt_Milestones",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
         "Date",
-        "Milestones",
+        "Gantt_Milestones",
       ]
       this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);
     }

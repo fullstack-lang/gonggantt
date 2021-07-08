@@ -75,7 +75,7 @@ export class ArrowsTableComponent implements OnInit {
         case 'OptionnalStroke':
           return arrowDB.OptionnalStroke;
 
-        case 'Arrows':
+        case 'Gantt_Arrows':
           return this.frontRepo.Gantts.get(arrowDB.Gantt_ArrowsDBID.Int64)?.Name;
 
         default:
@@ -159,7 +159,7 @@ export class ArrowsTableComponent implements OnInit {
         "To",
         "OptionnalColor",
         "OptionnalStroke",
-        "Arrows",
+        "Gantt_Arrows",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -168,7 +168,7 @@ export class ArrowsTableComponent implements OnInit {
         "To",
         "OptionnalColor",
         "OptionnalStroke",
-        "Arrows",
+        "Gantt_Arrows",
       ]
       this.selection = new SelectionModel<ArrowDB>(allowMultiSelect, this.initialSelection);
     }

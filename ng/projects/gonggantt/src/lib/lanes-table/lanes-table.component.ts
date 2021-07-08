@@ -66,13 +66,13 @@ export class LanesTableComponent implements OnInit {
         case 'Order':
           return laneDB.Order;
 
-        case 'Lanes':
+        case 'Gantt_Lanes':
           return this.frontRepo.Gantts.get(laneDB.Gantt_LanesDBID.Int64)?.Name;
 
-        case 'GroupLanes':
+        case 'Group_GroupLanes':
           return this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64)?.Name;
 
-        case 'DiamonfAndTextAnchors':
+        case 'Milestone_DiamonfAndTextAnchors':
           return this.frontRepo.Milestones.get(laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64)?.Name;
 
         default:
@@ -154,17 +154,17 @@ export class LanesTableComponent implements OnInit {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
         "Order",
-        "Lanes",
-        "GroupLanes",
-        "DiamonfAndTextAnchors",
+        "Gantt_Lanes",
+        "Group_GroupLanes",
+        "Milestone_DiamonfAndTextAnchors",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
         "Order",
-        "Lanes",
-        "GroupLanes",
-        "DiamonfAndTextAnchors",
+        "Gantt_Lanes",
+        "Group_GroupLanes",
+        "Milestone_DiamonfAndTextAnchors",
       ]
       this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
     }

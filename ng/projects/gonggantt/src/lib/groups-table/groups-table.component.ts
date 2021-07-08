@@ -63,7 +63,7 @@ export class GroupsTableComponent implements OnInit {
         case 'Name':
           return groupDB.Name;
 
-        case 'Groups':
+        case 'Gantt_Groups':
           return this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64)?.Name;
 
         default:
@@ -135,12 +135,12 @@ export class GroupsTableComponent implements OnInit {
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
-        "Groups",
+        "Gantt_Groups",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
-        "Groups",
+        "Gantt_Groups",
       ]
       this.selection = new SelectionModel<GroupDB>(allowMultiSelect, this.initialSelection);
     }

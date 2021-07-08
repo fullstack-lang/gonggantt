@@ -1200,9 +1200,11 @@ responses:
           insertion for basic fields declaration
           Declation for basic field arrowDB.Name {{BasicKind}} (to be completed)
       OptionnalColor_Data:
-        description: Declation for basic field arrowDB.OptionnalColor {{BasicKind}} (to be completed)
+        description: Declation for basic field arrowDB.OptionnalColor {{BasicKind}}
+          (to be completed)
       OptionnalStroke_Data:
-        description: Declation for basic field arrowDB.OptionnalStroke {{BasicKind}} (to be completed)
+        description: Declation for basic field arrowDB.OptionnalStroke {{BasicKind}}
+          (to be completed)
       ToID:
         description: |-
           field To is a pointer to another Struct (optional or 0..1)
@@ -1241,9 +1243,11 @@ responses:
           insertion for basic fields declaration
           Declation for basic field barDB.Name {{BasicKind}} (to be completed)
       OptionnalColor_Data:
-        description: Declation for basic field barDB.OptionnalColor {{BasicKind}} (to be completed)
+        description: Declation for basic field barDB.OptionnalColor {{BasicKind}}
+          (to be completed)
       OptionnalStroke_Data:
-        description: Declation for basic field barDB.OptionnalStroke {{BasicKind}} (to be completed)
+        description: Declation for basic field barDB.OptionnalStroke {{BasicKind}}
+          (to be completed)
       Start_Data:
         description: Declation for basic field barDB.Start
       UpdatedAt:
@@ -1265,57 +1269,74 @@ responses:
           Declation for basic field ganttDB.AlignOnStartEndOnYearStart bool (to be completed)
           provide the sql storage for the boolan
       ArrowLengthToTheRightOfStartBar_Data:
-        description: Declation for basic field ganttDB.ArrowLengthToTheRightOfStartBar {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.ArrowLengthToTheRightOfStartBar
+          {{BasicKind}} (to be completed)
       ArrowTipLenght_Data:
-        description: Declation for basic field ganttDB.ArrowTipLenght {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.ArrowTipLenght {{BasicKind}}
+          (to be completed)
       CreatedAt:
         format: date-time
         type: string
       DateYOffset_Data:
-        description: Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to
+          be completed)
       DeletedAt: {}
       End_Data:
         description: Declation for basic field ganttDB.End
       Group_Stroke_Data:
-        description: Declation for basic field ganttDB.Group_Stroke {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.Group_Stroke {{BasicKind}}
+          (to be completed)
       Group_StrokeDashArray_Data:
-        description: Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}}
+          (to be completed)
       Group_StrokeWidth_Data:
-        description: Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}}
+          (to be completed)
       ID:
         format: uint64
         type: integer
       LaneHeight_Data:
-        description: Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to
+          be completed)
       Name_Data:
         description: |-
           insertion for basic fields declaration
           Declation for basic field ganttDB.Name {{BasicKind}} (to be completed)
       RatioBarToLaneHeight_Data:
-        description: Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}}
+          (to be completed)
       Start_Data:
         description: Declation for basic field ganttDB.Start
       TextHeight_Data:
-        description: Declation for basic field ganttDB.TextHeight {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.TextHeight {{BasicKind}} (to
+          be completed)
       TimeLine_Color_Data:
-        description: Declation for basic field ganttDB.TimeLine_Color {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_Color {{BasicKind}}
+          (to be completed)
       TimeLine_FillOpacity_Data:
-        description: Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}}
+          (to be completed)
       TimeLine_Stroke_Data:
-        description: Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}}
+          (to be completed)
       TimeLine_StrokeWidth_Data:
-        description: Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}}
+          (to be completed)
       UpdatedAt:
         format: date-time
         type: string
       XLeftLanes_Data:
-        description: Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to
+          be completed)
       XLeftText_Data:
-        description: Declation for basic field ganttDB.XLeftText {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.XLeftText {{BasicKind}} (to
+          be completed)
       XRightMargin_Data:
-        description: Declation for basic field ganttDB.XRightMargin {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.XRightMargin {{BasicKind}}
+          (to be completed)
       YTopMargin_Data:
-        description: Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to be completed)
+        description: Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to
+          be completed)
     schema:
       $ref: '#/definitions/NullBool'
   ganttDBsResponse:
@@ -1390,7 +1411,8 @@ responses:
         format: uint64
         type: integer
       Milestone_DiamonfAndTextAnchorsDBID:
-        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
+        description: Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors
+          []*Lane
       Milestone_DiamonfAndTextAnchorsDBID_Index:
         description: implementation of the index of the withing the slice
       Name_Data:

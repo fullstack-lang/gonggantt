@@ -26,7 +26,7 @@
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="Groups">
+        <ng-container matColumnDef="Gantt_Groups">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (Gantt) Groups </th>
             <td mat-cell *matCellDef="let group">
                 {{frontRepo.Gantts.get(group.Gantt_GroupsDBID.Int64)?.Name}}

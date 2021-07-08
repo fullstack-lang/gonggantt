@@ -75,7 +75,7 @@ export class BarsTableComponent implements OnInit {
         case 'OptionnalStroke':
           return barDB.OptionnalStroke;
 
-        case 'Bars':
+        case 'Lane_Bars':
           return this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)?.Name;
 
         default:
@@ -153,7 +153,7 @@ export class BarsTableComponent implements OnInit {
         "End",
         "OptionnalColor",
         "OptionnalStroke",
-        "Bars",
+        "Lane_Bars",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -162,7 +162,7 @@ export class BarsTableComponent implements OnInit {
         "End",
         "OptionnalColor",
         "OptionnalStroke",
-        "Bars",
+        "Lane_Bars",
       ]
       this.selection = new SelectionModel<BarDB>(allowMultiSelect, this.initialSelection);
     }

@@ -33,21 +33,21 @@
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="Lanes">
+        <ng-container matColumnDef="Gantt_Lanes">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (Gantt) Lanes </th>
             <td mat-cell *matCellDef="let lane">
                 {{frontRepo.Gantts.get(lane.Gantt_LanesDBID.Int64)?.Name}}
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="GroupLanes">
+        <ng-container matColumnDef="Group_GroupLanes">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (Group) GroupLanes </th>
             <td mat-cell *matCellDef="let lane">
                 {{frontRepo.Groups.get(lane.Group_GroupLanesDBID.Int64)?.Name}}
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="DiamonfAndTextAnchors">
+        <ng-container matColumnDef="Milestone_DiamonfAndTextAnchors">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (Milestone) DiamonfAndTextAnchors </th>
             <td mat-cell *matCellDef="let lane">
                 {{frontRepo.Milestones.get(lane.Milestone_DiamonfAndTextAnchorsDBID.Int64)?.Name}}
