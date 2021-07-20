@@ -24,6 +24,12 @@
 			"group": "build"
 		},
 		{
+			"label": "03 - lsof -i tcp:8080 ",
+			"type": "shell",
+			"command": "lsof -i tcp:8080 ",
+			"group": "build"
+		},
+		{
 			"label": "01 - gongc",
 			"type": "shell",
 			"options": {
