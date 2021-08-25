@@ -21,8 +21,8 @@ import (
 )
 
 // dummy variable to have the import declaration wihthout compile failure (even if no code needing this import is generated)
-var dummy_Bar sql.NullBool
-var __Bar_time__dummyDeclaration time.Duration
+var dummy_Bar_sql sql.NullBool
+var dummy_Bar_time time.Duration
 var dummy_Bar_sort sort.Float64Slice
 
 // BarAPI is the input in POST API

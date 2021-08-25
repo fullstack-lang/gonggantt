@@ -46,7 +46,6 @@ func main() {
 		// setup GORM
 		db := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
 		gonggantt_orm.AutoMigrate(db)
-		gonggantt_orm.BackRepo.Init(db)
 		gonggantt_models.Stage.Checkout()
 		gonggantt_models.Stage.Backup("bckp")
 
@@ -57,7 +56,6 @@ func main() {
 		// setup GORM
 		db := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
 		gonggantt_orm.AutoMigrate(db)
-		gonggantt_orm.BackRepo.Init(db)
 		gonggantt_models.Stage.Restore("bckp")
 
 		return
@@ -73,8 +71,7 @@ func main() {
 
 	//
 	// gonggantt
-	db_inFile := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
-	gonggantt_orm.BackRepo.Init(db_inFile)
+	gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
 
 	//
 	// gongsvg database
@@ -89,7 +86,6 @@ func main() {
 		panic("cannot access DB of db" + err.Error())
 	}
 	dbDB.SetMaxOpenConns(1)
-	gongsvg_orm.BackRepo.Init(db_inMemory)
 
 	gonggantt_controllers.RegisterControllers(r)
 	gongsvg_controllers.RegisterControllers(r)
