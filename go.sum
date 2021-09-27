@@ -28,6 +28,8 @@ github.com/fullstack-lang/gongsvg v0.0.0-20210915064220-25c763375bb6 h1:JsYt0v8b
 github.com/fullstack-lang/gongsvg v0.0.0-20210915064220-25c763375bb6/go.mod h1:7UYo++EKPHvu3hqQRy7oMMQLmtiaokRfp3AEpTkxpR0=
 github.com/fullstack-lang/gongsvg v0.0.0-20210926165932-b26e7b765eba h1:3B6pPaP3Uu/bNuLy4rH/NRqK7BOIoq2GrcSCzkqQlYw=
 github.com/fullstack-lang/gongsvg v0.0.0-20210926165932-b26e7b765eba/go.mod h1:9dUeAOBBEmq7sEeFp9/3w7s5Qwam0NqA3ZcPKaMEQ4s=
+github.com/fullstack-lang/gongsvg v0.0.0-20210927172800-a11e414f9288 h1:xw3Kvxyb3M3uwTK8hdcadu4oL/ItvcV45vPT6uTkUQU=
+github.com/fullstack-lang/gongsvg v0.0.0-20210927172800-a11e414f9288/go.mod h1:2qV6oaVhyNST52KbmCcY5lYn9QxXLAmcOKGJdrAUjz0=
 github.com/gin-contrib/cors v1.3.1 h1:doAsuITavI4IOcd0Y19U4B+O0dNWihRyX//nn4sEmgA=
 github.com/gin-contrib/cors v1.3.1/go.mod h1:jjEJ4268OPZUcU7k9Pm653S7lXUGcqMADzFA61xsmDk=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
@@ -226,6 +228,8 @@ golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf h1:2ucpDCmfkl8Bd/FsLtiD653Wf
 golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20210925032602-92d5a993a665 h1:QOQNt6vCjMpXE7JSK5VvAzJC1byuN3FgTNSBwf+CJgI=
 golang.org/x/sys v0.0.0-20210925032602-92d5a993a665/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 h1:foEbQz/B0Oz6YIqu/69kfXPYeFQAuuMYFkjaqXzl5Wo=
+golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.2/go.mod h1:bEr9sfX3Q8Zfm5fL9x+3itogRgK3+ptLWKqgva+5dAk=
