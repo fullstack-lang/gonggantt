@@ -70,23 +70,23 @@ type BackRepoInterface interface {
 
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
-	Arrows:           make(map[*Arrow]struct{}, 0),
-	Arrows_mapString: make(map[string]*Arrow, 0),
+	Arrows:           make(map[*Arrow]struct{}),
+	Arrows_mapString: make(map[string]*Arrow),
 
-	Bars:           make(map[*Bar]struct{}, 0),
-	Bars_mapString: make(map[string]*Bar, 0),
+	Bars:           make(map[*Bar]struct{}),
+	Bars_mapString: make(map[string]*Bar),
 
-	Gantts:           make(map[*Gantt]struct{}, 0),
-	Gantts_mapString: make(map[string]*Gantt, 0),
+	Gantts:           make(map[*Gantt]struct{}),
+	Gantts_mapString: make(map[string]*Gantt),
 
-	Groups:           make(map[*Group]struct{}, 0),
-	Groups_mapString: make(map[string]*Group, 0),
+	Groups:           make(map[*Group]struct{}),
+	Groups_mapString: make(map[string]*Group),
 
-	Lanes:           make(map[*Lane]struct{}, 0),
-	Lanes_mapString: make(map[string]*Lane, 0),
+	Lanes:           make(map[*Lane]struct{}),
+	Lanes_mapString: make(map[string]*Lane),
 
-	Milestones:           make(map[*Milestone]struct{}, 0),
-	Milestones_mapString: make(map[string]*Milestone, 0),
+	Milestones:           make(map[*Milestone]struct{}),
+	Milestones_mapString: make(map[string]*Milestone),
 
 	// end of insertion point
 }
@@ -764,23 +764,23 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 }
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
-	stage.Arrows = make(map[*Arrow]struct{}, 0)
-	stage.Arrows_mapString = make(map[string]*Arrow, 0)
+	stage.Arrows = make(map[*Arrow]struct{})
+	stage.Arrows_mapString = make(map[string]*Arrow)
 
-	stage.Bars = make(map[*Bar]struct{}, 0)
-	stage.Bars_mapString = make(map[string]*Bar, 0)
+	stage.Bars = make(map[*Bar]struct{})
+	stage.Bars_mapString = make(map[string]*Bar)
 
-	stage.Gantts = make(map[*Gantt]struct{}, 0)
-	stage.Gantts_mapString = make(map[string]*Gantt, 0)
+	stage.Gantts = make(map[*Gantt]struct{})
+	stage.Gantts_mapString = make(map[string]*Gantt)
 
-	stage.Groups = make(map[*Group]struct{}, 0)
-	stage.Groups_mapString = make(map[string]*Group, 0)
+	stage.Groups = make(map[*Group]struct{})
+	stage.Groups_mapString = make(map[string]*Group)
 
-	stage.Lanes = make(map[*Lane]struct{}, 0)
-	stage.Lanes_mapString = make(map[string]*Lane, 0)
+	stage.Lanes = make(map[*Lane]struct{})
+	stage.Lanes_mapString = make(map[string]*Lane)
 
-	stage.Milestones = make(map[*Milestone]struct{}, 0)
-	stage.Milestones_mapString = make(map[string]*Milestone, 0)
+	stage.Milestones = make(map[*Milestone]struct{})
+	stage.Milestones_mapString = make(map[string]*Milestone)
 
 }
 
