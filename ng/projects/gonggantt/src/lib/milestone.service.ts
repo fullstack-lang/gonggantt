@@ -13,6 +13,9 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { MilestoneDB } from './milestone-db';
 
+// insertion point for imports
+import { GanttDB } from './gantt-db'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,14 +38,14 @@ export class MilestoneService {
   ) {
     // path to the service share the same origin with the path to the document
     // get the origin in the URL to the document
-	let origin = this.document.location.origin
-    
-	// if debugging with ng, replace 4200 with 8080
-	origin = origin.replace("4200", "8080")
+    let origin = this.document.location.origin
+
+    // if debugging with ng, replace 4200 with 8080
+    origin = origin.replace("4200", "8080")
 
     // compute path to the service
     this.milestonesUrl = origin + '/api/github.com/fullstack-lang/gonggantt/go/v1/milestones';
-   }
+  }
 
   /** GET milestones from the server */
   getMilestones(): Observable<MilestoneDB[]> {
@@ -67,19 +70,19 @@ export class MilestoneService {
   /** POST: add a new milestone to the server */
   postMilestone(milestonedb: MilestoneDB): Observable<MilestoneDB> {
 
-		// insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     milestonedb.DiamonfAndTextAnchors = []
     let _Gantt_Milestones_reverse = milestonedb.Gantt_Milestones_reverse
-    milestonedb.Gantt_Milestones_reverse = {}
+    milestonedb.Gantt_Milestones_reverse = new GanttDB
 
-		return this.http.post<MilestoneDB>(this.milestonesUrl, milestonedb, this.httpOptions).pipe(
-			tap(_ => {
-				// insertion point for restoration of reverse pointers
+    return this.http.post<MilestoneDB>(this.milestonesUrl, milestonedb, this.httpOptions).pipe(
+      tap(_ => {
+        // insertion point for restoration of reverse pointers
         milestonedb.Gantt_Milestones_reverse = _Gantt_Milestones_reverse
-				this.log(`posted milestonedb id=${milestonedb.ID}`)
-			}),
-			catchError(this.handleError<MilestoneDB>('postMilestone'))
-		);
+        this.log(`posted milestonedb id=${milestonedb.ID}`)
+      }),
+      catchError(this.handleError<MilestoneDB>('postMilestone'))
+    );
   }
 
   /** DELETE: delete the milestonedb from the server */
@@ -101,9 +104,9 @@ export class MilestoneService {
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     milestonedb.DiamonfAndTextAnchors = []
     let _Gantt_Milestones_reverse = milestonedb.Gantt_Milestones_reverse
-    milestonedb.Gantt_Milestones_reverse = {}
+    milestonedb.Gantt_Milestones_reverse = new GanttDB
 
-    return this.http.put(url, milestonedb, this.httpOptions).pipe(
+    return this.http.put<MilestoneDB>(url, milestonedb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         milestonedb.Gantt_Milestones_reverse = _Gantt_Milestones_reverse

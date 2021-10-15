@@ -7,7 +7,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatButton } from '@angular/material/button'
 
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog'
-import { DialogData, FrontRepoService, FrontRepo, NullInt64, SelectionMode } from '../front-repo.service'
+import { DialogData, FrontRepoService, FrontRepo, SelectionMode } from '../front-repo.service'
+import { NullInt64 } from '../null-int64'
 import { SelectionModel } from '@angular/cdk/collections';
 
 const allowMultiSelect = true;
@@ -33,26 +34,28 @@ enum TableComponentMode {
 export class BarsTableComponent implements OnInit {
 
   // mode at invocation
-  mode: TableComponentMode
+  mode: TableComponentMode = TableComponentMode.DISPLAY_MODE
 
   // used if the component is called as a selection component of Bar instances
-  selection: SelectionModel<BarDB>;
-  initialSelection = new Array<BarDB>();
+  selection: SelectionModel<BarDB> = new (SelectionModel)
+  initialSelection = new Array<BarDB>()
 
   // the data source for the table
-  bars: BarDB[];
-  matTableDataSource: MatTableDataSource<BarDB>
+  bars: BarDB[] = []
+  matTableDataSource: MatTableDataSource<BarDB> = new (MatTableDataSource)
 
   // front repo, that will be referenced by this.bars
-  frontRepo: FrontRepo
+  frontRepo: FrontRepo = new (FrontRepo)
 
   // displayedColumns is referenced by the MatTable component for specify what columns
   // have to be displayed and in what order
   displayedColumns: string[];
 
   // for sorting & pagination
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort)
+  sort: MatSort | undefined
+  @ViewChild(MatPaginator)
+  paginator: MatPaginator | undefined;
 
   ngAfterViewInit() {
 
@@ -64,10 +67,10 @@ export class BarsTableComponent implements OnInit {
           return barDB.Name;
 
         case 'Start':
-          return barDB.Start;
+          return barDB.Start.getDate();
 
         case 'End':
-          return barDB.End;
+          return barDB.End.getDate();
 
         case 'OptionnalColor':
           return barDB.OptionnalColor;
@@ -76,10 +79,11 @@ export class BarsTableComponent implements OnInit {
           return barDB.OptionnalStroke;
 
         case 'Lane_Bars':
-          return this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)?.Name;
+          return this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)!.Name;
 
         default:
-          return BarDB[property];
+          console.assert(false, "Unknown field")
+          return "";
       }
     };
 
@@ -95,7 +99,7 @@ export class BarsTableComponent implements OnInit {
       mergedContent += barDB.OptionnalColor.toLowerCase()
       mergedContent += barDB.OptionnalStroke.toLowerCase()
       if (barDB.Lane_BarsDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)?.Name.toLowerCase()
+        mergedContent += this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -103,8 +107,8 @@ export class BarsTableComponent implements OnInit {
       return isSelected
     };
 
-    this.matTableDataSource.sort = this.sort;
-    this.matTableDataSource.paginator = this.paginator;
+    this.matTableDataSource.sort = this.sort!
+    this.matTableDataSource.paginator = this.paginator!
   }
 
   applyFilter(event: Event) {
@@ -188,7 +192,7 @@ export class BarsTableComponent implements OnInit {
           this.bars.forEach(
             bar => {
               let ID = this.dialogData.ID
-              let revPointer = bar[this.dialogData.ReversePointer]
+              let revPointer = bar[this.dialogData.ReversePointer as keyof BarDB] as unknown as NullInt64
               if (revPointer.Int64 == ID) {
                 this.initialSelection.push(bar)
               }
@@ -199,15 +203,15 @@ export class BarsTableComponent implements OnInit {
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
 
-          let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s"]
-          let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)
+          let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, BarDB>
+          let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
-          if (sourceInstance[this.dialogData.SourceField]) {
-            for (let associationInstance of sourceInstance[this.dialogData.SourceField]) {
-              let bar = associationInstance[this.dialogData.IntermediateStructField]
-              this.initialSelection.push(bar)
-            }
+          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as BarDB[]
+          for (let associationInstance of sourceField) {
+            let bar = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as BarDB
+            this.initialSelection.push(bar)
           }
+
           this.selection = new SelectionModel<BarDB>(allowMultiSelect, this.initialSelection);
         }
 
@@ -283,8 +287,9 @@ export class BarsTableComponent implements OnInit {
       // reset all initial selection of bar that belong to bar
       this.initialSelection.forEach(
         bar => {
-          bar[this.dialogData.ReversePointer].Int64 = 0
-          bar[this.dialogData.ReversePointer].Valid = true
+          let index = bar[this.dialogData.ReversePointer as keyof BarDB] as unknown as NullInt64
+          index.Int64 = 0
+          index.Valid = true
           toUpdate.add(bar)
         }
       )
@@ -292,9 +297,9 @@ export class BarsTableComponent implements OnInit {
       // from selection, set bar that belong to bar
       this.selection.selected.forEach(
         bar => {
-          let ID = +this.dialogData.ID
-          bar[this.dialogData.ReversePointer].Int64 = ID
-          bar[this.dialogData.ReversePointer].Valid = true
+          let ID = this.dialogData.ID as number
+          let reversePointer = bar[this.dialogData.ReversePointer  as keyof BarDB] as unknown as NullInt64
+          reversePointer.Int64 = ID
           toUpdate.add(bar)
         }
       )
@@ -312,8 +317,9 @@ export class BarsTableComponent implements OnInit {
 
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
 
-      let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s"]
-      let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)
+      // get the source instance via the map of instances in the front repo
+      let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, BarDB>
+      let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
       // First, parse all instance of the association struct and remove the instance
       // that have unselect
@@ -329,23 +335,21 @@ export class BarsTableComponent implements OnInit {
       }
 
       // delete the association instance
-      if (sourceInstance[this.dialogData.SourceField]) {
-        for (let associationInstance of sourceInstance[this.dialogData.SourceField]) {
-          let bar = associationInstance[this.dialogData.IntermediateStructField]
-          if (unselectedBar.has(bar.ID)) {
+      let associationInstance = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]
+      let bar = associationInstance![this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as BarDB
+      if (unselectedBar.has(bar.ID)) {
+        this.frontRepoService.deleteService(this.dialogData.IntermediateStruct, associationInstance)
 
-            this.frontRepoService.deleteService( this.dialogData.IntermediateStruct, associationInstance )
-          }
-        }
+
       }
 
-      // is the source array is emptyn create it
-      if (sourceInstance[this.dialogData.SourceField] == undefined) {
-        sourceInstance[this.dialogData.SourceField] = new Array<any>()
+      // is the source array is empty create it
+      if (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] == undefined) {
+        (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] as unknown as Array<BarDB>) = new Array<BarDB>()
       }
 
       // second, parse all instance of the selected
-      if (sourceInstance[this.dialogData.SourceField]) {
+      if (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]) {
         this.selection.selected.forEach(
           bar => {
             if (!this.initialSelection.includes(bar)) {
@@ -355,13 +359,11 @@ export class BarsTableComponent implements OnInit {
                 Name: sourceInstance["Name"] + "-" + bar.Name,
               }
 
-              associationInstance[this.dialogData.IntermediateStructField+"ID"] = new NullInt64
-              associationInstance[this.dialogData.IntermediateStructField+"ID"].Int64 = bar.ID
-              associationInstance[this.dialogData.IntermediateStructField+"ID"].Valid = true
+              let index = associationInstance[this.dialogData.IntermediateStructField+"ID" as keyof typeof associationInstance] as unknown as NullInt64
+              index.Int64 = bar.ID
 
-              associationInstance[this.dialogData.SourceStruct + "_" + this.dialogData.SourceField + "DBID"] = new NullInt64
-              associationInstance[this.dialogData.SourceStruct + "_" + this.dialogData.SourceField + "DBID"].Int64 = sourceInstance["ID"]
-              associationInstance[this.dialogData.SourceStruct + "_" + this.dialogData.SourceField + "DBID"].Valid = true
+              let indexDB = associationInstance[this.dialogData.IntermediateStructField+"DBID" as keyof typeof associationInstance] as unknown as NullInt64
+              indexDB.Int64 = bar.ID
 
               this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
 

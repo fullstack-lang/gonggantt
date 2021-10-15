@@ -36,7 +36,7 @@ export enum GongNodeType {
  */
 interface GongNode {
   name: string; // if STRUCT, the name of the struct, if INSTANCE the name of the instance
-  children?: GongNode[];
+  children: GongNode[];
   type: GongNodeType;
   structName: string;
   associationField: string;
@@ -143,8 +143,8 @@ export class SidebarComponent implements OnInit {
   hasChild = (_: number, node: GongFlatNode) => node.expandable;
 
   // front repo
-  frontRepo: FrontRepo
-  commitNb: number
+  frontRepo: FrontRepo = new (FrontRepo)
+  commitNb: number = 0
 
   // "data" tree that is constructed during NgInit and is passed to the mat-tree component
   gongNodeTree = new Array<GongNode>();
@@ -225,20 +225,19 @@ export class SidebarComponent implements OnInit {
       let memoryOfExpandedNodes = new Map<number, boolean>()
       let nonInstanceNodeId = 1
 
-      if (this.treeControl.dataNodes != undefined) {
-        this.treeControl.dataNodes.forEach(
-          node => {
-            if (this.treeControl.isExpanded(node)) {
-              memoryOfExpandedNodes[node.uniqueIdPerStack] = true
-            } else {
-              memoryOfExpandedNodes[node.uniqueIdPerStack] = false
-            }
+      this.treeControl.dataNodes?.forEach(
+        node => {
+          if (this.treeControl.isExpanded(node)) {
+            memoryOfExpandedNodes.set(node.uniqueIdPerStack, true)
+          } else {
+            memoryOfExpandedNodes.set(node.uniqueIdPerStack, false)
           }
-        )
-      }
+        }
+      )
 
+      // reset the gong node tree
       this.gongNodeTree = new Array<GongNode>();
-
+      
       // insertion point for per struct tree construction
       /**
       * fill up the Arrow part of the mat tree
@@ -278,7 +277,7 @@ export class SidebarComponent implements OnInit {
             associatedStructName: "",
             children: new Array<GongNode>()
           }
-          arrowGongNodeStruct.children.push(arrowGongNodeInstance)
+          arrowGongNodeStruct.children!.push(arrowGongNodeInstance)
 
           // insertion point for per field code
           /**
@@ -295,7 +294,7 @@ export class SidebarComponent implements OnInit {
             children: new Array<GongNode>()
           }
           nonInstanceNodeId = nonInstanceNodeId + 1
-          arrowGongNodeInstance.children.push(FromGongNodeAssociation)
+          arrowGongNodeInstance.children!.push(FromGongNodeAssociation)
 
           /**
             * let append a node for the instance behind the asssociation From
@@ -330,7 +329,7 @@ export class SidebarComponent implements OnInit {
             children: new Array<GongNode>()
           }
           nonInstanceNodeId = nonInstanceNodeId + 1
-          arrowGongNodeInstance.children.push(ToGongNodeAssociation)
+          arrowGongNodeInstance.children!.push(ToGongNodeAssociation)
 
           /**
             * let append a node for the instance behind the asssociation To
@@ -392,7 +391,7 @@ export class SidebarComponent implements OnInit {
             associatedStructName: "",
             children: new Array<GongNode>()
           }
-          barGongNodeStruct.children.push(barGongNodeInstance)
+          barGongNodeStruct.children!.push(barGongNodeInstance)
 
           // insertion point for per field code
         }
@@ -436,7 +435,7 @@ export class SidebarComponent implements OnInit {
             associatedStructName: "",
             children: new Array<GongNode>()
           }
-          ganttGongNodeStruct.children.push(ganttGongNodeInstance)
+          ganttGongNodeStruct.children!.push(ganttGongNodeInstance)
 
           // insertion point for per field code
           /**
@@ -608,7 +607,7 @@ export class SidebarComponent implements OnInit {
             associatedStructName: "",
             children: new Array<GongNode>()
           }
-          groupGongNodeStruct.children.push(groupGongNodeInstance)
+          groupGongNodeStruct.children!.push(groupGongNodeInstance)
 
           // insertion point for per field code
           /**
@@ -684,7 +683,7 @@ export class SidebarComponent implements OnInit {
             associatedStructName: "",
             children: new Array<GongNode>()
           }
-          laneGongNodeStruct.children.push(laneGongNodeInstance)
+          laneGongNodeStruct.children!.push(laneGongNodeInstance)
 
           // insertion point for per field code
           /**
@@ -760,7 +759,7 @@ export class SidebarComponent implements OnInit {
             associatedStructName: "",
             children: new Array<GongNode>()
           }
-          milestoneGongNodeStruct.children.push(milestoneGongNodeInstance)
+          milestoneGongNodeStruct.children!.push(milestoneGongNodeInstance)
 
           // insertion point for per field code
           /**
@@ -802,17 +801,13 @@ export class SidebarComponent implements OnInit {
       this.dataSource.data = this.gongNodeTree
 
       // expand nodes that were exapanded before
-      if (this.treeControl.dataNodes != undefined) {
-        this.treeControl.dataNodes.forEach(
-          node => {
-            if (memoryOfExpandedNodes[node.uniqueIdPerStack] != undefined) {
-              if (memoryOfExpandedNodes[node.uniqueIdPerStack]) {
-                this.treeControl.expand(node)
-              }
-            }
+      this.treeControl.dataNodes?.forEach(
+        node => {
+          if (memoryOfExpandedNodes.get(node.uniqueIdPerStack)) {
+            this.treeControl.expand(node)
           }
-        )
-      }
+        }
+      )
     });
 
     // fetch the number of commits
@@ -858,7 +853,7 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  setEditorRouterOutlet(path) {
+  setEditorRouterOutlet(path: string) {
     this.router.navigate([{
       outlets: {
         github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + path.toLowerCase()]
@@ -866,7 +861,7 @@ export class SidebarComponent implements OnInit {
     }]);
   }
 
-  setEditorSpecialRouterOutlet( node: GongFlatNode) {
+  setEditorSpecialRouterOutlet(node: GongFlatNode) {
     this.router.navigate([{
       outlets: {
         github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + node.associatedStructName.toLowerCase() + "-adder", node.id, node.structName, node.associationField]

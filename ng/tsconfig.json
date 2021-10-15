@@ -6,6 +6,7 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
+    "strict": true,
     "paths": {
       // 
       // https://angular.io/guide/creating-libraries#use-typescript-path-mapping-for-peer-dependencies
@@ -19,6 +20,9 @@
       ],
       "rxjs/operators": [
         "./node_modules/rxjs/operators"
+      ],
+      "@angular-material-components/datetime-picker":[
+        "./node_modules/@angular-material-components/datetime-picker"
       ],
       "rxjs": [
         "./node_modules/rxjs"

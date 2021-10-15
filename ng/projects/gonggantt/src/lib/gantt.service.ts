@@ -13,6 +13,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { GanttDB } from './gantt-db';
 
+// insertion point for imports
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,14 +37,14 @@ export class GanttService {
   ) {
     // path to the service share the same origin with the path to the document
     // get the origin in the URL to the document
-	let origin = this.document.location.origin
-    
-	// if debugging with ng, replace 4200 with 8080
-	origin = origin.replace("4200", "8080")
+    let origin = this.document.location.origin
+
+    // if debugging with ng, replace 4200 with 8080
+    origin = origin.replace("4200", "8080")
 
     // compute path to the service
     this.ganttsUrl = origin + '/api/github.com/fullstack-lang/gonggantt/go/v1/gantts';
-   }
+  }
 
   /** GET gantts from the server */
   getGantts(): Observable<GanttDB[]> {
@@ -67,19 +69,19 @@ export class GanttService {
   /** POST: add a new gantt to the server */
   postGantt(ganttdb: GanttDB): Observable<GanttDB> {
 
-		// insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     ganttdb.Lanes = []
     ganttdb.Milestones = []
     ganttdb.Groups = []
     ganttdb.Arrows = []
 
-		return this.http.post<GanttDB>(this.ganttsUrl, ganttdb, this.httpOptions).pipe(
-			tap(_ => {
-				// insertion point for restoration of reverse pointers
-				this.log(`posted ganttdb id=${ganttdb.ID}`)
-			}),
-			catchError(this.handleError<GanttDB>('postGantt'))
-		);
+    return this.http.post<GanttDB>(this.ganttsUrl, ganttdb, this.httpOptions).pipe(
+      tap(_ => {
+        // insertion point for restoration of reverse pointers
+        this.log(`posted ganttdb id=${ganttdb.ID}`)
+      }),
+      catchError(this.handleError<GanttDB>('postGantt'))
+    );
   }
 
   /** DELETE: delete the ganttdb from the server */
@@ -104,7 +106,7 @@ export class GanttService {
     ganttdb.Groups = []
     ganttdb.Arrows = []
 
-    return this.http.put(url, ganttdb, this.httpOptions).pipe(
+    return this.http.put<GanttDB>(url, ganttdb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         this.log(`updated ganttdb id=${ganttdb.ID}`)

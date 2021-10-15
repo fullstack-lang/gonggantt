@@ -13,6 +13,11 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { LaneDB } from './lane-db';
 
+// insertion point for imports
+import { GanttDB } from './gantt-db'
+import { GroupDB } from './group-db'
+import { MilestoneDB } from './milestone-db'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,14 +40,14 @@ export class LaneService {
   ) {
     // path to the service share the same origin with the path to the document
     // get the origin in the URL to the document
-	let origin = this.document.location.origin
-    
-	// if debugging with ng, replace 4200 with 8080
-	origin = origin.replace("4200", "8080")
+    let origin = this.document.location.origin
+
+    // if debugging with ng, replace 4200 with 8080
+    origin = origin.replace("4200", "8080")
 
     // compute path to the service
     this.lanesUrl = origin + '/api/github.com/fullstack-lang/gonggantt/go/v1/lanes';
-   }
+  }
 
   /** GET lanes from the server */
   getLanes(): Observable<LaneDB[]> {
@@ -67,25 +72,25 @@ export class LaneService {
   /** POST: add a new lane to the server */
   postLane(lanedb: LaneDB): Observable<LaneDB> {
 
-		// insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     lanedb.Bars = []
     let _Gantt_Lanes_reverse = lanedb.Gantt_Lanes_reverse
-    lanedb.Gantt_Lanes_reverse = {}
+    lanedb.Gantt_Lanes_reverse = new GanttDB
     let _Group_GroupLanes_reverse = lanedb.Group_GroupLanes_reverse
-    lanedb.Group_GroupLanes_reverse = {}
+    lanedb.Group_GroupLanes_reverse = new GroupDB
     let _Milestone_DiamonfAndTextAnchors_reverse = lanedb.Milestone_DiamonfAndTextAnchors_reverse
-    lanedb.Milestone_DiamonfAndTextAnchors_reverse = {}
+    lanedb.Milestone_DiamonfAndTextAnchors_reverse = new MilestoneDB
 
-		return this.http.post<LaneDB>(this.lanesUrl, lanedb, this.httpOptions).pipe(
-			tap(_ => {
-				// insertion point for restoration of reverse pointers
+    return this.http.post<LaneDB>(this.lanesUrl, lanedb, this.httpOptions).pipe(
+      tap(_ => {
+        // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
         lanedb.Group_GroupLanes_reverse = _Group_GroupLanes_reverse
         lanedb.Milestone_DiamonfAndTextAnchors_reverse = _Milestone_DiamonfAndTextAnchors_reverse
-				this.log(`posted lanedb id=${lanedb.ID}`)
-			}),
-			catchError(this.handleError<LaneDB>('postLane'))
-		);
+        this.log(`posted lanedb id=${lanedb.ID}`)
+      }),
+      catchError(this.handleError<LaneDB>('postLane'))
+    );
   }
 
   /** DELETE: delete the lanedb from the server */
@@ -107,13 +112,13 @@ export class LaneService {
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     lanedb.Bars = []
     let _Gantt_Lanes_reverse = lanedb.Gantt_Lanes_reverse
-    lanedb.Gantt_Lanes_reverse = {}
+    lanedb.Gantt_Lanes_reverse = new GanttDB
     let _Group_GroupLanes_reverse = lanedb.Group_GroupLanes_reverse
-    lanedb.Group_GroupLanes_reverse = {}
+    lanedb.Group_GroupLanes_reverse = new GroupDB
     let _Milestone_DiamonfAndTextAnchors_reverse = lanedb.Milestone_DiamonfAndTextAnchors_reverse
-    lanedb.Milestone_DiamonfAndTextAnchors_reverse = {}
+    lanedb.Milestone_DiamonfAndTextAnchors_reverse = new MilestoneDB
 
-    return this.http.put(url, lanedb, this.httpOptions).pipe(
+    return this.http.put<LaneDB>(url, lanedb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse

@@ -23,13 +23,13 @@ export class LanePresentationComponent implements OnInit {
 
 	// insertion point for declarations
 
-	displayedColumns: string[] = [];
-	dataSource = ELEMENT_DATA;
+	displayedColumns: string[] = []
+	dataSource = ELEMENT_DATA
 
-	lane: LaneDB;
+	lane: LaneDB = new (LaneDB)
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new (FrontRepo)
  
 	constructor(
 		private laneService: LaneService,
@@ -56,12 +56,12 @@ export class LanePresentationComponent implements OnInit {
 	}
 
 	getLane(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
+		const id = +this.route.snapshot.paramMap.get('id')!
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
-				this.lane = this.frontRepo.Lanes.get(id)
+				this.lane = this.frontRepo.Lanes.get(id)!
 
 				// insertion point for recovery of durations
 			}

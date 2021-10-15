@@ -23,13 +23,13 @@ export class MilestonePresentationComponent implements OnInit {
 
 	// insertion point for declarations
 
-	displayedColumns: string[] = [];
-	dataSource = ELEMENT_DATA;
+	displayedColumns: string[] = []
+	dataSource = ELEMENT_DATA
 
-	milestone: MilestoneDB;
+	milestone: MilestoneDB = new (MilestoneDB)
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new (FrontRepo)
  
 	constructor(
 		private milestoneService: MilestoneService,
@@ -56,12 +56,12 @@ export class MilestonePresentationComponent implements OnInit {
 	}
 
 	getMilestone(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
+		const id = +this.route.snapshot.paramMap.get('id')!
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
-				this.milestone = this.frontRepo.Milestones.get(id)
+				this.milestone = this.frontRepo.Milestones.get(id)!
 
 				// insertion point for recovery of durations
 			}

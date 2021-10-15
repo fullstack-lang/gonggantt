@@ -10,12 +10,13 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
+import { GanttDB } from '../gantt-db'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 
-import { NullInt64 } from '../front-repo.service'
+import { NullInt64 } from '../null-int64'
 
 // GroupDetailComponent is initilizaed from different routes
 // GroupDetailComponentState detail different cases 
@@ -36,10 +37,10 @@ export class GroupDetailComponent implements OnInit {
 	// insertion point for declarations
 
 	// the GroupDB of interest
-	group: GroupDB;
+	group: GroupDB = new GroupDB
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new FrontRepo
 
 	// this stores the information related to string fields
 	// if false, the field is inputed with an <input ...> form 
@@ -47,15 +48,15 @@ export class GroupDetailComponent implements OnInit {
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
 	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
-	state: GroupDetailComponentState
+	state: GroupDetailComponentState = GroupDetailComponentState.CREATE_INSTANCE
 
 	// in UDPATE state, if is the id of the instance to update
 	// in CREATE state with one association set, this is the id of the associated instance
-	id: number
+	id: number = 0
 
 	// in CREATE state with one association set, this is the id of the associated instance
-	originStruct: string
-	originStructFieldName: string
+	originStruct: string = ""
+	originStructFieldName: string = ""
 
 	constructor(
 		private groupService: GroupService,
@@ -69,9 +70,9 @@ export class GroupDetailComponent implements OnInit {
 	ngOnInit(): void {
 
 		// compute state
-		this.id = +this.route.snapshot.paramMap.get('id');
-		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
-		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+		this.id = +this.route.snapshot.paramMap.get('id')!;
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct')!;
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName')!;
 
 		const association = this.route.snapshot.paramMap.get('association');
 		if (this.id == 0) {
@@ -83,7 +84,7 @@ export class GroupDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Groups":
-						console.log("Group" + " is instanciated with back pointer to instance " + this.id + " Gantt association Groups")
+						// console.log("Group" + " is instanciated with back pointer to instance " + this.id + " Gantt association Groups")
 						this.state = GroupDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Groups_SET
 						break;
 					default:
@@ -117,12 +118,14 @@ export class GroupDetailComponent implements OnInit {
 						this.group = new (GroupDB)
 						break;
 					case GroupDetailComponentState.UPDATE_INSTANCE:
-						this.group = frontRepo.Groups.get(this.id)
+						let group = frontRepo.Groups.get(this.id)
+						console.assert(group != undefined, "missing group with id:" + this.id)
+						this.group = group!
 						break;
 					// insertion point for init of association field
 					case GroupDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Groups_SET:
 						this.group = new (GroupDB)
-						this.group.Gantt_Groups_reverse = frontRepo.Gantts.get(this.id)
+						this.group.Gantt_Groups_reverse = frontRepo.Gantts.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -155,7 +158,7 @@ export class GroupDetailComponent implements OnInit {
 				this.group.Gantt_GroupsDBID_Index = new NullInt64
 			}
 			this.group.Gantt_GroupsDBID_Index.Valid = true
-			this.group.Gantt_Groups_reverse = undefined // very important, otherwise, circular JSON
+			this.group.Gantt_Groups_reverse = new GanttDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {
@@ -168,7 +171,7 @@ export class GroupDetailComponent implements OnInit {
 			default:
 				this.groupService.postGroup(this.group).subscribe(group => {
 					this.groupService.GroupServiceChanged.next("post")
-					this.group = {} // reset fields
+					this.group = new (GroupDB) // reset fields
 				});
 		}
 	}
@@ -177,7 +180,7 @@ export class GroupDetailComponent implements OnInit {
 	// ONE-MANY association
 	// It uses the MapOfComponent provided by the front repo
 	openReverseSelection(AssociatedStruct: string, reverseField: string, selectionMode: string,
-		sourceField: string, intermediateStructField: string, nextAssociatedStruct: string ) {
+		sourceField: string, intermediateStructField: string, nextAssociatedStruct: string) {
 
 		console.log("mode " + selectionMode)
 
@@ -191,7 +194,7 @@ export class GroupDetailComponent implements OnInit {
 		dialogConfig.height = "50%"
 		if (selectionMode == SelectionMode.ONE_MANY_ASSOCIATION_MODE) {
 
-			dialogData.ID = this.group.ID
+			dialogData.ID = this.group.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
@@ -207,7 +210,7 @@ export class GroupDetailComponent implements OnInit {
 			});
 		}
 		if (selectionMode == SelectionMode.MANY_MANY_ASSOCIATION_MODE) {
-			dialogData.ID = this.group.ID
+			dialogData.ID = this.group.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
@@ -258,7 +261,7 @@ export class GroupDetailComponent implements OnInit {
 		});
 	}
 
-	fillUpNameIfEmpty(event) {
+	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
 		if (this.group.Name == undefined) {
 			this.group.Name = event.value.Name
 		}
@@ -275,7 +278,7 @@ export class GroupDetailComponent implements OnInit {
 
 	isATextArea(fieldName: string): boolean {
 		if (this.mapFields_displayAsTextArea.has(fieldName)) {
-			return this.mapFields_displayAsTextArea.get(fieldName)
+			return this.mapFields_displayAsTextArea.get(fieldName)!
 		} else {
 			return false
 		}

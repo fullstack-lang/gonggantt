@@ -23,13 +23,13 @@ export class BarPresentationComponent implements OnInit {
 
 	// insertion point for declarations
 
-	displayedColumns: string[] = [];
-	dataSource = ELEMENT_DATA;
+	displayedColumns: string[] = []
+	dataSource = ELEMENT_DATA
 
-	bar: BarDB;
+	bar: BarDB = new (BarDB)
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new (FrontRepo)
  
 	constructor(
 		private barService: BarService,
@@ -56,12 +56,12 @@ export class BarPresentationComponent implements OnInit {
 	}
 
 	getBar(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
+		const id = +this.route.snapshot.paramMap.get('id')!
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
-				this.bar = this.frontRepo.Bars.get(id)
+				this.bar = this.frontRepo.Bars.get(id)!
 
 				// insertion point for recovery of durations
 			}

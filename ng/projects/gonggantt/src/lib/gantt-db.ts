@@ -5,35 +5,35 @@ import { GroupDB } from './group-db'
 import { ArrowDB } from './arrow-db'
 
 // usefull for managing pointer ID values that can be nullable
-import { NullInt64 } from './front-repo.service'
+import { NullInt64 } from './null-int64'
 
 export class GanttDB {
-	CreatedAt?: string;
-	DeletedAt?: string;
-	ID?: number;
+	CreatedAt?: string
+	DeletedAt?: string
+	ID: number = 0
 
 	// insertion point for basic fields declarations
-	Name?: string
-	Start?: Date
-	End?: Date
-	LaneHeight?: number
-	RatioBarToLaneHeight?: number
-	YTopMargin?: number
-	XLeftText?: number
-	TextHeight?: number
-	XLeftLanes?: number
-	XRightMargin?: number
-	ArrowLengthToTheRightOfStartBar?: number
-	ArrowTipLenght?: number
-	TimeLine_Color?: string
-	TimeLine_FillOpacity?: number
-	TimeLine_Stroke?: string
-	TimeLine_StrokeWidth?: number
-	Group_Stroke?: string
-	Group_StrokeWidth?: number
-	Group_StrokeDashArray?: string
-	DateYOffset?: number
-	AlignOnStartEndOnYearStart?: string
+	Name: string = ""
+	Start: Date = new Date
+	End: Date = new Date
+	LaneHeight: number = 0
+	RatioBarToLaneHeight: number = 0
+	YTopMargin: number = 0
+	XLeftText: number = 0
+	TextHeight: number = 0
+	XLeftLanes: number = 0
+	XRightMargin: number = 0
+	ArrowLengthToTheRightOfStartBar: number = 0
+	ArrowTipLenght: number = 0
+	TimeLine_Color: string = ""
+	TimeLine_FillOpacity: number = 0
+	TimeLine_Stroke: string = ""
+	TimeLine_StrokeWidth: number = 0
+	Group_Stroke: string = ""
+	Group_StrokeWidth: number = 0
+	Group_StrokeDashArray: string = ""
+	DateYOffset: number = 0
+	AlignOnStartEndOnYearStart: boolean = false
 
 	// insertion point for other declarations
 	Lanes?: Array<LaneDB>

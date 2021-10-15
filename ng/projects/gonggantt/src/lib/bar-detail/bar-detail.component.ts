@@ -10,12 +10,13 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
+import { LaneDB } from '../lane-db'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 
-import { NullInt64 } from '../front-repo.service'
+import { NullInt64 } from '../null-int64'
 
 // BarDetailComponent is initilizaed from different routes
 // BarDetailComponentState detail different cases 
@@ -36,10 +37,10 @@ export class BarDetailComponent implements OnInit {
 	// insertion point for declarations
 
 	// the BarDB of interest
-	bar: BarDB;
+	bar: BarDB = new BarDB
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new FrontRepo
 
 	// this stores the information related to string fields
 	// if false, the field is inputed with an <input ...> form 
@@ -47,15 +48,15 @@ export class BarDetailComponent implements OnInit {
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
 	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
-	state: BarDetailComponentState
+	state: BarDetailComponentState = BarDetailComponentState.CREATE_INSTANCE
 
 	// in UDPATE state, if is the id of the instance to update
 	// in CREATE state with one association set, this is the id of the associated instance
-	id: number
+	id: number = 0
 
 	// in CREATE state with one association set, this is the id of the associated instance
-	originStruct: string
-	originStructFieldName: string
+	originStruct: string = ""
+	originStructFieldName: string = ""
 
 	constructor(
 		private barService: BarService,
@@ -69,9 +70,9 @@ export class BarDetailComponent implements OnInit {
 	ngOnInit(): void {
 
 		// compute state
-		this.id = +this.route.snapshot.paramMap.get('id');
-		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
-		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+		this.id = +this.route.snapshot.paramMap.get('id')!;
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct')!;
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName')!;
 
 		const association = this.route.snapshot.paramMap.get('association');
 		if (this.id == 0) {
@@ -83,7 +84,7 @@ export class BarDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Bars":
-						console.log("Bar" + " is instanciated with back pointer to instance " + this.id + " Lane association Bars")
+						// console.log("Bar" + " is instanciated with back pointer to instance " + this.id + " Lane association Bars")
 						this.state = BarDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Lane_Bars_SET
 						break;
 					default:
@@ -117,12 +118,14 @@ export class BarDetailComponent implements OnInit {
 						this.bar = new (BarDB)
 						break;
 					case BarDetailComponentState.UPDATE_INSTANCE:
-						this.bar = frontRepo.Bars.get(this.id)
+						let bar = frontRepo.Bars.get(this.id)
+						console.assert(bar != undefined, "missing bar with id:" + this.id)
+						this.bar = bar!
 						break;
 					// insertion point for init of association field
 					case BarDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Lane_Bars_SET:
 						this.bar = new (BarDB)
-						this.bar.Lane_Bars_reverse = frontRepo.Lanes.get(this.id)
+						this.bar.Lane_Bars_reverse = frontRepo.Lanes.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -155,7 +158,7 @@ export class BarDetailComponent implements OnInit {
 				this.bar.Lane_BarsDBID_Index = new NullInt64
 			}
 			this.bar.Lane_BarsDBID_Index.Valid = true
-			this.bar.Lane_Bars_reverse = undefined // very important, otherwise, circular JSON
+			this.bar.Lane_Bars_reverse = new LaneDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {
@@ -168,7 +171,7 @@ export class BarDetailComponent implements OnInit {
 			default:
 				this.barService.postBar(this.bar).subscribe(bar => {
 					this.barService.BarServiceChanged.next("post")
-					this.bar = {} // reset fields
+					this.bar = new (BarDB) // reset fields
 				});
 		}
 	}
@@ -177,7 +180,7 @@ export class BarDetailComponent implements OnInit {
 	// ONE-MANY association
 	// It uses the MapOfComponent provided by the front repo
 	openReverseSelection(AssociatedStruct: string, reverseField: string, selectionMode: string,
-		sourceField: string, intermediateStructField: string, nextAssociatedStruct: string ) {
+		sourceField: string, intermediateStructField: string, nextAssociatedStruct: string) {
 
 		console.log("mode " + selectionMode)
 
@@ -191,7 +194,7 @@ export class BarDetailComponent implements OnInit {
 		dialogConfig.height = "50%"
 		if (selectionMode == SelectionMode.ONE_MANY_ASSOCIATION_MODE) {
 
-			dialogData.ID = this.bar.ID
+			dialogData.ID = this.bar.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
@@ -207,7 +210,7 @@ export class BarDetailComponent implements OnInit {
 			});
 		}
 		if (selectionMode == SelectionMode.MANY_MANY_ASSOCIATION_MODE) {
-			dialogData.ID = this.bar.ID
+			dialogData.ID = this.bar.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
@@ -258,7 +261,7 @@ export class BarDetailComponent implements OnInit {
 		});
 	}
 
-	fillUpNameIfEmpty(event) {
+	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
 		if (this.bar.Name == undefined) {
 			this.bar.Name = event.value.Name
 		}
@@ -275,7 +278,7 @@ export class BarDetailComponent implements OnInit {
 
 	isATextArea(fieldName: string): boolean {
 		if (this.mapFields_displayAsTextArea.has(fieldName)) {
-			return this.mapFields_displayAsTextArea.get(fieldName)
+			return this.mapFields_displayAsTextArea.get(fieldName)!
 		} else {
 			return false
 		}

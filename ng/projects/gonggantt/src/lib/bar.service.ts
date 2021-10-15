@@ -13,6 +13,9 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { BarDB } from './bar-db';
 
+// insertion point for imports
+import { LaneDB } from './lane-db'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,14 +38,14 @@ export class BarService {
   ) {
     // path to the service share the same origin with the path to the document
     // get the origin in the URL to the document
-	let origin = this.document.location.origin
-    
-	// if debugging with ng, replace 4200 with 8080
-	origin = origin.replace("4200", "8080")
+    let origin = this.document.location.origin
+
+    // if debugging with ng, replace 4200 with 8080
+    origin = origin.replace("4200", "8080")
 
     // compute path to the service
     this.barsUrl = origin + '/api/github.com/fullstack-lang/gonggantt/go/v1/bars';
-   }
+  }
 
   /** GET bars from the server */
   getBars(): Observable<BarDB[]> {
@@ -67,18 +70,18 @@ export class BarService {
   /** POST: add a new bar to the server */
   postBar(bardb: BarDB): Observable<BarDB> {
 
-		// insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     let _Lane_Bars_reverse = bardb.Lane_Bars_reverse
-    bardb.Lane_Bars_reverse = {}
+    bardb.Lane_Bars_reverse = new LaneDB
 
-		return this.http.post<BarDB>(this.barsUrl, bardb, this.httpOptions).pipe(
-			tap(_ => {
-				// insertion point for restoration of reverse pointers
+    return this.http.post<BarDB>(this.barsUrl, bardb, this.httpOptions).pipe(
+      tap(_ => {
+        // insertion point for restoration of reverse pointers
         bardb.Lane_Bars_reverse = _Lane_Bars_reverse
-				this.log(`posted bardb id=${bardb.ID}`)
-			}),
-			catchError(this.handleError<BarDB>('postBar'))
-		);
+        this.log(`posted bardb id=${bardb.ID}`)
+      }),
+      catchError(this.handleError<BarDB>('postBar'))
+    );
   }
 
   /** DELETE: delete the bardb from the server */
@@ -99,9 +102,9 @@ export class BarService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     let _Lane_Bars_reverse = bardb.Lane_Bars_reverse
-    bardb.Lane_Bars_reverse = {}
+    bardb.Lane_Bars_reverse = new LaneDB
 
-    return this.http.put(url, bardb, this.httpOptions).pipe(
+    return this.http.put<BarDB>(url, bardb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         bardb.Lane_Bars_reverse = _Lane_Bars_reverse

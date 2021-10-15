@@ -13,6 +13,10 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { ArrowDB } from './arrow-db';
 
+// insertion point for imports
+import { BarDB } from './bar-db'
+import { GanttDB } from './gantt-db'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,14 +39,14 @@ export class ArrowService {
   ) {
     // path to the service share the same origin with the path to the document
     // get the origin in the URL to the document
-	let origin = this.document.location.origin
-    
-	// if debugging with ng, replace 4200 with 8080
-	origin = origin.replace("4200", "8080")
+    let origin = this.document.location.origin
+
+    // if debugging with ng, replace 4200 with 8080
+    origin = origin.replace("4200", "8080")
 
     // compute path to the service
     this.arrowsUrl = origin + '/api/github.com/fullstack-lang/gonggantt/go/v1/arrows';
-   }
+  }
 
   /** GET arrows from the server */
   getArrows(): Observable<ArrowDB[]> {
@@ -67,20 +71,20 @@ export class ArrowService {
   /** POST: add a new arrow to the server */
   postArrow(arrowdb: ArrowDB): Observable<ArrowDB> {
 
-		// insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    arrowdb.From = {}
-    arrowdb.To = {}
+    // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    arrowdb.From = new BarDB
+    arrowdb.To = new BarDB
     let _Gantt_Arrows_reverse = arrowdb.Gantt_Arrows_reverse
-    arrowdb.Gantt_Arrows_reverse = {}
+    arrowdb.Gantt_Arrows_reverse = new GanttDB
 
-		return this.http.post<ArrowDB>(this.arrowsUrl, arrowdb, this.httpOptions).pipe(
-			tap(_ => {
-				// insertion point for restoration of reverse pointers
+    return this.http.post<ArrowDB>(this.arrowsUrl, arrowdb, this.httpOptions).pipe(
+      tap(_ => {
+        // insertion point for restoration of reverse pointers
         arrowdb.Gantt_Arrows_reverse = _Gantt_Arrows_reverse
-				this.log(`posted arrowdb id=${arrowdb.ID}`)
-			}),
-			catchError(this.handleError<ArrowDB>('postArrow'))
-		);
+        this.log(`posted arrowdb id=${arrowdb.ID}`)
+      }),
+      catchError(this.handleError<ArrowDB>('postArrow'))
+    );
   }
 
   /** DELETE: delete the arrowdb from the server */
@@ -100,12 +104,12 @@ export class ArrowService {
     const url = `${this.arrowsUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    arrowdb.From = {}
-    arrowdb.To = {}
+    arrowdb.From = new BarDB
+    arrowdb.To = new BarDB
     let _Gantt_Arrows_reverse = arrowdb.Gantt_Arrows_reverse
-    arrowdb.Gantt_Arrows_reverse = {}
+    arrowdb.Gantt_Arrows_reverse = new GanttDB
 
-    return this.http.put(url, arrowdb, this.httpOptions).pipe(
+    return this.http.put<ArrowDB>(url, arrowdb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         arrowdb.Gantt_Arrows_reverse = _Gantt_Arrows_reverse

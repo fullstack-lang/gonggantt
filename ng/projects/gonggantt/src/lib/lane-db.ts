@@ -5,29 +5,29 @@ import { GroupDB } from './group-db'
 import { MilestoneDB } from './milestone-db'
 
 // usefull for managing pointer ID values that can be nullable
-import { NullInt64 } from './front-repo.service'
+import { NullInt64 } from './null-int64'
 
 export class LaneDB {
-	CreatedAt?: string;
-	DeletedAt?: string;
-	ID?: number;
+	CreatedAt?: string
+	DeletedAt?: string
+	ID: number = 0
 
 	// insertion point for basic fields declarations
-	Name?: string
-	Order?: number
+	Name: string = ""
+	Order: number = 0
 
 	// insertion point for other declarations
 	Bars?: Array<BarDB>
-	Gantt_LanesDBID?: NullInt64
-	Gantt_LanesDBID_Index?: NullInt64 // store the index of the lane instance in Gantt.Lanes
-	Gantt_Lanes_reverse?: GanttDB
+	Gantt_LanesDBID: NullInt64 = new NullInt64
+	Gantt_LanesDBID_Index: NullInt64  = new NullInt64 // store the index of the lane instance in Gantt.Lanes
+	Gantt_Lanes_reverse?: GanttDB 
 
-	Group_GroupLanesDBID?: NullInt64
-	Group_GroupLanesDBID_Index?: NullInt64 // store the index of the lane instance in Group.GroupLanes
-	Group_GroupLanes_reverse?: GroupDB
+	Group_GroupLanesDBID: NullInt64 = new NullInt64
+	Group_GroupLanesDBID_Index: NullInt64  = new NullInt64 // store the index of the lane instance in Group.GroupLanes
+	Group_GroupLanes_reverse?: GroupDB 
 
-	Milestone_DiamonfAndTextAnchorsDBID?: NullInt64
-	Milestone_DiamonfAndTextAnchorsDBID_Index?: NullInt64 // store the index of the lane instance in Milestone.DiamonfAndTextAnchors
-	Milestone_DiamonfAndTextAnchors_reverse?: MilestoneDB
+	Milestone_DiamonfAndTextAnchorsDBID: NullInt64 = new NullInt64
+	Milestone_DiamonfAndTextAnchorsDBID_Index: NullInt64  = new NullInt64 // store the index of the lane instance in Milestone.DiamonfAndTextAnchors
+	Milestone_DiamonfAndTextAnchors_reverse?: MilestoneDB 
 
 }

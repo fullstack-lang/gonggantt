@@ -10,12 +10,13 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
+import { GanttDB } from '../gantt-db'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
 import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angular/material/dialog';
 
-import { NullInt64 } from '../front-repo.service'
+import { NullInt64 } from '../null-int64'
 
 // ArrowDetailComponent is initilizaed from different routes
 // ArrowDetailComponentState detail different cases 
@@ -36,10 +37,10 @@ export class ArrowDetailComponent implements OnInit {
 	// insertion point for declarations
 
 	// the ArrowDB of interest
-	arrow: ArrowDB;
+	arrow: ArrowDB = new ArrowDB
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new FrontRepo
 
 	// this stores the information related to string fields
 	// if false, the field is inputed with an <input ...> form 
@@ -47,15 +48,15 @@ export class ArrowDetailComponent implements OnInit {
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
 	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
-	state: ArrowDetailComponentState
+	state: ArrowDetailComponentState = ArrowDetailComponentState.CREATE_INSTANCE
 
 	// in UDPATE state, if is the id of the instance to update
 	// in CREATE state with one association set, this is the id of the associated instance
-	id: number
+	id: number = 0
 
 	// in CREATE state with one association set, this is the id of the associated instance
-	originStruct: string
-	originStructFieldName: string
+	originStruct: string = ""
+	originStructFieldName: string = ""
 
 	constructor(
 		private arrowService: ArrowService,
@@ -69,9 +70,9 @@ export class ArrowDetailComponent implements OnInit {
 	ngOnInit(): void {
 
 		// compute state
-		this.id = +this.route.snapshot.paramMap.get('id');
-		this.originStruct = this.route.snapshot.paramMap.get('originStruct');
-		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName');
+		this.id = +this.route.snapshot.paramMap.get('id')!;
+		this.originStruct = this.route.snapshot.paramMap.get('originStruct')!;
+		this.originStructFieldName = this.route.snapshot.paramMap.get('originStructFieldName')!;
 
 		const association = this.route.snapshot.paramMap.get('association');
 		if (this.id == 0) {
@@ -83,7 +84,7 @@ export class ArrowDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Arrows":
-						console.log("Arrow" + " is instanciated with back pointer to instance " + this.id + " Gantt association Arrows")
+						// console.log("Arrow" + " is instanciated with back pointer to instance " + this.id + " Gantt association Arrows")
 						this.state = ArrowDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Arrows_SET
 						break;
 					default:
@@ -117,12 +118,14 @@ export class ArrowDetailComponent implements OnInit {
 						this.arrow = new (ArrowDB)
 						break;
 					case ArrowDetailComponentState.UPDATE_INSTANCE:
-						this.arrow = frontRepo.Arrows.get(this.id)
+						let arrow = frontRepo.Arrows.get(this.id)
+						console.assert(arrow != undefined, "missing arrow with id:" + this.id)
+						this.arrow = arrow!
 						break;
 					// insertion point for init of association field
 					case ArrowDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Arrows_SET:
 						this.arrow = new (ArrowDB)
-						this.arrow.Gantt_Arrows_reverse = frontRepo.Gantts.get(this.id)
+						this.arrow.Gantt_Arrows_reverse = frontRepo.Gantts.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -175,7 +178,7 @@ export class ArrowDetailComponent implements OnInit {
 				this.arrow.Gantt_ArrowsDBID_Index = new NullInt64
 			}
 			this.arrow.Gantt_ArrowsDBID_Index.Valid = true
-			this.arrow.Gantt_Arrows_reverse = undefined // very important, otherwise, circular JSON
+			this.arrow.Gantt_Arrows_reverse = new GanttDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {
@@ -188,7 +191,7 @@ export class ArrowDetailComponent implements OnInit {
 			default:
 				this.arrowService.postArrow(this.arrow).subscribe(arrow => {
 					this.arrowService.ArrowServiceChanged.next("post")
-					this.arrow = {} // reset fields
+					this.arrow = new (ArrowDB) // reset fields
 				});
 		}
 	}
@@ -197,7 +200,7 @@ export class ArrowDetailComponent implements OnInit {
 	// ONE-MANY association
 	// It uses the MapOfComponent provided by the front repo
 	openReverseSelection(AssociatedStruct: string, reverseField: string, selectionMode: string,
-		sourceField: string, intermediateStructField: string, nextAssociatedStruct: string ) {
+		sourceField: string, intermediateStructField: string, nextAssociatedStruct: string) {
 
 		console.log("mode " + selectionMode)
 
@@ -211,7 +214,7 @@ export class ArrowDetailComponent implements OnInit {
 		dialogConfig.height = "50%"
 		if (selectionMode == SelectionMode.ONE_MANY_ASSOCIATION_MODE) {
 
-			dialogData.ID = this.arrow.ID
+			dialogData.ID = this.arrow.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
@@ -227,7 +230,7 @@ export class ArrowDetailComponent implements OnInit {
 			});
 		}
 		if (selectionMode == SelectionMode.MANY_MANY_ASSOCIATION_MODE) {
-			dialogData.ID = this.arrow.ID
+			dialogData.ID = this.arrow.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
@@ -278,7 +281,7 @@ export class ArrowDetailComponent implements OnInit {
 		});
 	}
 
-	fillUpNameIfEmpty(event) {
+	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
 		if (this.arrow.Name == undefined) {
 			this.arrow.Name = event.value.Name
 		}
@@ -295,7 +298,7 @@ export class ArrowDetailComponent implements OnInit {
 
 	isATextArea(fieldName: string): boolean {
 		if (this.mapFields_displayAsTextArea.has(fieldName)) {
-			return this.mapFields_displayAsTextArea.get(fieldName)
+			return this.mapFields_displayAsTextArea.get(fieldName)!
 		} else {
 			return false
 		}

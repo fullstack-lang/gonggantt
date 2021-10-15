@@ -13,6 +13,9 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 import { GroupDB } from './group-db';
 
+// insertion point for imports
+import { GanttDB } from './gantt-db'
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,14 +38,14 @@ export class GroupService {
   ) {
     // path to the service share the same origin with the path to the document
     // get the origin in the URL to the document
-	let origin = this.document.location.origin
-    
-	// if debugging with ng, replace 4200 with 8080
-	origin = origin.replace("4200", "8080")
+    let origin = this.document.location.origin
+
+    // if debugging with ng, replace 4200 with 8080
+    origin = origin.replace("4200", "8080")
 
     // compute path to the service
     this.groupsUrl = origin + '/api/github.com/fullstack-lang/gonggantt/go/v1/groups';
-   }
+  }
 
   /** GET groups from the server */
   getGroups(): Observable<GroupDB[]> {
@@ -67,19 +70,19 @@ export class GroupService {
   /** POST: add a new group to the server */
   postGroup(groupdb: GroupDB): Observable<GroupDB> {
 
-		// insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     groupdb.GroupLanes = []
     let _Gantt_Groups_reverse = groupdb.Gantt_Groups_reverse
-    groupdb.Gantt_Groups_reverse = {}
+    groupdb.Gantt_Groups_reverse = new GanttDB
 
-		return this.http.post<GroupDB>(this.groupsUrl, groupdb, this.httpOptions).pipe(
-			tap(_ => {
-				// insertion point for restoration of reverse pointers
+    return this.http.post<GroupDB>(this.groupsUrl, groupdb, this.httpOptions).pipe(
+      tap(_ => {
+        // insertion point for restoration of reverse pointers
         groupdb.Gantt_Groups_reverse = _Gantt_Groups_reverse
-				this.log(`posted groupdb id=${groupdb.ID}`)
-			}),
-			catchError(this.handleError<GroupDB>('postGroup'))
-		);
+        this.log(`posted groupdb id=${groupdb.ID}`)
+      }),
+      catchError(this.handleError<GroupDB>('postGroup'))
+    );
   }
 
   /** DELETE: delete the groupdb from the server */
@@ -101,9 +104,9 @@ export class GroupService {
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     groupdb.GroupLanes = []
     let _Gantt_Groups_reverse = groupdb.Gantt_Groups_reverse
-    groupdb.Gantt_Groups_reverse = {}
+    groupdb.Gantt_Groups_reverse = new GanttDB
 
-    return this.http.put(url, groupdb, this.httpOptions).pipe(
+    return this.http.put<GroupDB>(url, groupdb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         groupdb.Gantt_Groups_reverse = _Gantt_Groups_reverse

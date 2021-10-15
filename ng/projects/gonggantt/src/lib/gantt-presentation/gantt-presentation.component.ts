@@ -23,13 +23,13 @@ export class GanttPresentationComponent implements OnInit {
 
 	// insertion point for declarations
 
-	displayedColumns: string[] = [];
-	dataSource = ELEMENT_DATA;
+	displayedColumns: string[] = []
+	dataSource = ELEMENT_DATA
 
-	gantt: GanttDB;
+	gantt: GanttDB = new (GanttDB)
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new (FrontRepo)
  
 	constructor(
 		private ganttService: GanttService,
@@ -56,12 +56,12 @@ export class GanttPresentationComponent implements OnInit {
 	}
 
 	getGantt(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
+		const id = +this.route.snapshot.paramMap.get('id')!
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
-				this.gantt = this.frontRepo.Gantts.get(id)
+				this.gantt = this.frontRepo.Gantts.get(id)!
 
 				// insertion point for recovery of durations
 			}

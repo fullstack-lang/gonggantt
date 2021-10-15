@@ -23,13 +23,13 @@ export class ArrowPresentationComponent implements OnInit {
 
 	// insertion point for declarations
 
-	displayedColumns: string[] = [];
-	dataSource = ELEMENT_DATA;
+	displayedColumns: string[] = []
+	dataSource = ELEMENT_DATA
 
-	arrow: ArrowDB;
+	arrow: ArrowDB = new (ArrowDB)
 
 	// front repo
-	frontRepo: FrontRepo
+	frontRepo: FrontRepo = new (FrontRepo)
  
 	constructor(
 		private arrowService: ArrowService,
@@ -56,12 +56,12 @@ export class ArrowPresentationComponent implements OnInit {
 	}
 
 	getArrow(): void {
-		const id = +this.route.snapshot.paramMap.get('id');
+		const id = +this.route.snapshot.paramMap.get('id')!
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
-				this.arrow = this.frontRepo.Arrows.get(id)
+				this.arrow = this.frontRepo.Arrows.get(id)!
 
 				// insertion point for recovery of durations
 			}
