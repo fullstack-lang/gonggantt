@@ -189,16 +189,14 @@ export class BarsTableComponent implements OnInit {
 
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          this.bars.forEach(
-            bar => {
-              let ID = this.dialogData.ID
-              let revPointer = bar[this.dialogData.ReversePointer as keyof BarDB] as unknown as NullInt64
-              if (revPointer.Int64 == ID) {
-                this.initialSelection.push(bar)
-              }
+          for (let bar of this.bars) {
+            let ID = this.dialogData.ID
+            let revPointer = bar[this.dialogData.ReversePointer as keyof BarDB] as unknown as NullInt64
+            if (revPointer.Int64 == ID) {
+              this.initialSelection.push(bar)
             }
-          )
-          this.selection = new SelectionModel<BarDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<BarDB>(allowMultiSelect, this.initialSelection);
+          }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -285,34 +283,31 @@ export class BarsTableComponent implements OnInit {
       let toUpdate = new Set<BarDB>()
 
       // reset all initial selection of bar that belong to bar
-      this.initialSelection.forEach(
-        bar => {
-          let index = bar[this.dialogData.ReversePointer as keyof BarDB] as unknown as NullInt64
-          index.Int64 = 0
-          index.Valid = true
-          toUpdate.add(bar)
-        }
-      )
+      for (let bar of this.initialSelection) {
+        let index = bar[this.dialogData.ReversePointer as keyof BarDB] as unknown as NullInt64
+        index.Int64 = 0
+        index.Valid = true
+        toUpdate.add(bar)
+
+      }
 
       // from selection, set bar that belong to bar
-      this.selection.selected.forEach(
-        bar => {
-          let ID = this.dialogData.ID as number
-          let reversePointer = bar[this.dialogData.ReversePointer  as keyof BarDB] as unknown as NullInt64
-          reversePointer.Int64 = ID
-          toUpdate.add(bar)
-        }
-      )
+      for (let bar of this.selection.selected) {
+        let ID = this.dialogData.ID as number
+        let reversePointer = bar[this.dialogData.ReversePointer as keyof BarDB] as unknown as NullInt64
+        reversePointer.Int64 = ID
+        reversePointer.Valid = true
+        toUpdate.add(bar)
+      }
+
 
       // update all bar (only update selection & initial selection)
-      toUpdate.forEach(
-        bar => {
-          this.barService.updateBar(bar)
-            .subscribe(bar => {
-              this.barService.BarServiceChanged.next("update")
-            });
-        }
-      )
+      for (let bar of toUpdate) {
+        this.barService.updateBar(bar)
+          .subscribe(bar => {
+            this.barService.BarServiceChanged.next("update")
+          });
+      }
     }
 
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -359,13 +354,15 @@ export class BarsTableComponent implements OnInit {
                 Name: sourceInstance["Name"] + "-" + bar.Name,
               }
 
-              let index = associationInstance[this.dialogData.IntermediateStructField+"ID" as keyof typeof associationInstance] as unknown as NullInt64
+              let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
               index.Int64 = bar.ID
+              index.Valid = true
 
-              let indexDB = associationInstance[this.dialogData.IntermediateStructField+"DBID" as keyof typeof associationInstance] as unknown as NullInt64
+              let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
               indexDB.Int64 = bar.ID
+              index.Valid = true
 
-              this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
+              this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
               // console.log("bar " + bar.Name + " is still selected")

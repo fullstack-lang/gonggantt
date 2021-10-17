@@ -195,16 +195,14 @@ export class ArrowsTableComponent implements OnInit {
 
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          this.arrows.forEach(
-            arrow => {
-              let ID = this.dialogData.ID
-              let revPointer = arrow[this.dialogData.ReversePointer as keyof ArrowDB] as unknown as NullInt64
-              if (revPointer.Int64 == ID) {
-                this.initialSelection.push(arrow)
-              }
+          for (let arrow of this.arrows) {
+            let ID = this.dialogData.ID
+            let revPointer = arrow[this.dialogData.ReversePointer as keyof ArrowDB] as unknown as NullInt64
+            if (revPointer.Int64 == ID) {
+              this.initialSelection.push(arrow)
             }
-          )
-          this.selection = new SelectionModel<ArrowDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<ArrowDB>(allowMultiSelect, this.initialSelection);
+          }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -291,34 +289,31 @@ export class ArrowsTableComponent implements OnInit {
       let toUpdate = new Set<ArrowDB>()
 
       // reset all initial selection of arrow that belong to arrow
-      this.initialSelection.forEach(
-        arrow => {
-          let index = arrow[this.dialogData.ReversePointer as keyof ArrowDB] as unknown as NullInt64
-          index.Int64 = 0
-          index.Valid = true
-          toUpdate.add(arrow)
-        }
-      )
+      for (let arrow of this.initialSelection) {
+        let index = arrow[this.dialogData.ReversePointer as keyof ArrowDB] as unknown as NullInt64
+        index.Int64 = 0
+        index.Valid = true
+        toUpdate.add(arrow)
+
+      }
 
       // from selection, set arrow that belong to arrow
-      this.selection.selected.forEach(
-        arrow => {
-          let ID = this.dialogData.ID as number
-          let reversePointer = arrow[this.dialogData.ReversePointer  as keyof ArrowDB] as unknown as NullInt64
-          reversePointer.Int64 = ID
-          toUpdate.add(arrow)
-        }
-      )
+      for (let arrow of this.selection.selected) {
+        let ID = this.dialogData.ID as number
+        let reversePointer = arrow[this.dialogData.ReversePointer as keyof ArrowDB] as unknown as NullInt64
+        reversePointer.Int64 = ID
+        reversePointer.Valid = true
+        toUpdate.add(arrow)
+      }
+
 
       // update all arrow (only update selection & initial selection)
-      toUpdate.forEach(
-        arrow => {
-          this.arrowService.updateArrow(arrow)
-            .subscribe(arrow => {
-              this.arrowService.ArrowServiceChanged.next("update")
-            });
-        }
-      )
+      for (let arrow of toUpdate) {
+        this.arrowService.updateArrow(arrow)
+          .subscribe(arrow => {
+            this.arrowService.ArrowServiceChanged.next("update")
+          });
+      }
     }
 
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -365,13 +360,15 @@ export class ArrowsTableComponent implements OnInit {
                 Name: sourceInstance["Name"] + "-" + arrow.Name,
               }
 
-              let index = associationInstance[this.dialogData.IntermediateStructField+"ID" as keyof typeof associationInstance] as unknown as NullInt64
+              let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
               index.Int64 = arrow.ID
+              index.Valid = true
 
-              let indexDB = associationInstance[this.dialogData.IntermediateStructField+"DBID" as keyof typeof associationInstance] as unknown as NullInt64
+              let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
               indexDB.Int64 = arrow.ID
+              index.Valid = true
 
-              this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
+              this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
               // console.log("arrow " + arrow.Name + " is still selected")

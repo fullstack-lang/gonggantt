@@ -167,16 +167,14 @@ export class GroupsTableComponent implements OnInit {
 
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          this.groups.forEach(
-            group => {
-              let ID = this.dialogData.ID
-              let revPointer = group[this.dialogData.ReversePointer as keyof GroupDB] as unknown as NullInt64
-              if (revPointer.Int64 == ID) {
-                this.initialSelection.push(group)
-              }
+          for (let group of this.groups) {
+            let ID = this.dialogData.ID
+            let revPointer = group[this.dialogData.ReversePointer as keyof GroupDB] as unknown as NullInt64
+            if (revPointer.Int64 == ID) {
+              this.initialSelection.push(group)
             }
-          )
-          this.selection = new SelectionModel<GroupDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<GroupDB>(allowMultiSelect, this.initialSelection);
+          }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -263,34 +261,31 @@ export class GroupsTableComponent implements OnInit {
       let toUpdate = new Set<GroupDB>()
 
       // reset all initial selection of group that belong to group
-      this.initialSelection.forEach(
-        group => {
-          let index = group[this.dialogData.ReversePointer as keyof GroupDB] as unknown as NullInt64
-          index.Int64 = 0
-          index.Valid = true
-          toUpdate.add(group)
-        }
-      )
+      for (let group of this.initialSelection) {
+        let index = group[this.dialogData.ReversePointer as keyof GroupDB] as unknown as NullInt64
+        index.Int64 = 0
+        index.Valid = true
+        toUpdate.add(group)
+
+      }
 
       // from selection, set group that belong to group
-      this.selection.selected.forEach(
-        group => {
-          let ID = this.dialogData.ID as number
-          let reversePointer = group[this.dialogData.ReversePointer  as keyof GroupDB] as unknown as NullInt64
-          reversePointer.Int64 = ID
-          toUpdate.add(group)
-        }
-      )
+      for (let group of this.selection.selected) {
+        let ID = this.dialogData.ID as number
+        let reversePointer = group[this.dialogData.ReversePointer as keyof GroupDB] as unknown as NullInt64
+        reversePointer.Int64 = ID
+        reversePointer.Valid = true
+        toUpdate.add(group)
+      }
+
 
       // update all group (only update selection & initial selection)
-      toUpdate.forEach(
-        group => {
-          this.groupService.updateGroup(group)
-            .subscribe(group => {
-              this.groupService.GroupServiceChanged.next("update")
-            });
-        }
-      )
+      for (let group of toUpdate) {
+        this.groupService.updateGroup(group)
+          .subscribe(group => {
+            this.groupService.GroupServiceChanged.next("update")
+          });
+      }
     }
 
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -337,13 +332,15 @@ export class GroupsTableComponent implements OnInit {
                 Name: sourceInstance["Name"] + "-" + group.Name,
               }
 
-              let index = associationInstance[this.dialogData.IntermediateStructField+"ID" as keyof typeof associationInstance] as unknown as NullInt64
+              let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
               index.Int64 = group.ID
+              index.Valid = true
 
-              let indexDB = associationInstance[this.dialogData.IntermediateStructField+"DBID" as keyof typeof associationInstance] as unknown as NullInt64
+              let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
               indexDB.Int64 = group.ID
+              index.Valid = true
 
-              this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
+              this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
               // console.log("group " + group.Name + " is still selected")

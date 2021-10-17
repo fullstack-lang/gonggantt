@@ -275,16 +275,14 @@ export class GanttsTableComponent implements OnInit {
 
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          this.gantts.forEach(
-            gantt => {
-              let ID = this.dialogData.ID
-              let revPointer = gantt[this.dialogData.ReversePointer as keyof GanttDB] as unknown as NullInt64
-              if (revPointer.Int64 == ID) {
-                this.initialSelection.push(gantt)
-              }
+          for (let gantt of this.gantts) {
+            let ID = this.dialogData.ID
+            let revPointer = gantt[this.dialogData.ReversePointer as keyof GanttDB] as unknown as NullInt64
+            if (revPointer.Int64 == ID) {
+              this.initialSelection.push(gantt)
             }
-          )
-          this.selection = new SelectionModel<GanttDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<GanttDB>(allowMultiSelect, this.initialSelection);
+          }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -371,34 +369,31 @@ export class GanttsTableComponent implements OnInit {
       let toUpdate = new Set<GanttDB>()
 
       // reset all initial selection of gantt that belong to gantt
-      this.initialSelection.forEach(
-        gantt => {
-          let index = gantt[this.dialogData.ReversePointer as keyof GanttDB] as unknown as NullInt64
-          index.Int64 = 0
-          index.Valid = true
-          toUpdate.add(gantt)
-        }
-      )
+      for (let gantt of this.initialSelection) {
+        let index = gantt[this.dialogData.ReversePointer as keyof GanttDB] as unknown as NullInt64
+        index.Int64 = 0
+        index.Valid = true
+        toUpdate.add(gantt)
+
+      }
 
       // from selection, set gantt that belong to gantt
-      this.selection.selected.forEach(
-        gantt => {
-          let ID = this.dialogData.ID as number
-          let reversePointer = gantt[this.dialogData.ReversePointer  as keyof GanttDB] as unknown as NullInt64
-          reversePointer.Int64 = ID
-          toUpdate.add(gantt)
-        }
-      )
+      for (let gantt of this.selection.selected) {
+        let ID = this.dialogData.ID as number
+        let reversePointer = gantt[this.dialogData.ReversePointer as keyof GanttDB] as unknown as NullInt64
+        reversePointer.Int64 = ID
+        reversePointer.Valid = true
+        toUpdate.add(gantt)
+      }
+
 
       // update all gantt (only update selection & initial selection)
-      toUpdate.forEach(
-        gantt => {
-          this.ganttService.updateGantt(gantt)
-            .subscribe(gantt => {
-              this.ganttService.GanttServiceChanged.next("update")
-            });
-        }
-      )
+      for (let gantt of toUpdate) {
+        this.ganttService.updateGantt(gantt)
+          .subscribe(gantt => {
+            this.ganttService.GanttServiceChanged.next("update")
+          });
+      }
     }
 
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -445,13 +440,15 @@ export class GanttsTableComponent implements OnInit {
                 Name: sourceInstance["Name"] + "-" + gantt.Name,
               }
 
-              let index = associationInstance[this.dialogData.IntermediateStructField+"ID" as keyof typeof associationInstance] as unknown as NullInt64
+              let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
               index.Int64 = gantt.ID
+              index.Valid = true
 
-              let indexDB = associationInstance[this.dialogData.IntermediateStructField+"DBID" as keyof typeof associationInstance] as unknown as NullInt64
+              let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
               indexDB.Int64 = gantt.ID
+              index.Valid = true
 
-              this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
+              this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
               // console.log("gantt " + gantt.Name + " is still selected")

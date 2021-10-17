@@ -191,16 +191,14 @@ export class LanesTableComponent implements OnInit {
 
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          this.lanes.forEach(
-            lane => {
-              let ID = this.dialogData.ID
-              let revPointer = lane[this.dialogData.ReversePointer as keyof LaneDB] as unknown as NullInt64
-              if (revPointer.Int64 == ID) {
-                this.initialSelection.push(lane)
-              }
+          for (let lane of this.lanes) {
+            let ID = this.dialogData.ID
+            let revPointer = lane[this.dialogData.ReversePointer as keyof LaneDB] as unknown as NullInt64
+            if (revPointer.Int64 == ID) {
+              this.initialSelection.push(lane)
             }
-          )
-          this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
+          }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -287,34 +285,31 @@ export class LanesTableComponent implements OnInit {
       let toUpdate = new Set<LaneDB>()
 
       // reset all initial selection of lane that belong to lane
-      this.initialSelection.forEach(
-        lane => {
-          let index = lane[this.dialogData.ReversePointer as keyof LaneDB] as unknown as NullInt64
-          index.Int64 = 0
-          index.Valid = true
-          toUpdate.add(lane)
-        }
-      )
+      for (let lane of this.initialSelection) {
+        let index = lane[this.dialogData.ReversePointer as keyof LaneDB] as unknown as NullInt64
+        index.Int64 = 0
+        index.Valid = true
+        toUpdate.add(lane)
+
+      }
 
       // from selection, set lane that belong to lane
-      this.selection.selected.forEach(
-        lane => {
-          let ID = this.dialogData.ID as number
-          let reversePointer = lane[this.dialogData.ReversePointer  as keyof LaneDB] as unknown as NullInt64
-          reversePointer.Int64 = ID
-          toUpdate.add(lane)
-        }
-      )
+      for (let lane of this.selection.selected) {
+        let ID = this.dialogData.ID as number
+        let reversePointer = lane[this.dialogData.ReversePointer as keyof LaneDB] as unknown as NullInt64
+        reversePointer.Int64 = ID
+        reversePointer.Valid = true
+        toUpdate.add(lane)
+      }
+
 
       // update all lane (only update selection & initial selection)
-      toUpdate.forEach(
-        lane => {
-          this.laneService.updateLane(lane)
-            .subscribe(lane => {
-              this.laneService.LaneServiceChanged.next("update")
-            });
-        }
-      )
+      for (let lane of toUpdate) {
+        this.laneService.updateLane(lane)
+          .subscribe(lane => {
+            this.laneService.LaneServiceChanged.next("update")
+          });
+      }
     }
 
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -361,13 +356,15 @@ export class LanesTableComponent implements OnInit {
                 Name: sourceInstance["Name"] + "-" + lane.Name,
               }
 
-              let index = associationInstance[this.dialogData.IntermediateStructField+"ID" as keyof typeof associationInstance] as unknown as NullInt64
+              let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
               index.Int64 = lane.ID
+              index.Valid = true
 
-              let indexDB = associationInstance[this.dialogData.IntermediateStructField+"DBID" as keyof typeof associationInstance] as unknown as NullInt64
+              let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
               indexDB.Int64 = lane.ID
+              index.Valid = true
 
-              this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
+              this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
               // console.log("lane " + lane.Name + " is still selected")

@@ -172,16 +172,14 @@ export class MilestonesTableComponent implements OnInit {
 
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          this.milestones.forEach(
-            milestone => {
-              let ID = this.dialogData.ID
-              let revPointer = milestone[this.dialogData.ReversePointer as keyof MilestoneDB] as unknown as NullInt64
-              if (revPointer.Int64 == ID) {
-                this.initialSelection.push(milestone)
-              }
+          for (let milestone of this.milestones) {
+            let ID = this.dialogData.ID
+            let revPointer = milestone[this.dialogData.ReversePointer as keyof MilestoneDB] as unknown as NullInt64
+            if (revPointer.Int64 == ID) {
+              this.initialSelection.push(milestone)
             }
-          )
-          this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);
+          }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -268,34 +266,31 @@ export class MilestonesTableComponent implements OnInit {
       let toUpdate = new Set<MilestoneDB>()
 
       // reset all initial selection of milestone that belong to milestone
-      this.initialSelection.forEach(
-        milestone => {
-          let index = milestone[this.dialogData.ReversePointer as keyof MilestoneDB] as unknown as NullInt64
-          index.Int64 = 0
-          index.Valid = true
-          toUpdate.add(milestone)
-        }
-      )
+      for (let milestone of this.initialSelection) {
+        let index = milestone[this.dialogData.ReversePointer as keyof MilestoneDB] as unknown as NullInt64
+        index.Int64 = 0
+        index.Valid = true
+        toUpdate.add(milestone)
+
+      }
 
       // from selection, set milestone that belong to milestone
-      this.selection.selected.forEach(
-        milestone => {
-          let ID = this.dialogData.ID as number
-          let reversePointer = milestone[this.dialogData.ReversePointer  as keyof MilestoneDB] as unknown as NullInt64
-          reversePointer.Int64 = ID
-          toUpdate.add(milestone)
-        }
-      )
+      for (let milestone of this.selection.selected) {
+        let ID = this.dialogData.ID as number
+        let reversePointer = milestone[this.dialogData.ReversePointer as keyof MilestoneDB] as unknown as NullInt64
+        reversePointer.Int64 = ID
+        reversePointer.Valid = true
+        toUpdate.add(milestone)
+      }
+
 
       // update all milestone (only update selection & initial selection)
-      toUpdate.forEach(
-        milestone => {
-          this.milestoneService.updateMilestone(milestone)
-            .subscribe(milestone => {
-              this.milestoneService.MilestoneServiceChanged.next("update")
-            });
-        }
-      )
+      for (let milestone of toUpdate) {
+        this.milestoneService.updateMilestone(milestone)
+          .subscribe(milestone => {
+            this.milestoneService.MilestoneServiceChanged.next("update")
+          });
+      }
     }
 
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
@@ -342,13 +337,15 @@ export class MilestonesTableComponent implements OnInit {
                 Name: sourceInstance["Name"] + "-" + milestone.Name,
               }
 
-              let index = associationInstance[this.dialogData.IntermediateStructField+"ID" as keyof typeof associationInstance] as unknown as NullInt64
+              let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
               index.Int64 = milestone.ID
+              index.Valid = true
 
-              let indexDB = associationInstance[this.dialogData.IntermediateStructField+"DBID" as keyof typeof associationInstance] as unknown as NullInt64
+              let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
               indexDB.Int64 = milestone.ID
+              index.Valid = true
 
-              this.frontRepoService.postService( this.dialogData.IntermediateStruct, associationInstance )
+              this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
               // console.log("milestone " + milestone.Name + " is still selected")

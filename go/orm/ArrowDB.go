@@ -262,6 +262,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackR
 		if arrow.From != nil {
 			if FromId, ok := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[arrow.From]; ok {
 				arrowDB.FromID.Int64 = int64(FromId)
+				arrowDB.FromID.Valid = true
 			}
 		}
 
@@ -270,6 +271,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackR
 		if arrow.To != nil {
 			if ToId, ok := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[arrow.To]; ok {
 				arrowDB.ToID.Int64 = int64(ToId)
+				arrowDB.ToID.Valid = true
 			}
 		}
 
@@ -573,11 +575,13 @@ func (backRepoArrow *BackRepoArrowStruct) RestorePhaseTwo() {
 		// reindexing From field
 		if arrowDB.FromID.Int64 != 0 {
 			arrowDB.FromID.Int64 = int64(BackRepoBarid_atBckpTime_newID[uint(arrowDB.FromID.Int64)])
+			arrowDB.FromID.Valid = true
 		}
 
 		// reindexing To field
 		if arrowDB.ToID.Int64 != 0 {
 			arrowDB.ToID.Int64 = int64(BackRepoBarid_atBckpTime_newID[uint(arrowDB.ToID.Int64)])
+			arrowDB.ToID.Valid = true
 		}
 
 		// This reindex arrow.Arrows
