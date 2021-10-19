@@ -62,6 +62,9 @@ export class MilestonesTableComponent implements OnInit {
     // enable sorting on all fields (including pointers and reverse pointer)
     this.matTableDataSource.sortingDataAccessor = (milestoneDB: MilestoneDB, property: string) => {
       switch (property) {
+        case 'ID':
+          return milestoneDB.ID
+
         // insertion point for specific sorting accessor
         case 'Name':
           return milestoneDB.Name;

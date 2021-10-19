@@ -62,6 +62,9 @@ export class ArrowsTableComponent implements OnInit {
     // enable sorting on all fields (including pointers and reverse pointer)
     this.matTableDataSource.sortingDataAccessor = (arrowDB: ArrowDB, property: string) => {
       switch (property) {
+        case 'ID':
+          return arrowDB.ID
+
         // insertion point for specific sorting accessor
         case 'Name':
           return arrowDB.Name;
