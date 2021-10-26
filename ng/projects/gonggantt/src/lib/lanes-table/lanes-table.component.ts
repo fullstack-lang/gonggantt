@@ -62,6 +62,9 @@ export class LanesTableComponent implements OnInit {
     // enable sorting on all fields (including pointers and reverse pointer)
     this.matTableDataSource.sortingDataAccessor = (laneDB: LaneDB, property: string) => {
       switch (property) {
+        case 'ID':
+          return laneDB.ID
+
         // insertion point for specific sorting accessor
         case 'Name':
           return laneDB.Name;

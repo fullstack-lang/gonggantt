@@ -62,6 +62,9 @@ export class GroupsTableComponent implements OnInit {
     // enable sorting on all fields (including pointers and reverse pointer)
     this.matTableDataSource.sortingDataAccessor = (groupDB: GroupDB, property: string) => {
       switch (property) {
+        case 'ID':
+          return groupDB.ID
+
         // insertion point for specific sorting accessor
         case 'Name':
           return groupDB.Name;

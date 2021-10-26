@@ -62,6 +62,9 @@ export class GanttsTableComponent implements OnInit {
     // enable sorting on all fields (including pointers and reverse pointer)
     this.matTableDataSource.sortingDataAccessor = (ganttDB: GanttDB, property: string) => {
       switch (property) {
+        case 'ID':
+          return ganttDB.ID
+
         // insertion point for specific sorting accessor
         case 'Name':
           return ganttDB.Name;
