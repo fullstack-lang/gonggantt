@@ -45,6 +45,7 @@ type BarAPI struct {
 // reverse pointers of slice of poitners to Struct
 type BarPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
+
 	// Implementation of a reverse ID for field Lane{}.Bars []*Bar
 	Lane_BarsDBID sql.NullInt64
 
@@ -62,6 +63,7 @@ type BarDB struct {
 	gorm.Model
 
 	// insertion for basic fields declaration
+
 	// Declation for basic field barDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
 
@@ -76,7 +78,6 @@ type BarDB struct {
 
 	// Declation for basic field barDB.OptionnalStroke {{BasicKind}} (to be completed)
 	OptionnalStroke_Data sql.NullString
-
 	// encoding of pointers
 	BarPointersEnconding
 }
@@ -94,19 +95,19 @@ type BarDBResponse struct {
 // BarWOP is a Bar without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type BarWOP struct {
-	ID int
+	ID int `xlsx:"0"`
 
 	// insertion for WOP basic fields
 
-	Name string
+	Name string `xlsx:"1"`
 
-	Start time.Time
+	Start time.Time `xlsx:"2"`
 
-	End time.Time
+	End time.Time `xlsx:"3"`
 
-	OptionnalColor string
+	OptionnalColor string `xlsx:"4"`
 
-	OptionnalStroke string
+	OptionnalStroke string `xlsx:"5"`
 	// insertion for WOP pointer fields
 }
 
@@ -398,6 +399,7 @@ func (backRepo *BackRepoStruct) CheckoutBar(bar *models.Bar) {
 // CopyBasicFieldsFromBar
 func (barDB *BarDB) CopyBasicFieldsFromBar(bar *models.Bar) {
 	// insertion point for fields commit
+
 	barDB.Name_Data.String = bar.Name
 	barDB.Name_Data.Valid = true
 
@@ -412,12 +414,12 @@ func (barDB *BarDB) CopyBasicFieldsFromBar(bar *models.Bar) {
 
 	barDB.OptionnalStroke_Data.String = bar.OptionnalStroke
 	barDB.OptionnalStroke_Data.Valid = true
-
 }
 
 // CopyBasicFieldsFromBarWOP
 func (barDB *BarDB) CopyBasicFieldsFromBarWOP(bar *BarWOP) {
 	// insertion point for fields commit
+
 	barDB.Name_Data.String = bar.Name
 	barDB.Name_Data.Valid = true
 
@@ -432,7 +434,6 @@ func (barDB *BarDB) CopyBasicFieldsFromBarWOP(bar *BarWOP) {
 
 	barDB.OptionnalStroke_Data.String = bar.OptionnalStroke
 	barDB.OptionnalStroke_Data.Valid = true
-
 }
 
 // CopyBasicFieldsToBar
@@ -514,6 +515,51 @@ func (backRepoBar *BackRepoBarStruct) BackupXL(file *xlsx.File) {
 		row := sh.AddRow()
 		row.WriteStruct(&barWOP, -1)
 	}
+}
+
+// RestoreXL from the "Bar" sheet all BarDB instances
+func (backRepoBar *BackRepoBarStruct) RestoreXLPhaseOne(file *xlsx.File) {
+
+	// resets the map
+	BackRepoBarid_atBckpTime_newID = make(map[uint]uint)
+
+	sh, ok := file.Sheet["Bar"]
+	_ = sh
+	if !ok {
+		log.Panic(errors.New("sheet not found"))
+	}
+
+	// log.Println("Max row is", sh.MaxRow)
+	err := sh.ForEachRow(backRepoBar.rowVisitorBar)
+	if err != nil {
+		log.Panic("Err=", err)
+	}
+}
+
+func (backRepoBar *BackRepoBarStruct) rowVisitorBar(row *xlsx.Row) error {
+
+	log.Printf("row line %d\n", row.GetCoordinate())
+	log.Println(row)
+
+	// skip first line
+	if row.GetCoordinate() > 0 {
+		var barWOP BarWOP
+		row.ReadStruct(&barWOP)
+
+		// add the unmarshalled struct to the stage
+		barDB := new(BarDB)
+		barDB.CopyBasicFieldsFromBarWOP(&barWOP)
+
+		barDB_ID_atBackupTime := barDB.ID
+		barDB.ID = 0
+		query := backRepoBar.db.Create(barDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		(*backRepoBar.Map_BarDBID_BarDB)[barDB.ID] = barDB
+		BackRepoBarid_atBckpTime_newID[barDB_ID_atBackupTime] = barDB.ID
+	}
+	return nil
 }
 
 // RestorePhaseOne read the file "BarDB.json" in dirPath that stores an array

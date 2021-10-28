@@ -45,6 +45,7 @@ type GroupAPI struct {
 // reverse pointers of slice of poitners to Struct
 type GroupPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
+
 	// Implementation of a reverse ID for field Gantt{}.Groups []*Group
 	Gantt_GroupsDBID sql.NullInt64
 
@@ -62,9 +63,9 @@ type GroupDB struct {
 	gorm.Model
 
 	// insertion for basic fields declaration
+
 	// Declation for basic field groupDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
-
 	// encoding of pointers
 	GroupPointersEnconding
 }
@@ -82,11 +83,11 @@ type GroupDBResponse struct {
 // GroupWOP is a Group without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type GroupWOP struct {
-	ID int
+	ID int `xlsx:"0"`
 
 	// insertion for WOP basic fields
 
-	Name string
+	Name string `xlsx:"1"`
 	// insertion for WOP pointer fields
 }
 
@@ -420,17 +421,17 @@ func (backRepo *BackRepoStruct) CheckoutGroup(group *models.Group) {
 // CopyBasicFieldsFromGroup
 func (groupDB *GroupDB) CopyBasicFieldsFromGroup(group *models.Group) {
 	// insertion point for fields commit
+
 	groupDB.Name_Data.String = group.Name
 	groupDB.Name_Data.Valid = true
-
 }
 
 // CopyBasicFieldsFromGroupWOP
 func (groupDB *GroupDB) CopyBasicFieldsFromGroupWOP(group *GroupWOP) {
 	// insertion point for fields commit
+
 	groupDB.Name_Data.String = group.Name
 	groupDB.Name_Data.Valid = true
-
 }
 
 // CopyBasicFieldsToGroup
@@ -504,6 +505,51 @@ func (backRepoGroup *BackRepoGroupStruct) BackupXL(file *xlsx.File) {
 		row := sh.AddRow()
 		row.WriteStruct(&groupWOP, -1)
 	}
+}
+
+// RestoreXL from the "Group" sheet all GroupDB instances
+func (backRepoGroup *BackRepoGroupStruct) RestoreXLPhaseOne(file *xlsx.File) {
+
+	// resets the map
+	BackRepoGroupid_atBckpTime_newID = make(map[uint]uint)
+
+	sh, ok := file.Sheet["Group"]
+	_ = sh
+	if !ok {
+		log.Panic(errors.New("sheet not found"))
+	}
+
+	// log.Println("Max row is", sh.MaxRow)
+	err := sh.ForEachRow(backRepoGroup.rowVisitorGroup)
+	if err != nil {
+		log.Panic("Err=", err)
+	}
+}
+
+func (backRepoGroup *BackRepoGroupStruct) rowVisitorGroup(row *xlsx.Row) error {
+
+	log.Printf("row line %d\n", row.GetCoordinate())
+	log.Println(row)
+
+	// skip first line
+	if row.GetCoordinate() > 0 {
+		var groupWOP GroupWOP
+		row.ReadStruct(&groupWOP)
+
+		// add the unmarshalled struct to the stage
+		groupDB := new(GroupDB)
+		groupDB.CopyBasicFieldsFromGroupWOP(&groupWOP)
+
+		groupDB_ID_atBackupTime := groupDB.ID
+		groupDB.ID = 0
+		query := backRepoGroup.db.Create(groupDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		(*backRepoGroup.Map_GroupDBID_GroupDB)[groupDB.ID] = groupDB
+		BackRepoGroupid_atBckpTime_newID[groupDB_ID_atBackupTime] = groupDB.ID
+	}
+	return nil
 }
 
 // RestorePhaseOne read the file "GroupDB.json" in dirPath that stores an array

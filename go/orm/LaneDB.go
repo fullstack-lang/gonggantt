@@ -45,16 +45,19 @@ type LaneAPI struct {
 // reverse pointers of slice of poitners to Struct
 type LanePointersEnconding struct {
 	// insertion for pointer fields encoding declaration
+
 	// Implementation of a reverse ID for field Gantt{}.Lanes []*Lane
 	Gantt_LanesDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
 	Gantt_LanesDBID_Index sql.NullInt64
+
 	// Implementation of a reverse ID for field Group{}.GroupLanes []*Lane
 	Group_GroupLanesDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
 	Group_GroupLanesDBID_Index sql.NullInt64
+
 	// Implementation of a reverse ID for field Milestone{}.DiamonfAndTextAnchors []*Lane
 	Milestone_DiamonfAndTextAnchorsDBID sql.NullInt64
 
@@ -72,12 +75,12 @@ type LaneDB struct {
 	gorm.Model
 
 	// insertion for basic fields declaration
+
 	// Declation for basic field laneDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
 
 	// Declation for basic field laneDB.Order {{BasicKind}} (to be completed)
 	Order_Data sql.NullInt64
-
 	// encoding of pointers
 	LanePointersEnconding
 }
@@ -95,13 +98,13 @@ type LaneDBResponse struct {
 // LaneWOP is a Lane without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type LaneWOP struct {
-	ID int
+	ID int `xlsx:"0"`
 
 	// insertion for WOP basic fields
 
-	Name string
+	Name string `xlsx:"1"`
 
-	Order int
+	Order int `xlsx:"2"`
 	// insertion for WOP pointer fields
 }
 
@@ -436,23 +439,23 @@ func (backRepo *BackRepoStruct) CheckoutLane(lane *models.Lane) {
 // CopyBasicFieldsFromLane
 func (laneDB *LaneDB) CopyBasicFieldsFromLane(lane *models.Lane) {
 	// insertion point for fields commit
+
 	laneDB.Name_Data.String = lane.Name
 	laneDB.Name_Data.Valid = true
 
 	laneDB.Order_Data.Int64 = int64(lane.Order)
 	laneDB.Order_Data.Valid = true
-
 }
 
 // CopyBasicFieldsFromLaneWOP
 func (laneDB *LaneDB) CopyBasicFieldsFromLaneWOP(lane *LaneWOP) {
 	// insertion point for fields commit
+
 	laneDB.Name_Data.String = lane.Name
 	laneDB.Name_Data.Valid = true
 
 	laneDB.Order_Data.Int64 = int64(lane.Order)
 	laneDB.Order_Data.Valid = true
-
 }
 
 // CopyBasicFieldsToLane
@@ -528,6 +531,51 @@ func (backRepoLane *BackRepoLaneStruct) BackupXL(file *xlsx.File) {
 		row := sh.AddRow()
 		row.WriteStruct(&laneWOP, -1)
 	}
+}
+
+// RestoreXL from the "Lane" sheet all LaneDB instances
+func (backRepoLane *BackRepoLaneStruct) RestoreXLPhaseOne(file *xlsx.File) {
+
+	// resets the map
+	BackRepoLaneid_atBckpTime_newID = make(map[uint]uint)
+
+	sh, ok := file.Sheet["Lane"]
+	_ = sh
+	if !ok {
+		log.Panic(errors.New("sheet not found"))
+	}
+
+	// log.Println("Max row is", sh.MaxRow)
+	err := sh.ForEachRow(backRepoLane.rowVisitorLane)
+	if err != nil {
+		log.Panic("Err=", err)
+	}
+}
+
+func (backRepoLane *BackRepoLaneStruct) rowVisitorLane(row *xlsx.Row) error {
+
+	log.Printf("row line %d\n", row.GetCoordinate())
+	log.Println(row)
+
+	// skip first line
+	if row.GetCoordinate() > 0 {
+		var laneWOP LaneWOP
+		row.ReadStruct(&laneWOP)
+
+		// add the unmarshalled struct to the stage
+		laneDB := new(LaneDB)
+		laneDB.CopyBasicFieldsFromLaneWOP(&laneWOP)
+
+		laneDB_ID_atBackupTime := laneDB.ID
+		laneDB.ID = 0
+		query := backRepoLane.db.Create(laneDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		(*backRepoLane.Map_LaneDBID_LaneDB)[laneDB.ID] = laneDB
+		BackRepoLaneid_atBckpTime_newID[laneDB_ID_atBackupTime] = laneDB.ID
+	}
+	return nil
 }
 
 // RestorePhaseOne read the file "LaneDB.json" in dirPath that stores an array

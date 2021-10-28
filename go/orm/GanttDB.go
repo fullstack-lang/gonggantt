@@ -57,6 +57,7 @@ type GanttDB struct {
 	gorm.Model
 
 	// insertion for basic fields declaration
+
 	// Declation for basic field ganttDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
 
@@ -120,7 +121,6 @@ type GanttDB struct {
 	// Declation for basic field ganttDB.AlignOnStartEndOnYearStart bool (to be completed)
 	// provide the sql storage for the boolan
 	AlignOnStartEndOnYearStart_Data sql.NullBool
-
 	// encoding of pointers
 	GanttPointersEnconding
 }
@@ -138,51 +138,51 @@ type GanttDBResponse struct {
 // GanttWOP is a Gantt without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type GanttWOP struct {
-	ID int
+	ID int `xlsx:"0"`
 
 	// insertion for WOP basic fields
 
-	Name string
+	Name string `xlsx:"1"`
 
-	Start time.Time
+	Start time.Time `xlsx:"2"`
 
-	End time.Time
+	End time.Time `xlsx:"3"`
 
-	LaneHeight float64
+	LaneHeight float64 `xlsx:"4"`
 
-	RatioBarToLaneHeight float64
+	RatioBarToLaneHeight float64 `xlsx:"5"`
 
-	YTopMargin float64
+	YTopMargin float64 `xlsx:"6"`
 
-	XLeftText float64
+	XLeftText float64 `xlsx:"7"`
 
-	TextHeight float64
+	TextHeight float64 `xlsx:"8"`
 
-	XLeftLanes float64
+	XLeftLanes float64 `xlsx:"9"`
 
-	XRightMargin float64
+	XRightMargin float64 `xlsx:"10"`
 
-	ArrowLengthToTheRightOfStartBar float64
+	ArrowLengthToTheRightOfStartBar float64 `xlsx:"11"`
 
-	ArrowTipLenght float64
+	ArrowTipLenght float64 `xlsx:"12"`
 
-	TimeLine_Color string
+	TimeLine_Color string `xlsx:"13"`
 
-	TimeLine_FillOpacity float64
+	TimeLine_FillOpacity float64 `xlsx:"14"`
 
-	TimeLine_Stroke string
+	TimeLine_Stroke string `xlsx:"15"`
 
-	TimeLine_StrokeWidth float64
+	TimeLine_StrokeWidth float64 `xlsx:"16"`
 
-	Group_Stroke string
+	Group_Stroke string `xlsx:"17"`
 
-	Group_StrokeWidth float64
+	Group_StrokeWidth float64 `xlsx:"18"`
 
-	Group_StrokeDashArray string
+	Group_StrokeDashArray string `xlsx:"19"`
 
-	DateYOffset float64
+	DateYOffset float64 `xlsx:"20"`
 
-	AlignOnStartEndOnYearStart bool
+	AlignOnStartEndOnYearStart bool `xlsx:"21"`
 	// insertion for WOP pointer fields
 }
 
@@ -674,6 +674,7 @@ func (backRepo *BackRepoStruct) CheckoutGantt(gantt *models.Gantt) {
 // CopyBasicFieldsFromGantt
 func (ganttDB *GanttDB) CopyBasicFieldsFromGantt(gantt *models.Gantt) {
 	// insertion point for fields commit
+
 	ganttDB.Name_Data.String = gantt.Name
 	ganttDB.Name_Data.Valid = true
 
@@ -736,12 +737,12 @@ func (ganttDB *GanttDB) CopyBasicFieldsFromGantt(gantt *models.Gantt) {
 
 	ganttDB.AlignOnStartEndOnYearStart_Data.Bool = gantt.AlignOnStartEndOnYearStart
 	ganttDB.AlignOnStartEndOnYearStart_Data.Valid = true
-
 }
 
 // CopyBasicFieldsFromGanttWOP
 func (ganttDB *GanttDB) CopyBasicFieldsFromGanttWOP(gantt *GanttWOP) {
 	// insertion point for fields commit
+
 	ganttDB.Name_Data.String = gantt.Name
 	ganttDB.Name_Data.Valid = true
 
@@ -804,7 +805,6 @@ func (ganttDB *GanttDB) CopyBasicFieldsFromGanttWOP(gantt *GanttWOP) {
 
 	ganttDB.AlignOnStartEndOnYearStart_Data.Bool = gantt.AlignOnStartEndOnYearStart
 	ganttDB.AlignOnStartEndOnYearStart_Data.Valid = true
-
 }
 
 // CopyBasicFieldsToGantt
@@ -918,6 +918,51 @@ func (backRepoGantt *BackRepoGanttStruct) BackupXL(file *xlsx.File) {
 		row := sh.AddRow()
 		row.WriteStruct(&ganttWOP, -1)
 	}
+}
+
+// RestoreXL from the "Gantt" sheet all GanttDB instances
+func (backRepoGantt *BackRepoGanttStruct) RestoreXLPhaseOne(file *xlsx.File) {
+
+	// resets the map
+	BackRepoGanttid_atBckpTime_newID = make(map[uint]uint)
+
+	sh, ok := file.Sheet["Gantt"]
+	_ = sh
+	if !ok {
+		log.Panic(errors.New("sheet not found"))
+	}
+
+	// log.Println("Max row is", sh.MaxRow)
+	err := sh.ForEachRow(backRepoGantt.rowVisitorGantt)
+	if err != nil {
+		log.Panic("Err=", err)
+	}
+}
+
+func (backRepoGantt *BackRepoGanttStruct) rowVisitorGantt(row *xlsx.Row) error {
+
+	log.Printf("row line %d\n", row.GetCoordinate())
+	log.Println(row)
+
+	// skip first line
+	if row.GetCoordinate() > 0 {
+		var ganttWOP GanttWOP
+		row.ReadStruct(&ganttWOP)
+
+		// add the unmarshalled struct to the stage
+		ganttDB := new(GanttDB)
+		ganttDB.CopyBasicFieldsFromGanttWOP(&ganttWOP)
+
+		ganttDB_ID_atBackupTime := ganttDB.ID
+		ganttDB.ID = 0
+		query := backRepoGantt.db.Create(ganttDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		(*backRepoGantt.Map_GanttDBID_GanttDB)[ganttDB.ID] = ganttDB
+		BackRepoGanttid_atBckpTime_newID[ganttDB_ID_atBackupTime] = ganttDB.ID
+	}
+	return nil
 }
 
 // RestorePhaseOne read the file "GanttDB.json" in dirPath that stores an array

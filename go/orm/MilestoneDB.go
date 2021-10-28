@@ -45,6 +45,7 @@ type MilestoneAPI struct {
 // reverse pointers of slice of poitners to Struct
 type MilestonePointersEnconding struct {
 	// insertion for pointer fields encoding declaration
+
 	// Implementation of a reverse ID for field Gantt{}.Milestones []*Milestone
 	Gantt_MilestonesDBID sql.NullInt64
 
@@ -62,12 +63,12 @@ type MilestoneDB struct {
 	gorm.Model
 
 	// insertion for basic fields declaration
+
 	// Declation for basic field milestoneDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
 
 	// Declation for basic field milestoneDB.Date
 	Date_Data sql.NullTime
-
 	// encoding of pointers
 	MilestonePointersEnconding
 }
@@ -85,13 +86,13 @@ type MilestoneDBResponse struct {
 // MilestoneWOP is a Milestone without pointers (WOP is an acronym for "Without Pointers")
 // it holds the same basic fields but pointers are encoded into uint
 type MilestoneWOP struct {
-	ID int
+	ID int `xlsx:"0"`
 
 	// insertion for WOP basic fields
 
-	Name string
+	Name string `xlsx:"1"`
 
-	Date time.Time
+	Date time.Time `xlsx:"2"`
 	// insertion for WOP pointer fields
 }
 
@@ -426,23 +427,23 @@ func (backRepo *BackRepoStruct) CheckoutMilestone(milestone *models.Milestone) {
 // CopyBasicFieldsFromMilestone
 func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestone(milestone *models.Milestone) {
 	// insertion point for fields commit
+
 	milestoneDB.Name_Data.String = milestone.Name
 	milestoneDB.Name_Data.Valid = true
 
 	milestoneDB.Date_Data.Time = milestone.Date
 	milestoneDB.Date_Data.Valid = true
-
 }
 
 // CopyBasicFieldsFromMilestoneWOP
 func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestoneWOP(milestone *MilestoneWOP) {
 	// insertion point for fields commit
+
 	milestoneDB.Name_Data.String = milestone.Name
 	milestoneDB.Name_Data.Valid = true
 
 	milestoneDB.Date_Data.Time = milestone.Date
 	milestoneDB.Date_Data.Valid = true
-
 }
 
 // CopyBasicFieldsToMilestone
@@ -518,6 +519,51 @@ func (backRepoMilestone *BackRepoMilestoneStruct) BackupXL(file *xlsx.File) {
 		row := sh.AddRow()
 		row.WriteStruct(&milestoneWOP, -1)
 	}
+}
+
+// RestoreXL from the "Milestone" sheet all MilestoneDB instances
+func (backRepoMilestone *BackRepoMilestoneStruct) RestoreXLPhaseOne(file *xlsx.File) {
+
+	// resets the map
+	BackRepoMilestoneid_atBckpTime_newID = make(map[uint]uint)
+
+	sh, ok := file.Sheet["Milestone"]
+	_ = sh
+	if !ok {
+		log.Panic(errors.New("sheet not found"))
+	}
+
+	// log.Println("Max row is", sh.MaxRow)
+	err := sh.ForEachRow(backRepoMilestone.rowVisitorMilestone)
+	if err != nil {
+		log.Panic("Err=", err)
+	}
+}
+
+func (backRepoMilestone *BackRepoMilestoneStruct) rowVisitorMilestone(row *xlsx.Row) error {
+
+	log.Printf("row line %d\n", row.GetCoordinate())
+	log.Println(row)
+
+	// skip first line
+	if row.GetCoordinate() > 0 {
+		var milestoneWOP MilestoneWOP
+		row.ReadStruct(&milestoneWOP)
+
+		// add the unmarshalled struct to the stage
+		milestoneDB := new(MilestoneDB)
+		milestoneDB.CopyBasicFieldsFromMilestoneWOP(&milestoneWOP)
+
+		milestoneDB_ID_atBackupTime := milestoneDB.ID
+		milestoneDB.ID = 0
+		query := backRepoMilestone.db.Create(milestoneDB)
+		if query.Error != nil {
+			log.Panic(query.Error)
+		}
+		(*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB.ID] = milestoneDB
+		BackRepoMilestoneid_atBckpTime_newID[milestoneDB_ID_atBackupTime] = milestoneDB.ID
+	}
+	return nil
 }
 
 // RestorePhaseOne read the file "MilestoneDB.json" in dirPath that stores an array
