@@ -40,6 +40,8 @@ github.com/fullstack-lang/gongsvg v0.0.0-20211017120233-e88c86eb8389 h1:hJTuNVd1
 github.com/fullstack-lang/gongsvg v0.0.0-20211017120233-e88c86eb8389/go.mod h1:T0wKQTJSxw40sH25C1ENRkmhR0tqCq4BL+V/PAUp8zU=
 github.com/fullstack-lang/gongsvg v0.0.0-20211017121441-55a2bde43e8d h1:HvPrq3Ut3djW0d8lsyfTWaKBGBiBVThsxVka4SMIT60=
 github.com/fullstack-lang/gongsvg v0.0.0-20211017121441-55a2bde43e8d/go.mod h1:06yvrJp3gQweKYSjK6rELYtLW5YtCYGSd/OfUKAR1Po=
+github.com/fullstack-lang/gongsvg v0.0.0-20211102173855-c7cd80969b11 h1:HKXsLH9D9vvsz2eC642OJ2lMVtUxR6artaxynnGs1EM=
+github.com/fullstack-lang/gongsvg v0.0.0-20211102173855-c7cd80969b11/go.mod h1:06yvrJp3gQweKYSjK6rELYtLW5YtCYGSd/OfUKAR1Po=
 github.com/gin-contrib/cors v1.3.1 h1:doAsuITavI4IOcd0Y19U4B+O0dNWihRyX//nn4sEmgA=
 github.com/gin-contrib/cors v1.3.1/go.mod h1:jjEJ4268OPZUcU7k9Pm653S7lXUGcqMADzFA61xsmDk=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
