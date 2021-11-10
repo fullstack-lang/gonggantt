@@ -4,3 +4,4 @@ go/controllers/gongganttapi.yml
 gonggantt.exe
 .DS_Store
 go/.DS_Store
+go/cmd/gonggantt/gonggantt
