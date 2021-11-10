@@ -13,17 +13,17 @@ import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 
+	"github.com/fullstack-lang/gonggantt"
 	gonggantt_controllers "github.com/fullstack-lang/gonggantt/go/controllers"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
-
-	"github.com/fullstack-lang/gonggantt"
 
 	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
 	gongsvg_controllers "github.com/fullstack-lang/gongsvg/go/controllers"
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 	gongsvg_orm "github.com/fullstack-lang/gongsvg/go/orm"
+	_ "github.com/fullstack-lang/gongsvg/ng"
 )
 
 var (
