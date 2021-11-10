@@ -17,6 +17,8 @@ import (
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
 
+	"github.com/fullstack-lang/gonggantt"
+
 	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
 	gongsvg_controllers "github.com/fullstack-lang/gongsvg/go/controllers"
@@ -98,7 +100,7 @@ func main() {
 	gongsvg_models.Stage.Commit()
 
 	// provide the static route for the angular pages
-	r.Use(static.Serve("/", EmbedFolder(ng, "ng/dist/ng")))
+	r.Use(static.Serve("/", EmbedFolder(gonggantt.NgDistNg, "ng/dist/ng")))
 	r.NoRoute(func(c *gin.Context) {
 		fmt.Println(c.Request.URL.Path, "doesn't exists, redirect on /")
 		c.Redirect(http.StatusMovedPermanently, "/")
@@ -108,9 +110,6 @@ func main() {
 	log.Printf("Server ready serve on localhost:8080")
 	r.Run()
 }
-
-//go:embed ng/dist/ng
-var ng embed.FS
 
 type embedFileSystem struct {
 	http.FileSystem
