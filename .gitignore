@@ -6,3 +6,4 @@ go/controllers/gongganttapi.yml
 go/.DS_Store
 go/cmd/gonggantt/gonggantt
 go/cmd/gonggantt/gonggantt.exe
+go/cmd/gonggantt/__debug_bin.exe

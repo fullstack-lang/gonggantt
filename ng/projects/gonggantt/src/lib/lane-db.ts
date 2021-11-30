@@ -26,8 +26,8 @@ export class LaneDB {
 	Group_GroupLanesDBID_Index: NullInt64  = new NullInt64 // store the index of the lane instance in Group.GroupLanes
 	Group_GroupLanes_reverse?: GroupDB 
 
-	Milestone_DiamonfAndTextAnchorsDBID: NullInt64 = new NullInt64
-	Milestone_DiamonfAndTextAnchorsDBID_Index: NullInt64  = new NullInt64 // store the index of the lane instance in Milestone.DiamonfAndTextAnchors
-	Milestone_DiamonfAndTextAnchors_reverse?: MilestoneDB 
+	Milestone_LanesToDisplayMilestoneDBID: NullInt64 = new NullInt64
+	Milestone_LanesToDisplayMilestoneDBID_Index: NullInt64  = new NullInt64 // store the index of the lane instance in Milestone.LanesToDisplayMilestone
+	Milestone_LanesToDisplayMilestone_reverse?: MilestoneDB 
 
 }

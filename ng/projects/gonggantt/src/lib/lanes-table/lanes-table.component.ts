@@ -78,8 +78,8 @@ export class LanesTableComponent implements OnInit {
         case 'Group_GroupLanes':
           return this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64)!.Name;
 
-        case 'Milestone_DiamonfAndTextAnchors':
-          return this.frontRepo.Milestones.get(laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64)!.Name;
+        case 'Milestone_LanesToDisplayMilestone':
+          return this.frontRepo.Milestones.get(laneDB.Milestone_LanesToDisplayMilestoneDBID.Int64)!.Name;
 
         default:
           console.assert(false, "Unknown field")
@@ -105,8 +105,8 @@ export class LanesTableComponent implements OnInit {
         mergedContent += this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64)!.Name.toLowerCase()
       }
 
-      if (laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.Milestones.get(laneDB.Milestone_DiamonfAndTextAnchorsDBID.Int64)!.Name.toLowerCase()
+      if (laneDB.Milestone_LanesToDisplayMilestoneDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Milestones.get(laneDB.Milestone_LanesToDisplayMilestoneDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -163,7 +163,7 @@ export class LanesTableComponent implements OnInit {
         "Order",
         "Gantt_Lanes",
         "Group_GroupLanes",
-        "Milestone_DiamonfAndTextAnchors",
+        "Milestone_LanesToDisplayMilestone",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -171,7 +171,7 @@ export class LanesTableComponent implements OnInit {
         "Order",
         "Gantt_Lanes",
         "Group_GroupLanes",
-        "Milestone_DiamonfAndTextAnchors",
+        "Milestone_LanesToDisplayMilestone",
       ]
       this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
     }

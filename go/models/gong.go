@@ -38,11 +38,19 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 
 	// if set will be called before each commit to the back repo
 	OnInitCommitCallback OnInitCommitInterface
+
+	// if set will be called before each commit to the back repo
+	OnInitCommitCallbackFromFront OnInitCommitInterfaceFromFront
 }
 
 type OnInitCommitInterface interface {
 	BeforeCommit(stage *StageStruct)
 }
+
+type OnInitCommitInterfaceFromFront interface {
+	BeforeCommitFromFront(stage *StageStruct)
+}
+
 
 type BackRepoInterface interface {
 	Commit(stage *StageStruct)

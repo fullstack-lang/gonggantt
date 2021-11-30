@@ -62,6 +62,10 @@ var GanttToSVGTranformerSingloton GanttToSVGTranformer
 
 // callback on the commit function
 func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_models.StageStruct) {
+	GanttToSVGTranformer.BeforeCommitFromFront(stage)
+}
+
+func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommitFromFront(stage *gonggantt_models.StageStruct) {
 
 	// remove all gongsvg stage/repo
 	gongsvg_models.Stage.Checkout()
@@ -288,13 +292,13 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		// draw diamond
 		//
 		diamondWidth := 18.0
-		for _, diamondAndTextAnchor := range milestone.DiamonfAndTextAnchors {
+		for _, lanesToDisplayMilestone := range milestone.LanesToDisplayMilestone {
 
 			diamond := new(gongsvg_models.Rect).Stage()
 			svg.Rects = append(svg.Rects, diamond)
 			diamond.Name = milestone.Name
 			diamond.X = line.X1 - diamondWidth/2.0
-			diamond.Y = mapLane_TextY[diamondAndTextAnchor] - diamondWidth + LaneHeight/2.0
+			diamond.Y = mapLane_TextY[lanesToDisplayMilestone] - diamondWidth + LaneHeight/2.0
 			diamond.Width = diamondWidth
 			diamond.Height = diamondWidth
 			diamond.Color = "red"

@@ -504,16 +504,16 @@ export class FrontRepoService {
                     }
                   }
                 }
-                // insertion point for slice of pointer field Milestone.DiamonfAndTextAnchors redeeming
+                // insertion point for slice of pointer field Milestone.LanesToDisplayMilestone redeeming
                 {
-                  let _milestone = FrontRepoSingloton.Milestones.get(lane.Milestone_DiamonfAndTextAnchorsDBID.Int64)
+                  let _milestone = FrontRepoSingloton.Milestones.get(lane.Milestone_LanesToDisplayMilestoneDBID.Int64)
                   if (_milestone) {
-                    if (_milestone.DiamonfAndTextAnchors == undefined) {
-                      _milestone.DiamonfAndTextAnchors = new Array<LaneDB>()
+                    if (_milestone.LanesToDisplayMilestone == undefined) {
+                      _milestone.LanesToDisplayMilestone = new Array<LaneDB>()
                     }
-                    _milestone.DiamonfAndTextAnchors.push(lane)
-                    if (lane.Milestone_DiamonfAndTextAnchors_reverse == undefined) {
-                      lane.Milestone_DiamonfAndTextAnchors_reverse = _milestone
+                    _milestone.LanesToDisplayMilestone.push(lane)
+                    if (lane.Milestone_LanesToDisplayMilestone_reverse == undefined) {
+                      lane.Milestone_LanesToDisplayMilestone_reverse = _milestone
                     }
                   }
                 }
@@ -860,16 +860,16 @@ export class FrontRepoService {
                     }
                   }
                 }
-                // insertion point for slice of pointer field Milestone.DiamonfAndTextAnchors redeeming
+                // insertion point for slice of pointer field Milestone.LanesToDisplayMilestone redeeming
                 {
-                  let _milestone = FrontRepoSingloton.Milestones.get(lane.Milestone_DiamonfAndTextAnchorsDBID.Int64)
+                  let _milestone = FrontRepoSingloton.Milestones.get(lane.Milestone_LanesToDisplayMilestoneDBID.Int64)
                   if (_milestone) {
-                    if (_milestone.DiamonfAndTextAnchors == undefined) {
-                      _milestone.DiamonfAndTextAnchors = new Array<LaneDB>()
+                    if (_milestone.LanesToDisplayMilestone == undefined) {
+                      _milestone.LanesToDisplayMilestone = new Array<LaneDB>()
                     }
-                    _milestone.DiamonfAndTextAnchors.push(lane)
-                    if (lane.Milestone_DiamonfAndTextAnchors_reverse == undefined) {
-                      lane.Milestone_DiamonfAndTextAnchors_reverse = _milestone
+                    _milestone.LanesToDisplayMilestone.push(lane)
+                    if (lane.Milestone_LanesToDisplayMilestone_reverse == undefined) {
+                      lane.Milestone_LanesToDisplayMilestone_reverse = _milestone
                     }
                   }
                 }
