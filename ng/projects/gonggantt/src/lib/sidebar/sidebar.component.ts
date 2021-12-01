@@ -763,22 +763,22 @@ export class SidebarComponent implements OnInit {
 
           // insertion point for per field code
           /**
-          * let append a node for the slide of pointer DiamonfAndTextAnchors
+          * let append a node for the slide of pointer LanesToDisplayMilestone
           */
-          let DiamonfAndTextAnchorsGongNodeAssociation: GongNode = {
-            name: "(Lane) DiamonfAndTextAnchors",
+          let LanesToDisplayMilestoneGongNodeAssociation: GongNode = {
+            name: "(Lane) LanesToDisplayMilestone",
             type: GongNodeType.ONE__ZERO_MANY_ASSOCIATION,
             id: milestoneDB.ID,
             uniqueIdPerStack: 19 * nonInstanceNodeId,
             structName: "Milestone",
-            associationField: "DiamonfAndTextAnchors",
+            associationField: "LanesToDisplayMilestone",
             associatedStructName: "Lane",
             children: new Array<GongNode>()
           }
           nonInstanceNodeId = nonInstanceNodeId + 1
-          milestoneGongNodeInstance.children.push(DiamonfAndTextAnchorsGongNodeAssociation)
+          milestoneGongNodeInstance.children.push(LanesToDisplayMilestoneGongNodeAssociation)
 
-          milestoneDB.DiamonfAndTextAnchors?.forEach(laneDB => {
+          milestoneDB.LanesToDisplayMilestone?.forEach(laneDB => {
             let laneNode: GongNode = {
               name: laneDB.Name,
               type: GongNodeType.INSTANCE,
@@ -791,7 +791,7 @@ export class SidebarComponent implements OnInit {
               associatedStructName: "",
               children: new Array<GongNode>()
             }
-            DiamonfAndTextAnchorsGongNodeAssociation.children.push(laneNode)
+            LanesToDisplayMilestoneGongNodeAssociation.children.push(laneNode)
           })
 
         }

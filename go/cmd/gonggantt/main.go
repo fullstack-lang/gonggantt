@@ -94,6 +94,7 @@ func main() {
 
 	// plug the svg generator on the OnInitCommit callback
 	gonggantt_models.Stage.OnInitCommitCallback = &gantt2svg.GanttToSVGTranformerSingloton
+	gonggantt_models.Stage.OnInitCommitCallbackFromFront = &gantt2svg.GanttToSVGTranformerSingloton
 
 	// put all to database
 	gonggantt_models.Stage.Commit()
