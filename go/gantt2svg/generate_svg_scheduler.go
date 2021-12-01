@@ -15,7 +15,7 @@ var GenerateSvgSchedulerSingloton GenerateSvgScheduler
 
 // start the scheduler
 func init() {
-	// GenerateSvgSchedulerSingloton.checkoutScheduler()
+	go GenerateSvgSchedulerSingloton.checkoutScheduler()
 }
 
 func (generateSvgScheduler *GenerateSvgScheduler) checkoutScheduler() {
@@ -33,9 +33,11 @@ func (generateSvgScheduler *GenerateSvgScheduler) checkoutScheduler() {
 			_ = t
 
 			if gonggantt_models.Stage.BackRepo != nil {
-				if lastPushFromFront < gonggantt_models.Stage.BackRepo.GetLastPushFromFrontNb() {
+				newPushFromFront := gonggantt_models.Stage.BackRepo.GetLastPushFromFrontNb()
+				if lastPushFromFront < newPushFromFront {
 
-					lastPushFromFront = gonggantt_models.Stage.BackRepo.GetLastPushFromFrontNb()
+					GanttToSVGTranformerSingloton.GenerateSvg(&gonggantt_models.Stage)
+					lastPushFromFront = newPushFromFront
 				}
 			}
 		}

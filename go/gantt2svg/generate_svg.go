@@ -66,6 +66,10 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 }
 
 func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommitFromFront(stage *gonggantt_models.StageStruct) {
+	GanttToSVGTranformer.GenerateSvg(stage)
+}
+
+func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_models.StageStruct) {
 
 	// remove all gongsvg stage/repo
 	gongsvg_models.Stage.Checkout()
