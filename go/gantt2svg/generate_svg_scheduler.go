@@ -11,11 +11,11 @@ import (
 type GenerateSvgScheduler struct {
 }
 
-var GenerateSvgSchedulerSingloton GenerateSvgScheduler
+var generateSvgSchedulerSingloton GenerateSvgScheduler
 
 // start the scheduler
 func init() {
-	go GenerateSvgSchedulerSingloton.checkoutScheduler()
+	go generateSvgSchedulerSingloton.checkoutScheduler()
 }
 
 func (generateSvgScheduler *GenerateSvgScheduler) checkoutScheduler() {
@@ -26,6 +26,7 @@ func (generateSvgScheduler *GenerateSvgScheduler) checkoutScheduler() {
 	var CheckoutSchedulerPeriod = time.NewTicker(100 * time.Millisecond)
 
 	lastPushFromFront := uint(0)
+	lastPushFromBack := uint(0)
 	for {
 		select {
 		case t := <-CheckoutSchedulerPeriod.C:
@@ -36,8 +37,16 @@ func (generateSvgScheduler *GenerateSvgScheduler) checkoutScheduler() {
 				newPushFromFront := gonggantt_models.Stage.BackRepo.GetLastPushFromFrontNb()
 				if lastPushFromFront < newPushFromFront {
 
-					GanttToSVGTranformerSingloton.GenerateSvg(&gonggantt_models.Stage)
+					ganttToSVGTranformerSingloton.GenerateSvg(&gonggantt_models.Stage)
 					lastPushFromFront = newPushFromFront
+				}
+			}
+			if gonggantt_models.Stage.BackRepo != nil {
+				newPushFromBack := gonggantt_models.Stage.BackRepo.GetLastCommitNb()
+				if lastPushFromBack < newPushFromBack {
+
+					ganttToSVGTranformerSingloton.GenerateSvg(&gonggantt_models.Stage)
+					lastPushFromBack = newPushFromBack
 				}
 			}
 		}

@@ -18,7 +18,9 @@ import (
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
 
-	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
+	// import this package in order to have the scheduler start a thread that will
+	// generate a new svg diagram each time the repo has been modified
+	_ "github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
 	gongsvg_controllers "github.com/fullstack-lang/gongsvg/go/controllers"
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
@@ -91,10 +93,6 @@ func main() {
 
 	gonggantt_controllers.RegisterControllers(r)
 	gongsvg_controllers.RegisterControllers(r)
-
-	// plug the svg generator on the OnInitCommit callback
-	gonggantt_models.Stage.OnInitCommitCallback = &gantt2svg.GanttToSVGTranformerSingloton
-	gonggantt_models.Stage.OnInitCommitCallbackFromFront = &gantt2svg.GanttToSVGTranformerSingloton
 
 	// put all to database
 	gonggantt_models.Stage.Commit()
