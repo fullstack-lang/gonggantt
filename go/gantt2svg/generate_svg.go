@@ -17,51 +17,9 @@ import (
 type GanttToSVGTranformer struct {
 }
 
-var GanttToSVGTranformerSingloton GanttToSVGTranformer
+var ganttToSVGTranformerSingloton GanttToSVGTranformer
 
-// backgroundColor.fill 	string 	'white' 	The chart fill color, as an HTML color string.
-// gantt.arrow 	object 	null 	For Gantt Charts, gantt.arrow controls the various properties of the arrows connecting tasks.
-// gantt.arrow.angle 	number 	45 	The angle of the head of the arrow.
-// gantt.arrow.color 	string 	'#000' 	The color of the arrows.
-// gantt.arrow.length 	number 	8 	The length of the head of the arrow.
-// gantt.arrow.radius 	number 	15 	The radius for defining the curve of the arrow between two tasks.
-// gantt.arrow.spaceAfter 	number 	4 	The amount of whitespace between the head of an arrow and the task to which it points.
-// gantt.arrow.width 	number 	1.4 	The width of the arrows.
-// gantt.barCornerRadius 	number 	2 	The radius for defining the curve of a bar's corners.
-// gantt.barHeight 	number 	null 	The height of the bars for tasks.
-// gantt.criticalPathEnabled 	boolean 	true 	If true any arrows on the critical path will be styled differently.
-// gantt.criticalPathStyle 	object 	null 	An object containing the style for any critical path arrows.
-// gantt.criticalPathStyle.stroke 	string 	null 	The color of any critical path arrows.
-// gantt.criticalPathStyle.strokeWidth 	number 	1.4 	The thickness of any critical path arrows.
-// gantt.defaultStartDate 	date/number 	null 	If the start date cannot be computed from the values in the DataTable, the start date will be set to this. Accepts a date value (new Date(YYYY, M, D)) or a number, which is the number of milliseconds to use.
-// gantt.innerGridHorizLine 	object 	null 	Defines the style of the inner horizontal grid lines.
-// gantt.innerGridHorizLine.stroke 	string 	null 	The color of the inner horizontal grid lines.
-// gantt.innerGridHorizLine.strokeWidth 	number 	1 	The width of the inner horizontal grid lines.
-// gantt.innerGridTrack.fill 	string 	null 	The fill color of the inner grid track. If no innerGridDarkTrack.fill is specified, this will be applied to every grid track.
-// gantt.innerGridDarkTrack.fill 	string 	null 	The fill color of the alternate, dark inner grid track.
-// gantt.labelMaxWidth 	number 	300 	The maximum amount of space allowed for each task label.
-// gantt.labelStyle 	object 	null
-
-// An object containing the styles for task labels.
-
-// labelStyle: {
-//   fontName: Roboto2,
-//   fontSize: 14,
-//   color: '#757575'
-// },
-
-// gantt.percentEnabled 	boolean 	true 	Fills the task bar based on the percentage completed for the task.
-// gantt.percentStyle.fill 	string 	null 	The color of the percentage completed portion of a task bar.
-// gantt.shadowEnabled 	boolean 	true 	If set to true, draws a shadow under each task bar which has dependencies.
-// gantt.shadowColor 	string 	'#000' 	Defines the color of the shadows under any task bar which has dependencies.
-// gantt.shadowOffset 	number 	1 	Defines the offset, in pixels, of the shadows under any task bar which has dependencies.
-// gantt.sortTasks 	boolean 	true 	Specifies that the tasks should sorted topologically, if true; otherwise use the same order as the corresponding rows of the DataTable.
-// gantt.trackHeight 	number 	null 	The height of the tracks.
-// width 	number 	width of the containing element 	Width of the chart, in pixels.
-// height 	number 	height of the containing element 	height of the chart, in pixels.
-
-// callback on the commit function
-func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_models.StageStruct) {
+func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_models.StageStruct) {
 
 	// remove all gongsvg stage/repo
 	gongsvg_models.Stage.Checkout()
@@ -288,13 +246,13 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) BeforeCommit(stage *gonggantt_
 		// draw diamond
 		//
 		diamondWidth := 18.0
-		for _, diamondAndTextAnchor := range milestone.DiamonfAndTextAnchors {
+		for _, lanesToDisplayMilestone := range milestone.LanesToDisplayMilestone {
 
 			diamond := new(gongsvg_models.Rect).Stage()
 			svg.Rects = append(svg.Rects, diamond)
 			diamond.Name = milestone.Name
 			diamond.X = line.X1 - diamondWidth/2.0
-			diamond.Y = mapLane_TextY[diamondAndTextAnchor] - diamondWidth + LaneHeight/2.0
+			diamond.Y = mapLane_TextY[lanesToDisplayMilestone] - diamondWidth + LaneHeight/2.0
 			diamond.Width = diamondWidth
 			diamond.Height = diamondWidth
 			diamond.Color = "red"
