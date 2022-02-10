@@ -44,19 +44,11 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 
 	// if set will be called before each commit to the back repo
 	OnInitCommitCallback OnInitCommitInterface
-
-	// if set will be called before each commit to the back repo
-	OnInitCommitCallbackFromFront OnInitCommitInterfaceFromFront
 }
 
 type OnInitCommitInterface interface {
 	BeforeCommit(stage *StageStruct)
 }
-
-type OnInitCommitInterfaceFromFront interface {
-	BeforeCommitFromFront(stage *StageStruct)
-}
-
 
 type BackRepoInterface interface {
 	Commit(stage *StageStruct)
@@ -1369,10 +1361,10 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		map_Milestone_Identifiers[milestone] = id
 
 		// Initialisation of values
-		for _, _lane := range milestone.DiamonfAndTextAnchors {
+		for _, _lane := range milestone.LanesToDisplayMilestone {
 			setPointerField = SliceOfPointersFieldInitStatement
 			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "DiamonfAndTextAnchors")
+			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "LanesToDisplayMilestone")
 			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_Lane_Identifiers[_lane])
 			pointersInitializesStatements += setPointerField
 		}

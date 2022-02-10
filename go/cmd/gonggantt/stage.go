@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/fullstack-lang/gong/test/go/models"
+	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
 var __Dummy_time_variable time.Time
