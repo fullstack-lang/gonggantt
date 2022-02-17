@@ -124,8 +124,8 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 	//
 	currentY := YTopMargin
 
-	mapLane_TextY := make(map[*gonggantt_models.Lane]float64, 0)
-	mapLane_TopY := make(map[*gonggantt_models.Lane]float64, 0)
+	mapLane_TextY := make(map[*gonggantt_models.Lane]float64)
+	mapLane_TopY := make(map[*gonggantt_models.Lane]float64)
 
 	//
 	// Sort Lanes according to the Order

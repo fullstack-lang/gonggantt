@@ -42,7 +42,7 @@ func (generateSvgScheduler *GenerateSvgScheduler) checkoutScheduler() {
 				}
 			}
 			if gonggantt_models.Stage.BackRepo != nil {
-				newPushFromBack := gonggantt_models.Stage.BackRepo.GetLastCommitNb()
+				newPushFromBack := gonggantt_models.Stage.BackRepo.GetLastCommitFromBackNb()
 				if lastPushFromBack < newPushFromBack {
 
 					ganttToSVGTranformerSingloton.GenerateSvg(&gonggantt_models.Stage)

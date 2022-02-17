@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"sort"
 	"strings"
 )
@@ -44,6 +45,8 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 
 	// if set will be called before each commit to the back repo
 	OnInitCommitCallback OnInitCommitInterface
+	OnInitCommitFromFrontCallback OnInitCommitInterface
+	OnInitCommitFromBackCallback  OnInitCommitInterface
 }
 
 type OnInitCommitInterface interface {
@@ -70,7 +73,7 @@ type BackRepoInterface interface {
 	CheckoutLane(lane *Lane)
 	CommitMilestone(milestone *Milestone)
 	CheckoutMilestone(milestone *Milestone)
-	GetLastCommitNb() uint
+	GetLastCommitFromBackNb() uint
 	GetLastPushFromFrontNb() uint
 }
 
@@ -819,21 +822,26 @@ import (
 	"{{ModelsPackageName}}"
 )
 
-var __Dummy_time_variable time.Time
+func init() {
+	var __Dummy_time_variable time.Time
+	_ = __Dummy_time_variable
+	InjectionGateway["{{databaseName}}"] = {{databaseName}}Injection
+}
 
-func Unmarshall(stage *models.StageStruct) {
+// {{databaseName}}Injection will stage objects of database "{{databaseName}}"
+func {{databaseName}}Injection() {
 
-	// map of identifiers{{Identifiers}}
+	// Declaration of instances to stage{{Identifiers}}
 
-	// initializers of values{{ValueInitializers}}
+	// Setup of values{{ValueInitializers}}
 
-	// initializers of pointers{{PointersInitializers}}
+	// Setup of pointers{{PointersInitializers}}
 }
 
 `
 
 const IdentifiersDecls = `
-	{{Identifier}} := (&models.{{GeneratedStructName}}{ Name : "{{GeneratedFieldNameValue}}"}).Stage()`
+	{{Identifier}} := (&models.{{GeneratedStructName}}{Name: "{{GeneratedFieldNameValue}}"}).Stage()`
 
 const StringInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = "{{GeneratedFieldNameValue}}"`
@@ -855,9 +863,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	name := file.Name()
 
+	if !strings.HasSuffix(name, ".go") {
+		log.Fatalln(name + " is not a go filename")
+	}
+
 	log.Println("filename of marshall output  is " + name)
 
 	res := marshallRes
+	res = strings.ReplaceAll(res, "{{databaseName}}", strings.ReplaceAll(path.Base(name), ".go", ""))
 	res = strings.ReplaceAll(res, "{{PackageName}}", packageName)
 	res = strings.ReplaceAll(res, "{{ModelsPackageName}}", modelsPackageName)
 
@@ -894,7 +907,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", arrow.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Arrow values %s", arrow.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Arrow %s values setup", arrow.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -938,7 +951,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", bar.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Bar values %s", bar.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Bar %s values setup", bar.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -996,7 +1009,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", gantt.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Gantt values %s", gantt.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Gantt %s values setup", gantt.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1150,7 +1163,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", group.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Group values %s", group.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Group %s values setup", group.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1182,7 +1195,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", lane.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Lane values %s", lane.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Lane %s values setup", lane.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1220,7 +1233,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", milestone.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Milestone values %s", milestone.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Milestone %s values setup", milestone.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1382,10 +1395,26 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 // unique identifier per struct
 func generatesIdentifier(gongStructName string, idx int, instanceName string) (identifier string) {
 
-	identifier = fmt.Sprintf("__%s__%06d_%s",
-		gongStructName,
-		idx,
-		strings.ReplaceAll(instanceName, " ", "_"))
+	identifier = instanceName
+	identifier = strings.ReplaceAll(identifier, " ", "_")
+	identifier = strings.ReplaceAll(identifier, "%", "_")
+	identifier = strings.ReplaceAll(identifier, ".", "_")
+	identifier = strings.ReplaceAll(identifier, "&", "_")
+	identifier = strings.ReplaceAll(identifier, "!", "_")
+	identifier = strings.ReplaceAll(identifier, "@", "_")
+	identifier = strings.ReplaceAll(identifier, "&", "_")
+	identifier = strings.ReplaceAll(identifier, "'", "_")
+	identifier = strings.ReplaceAll(identifier, "(", "_")
+	identifier = strings.ReplaceAll(identifier, ")", "_")
+	identifier = strings.ReplaceAll(identifier, "-", "_")
+	identifier = strings.ReplaceAll(identifier, "à", "_")
+	identifier = strings.ReplaceAll(identifier, "ç", "_")
+	identifier = strings.ReplaceAll(identifier, "è", "_")
+	identifier = strings.ReplaceAll(identifier, "é", "_")
+	identifier = strings.ReplaceAll(identifier, "§", "_")
+	identifier = strings.ReplaceAll(identifier, "\"", "_")
+
+	identifier = fmt.Sprintf("__%s__%06d_%s", gongStructName, idx, identifier)
 
 	return
 }
