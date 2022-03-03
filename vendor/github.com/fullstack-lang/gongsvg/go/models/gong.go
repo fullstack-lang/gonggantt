@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -55,7 +57,12 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	BackRepo BackRepoInterface
 
 	// if set will be called before each commit to the back repo
-	OnInitCommitCallback OnInitCommitInterface
+	OnInitCommitCallback          OnInitCommitInterface
+	OnInitCommitFromFrontCallback OnInitCommitInterface
+	OnInitCommitFromBackCallback  OnInitCommitInterface
+
+	// store the number of instance per gongstruct
+	Map_GongStructName_InstancesNb map[string]int
 }
 
 type OnInitCommitInterface interface {
@@ -90,7 +97,7 @@ type BackRepoInterface interface {
 	CheckoutSVG(svg *SVG)
 	CommitText(text *Text)
 	CheckoutText(text *Text)
-	GetLastCommitNb() uint
+	GetLastCommitFromBackNb() uint
 	GetLastPushFromFrontNb() uint
 }
 
@@ -127,12 +134,26 @@ var Stage StageStruct = StageStruct{ // insertion point for array initiatialisat
 	Texts_mapString: make(map[string]*Text),
 
 	// end of insertion point
+	Map_GongStructName_InstancesNb: make(map[string]int),
 }
 
 func (stage *StageStruct) Commit() {
 	if stage.BackRepo != nil {
 		stage.BackRepo.Commit(stage)
 	}
+
+	// insertion point for computing the map of number of instances per gongstruct
+	stage.Map_GongStructName_InstancesNb["Animate"] = len(stage.Animates)
+	stage.Map_GongStructName_InstancesNb["Circle"] = len(stage.Circles)
+	stage.Map_GongStructName_InstancesNb["Ellipse"] = len(stage.Ellipses)
+	stage.Map_GongStructName_InstancesNb["Line"] = len(stage.Lines)
+	stage.Map_GongStructName_InstancesNb["Path"] = len(stage.Paths)
+	stage.Map_GongStructName_InstancesNb["Polygone"] = len(stage.Polygones)
+	stage.Map_GongStructName_InstancesNb["Polyline"] = len(stage.Polylines)
+	stage.Map_GongStructName_InstancesNb["Rect"] = len(stage.Rects)
+	stage.Map_GongStructName_InstancesNb["SVG"] = len(stage.SVGs)
+	stage.Map_GongStructName_InstancesNb["Text"] = len(stage.Texts)
+
 }
 
 func (stage *StageStruct) Checkout() {
@@ -1291,21 +1312,26 @@ import (
 	"{{ModelsPackageName}}"
 )
 
-var __Dummy_time_variable time.Time
+func init() {
+	var __Dummy_time_variable time.Time
+	_ = __Dummy_time_variable
+	InjectionGateway["{{databaseName}}"] = {{databaseName}}Injection
+}
 
-func Unmarshall(stage *models.StageStruct) {
+// {{databaseName}}Injection will stage objects of database "{{databaseName}}"
+func {{databaseName}}Injection() {
 
-	// map of identifiers{{Identifiers}}
+	// Declaration of instances to stage{{Identifiers}}
 
-	// initializers of values{{ValueInitializers}}
+	// Setup of values{{ValueInitializers}}
 
-	// initializers of pointers{{PointersInitializers}}
+	// Setup of pointers{{PointersInitializers}}
 }
 
 `
 
 const IdentifiersDecls = `
-	{{Identifier}} := (&models.{{GeneratedStructName}}{ Name : "{{GeneratedFieldNameValue}}"}).Stage()`
+	{{Identifier}} := (&models.{{GeneratedStructName}}{Name: "{{GeneratedFieldNameValue}}"}).Stage()`
 
 const StringInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = "{{GeneratedFieldNameValue}}"`
@@ -1327,9 +1353,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	name := file.Name()
 
+	if !strings.HasSuffix(name, ".go") {
+		log.Fatalln(name + " is not a go filename")
+	}
+
 	log.Println("filename of marshall output  is " + name)
 
 	res := marshallRes
+	res = strings.ReplaceAll(res, "{{databaseName}}", strings.ReplaceAll(path.Base(name), ".go", ""))
 	res = strings.ReplaceAll(res, "{{PackageName}}", packageName)
 	res = strings.ReplaceAll(res, "{{ModelsPackageName}}", modelsPackageName)
 
@@ -1366,7 +1397,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", animate.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Animate values %s", animate.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Animate %s values setup", animate.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1422,7 +1453,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", circle.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Circle values %s", circle.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Circle %s values setup", circle.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1508,7 +1539,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", ellipse.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Ellipse values %s", ellipse.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Ellipse %s values setup", ellipse.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1600,7 +1631,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", line.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Line values %s", line.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Line %s values setup", line.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1692,7 +1723,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", path.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Path values %s", path.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Path %s values setup", path.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1766,7 +1797,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", polygone.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Polygone values %s", polygone.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Polygone %s values setup", polygone.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1840,7 +1871,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", polyline.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Polyline values %s", polyline.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Polyline %s values setup", polyline.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1914,7 +1945,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", rect.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Rect values %s", rect.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Rect %s values setup", rect.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -2012,7 +2043,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", svg.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init SVG values %s", svg.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// SVG %s values setup", svg.Name)
 		// Initialisation of values
 		setValueField = NumberInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -2050,7 +2081,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", text.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Init Text values %s", text.Name)
+		initializerStatements += fmt.Sprintf("\n\n	// Text %s values setup", text.Name)
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -2355,10 +2386,15 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 // unique identifier per struct
 func generatesIdentifier(gongStructName string, idx int, instanceName string) (identifier string) {
 
-	identifier = fmt.Sprintf("__%s__%06d_%s",
-		gongStructName,
-		idx,
-		strings.ReplaceAll(instanceName, " ", "_"))
+	identifier = instanceName
+	// Make a Regex to say we only want letters and numbers
+	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+	if err != nil {
+		log.Fatal(err)
+	}
+	processedString := reg.ReplaceAllString(instanceName, "_")
+
+	identifier = fmt.Sprintf("__%s__%06d_%s", gongStructName, idx, processedString)
 
 	return
 }
