@@ -88,5 +88,12 @@
 			],
 			"group": "build"
 		},
+		{
+			"label": "00 - go mod vendor",
+			"type": "shell",
+			"dependsOn": [ "00 - update dependency"],
+			"group": "build",
+			"command": "go mod vendor"
+		  },
 	]
 }

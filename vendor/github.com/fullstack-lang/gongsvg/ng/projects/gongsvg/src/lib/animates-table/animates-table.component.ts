@@ -17,6 +17,8 @@ import { Router, RouterState } from '@angular/router';
 import { AnimateDB } from '../animate-db'
 import { AnimateService } from '../animate.service'
 
+// insertion point for additional imports
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -253,8 +255,9 @@ export class AnimatesTableComponent implements OnInit {
 
         this.animates = this.frontRepo.Animates_array;
 
-        // insertion point for variables Recoveries
-
+        // insertion point for time duration Recoveries
+        // insertion point for enum int Recoveries
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let animate of this.animates) {
