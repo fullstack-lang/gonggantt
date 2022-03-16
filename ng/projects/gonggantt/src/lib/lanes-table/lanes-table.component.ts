@@ -17,6 +17,8 @@ import { Router, RouterState } from '@angular/router';
 import { LaneDB } from '../lane-db'
 import { LaneService } from '../lane.service'
 
+// insertion point for additional imports
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -190,8 +192,9 @@ export class LanesTableComponent implements OnInit {
 
         this.lanes = this.frontRepo.Lanes_array;
 
-        // insertion point for variables Recoveries
-
+        // insertion point for time duration Recoveries
+        // insertion point for enum int Recoveries
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let lane of this.lanes) {
