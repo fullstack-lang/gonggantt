@@ -44,7 +44,6 @@ import (
 var (
 	logDBFlag  = flag.Bool("logDB", false, "log mode for db")
 	logGINFlag = flag.Bool("logGIN", false, "log mode for gin")
-	apiFlag    = flag.Bool("api", false, "it true, use api controllers instead of default controllers")
 
 	backupFlag  = flag.Bool("backup", false, "read database file, generate backup and exits")
 	restoreFlag = flag.Bool("restore", false, "generate restore and exits")
@@ -114,7 +113,7 @@ func main() {
 
 	//
 	// gonggantt
-	gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
+	gonggantt_orm.SetupModels(*logDBFlag, "file:memdb2?mode=memory&cache=shared")
 
 	// generate injection code from the stage
 	if *marshallOnStartup != "" {
@@ -160,7 +159,7 @@ func main() {
 	//
 	// gongsvg database
 	//
-	db_inMemory := gongsvg_orm.SetupModels(*logDBFlag, ":memory:")
+	db_inMemory := gongsvg_orm.SetupModels(*logDBFlag, "file:memdb1?mode=memory&cache=shared")
 	// mandatory, otherwise, bizarre errors occurs
 
 	// since gongsim is a multi threaded application. It is important to set up
@@ -203,7 +202,7 @@ func main() {
 		pkgelt := new(gongdoc_models.Pkgelt)
 
 		// first, get all gong struct in the model
-		for gongStruct, _ := range gong_models.Stage.GongStructs {
+		for gongStruct := range gong_models.Stage.GongStructs {
 
 			// let create the gong struct in the gongdoc models
 			// and put the numbre of instances

@@ -32,7 +32,7 @@
 			"command": "go",
 			"args": [
 				"run",
-				"main.go",
+				".",
 				"-diagrams",
 				"-unmarshall",
 				"gantt1",
