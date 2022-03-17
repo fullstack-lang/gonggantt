@@ -1031,14 +1031,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 		setValueField = TimeInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Start")
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", gantt.Start.String())
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "ComputedStart")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", gantt.ComputedStart.String())
 		initializerStatements += setValueField
 
 		setValueField = TimeInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "End")
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", gantt.End.String())
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "ComputedEnd")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", gantt.ComputedEnd.String())
 		initializerStatements += setValueField
 
 		setValueField = NumberInitStatement

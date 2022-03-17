@@ -86,12 +86,12 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 	DateYOffset := 20.0
 
 	// put a date for every year
-	for year := ganttToRender.Start.Year(); year <= ganttToRender.End.Year(); year++ {
+	for year := ganttToRender.ComputedStart.Year(); year <= ganttToRender.ComputedEnd.Year(); year++ {
 		yearTime := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
-		durationBetweenYearAndGanttStart := yearTime.Sub(ganttToRender.Start)
+		durationBetweenYearAndGanttStart := yearTime.Sub(ganttToRender.ComputedStart)
 
 		durationBetweenYearStartAndGanttStartRelativeToGanttDuration :=
-			float64(durationBetweenYearAndGanttStart) / float64(ganttToRender.End.Sub(ganttToRender.Start))
+			float64(durationBetweenYearAndGanttStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))
 
 		yearText := new(gongsvg_models.Text).Stage()
 		yearText.Name = fmt.Sprintf("%d", year)
@@ -177,14 +177,14 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 			svg.Rects = append(svg.Rects, barSVG)
 			barSVG.Name = bar.Name
 
-			durationBetweenBarStartAndGanttStart := bar.Start.Sub(ganttToRender.Start)
+			durationBetweenBarStartAndGanttStart := bar.Start.Sub(ganttToRender.ComputedStart)
 			durationBetweenBarStartAndGanttStartRelativeToGanttDuration :=
-				float64(durationBetweenBarStartAndGanttStart) / float64(ganttToRender.End.Sub(ganttToRender.Start))
+				float64(durationBetweenBarStartAndGanttStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))
 			// log.Printf("Duration is %f", durationBetweenBarStartAndGanttStartRelativeToGanttDuration)
 
 			durationBetweenBarEndAndBarStart := bar.End.Sub(bar.Start)
 			durationBetweenBarEndAndBarStartRelativeToGanttDuration :=
-				float64(durationBetweenBarEndAndBarStart) / float64(ganttToRender.End.Sub(ganttToRender.Start))
+				float64(durationBetweenBarEndAndBarStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))
 			// log.Printf("Relative Duration is %f", durationBetweenBarEndAndBarStartRelativeToGanttDuration)
 
 			barSVG.X = XLeftLanes + (XRightMargin-XLeftLanes)*durationBetweenBarStartAndGanttStartRelativeToGanttDuration
@@ -223,9 +223,9 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 	//
 	for _, milestone := range ganttToRender.Milestones {
 
-		durationBetweenMilestoneAndGanttStart := milestone.Date.Sub(ganttToRender.Start)
+		durationBetweenMilestoneAndGanttStart := milestone.Date.Sub(ganttToRender.ComputedStart)
 		durationBetweenMilestoneAndGanttStartRelativeToGanttDuration :=
-			float64(durationBetweenMilestoneAndGanttStart) / float64(ganttToRender.End.Sub(ganttToRender.Start))
+			float64(durationBetweenMilestoneAndGanttStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))
 
 		//
 		// draw the line

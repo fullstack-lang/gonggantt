@@ -61,11 +61,11 @@ type GanttDB struct {
 	// Declation for basic field ganttDB.Name {{BasicKind}} (to be completed)
 	Name_Data sql.NullString
 
-	// Declation for basic field ganttDB.Start
-	Start_Data sql.NullTime
+	// Declation for basic field ganttDB.ComputedStart
+	ComputedStart_Data sql.NullTime
 
-	// Declation for basic field ganttDB.End
-	End_Data sql.NullTime
+	// Declation for basic field ganttDB.ComputedEnd
+	ComputedEnd_Data sql.NullTime
 
 	// Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to be completed)
 	LaneHeight_Data sql.NullFloat64
@@ -144,9 +144,9 @@ type GanttWOP struct {
 
 	Name string `xlsx:"1"`
 
-	Start time.Time `xlsx:"2"`
+	ComputedStart time.Time `xlsx:"2"`
 
-	End time.Time `xlsx:"3"`
+	ComputedEnd time.Time `xlsx:"3"`
 
 	LaneHeight float64 `xlsx:"4"`
 
@@ -190,8 +190,8 @@ var Gantt_Fields = []string{
 	// insertion for WOP basic fields
 	"ID",
 	"Name",
-	"Start",
-	"End",
+	"ComputedStart",
+	"ComputedEnd",
 	"LaneHeight",
 	"RatioBarToLaneHeight",
 	"YTopMargin",
@@ -678,11 +678,11 @@ func (ganttDB *GanttDB) CopyBasicFieldsFromGantt(gantt *models.Gantt) {
 	ganttDB.Name_Data.String = gantt.Name
 	ganttDB.Name_Data.Valid = true
 
-	ganttDB.Start_Data.Time = gantt.Start
-	ganttDB.Start_Data.Valid = true
+	ganttDB.ComputedStart_Data.Time = gantt.ComputedStart
+	ganttDB.ComputedStart_Data.Valid = true
 
-	ganttDB.End_Data.Time = gantt.End
-	ganttDB.End_Data.Valid = true
+	ganttDB.ComputedEnd_Data.Time = gantt.ComputedEnd
+	ganttDB.ComputedEnd_Data.Valid = true
 
 	ganttDB.LaneHeight_Data.Float64 = gantt.LaneHeight
 	ganttDB.LaneHeight_Data.Valid = true
@@ -746,11 +746,11 @@ func (ganttDB *GanttDB) CopyBasicFieldsFromGanttWOP(gantt *GanttWOP) {
 	ganttDB.Name_Data.String = gantt.Name
 	ganttDB.Name_Data.Valid = true
 
-	ganttDB.Start_Data.Time = gantt.Start
-	ganttDB.Start_Data.Valid = true
+	ganttDB.ComputedStart_Data.Time = gantt.ComputedStart
+	ganttDB.ComputedStart_Data.Valid = true
 
-	ganttDB.End_Data.Time = gantt.End
-	ganttDB.End_Data.Valid = true
+	ganttDB.ComputedEnd_Data.Time = gantt.ComputedEnd
+	ganttDB.ComputedEnd_Data.Valid = true
 
 	ganttDB.LaneHeight_Data.Float64 = gantt.LaneHeight
 	ganttDB.LaneHeight_Data.Valid = true
@@ -811,8 +811,8 @@ func (ganttDB *GanttDB) CopyBasicFieldsFromGanttWOP(gantt *GanttWOP) {
 func (ganttDB *GanttDB) CopyBasicFieldsToGantt(gantt *models.Gantt) {
 	// insertion point for checkout of basic fields (back repo to stage)
 	gantt.Name = ganttDB.Name_Data.String
-	gantt.Start = ganttDB.Start_Data.Time
-	gantt.End = ganttDB.End_Data.Time
+	gantt.ComputedStart = ganttDB.ComputedStart_Data.Time
+	gantt.ComputedEnd = ganttDB.ComputedEnd_Data.Time
 	gantt.LaneHeight = ganttDB.LaneHeight_Data.Float64
 	gantt.RatioBarToLaneHeight = ganttDB.RatioBarToLaneHeight_Data.Float64
 	gantt.YTopMargin = ganttDB.YTopMargin_Data.Float64
@@ -838,8 +838,8 @@ func (ganttDB *GanttDB) CopyBasicFieldsToGanttWOP(gantt *GanttWOP) {
 	gantt.ID = int(ganttDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
 	gantt.Name = ganttDB.Name_Data.String
-	gantt.Start = ganttDB.Start_Data.Time
-	gantt.End = ganttDB.End_Data.Time
+	gantt.ComputedStart = ganttDB.ComputedStart_Data.Time
+	gantt.ComputedEnd = ganttDB.ComputedEnd_Data.Time
 	gantt.LaneHeight = ganttDB.LaneHeight_Data.Float64
 	gantt.RatioBarToLaneHeight = ganttDB.RatioBarToLaneHeight_Data.Float64
 	gantt.YTopMargin = ganttDB.YTopMargin_Data.Float64

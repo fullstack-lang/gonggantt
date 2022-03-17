@@ -3,9 +3,10 @@ package models
 import "time"
 
 type Gantt struct {
-	Name  string
-	Start time.Time
-	End   time.Time
+	Name string
+
+	ComputedStart time.Time
+	ComputedEnd   time.Time
 
 	LaneHeight           float64
 	RatioBarToLaneHeight float64
@@ -53,16 +54,16 @@ func (gantt *Gantt) ComputeStartAndEndDate() {
 		for _, bar := range lane.Bars {
 
 			if firstBar == true {
-				gantt.Start = bar.Start
-				gantt.End = bar.End
+				gantt.ComputedStart = bar.Start
+				gantt.ComputedEnd = bar.End
 
 				firstBar = false
 			} else {
-				if gantt.Start.After(bar.Start) {
-					gantt.Start = bar.Start
+				if gantt.ComputedStart.After(bar.Start) {
+					gantt.ComputedStart = bar.Start
 				}
-				if gantt.End.Before(bar.End) {
-					gantt.End = bar.End
+				if gantt.ComputedEnd.Before(bar.End) {
+					gantt.ComputedEnd = bar.End
 				}
 			}
 		}
@@ -70,7 +71,7 @@ func (gantt *Gantt) ComputeStartAndEndDate() {
 
 	// align start on the beginning of the year
 	if gantt.AlignOnStartEndOnYearStart {
-		gantt.Start = time.Date(gantt.Start.Year(), time.January, 1, 0, 0, 0, 0, time.UTC)
-		gantt.End = time.Date(gantt.End.Year(), time.December, 31, 0, 0, 0, 0, time.UTC)
+		gantt.ComputedStart = time.Date(gantt.ComputedStart.Year(), time.January, 1, 0, 0, 0, 0, time.UTC)
+		gantt.ComputedEnd = time.Date(gantt.ComputedEnd.Year(), time.December, 31, 0, 0, 0, 0, time.UTC)
 	}
 }
