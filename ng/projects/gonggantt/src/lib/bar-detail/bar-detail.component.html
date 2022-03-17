@@ -23,16 +23,18 @@
 
     <!-- -->
     <mat-form-field>
-        <input matInput [ngModelOptions]="{standalone: true}" [ngxMatDatetimePicker]="picker" [(ngModel)]="bar.Start">
-        <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
-        <ngx-mat-datetime-picker [showSeconds]="true" #picker></ngx-mat-datetime-picker>
+        <mat-label>Start</mat-label>
+        <input matInput [ngModelOptions]="{standalone: true}" [ngxMatDatetimePicker]="pickerStart" [(ngModel)]="bar.Start">
+        <mat-datepicker-toggle matSuffix [for]="$any(pickerStart)"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker [showSeconds]="true" #pickerStart></ngx-mat-datetime-picker>
     </mat-form-field>
 
     <!-- -->
     <mat-form-field>
-        <input matInput [ngModelOptions]="{standalone: true}" [ngxMatDatetimePicker]="picker" [(ngModel)]="bar.End">
-        <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
-        <ngx-mat-datetime-picker [showSeconds]="true" #picker></ngx-mat-datetime-picker>
+        <mat-label>End</mat-label>
+        <input matInput [ngModelOptions]="{standalone: true}" [ngxMatDatetimePicker]="pickerEnd" [(ngModel)]="bar.End">
+        <mat-datepicker-toggle matSuffix [for]="$any(pickerEnd)"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker [showSeconds]="true" #pickerEnd></ngx-mat-datetime-picker>
     </mat-form-field>
 
     <mat-grid-list *ngIf='!isATextArea("OptionnalColor")' cols="5" rowHeight="2:1">
