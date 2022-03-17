@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
@@ -48,8 +49,32 @@ var (
 	backupFlag  = flag.Bool("backup", false, "read database file, generate backup and exits")
 	restoreFlag = flag.Bool("restore", false, "generate restore and exits")
 
+	marshallOnStartup = flag.String("marshallOnStartup", "", "at startup, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
+	unmarshall        = flag.String("unmarshall", "", "unmarshall data from marshall name and '.go' (must be lowercased without spaces), If unmarshall arg is '', no unmarshalling")
+	marshallOnCommit  = flag.String("marshallOnCommit", "", "on all commits, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
+
 	diagrams = flag.Bool("diagrams", true, "parse diagrams (takes a few seconds)")
 )
+
+// InjectionGateway is the singloton that stores all functions
+// that can set the objects the stage
+// InjectionGateway stores function as a map of names
+var InjectionGateway = make(map[string](func()))
+
+// hook marhalling to stage
+type BeforeCommitImplementation struct {
+}
+
+func (impl *BeforeCommitImplementation) BeforeCommit(stage *gonggantt_models.StageStruct) {
+	file, err := os.Create(fmt.Sprintf("./%s.go", *marshallOnCommit))
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer file.Close()
+
+	gonggantt_models.Stage.Checkout()
+	gonggantt_models.Stage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
+}
 
 func main() {
 
@@ -90,6 +115,46 @@ func main() {
 	//
 	// gonggantt
 	gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
+
+	// generate injection code from the stage
+	if *marshallOnStartup != "" {
+
+		if strings.Contains(*marshallOnStartup, " ") {
+			log.Fatalln(*marshallOnStartup + " must not contains blank spaces")
+		}
+		if strings.ToLower(*marshallOnStartup) != *marshallOnStartup {
+			log.Fatalln(*marshallOnStartup + " must be lowercases")
+		}
+
+		file, err := os.Create(fmt.Sprintf("./%s.go", *marshallOnStartup))
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		defer file.Close()
+
+		gonggantt_models.Stage.Checkout()
+		gonggantt_models.Stage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
+		os.Exit(0)
+	}
+
+	// setup the stage by injecting the code from code database
+	if *unmarshall != "" {
+		gonggantt_models.Stage.Checkout()
+		gonggantt_models.Stage.Reset()
+		gonggantt_models.Stage.Commit()
+		if InjectionGateway[*unmarshall] != nil {
+			InjectionGateway[*unmarshall]()
+		}
+
+		gonggantt_models.Stage.Commit()
+	}
+	stage := gonggantt_models.Stage
+	_ = stage
+	// hook automatic marshall to go code at every commit
+	if *marshallOnCommit != "" {
+		hook := new(BeforeCommitImplementation)
+		gonggantt_models.Stage.OnInitCommitFromFrontCallback = hook
+	}
 
 	//
 	// gongsvg database
