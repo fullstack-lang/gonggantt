@@ -79,7 +79,7 @@ func gantt1Injection() {
 	// Gantt Test values setup
 	__Gantt__000000_Test.Name = `Test`
 	__Gantt__000000_Test.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2020-01-01 00:00:00 +0000 +0000")
-	__Gantt__000000_Test.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-01-01 00:00:00 +0000 +0000")
+	__Gantt__000000_Test.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-12-31 00:00:00 +0000 +0000")
 	__Gantt__000000_Test.LaneHeight = 80.000000
 	__Gantt__000000_Test.RatioBarToLaneHeight = 0.700000
 	__Gantt__000000_Test.YTopMargin = 10.000000
@@ -125,10 +125,10 @@ func gantt1Injection() {
 	// Setup of pointers
 	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1.From = __Bar__000003_Lane_3_Bar_1
 	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1.To = __Bar__000002_Lane_2_Bar_1
-	__Gantt__000000_Test.Lanes = append(__Gantt__000000_Test.Lanes, __Lane__000000_Lane_1)
 	__Gantt__000000_Test.Lanes = append(__Gantt__000000_Test.Lanes, __Lane__000001_Lane_2)
-	__Gantt__000000_Test.Lanes = append(__Gantt__000000_Test.Lanes, __Lane__000002_Lane_3)
 	__Gantt__000000_Test.Lanes = append(__Gantt__000000_Test.Lanes, __Lane__000003_Lane_4)
+	__Gantt__000000_Test.Lanes = append(__Gantt__000000_Test.Lanes, __Lane__000002_Lane_3)
+	__Gantt__000000_Test.Lanes = append(__Gantt__000000_Test.Lanes, __Lane__000000_Lane_1)
 	__Gantt__000000_Test.Milestones = append(__Gantt__000000_Test.Milestones, __Milestone__000000_june_2023_)
 	__Gantt__000000_Test.Groups = append(__Gantt__000000_Test.Groups, __Group__000000_Group_of_lanes_3_4)
 	__Gantt__000000_Test.Arrows = append(__Gantt__000000_Test.Arrows, __Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1)
@@ -141,3 +141,5 @@ func gantt1Injection() {
 	__Milestone__000000_june_2023_.LanesToDisplayMilestone = append(__Milestone__000000_june_2023_.LanesToDisplayMilestone, __Lane__000000_Lane_1)
 	__Milestone__000000_june_2023_.LanesToDisplayMilestone = append(__Milestone__000000_june_2023_.LanesToDisplayMilestone, __Lane__000002_Lane_3)
 }
+
+

@@ -138,6 +138,8 @@ func main() {
 	}
 
 	// setup the stage by injecting the code from code database
+	stage := &gonggantt_models.Stage
+	_ = stage
 	if *unmarshall != "" {
 		gonggantt_models.Stage.Checkout()
 		gonggantt_models.Stage.Reset()
@@ -148,8 +150,7 @@ func main() {
 
 		gonggantt_models.Stage.Commit()
 	}
-	stage := gonggantt_models.Stage
-	_ = stage
+
 	// hook automatic marshall to go code at every commit
 	if *marshallOnCommit != "" {
 		hook := new(BeforeCommitImplementation)
