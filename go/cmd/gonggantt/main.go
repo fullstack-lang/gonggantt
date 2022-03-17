@@ -18,6 +18,18 @@ import (
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
 
+	// gong stack for model analysis
+	gong_controllers "github.com/fullstack-lang/gong/go/controllers"
+	gong_models "github.com/fullstack-lang/gong/go/models"
+	gong_orm "github.com/fullstack-lang/gong/go/orm"
+	_ "github.com/fullstack-lang/gong/ng"
+
+	// for diagrams
+	gongdoc_controllers "github.com/fullstack-lang/gongdoc/go/controllers"
+	gongdoc_models "github.com/fullstack-lang/gongdoc/go/models"
+	gongdoc_orm "github.com/fullstack-lang/gongdoc/go/orm"
+	_ "github.com/fullstack-lang/gongdoc/ng"
+
 	// import this package in order to have the scheduler start a thread that will
 	// generate a new svg diagram each time the repo has been modified
 	_ "github.com/fullstack-lang/gonggantt/go/gantt2svg"
@@ -35,6 +47,8 @@ var (
 
 	backupFlag  = flag.Bool("backup", false, "read database file, generate backup and exits")
 	restoreFlag = flag.Bool("restore", false, "generate restore and exits")
+
+	diagrams = flag.Bool("diagrams", true, "parse diagrams (takes a few seconds)")
 )
 
 func main() {
@@ -91,12 +105,55 @@ func main() {
 	}
 	dbDB.SetMaxOpenConns(1)
 
+	// add gongdoc database
+	gongdoc_orm.AutoMigrate(db_inMemory)
+
+	// add gong database
+	gong_orm.AutoMigrate(db_inMemory)
+
 	gonggantt_controllers.RegisterControllers(r)
 	gongsvg_controllers.RegisterControllers(r)
+	gongdoc_controllers.RegisterControllers(r)
+	gong_controllers.RegisterControllers(r)
 
 	// put all to database
 	gonggantt_models.Stage.Commit()
 	gongsvg_models.Stage.Commit()
+	gongdoc_models.Stage.Commit()
+	gong_models.Stage.Commit()
+
+	// from the commited stage, get the number of instances per struct
+	// before unmarshalling diagrams
+	if *diagrams {
+
+		// load package to analyse
+		modelPkg := &gong_models.ModelPkg{}
+		gong_models.Walk("../../models", modelPkg)
+		modelPkg.SerializeToStage()
+		gong_models.Stage.Commit()
+
+		// create the diagrams
+		// prepare the model views
+		pkgelt := new(gongdoc_models.Pkgelt)
+
+		// first, get all gong struct in the model
+		for gongStruct, _ := range gong_models.Stage.GongStructs {
+
+			// let create the gong struct in the gongdoc models
+			// and put the numbre of instances
+			gongStruct_ := (&gongdoc_models.GongStruct{Name: gongStruct.Name}).Stage()
+			nbInstances, ok := gonggantt_models.Stage.Map_GongStructName_InstancesNb[gongStruct.Name]
+			if ok {
+				gongStruct_.NbInstances = nbInstances
+			}
+		}
+
+		// classdiagram can only be fully in memory when they are Unmarshalled
+		// for instance, the Name of diagrams or the Name of the Link
+		pkgelt.Unmarshall("../../diagrams")
+		pkgelt.SerializeToStage()
+		gongdoc_models.Stage.Commit()
+	}
 
 	// provide the static route for the angular pages
 	r.Use(static.Serve("/", EmbedFolder(gonggantt.NgDistNg, "ng/dist/ng")))
