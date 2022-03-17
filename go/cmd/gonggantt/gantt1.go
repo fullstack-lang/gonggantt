@@ -78,8 +78,11 @@ func gantt1Injection() {
 
 	// Gantt Test values setup
 	__Gantt__000000_Test.Name = `Test`
-	__Gantt__000000_Test.ComputedStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2020-01-01 00:00:00 +0000 +0000")
-	__Gantt__000000_Test.ComputedEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-12-31 00:00:00 +0000 +0000")
+	__Gantt__000000_Test.ComputedStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2017-01-01 00:00:00 +0000 +0000")
+	__Gantt__000000_Test.ComputedEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-12-31 00:00:00 +0000 +0000")
+	__Gantt__000000_Test.UseManualStartAndEndDates = false
+	__Gantt__000000_Test.ManualStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2017-02-12 00:00:00 +0000 +0000")
+	__Gantt__000000_Test.ManualEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-02-12 00:00:00 +0000 +0000")
 	__Gantt__000000_Test.LaneHeight = 80.000000
 	__Gantt__000000_Test.RatioBarToLaneHeight = 0.700000
 	__Gantt__000000_Test.YTopMargin = 10.000000
@@ -141,3 +144,5 @@ func gantt1Injection() {
 	__Milestone__000000_june_2023_.LanesToDisplayMilestone = append(__Milestone__000000_june_2023_.LanesToDisplayMilestone, __Lane__000000_Lane_1)
 	__Milestone__000000_june_2023_.LanesToDisplayMilestone = append(__Milestone__000000_june_2023_.LanesToDisplayMilestone, __Lane__000002_Lane_3)
 }
+
+

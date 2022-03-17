@@ -33,6 +33,7 @@ enum GanttDetailComponentState {
 export class GanttDetailComponent implements OnInit {
 
 	// insertion point for declarations
+	UseManualStartAndEndDatesFormControl = new FormControl(false);
 	AlignOnStartEndOnYearStartFormControl = new FormControl(false);
 
 	// the GanttDB of interest
@@ -123,6 +124,7 @@ export class GanttDetailComponent implements OnInit {
 				}
 
 				// insertion point for recovery of form controls value for bool fields
+				this.UseManualStartAndEndDatesFormControl.setValue(this.gantt.UseManualStartAndEndDates)
 				this.AlignOnStartEndOnYearStartFormControl.setValue(this.gantt.AlignOnStartEndOnYearStart)
 			}
 		)
@@ -136,6 +138,7 @@ export class GanttDetailComponent implements OnInit {
 		// pointers fields, after the translation, are nulled in order to perform serialization
 
 		// insertion point for translation/nullation of each field
+		this.gantt.UseManualStartAndEndDates = this.UseManualStartAndEndDatesFormControl.value
 		this.gantt.AlignOnStartEndOnYearStart = this.AlignOnStartEndOnYearStartFormControl.value
 
 		// save from the front pointer space to the non pointer space for serialization

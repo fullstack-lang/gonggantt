@@ -42,6 +42,23 @@
 			"group": "build"
 		},
 		{
+			"label": "02 - go run -unmarshall=gantt1 -marshallOnCommit=gantt1",
+			"type": "shell",
+			"options": {
+				"cwd": "./go/cmd/gonggantt"
+			},
+			"command": "go",
+			"args": [
+				"run",
+				".",
+				"-unmarshall",
+				"gantt1",
+				"-marshallOnCommit",
+				"gantt1",
+			],
+			"group": "build"
+		},
+		{
 			"label": "03 - lsof -i tcp:8080 ",
 			"type": "shell",
 			"command": "lsof -i tcp:8080 ",

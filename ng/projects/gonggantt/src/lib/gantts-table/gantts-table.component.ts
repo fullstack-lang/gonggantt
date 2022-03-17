@@ -77,6 +77,15 @@ export class GanttsTableComponent implements OnInit {
         case 'ComputedEnd':
           return ganttDB.ComputedEnd.getDate();
 
+        case 'UseManualStartAndEndDates':
+          return ganttDB.UseManualStartAndEndDates?"true":"false";
+
+        case 'ManualStart':
+          return ganttDB.ManualStart.getDate();
+
+        case 'ManualEnd':
+          return ganttDB.ManualEnd.getDate();
+
         case 'LaneHeight':
           return ganttDB.LaneHeight;
 
@@ -216,6 +225,9 @@ export class GanttsTableComponent implements OnInit {
         "Name",
         "ComputedStart",
         "ComputedEnd",
+        "UseManualStartAndEndDates",
+        "ManualStart",
+        "ManualEnd",
         "LaneHeight",
         "RatioBarToLaneHeight",
         "YTopMargin",
@@ -240,6 +252,9 @@ export class GanttsTableComponent implements OnInit {
         "Name",
         "ComputedStart",
         "ComputedEnd",
+        "UseManualStartAndEndDates",
+        "ManualStart",
+        "ManualEnd",
         "LaneHeight",
         "RatioBarToLaneHeight",
         "YTopMargin",

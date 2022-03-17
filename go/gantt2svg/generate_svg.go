@@ -177,14 +177,28 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 			svg.Rects = append(svg.Rects, barSVG)
 			barSVG.Name = bar.Name
 
-			durationBetweenBarStartAndGanttStart := bar.Start.Sub(ganttToRender.ComputedStart)
+			var barToDisplay gonggantt_models.Bar
+			barToDisplay = *bar
+
+			// if start and end dates of the gantt are set manualy, then
+			// reset start and end dates of the bar to display
+			if ganttToRender.UseManualStartAndEndDates {
+				if bar.Start.Before(ganttToRender.ManualStart) {
+					barToDisplay.Start = ganttToRender.ManualStart
+				}
+				if bar.End.After(ganttToRender.ManualEnd) {
+					barToDisplay.End = ganttToRender.ManualEnd
+				}
+			}
+
+			durationFromGanttStartToBarStart := barToDisplay.Start.Sub(ganttToRender.ComputedStart)
 			durationBetweenBarStartAndGanttStartRelativeToGanttDuration :=
-				float64(durationBetweenBarStartAndGanttStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))
+				float64(durationFromGanttStartToBarStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))
 			// log.Printf("Duration is %f", durationBetweenBarStartAndGanttStartRelativeToGanttDuration)
 
-			durationBetweenBarEndAndBarStart := bar.End.Sub(bar.Start)
+			durationFromBarEndAndBarStart := barToDisplay.End.Sub(barToDisplay.Start)
 			durationBetweenBarEndAndBarStartRelativeToGanttDuration :=
-				float64(durationBetweenBarEndAndBarStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))
+				float64(durationFromBarEndAndBarStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))
 			// log.Printf("Relative Duration is %f", durationBetweenBarEndAndBarStartRelativeToGanttDuration)
 
 			barSVG.X = XLeftLanes + (XRightMargin-XLeftLanes)*durationBetweenBarStartAndGanttStartRelativeToGanttDuration
@@ -223,6 +237,11 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 	//
 	for _, milestone := range ganttToRender.Milestones {
 
+		if ganttToRender.UseManualStartAndEndDates &&
+			(milestone.Date.Before(ganttToRender.ManualStart) ||
+				milestone.Date.After(ganttToRender.ManualEnd)) {
+			continue
+		}
 		durationBetweenMilestoneAndGanttStart := milestone.Date.Sub(ganttToRender.ComputedStart)
 		durationBetweenMilestoneAndGanttStartRelativeToGanttDuration :=
 			float64(durationBetweenMilestoneAndGanttStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))

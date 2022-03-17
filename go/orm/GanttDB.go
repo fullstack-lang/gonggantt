@@ -67,6 +67,16 @@ type GanttDB struct {
 	// Declation for basic field ganttDB.ComputedEnd
 	ComputedEnd_Data sql.NullTime
 
+	// Declation for basic field ganttDB.UseManualStartAndEndDates bool (to be completed)
+	// provide the sql storage for the boolan
+	UseManualStartAndEndDates_Data sql.NullBool
+
+	// Declation for basic field ganttDB.ManualStart
+	ManualStart_Data sql.NullTime
+
+	// Declation for basic field ganttDB.ManualEnd
+	ManualEnd_Data sql.NullTime
+
 	// Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to be completed)
 	LaneHeight_Data sql.NullFloat64
 
@@ -148,41 +158,47 @@ type GanttWOP struct {
 
 	ComputedEnd time.Time `xlsx:"3"`
 
-	LaneHeight float64 `xlsx:"4"`
+	UseManualStartAndEndDates bool `xlsx:"4"`
 
-	RatioBarToLaneHeight float64 `xlsx:"5"`
+	ManualStart time.Time `xlsx:"5"`
 
-	YTopMargin float64 `xlsx:"6"`
+	ManualEnd time.Time `xlsx:"6"`
 
-	XLeftText float64 `xlsx:"7"`
+	LaneHeight float64 `xlsx:"7"`
 
-	TextHeight float64 `xlsx:"8"`
+	RatioBarToLaneHeight float64 `xlsx:"8"`
 
-	XLeftLanes float64 `xlsx:"9"`
+	YTopMargin float64 `xlsx:"9"`
 
-	XRightMargin float64 `xlsx:"10"`
+	XLeftText float64 `xlsx:"10"`
 
-	ArrowLengthToTheRightOfStartBar float64 `xlsx:"11"`
+	TextHeight float64 `xlsx:"11"`
 
-	ArrowTipLenght float64 `xlsx:"12"`
+	XLeftLanes float64 `xlsx:"12"`
 
-	TimeLine_Color string `xlsx:"13"`
+	XRightMargin float64 `xlsx:"13"`
 
-	TimeLine_FillOpacity float64 `xlsx:"14"`
+	ArrowLengthToTheRightOfStartBar float64 `xlsx:"14"`
 
-	TimeLine_Stroke string `xlsx:"15"`
+	ArrowTipLenght float64 `xlsx:"15"`
 
-	TimeLine_StrokeWidth float64 `xlsx:"16"`
+	TimeLine_Color string `xlsx:"16"`
 
-	Group_Stroke string `xlsx:"17"`
+	TimeLine_FillOpacity float64 `xlsx:"17"`
 
-	Group_StrokeWidth float64 `xlsx:"18"`
+	TimeLine_Stroke string `xlsx:"18"`
 
-	Group_StrokeDashArray string `xlsx:"19"`
+	TimeLine_StrokeWidth float64 `xlsx:"19"`
 
-	DateYOffset float64 `xlsx:"20"`
+	Group_Stroke string `xlsx:"20"`
 
-	AlignOnStartEndOnYearStart bool `xlsx:"21"`
+	Group_StrokeWidth float64 `xlsx:"21"`
+
+	Group_StrokeDashArray string `xlsx:"22"`
+
+	DateYOffset float64 `xlsx:"23"`
+
+	AlignOnStartEndOnYearStart bool `xlsx:"24"`
 	// insertion for WOP pointer fields
 }
 
@@ -192,6 +208,9 @@ var Gantt_Fields = []string{
 	"Name",
 	"ComputedStart",
 	"ComputedEnd",
+	"UseManualStartAndEndDates",
+	"ManualStart",
+	"ManualEnd",
 	"LaneHeight",
 	"RatioBarToLaneHeight",
 	"YTopMargin",
@@ -684,6 +703,15 @@ func (ganttDB *GanttDB) CopyBasicFieldsFromGantt(gantt *models.Gantt) {
 	ganttDB.ComputedEnd_Data.Time = gantt.ComputedEnd
 	ganttDB.ComputedEnd_Data.Valid = true
 
+	ganttDB.UseManualStartAndEndDates_Data.Bool = gantt.UseManualStartAndEndDates
+	ganttDB.UseManualStartAndEndDates_Data.Valid = true
+
+	ganttDB.ManualStart_Data.Time = gantt.ManualStart
+	ganttDB.ManualStart_Data.Valid = true
+
+	ganttDB.ManualEnd_Data.Time = gantt.ManualEnd
+	ganttDB.ManualEnd_Data.Valid = true
+
 	ganttDB.LaneHeight_Data.Float64 = gantt.LaneHeight
 	ganttDB.LaneHeight_Data.Valid = true
 
@@ -752,6 +780,15 @@ func (ganttDB *GanttDB) CopyBasicFieldsFromGanttWOP(gantt *GanttWOP) {
 	ganttDB.ComputedEnd_Data.Time = gantt.ComputedEnd
 	ganttDB.ComputedEnd_Data.Valid = true
 
+	ganttDB.UseManualStartAndEndDates_Data.Bool = gantt.UseManualStartAndEndDates
+	ganttDB.UseManualStartAndEndDates_Data.Valid = true
+
+	ganttDB.ManualStart_Data.Time = gantt.ManualStart
+	ganttDB.ManualStart_Data.Valid = true
+
+	ganttDB.ManualEnd_Data.Time = gantt.ManualEnd
+	ganttDB.ManualEnd_Data.Valid = true
+
 	ganttDB.LaneHeight_Data.Float64 = gantt.LaneHeight
 	ganttDB.LaneHeight_Data.Valid = true
 
@@ -813,6 +850,9 @@ func (ganttDB *GanttDB) CopyBasicFieldsToGantt(gantt *models.Gantt) {
 	gantt.Name = ganttDB.Name_Data.String
 	gantt.ComputedStart = ganttDB.ComputedStart_Data.Time
 	gantt.ComputedEnd = ganttDB.ComputedEnd_Data.Time
+	gantt.UseManualStartAndEndDates = ganttDB.UseManualStartAndEndDates_Data.Bool
+	gantt.ManualStart = ganttDB.ManualStart_Data.Time
+	gantt.ManualEnd = ganttDB.ManualEnd_Data.Time
 	gantt.LaneHeight = ganttDB.LaneHeight_Data.Float64
 	gantt.RatioBarToLaneHeight = ganttDB.RatioBarToLaneHeight_Data.Float64
 	gantt.YTopMargin = ganttDB.YTopMargin_Data.Float64
@@ -840,6 +880,9 @@ func (ganttDB *GanttDB) CopyBasicFieldsToGanttWOP(gantt *GanttWOP) {
 	gantt.Name = ganttDB.Name_Data.String
 	gantt.ComputedStart = ganttDB.ComputedStart_Data.Time
 	gantt.ComputedEnd = ganttDB.ComputedEnd_Data.Time
+	gantt.UseManualStartAndEndDates = ganttDB.UseManualStartAndEndDates_Data.Bool
+	gantt.ManualStart = ganttDB.ManualStart_Data.Time
+	gantt.ManualEnd = ganttDB.ManualEnd_Data.Time
 	gantt.LaneHeight = ganttDB.LaneHeight_Data.Float64
 	gantt.RatioBarToLaneHeight = ganttDB.RatioBarToLaneHeight_Data.Float64
 	gantt.YTopMargin = ganttDB.YTopMargin_Data.Float64
