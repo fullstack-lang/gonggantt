@@ -24,12 +24,18 @@
             "webRoot": "${workspaceFolder}/ng",
         },
         {
-            "name": "go server",
+            "name": "go server -diagrams -unmarshall=gantt1 -marshallOnCommit=gantt1",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/go/cmd/gonggantt",
-            "args": []
+            "args": [
+                "-diagrams",
+				"-unmarshall",
+				"gantt1",
+				"-marshallOnCommit",
+				"gantt1",
+            ]
         },
         {
             "name": "Launch firefox localhost:4200",

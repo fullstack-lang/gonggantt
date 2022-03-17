@@ -25,7 +25,6 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 	gongsvg_models.Stage.Checkout()
 	gongsvg_models.Stage.Reset()
 	gongsvg_models.Stage.Commit()
-	gonggantt_models.Stage.Checkout()
 
 	if len(gonggantt_models.Stage.Gantts) != 1 {
 		log.Printf("It is supposed to have only one gantt chart")
