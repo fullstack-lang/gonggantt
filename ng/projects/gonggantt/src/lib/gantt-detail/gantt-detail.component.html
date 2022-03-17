@@ -23,14 +23,31 @@
 
     <!-- -->
     <mat-form-field>
-        <input matInput [ngModelOptions]="{standalone: true}" [ngxMatDatetimePicker]="picker" [(ngModel)]="gantt.Start">
+        <input matInput [ngModelOptions]="{standalone: true}" [ngxMatDatetimePicker]="picker" [(ngModel)]="gantt.ComputedStart">
         <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
         <ngx-mat-datetime-picker [showSeconds]="true" #picker></ngx-mat-datetime-picker>
     </mat-form-field>
 
     <!-- -->
     <mat-form-field>
-        <input matInput [ngModelOptions]="{standalone: true}" [ngxMatDatetimePicker]="picker" [(ngModel)]="gantt.End">
+        <input matInput [ngModelOptions]="{standalone: true}" [ngxMatDatetimePicker]="picker" [(ngModel)]="gantt.ComputedEnd">
+        <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker [showSeconds]="true" #picker></ngx-mat-datetime-picker>
+    </mat-form-field>
+
+    <!-- -->
+    <mat-checkbox [formControl]="UseManualStartAndEndDatesFormControl">UseManualStartAndEndDates</mat-checkbox>
+
+    <!-- -->
+    <mat-form-field>
+        <input matInput [ngModelOptions]="{standalone: true}" [ngxMatDatetimePicker]="picker" [(ngModel)]="gantt.ManualStart">
+        <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
+        <ngx-mat-datetime-picker [showSeconds]="true" #picker></ngx-mat-datetime-picker>
+    </mat-form-field>
+
+    <!-- -->
+    <mat-form-field>
+        <input matInput [ngModelOptions]="{standalone: true}" [ngxMatDatetimePicker]="picker" [(ngModel)]="gantt.ManualEnd">
         <mat-datepicker-toggle matSuffix [for]="$any(picker)"></mat-datepicker-toggle>
         <ngx-mat-datetime-picker [showSeconds]="true" #picker></ngx-mat-datetime-picker>
     </mat-form-field>

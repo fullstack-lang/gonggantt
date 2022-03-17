@@ -130,7 +130,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 					Field: models.Gantt{}.RatioBarToLaneHeight,
 				},
 				{
-					Field: models.Gantt{}.Start,
+					Field: models.Gantt{}.ComputedStart,
 				},
 				{
 					Field: models.Gantt{}.TextHeight,

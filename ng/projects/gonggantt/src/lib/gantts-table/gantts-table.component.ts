@@ -71,11 +71,20 @@ export class GanttsTableComponent implements OnInit {
         case 'Name':
           return ganttDB.Name;
 
-        case 'Start':
-          return ganttDB.Start.getDate();
+        case 'ComputedStart':
+          return ganttDB.ComputedStart.getDate();
 
-        case 'End':
-          return ganttDB.End.getDate();
+        case 'ComputedEnd':
+          return ganttDB.ComputedEnd.getDate();
+
+        case 'UseManualStartAndEndDates':
+          return ganttDB.UseManualStartAndEndDates?"true":"false";
+
+        case 'ManualStart':
+          return ganttDB.ManualStart.getDate();
+
+        case 'ManualEnd':
+          return ganttDB.ManualEnd.getDate();
 
         case 'LaneHeight':
           return ganttDB.LaneHeight;
@@ -214,8 +223,11 @@ export class GanttsTableComponent implements OnInit {
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
-        "Start",
-        "End",
+        "ComputedStart",
+        "ComputedEnd",
+        "UseManualStartAndEndDates",
+        "ManualStart",
+        "ManualEnd",
         "LaneHeight",
         "RatioBarToLaneHeight",
         "YTopMargin",
@@ -238,8 +250,11 @@ export class GanttsTableComponent implements OnInit {
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
-        "Start",
-        "End",
+        "ComputedStart",
+        "ComputedEnd",
+        "UseManualStartAndEndDates",
+        "ManualStart",
+        "ManualEnd",
         "LaneHeight",
         "RatioBarToLaneHeight",
         "YTopMargin",

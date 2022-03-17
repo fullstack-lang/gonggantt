@@ -13,12 +13,27 @@
         <td class="mat-cell">{{gantt.Name}}</td>
     </tr>
     <tr class="mat-row">
-        <td class="mat-cell">Start</td>
-        <td class="mat-cell">{{gantt.Start}}</td>
+        <td class="mat-cell">ComputedStart</td>
+        <td class="mat-cell">{{gantt.ComputedStart}}</td>
     </tr>
     <tr class="mat-row">
-        <td class="mat-cell">End</td>
-        <td class="mat-cell">{{gantt.End}}</td>
+        <td class="mat-cell">ComputedEnd</td>
+        <td class="mat-cell">{{gantt.ComputedEnd}}</td>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">UseManualStartAndEndDates</td>
+        <td class="mat-cell">
+            <mat-checkbox [checked]="gantt.UseManualStartAndEndDates" disabled=true>
+            </mat-checkbox>
+        </td>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">ManualStart</td>
+        <td class="mat-cell">{{gantt.ManualStart}}</td>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">ManualEnd</td>
+        <td class="mat-cell">{{gantt.ManualEnd}}</td>
     </tr>
     <tr class="mat-row">
         <td class="mat-cell">LaneHeight</td>

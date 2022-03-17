@@ -26,17 +26,38 @@
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="Start">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Start </th>
+        <ng-container matColumnDef="ComputedStart">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ComputedStart </th>
             <td mat-cell *matCellDef="let Gantt">
-                {{Gantt.Start}}
+                {{Gantt.ComputedStart}}
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="End">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> End </th>
+        <ng-container matColumnDef="ComputedEnd">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ComputedEnd </th>
             <td mat-cell *matCellDef="let Gantt">
-                {{Gantt.End}}
+                {{Gantt.ComputedEnd}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="UseManualStartAndEndDates">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> UseManualStartAndEndDates </th>
+            <td mat-cell *matCellDef="let Gantt">
+                <mat-checkbox [checked]="Gantt.UseManualStartAndEndDates" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="ManualStart">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ManualStart </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.ManualStart}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="ManualEnd">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ManualEnd </th>
+            <td mat-cell *matCellDef="let Gantt">
+                {{Gantt.ManualEnd}}
             </td>
         </ng-container>
         <!-- -->

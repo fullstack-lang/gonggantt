@@ -14,8 +14,11 @@ export class GanttDB {
 
 	// insertion point for basic fields declarations
 	Name: string = ""
-	Start: Date = new Date
-	End: Date = new Date
+	ComputedStart: Date = new Date
+	ComputedEnd: Date = new Date
+	UseManualStartAndEndDates: boolean = false
+	ManualStart: Date = new Date
+	ManualEnd: Date = new Date
 	LaneHeight: number = 0
 	RatioBarToLaneHeight: number = 0
 	YTopMargin: number = 0
