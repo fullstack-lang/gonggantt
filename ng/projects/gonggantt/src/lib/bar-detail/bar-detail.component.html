@@ -77,6 +77,12 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.OptionnalStroke"></textarea>
     </mat-form-field>
 
+    <!-- -->
+    <mat-form-field class="detail-full-width">
+        <mat-label>FillOpacity</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.FillOpacity" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
     <mat-form-field class="detail-full-width">
         <mat-label>(Lane) Bars</mat-label>
         <mat-select [compareWith]="compareObjects" [(ngModel)]="bar.Lane_Bars_reverse" [ngModelOptions]="{standalone: true}">

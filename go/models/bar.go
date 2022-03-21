@@ -10,4 +10,5 @@ type Bar struct {
 	// if not Zero, is taken into account when drawing the bar
 	OptionnalColor  string
 	OptionnalStroke string
+	FillOpacity     float64
 }

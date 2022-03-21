@@ -78,6 +78,9 @@ type BarDB struct {
 
 	// Declation for basic field barDB.OptionnalStroke {{BasicKind}} (to be completed)
 	OptionnalStroke_Data sql.NullString
+
+	// Declation for basic field barDB.FillOpacity {{BasicKind}} (to be completed)
+	FillOpacity_Data sql.NullFloat64
 	// encoding of pointers
 	BarPointersEnconding
 }
@@ -108,6 +111,8 @@ type BarWOP struct {
 	OptionnalColor string `xlsx:"4"`
 
 	OptionnalStroke string `xlsx:"5"`
+
+	FillOpacity float64 `xlsx:"6"`
 	// insertion for WOP pointer fields
 }
 
@@ -119,6 +124,7 @@ var Bar_Fields = []string{
 	"End",
 	"OptionnalColor",
 	"OptionnalStroke",
+	"FillOpacity",
 }
 
 type BackRepoBarStruct struct {
@@ -414,6 +420,9 @@ func (barDB *BarDB) CopyBasicFieldsFromBar(bar *models.Bar) {
 
 	barDB.OptionnalStroke_Data.String = bar.OptionnalStroke
 	barDB.OptionnalStroke_Data.Valid = true
+
+	barDB.FillOpacity_Data.Float64 = bar.FillOpacity
+	barDB.FillOpacity_Data.Valid = true
 }
 
 // CopyBasicFieldsFromBarWOP
@@ -434,6 +443,9 @@ func (barDB *BarDB) CopyBasicFieldsFromBarWOP(bar *BarWOP) {
 
 	barDB.OptionnalStroke_Data.String = bar.OptionnalStroke
 	barDB.OptionnalStroke_Data.Valid = true
+
+	barDB.FillOpacity_Data.Float64 = bar.FillOpacity
+	barDB.FillOpacity_Data.Valid = true
 }
 
 // CopyBasicFieldsToBar
@@ -444,6 +456,7 @@ func (barDB *BarDB) CopyBasicFieldsToBar(bar *models.Bar) {
 	bar.End = barDB.End_Data.Time
 	bar.OptionnalColor = barDB.OptionnalColor_Data.String
 	bar.OptionnalStroke = barDB.OptionnalStroke_Data.String
+	bar.FillOpacity = barDB.FillOpacity_Data.Float64
 }
 
 // CopyBasicFieldsToBarWOP
@@ -455,6 +468,7 @@ func (barDB *BarDB) CopyBasicFieldsToBarWOP(bar *BarWOP) {
 	bar.End = barDB.End_Data.Time
 	bar.OptionnalColor = barDB.OptionnalColor_Data.String
 	bar.OptionnalStroke = barDB.OptionnalStroke_Data.String
+	bar.FillOpacity = barDB.FillOpacity_Data.Float64
 }
 
 // Backup generates a json file from a slice of all BarDB instances in the backrepo

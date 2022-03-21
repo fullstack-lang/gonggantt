@@ -211,6 +211,9 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 				barSVG.Color = bar.OptionnalColor
 			}
 			barSVG.FillOpacity = 0.1
+			if bar.FillOpacity != 0.0 {
+				barSVG.FillOpacity = bar.FillOpacity
+			}
 			barSVG.Stroke = "blue"
 			if bar.OptionnalStroke != "" {
 				barSVG.Stroke = bar.OptionnalStroke

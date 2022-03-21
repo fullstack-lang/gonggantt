@@ -15,6 +15,7 @@ export class BarDB {
 	End: Date = new Date
 	OptionnalColor: string = ""
 	OptionnalStroke: string = ""
+	FillOpacity: number = 0
 
 	// insertion point for other declarations
 	Lane_BarsDBID: NullInt64 = new NullInt64
