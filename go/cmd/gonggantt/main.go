@@ -215,7 +215,7 @@ func main() {
 
 		// classdiagram can only be fully in memory when they are Unmarshalled
 		// for instance, the Name of diagrams or the Name of the Link
-		pkgelt.Unmarshall("../../diagrams")
+		pkgelt.Unmarshall(modelPkg.PkgPath, "../../diagrams")
 		pkgelt.SerializeToStage()
 		gongdoc_models.Stage.Commit()
 	}
