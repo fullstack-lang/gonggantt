@@ -11,4 +11,6 @@ type Bar struct {
 	OptionnalColor  string
 	OptionnalStroke string
 	FillOpacity     float64
+	StrokeWidth     float64
+	StrokeDashArray string
 }

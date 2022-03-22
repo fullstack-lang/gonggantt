@@ -81,6 +81,12 @@ type BarDB struct {
 
 	// Declation for basic field barDB.FillOpacity {{BasicKind}} (to be completed)
 	FillOpacity_Data sql.NullFloat64
+
+	// Declation for basic field barDB.StrokeWidth {{BasicKind}} (to be completed)
+	StrokeWidth_Data sql.NullFloat64
+
+	// Declation for basic field barDB.StrokeDashArray {{BasicKind}} (to be completed)
+	StrokeDashArray_Data sql.NullString
 	// encoding of pointers
 	BarPointersEnconding
 }
@@ -113,6 +119,10 @@ type BarWOP struct {
 	OptionnalStroke string `xlsx:"5"`
 
 	FillOpacity float64 `xlsx:"6"`
+
+	StrokeWidth float64 `xlsx:"7"`
+
+	StrokeDashArray string `xlsx:"8"`
 	// insertion for WOP pointer fields
 }
 
@@ -125,6 +135,8 @@ var Bar_Fields = []string{
 	"OptionnalColor",
 	"OptionnalStroke",
 	"FillOpacity",
+	"StrokeWidth",
+	"StrokeDashArray",
 }
 
 type BackRepoBarStruct struct {
@@ -423,6 +435,12 @@ func (barDB *BarDB) CopyBasicFieldsFromBar(bar *models.Bar) {
 
 	barDB.FillOpacity_Data.Float64 = bar.FillOpacity
 	barDB.FillOpacity_Data.Valid = true
+
+	barDB.StrokeWidth_Data.Float64 = bar.StrokeWidth
+	barDB.StrokeWidth_Data.Valid = true
+
+	barDB.StrokeDashArray_Data.String = bar.StrokeDashArray
+	barDB.StrokeDashArray_Data.Valid = true
 }
 
 // CopyBasicFieldsFromBarWOP
@@ -446,6 +464,12 @@ func (barDB *BarDB) CopyBasicFieldsFromBarWOP(bar *BarWOP) {
 
 	barDB.FillOpacity_Data.Float64 = bar.FillOpacity
 	barDB.FillOpacity_Data.Valid = true
+
+	barDB.StrokeWidth_Data.Float64 = bar.StrokeWidth
+	barDB.StrokeWidth_Data.Valid = true
+
+	barDB.StrokeDashArray_Data.String = bar.StrokeDashArray
+	barDB.StrokeDashArray_Data.Valid = true
 }
 
 // CopyBasicFieldsToBar
@@ -457,6 +481,8 @@ func (barDB *BarDB) CopyBasicFieldsToBar(bar *models.Bar) {
 	bar.OptionnalColor = barDB.OptionnalColor_Data.String
 	bar.OptionnalStroke = barDB.OptionnalStroke_Data.String
 	bar.FillOpacity = barDB.FillOpacity_Data.Float64
+	bar.StrokeWidth = barDB.StrokeWidth_Data.Float64
+	bar.StrokeDashArray = barDB.StrokeDashArray_Data.String
 }
 
 // CopyBasicFieldsToBarWOP
@@ -469,6 +495,8 @@ func (barDB *BarDB) CopyBasicFieldsToBarWOP(bar *BarWOP) {
 	bar.OptionnalColor = barDB.OptionnalColor_Data.String
 	bar.OptionnalStroke = barDB.OptionnalStroke_Data.String
 	bar.FillOpacity = barDB.FillOpacity_Data.Float64
+	bar.StrokeWidth = barDB.StrokeWidth_Data.Float64
+	bar.StrokeDashArray = barDB.StrokeDashArray_Data.String
 }
 
 // Backup generates a json file from a slice of all BarDB instances in the backrepo

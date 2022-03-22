@@ -16,6 +16,8 @@ export class BarDB {
 	OptionnalColor: string = ""
 	OptionnalStroke: string = ""
 	FillOpacity: number = 0
+	StrokeWidth: number = 0
+	StrokeDashArray: string = ""
 
 	// insertion point for other declarations
 	Lane_BarsDBID: NullInt64 = new NullInt64

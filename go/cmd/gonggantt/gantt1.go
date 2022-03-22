@@ -54,6 +54,9 @@ func gantt1Injection() {
 	__Bar__000000_Lane_1_Bar_1.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-04-01 00:00:00 +0000 +0000")
 	__Bar__000000_Lane_1_Bar_1.OptionnalColor = `red`
 	__Bar__000000_Lane_1_Bar_1.OptionnalStroke = `red`
+	__Bar__000000_Lane_1_Bar_1.FillOpacity = 0.000000
+	__Bar__000000_Lane_1_Bar_1.StrokeWidth = 3.000000
+	__Bar__000000_Lane_1_Bar_1.StrokeDashArray = `5 5`
 
 	// Bar Lane 1 - Bar 2 values setup
 	__Bar__000001_Lane_1_Bar_2.Name = `Lane 1 - Bar 2`
@@ -61,6 +64,9 @@ func gantt1Injection() {
 	__Bar__000001_Lane_1_Bar_2.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-01-01 00:00:00 +0000 +0000")
 	__Bar__000001_Lane_1_Bar_2.OptionnalColor = `green`
 	__Bar__000001_Lane_1_Bar_2.OptionnalStroke = ``
+	__Bar__000001_Lane_1_Bar_2.FillOpacity = 0.000000
+	__Bar__000001_Lane_1_Bar_2.StrokeWidth = 0.000000
+	__Bar__000001_Lane_1_Bar_2.StrokeDashArray = ``
 
 	// Bar Lane 2 - Bar 1 values setup
 	__Bar__000002_Lane_2_Bar_1.Name = `Lane 2 - Bar 1`
@@ -68,6 +74,9 @@ func gantt1Injection() {
 	__Bar__000002_Lane_2_Bar_1.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2025-01-01 00:00:00 +0000 +0000")
 	__Bar__000002_Lane_2_Bar_1.OptionnalColor = ``
 	__Bar__000002_Lane_2_Bar_1.OptionnalStroke = ``
+	__Bar__000002_Lane_2_Bar_1.FillOpacity = 0.000000
+	__Bar__000002_Lane_2_Bar_1.StrokeWidth = 0.000000
+	__Bar__000002_Lane_2_Bar_1.StrokeDashArray = ``
 
 	// Bar Lane-3-Bar-1 values setup
 	__Bar__000003_Lane_3_Bar_1.Name = `Lane-3-Bar-1`
@@ -75,11 +84,14 @@ func gantt1Injection() {
 	__Bar__000003_Lane_3_Bar_1.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-01-01 00:00:00 +0000 +0000")
 	__Bar__000003_Lane_3_Bar_1.OptionnalColor = ``
 	__Bar__000003_Lane_3_Bar_1.OptionnalStroke = ``
+	__Bar__000003_Lane_3_Bar_1.FillOpacity = 0.000000
+	__Bar__000003_Lane_3_Bar_1.StrokeWidth = 0.000000
+	__Bar__000003_Lane_3_Bar_1.StrokeDashArray = ``
 
 	// Gantt Test values setup
 	__Gantt__000000_Test.Name = `Test`
-	__Gantt__000000_Test.ComputedStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2017-01-01 00:00:00 +0000 +0000")
-	__Gantt__000000_Test.ComputedEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-12-31 00:00:00 +0000 +0000")
+	__Gantt__000000_Test.ComputedStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2020-01-01 00:00:00 +0000 +0000")
+	__Gantt__000000_Test.ComputedEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2025-12-31 00:00:00 +0000 +0000")
 	__Gantt__000000_Test.UseManualStartAndEndDates = false
 	__Gantt__000000_Test.ManualStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2017-02-12 00:00:00 +0000 +0000")
 	__Gantt__000000_Test.ManualEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-02-12 00:00:00 +0000 +0000")

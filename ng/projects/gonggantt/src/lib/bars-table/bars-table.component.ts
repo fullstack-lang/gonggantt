@@ -86,6 +86,12 @@ export class BarsTableComponent implements OnInit {
         case 'FillOpacity':
           return barDB.FillOpacity;
 
+        case 'StrokeWidth':
+          return barDB.StrokeWidth;
+
+        case 'StrokeDashArray':
+          return barDB.StrokeDashArray;
+
         case 'Lane_Bars':
           return this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)!.Name;
 
@@ -107,6 +113,8 @@ export class BarsTableComponent implements OnInit {
       mergedContent += barDB.OptionnalColor.toLowerCase()
       mergedContent += barDB.OptionnalStroke.toLowerCase()
       mergedContent += barDB.FillOpacity.toString()
+      mergedContent += barDB.StrokeWidth.toString()
+      mergedContent += barDB.StrokeDashArray.toLowerCase()
       if (barDB.Lane_BarsDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)!.Name.toLowerCase()
       }
@@ -167,6 +175,8 @@ export class BarsTableComponent implements OnInit {
         "OptionnalColor",
         "OptionnalStroke",
         "FillOpacity",
+        "StrokeWidth",
+        "StrokeDashArray",
         "Lane_Bars",
       ]
     } else {
@@ -177,6 +187,8 @@ export class BarsTableComponent implements OnInit {
         "OptionnalColor",
         "OptionnalStroke",
         "FillOpacity",
+        "StrokeWidth",
+        "StrokeDashArray",
         "Lane_Bars",
       ]
       this.selection = new SelectionModel<BarDB>(allowMultiSelect, this.initialSelection);

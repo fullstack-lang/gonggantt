@@ -83,6 +83,32 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.FillOpacity" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
+    <!-- -->
+    <mat-form-field class="detail-full-width">
+        <mat-label>StrokeWidth</mat-label>
+        <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.StrokeWidth" [ngModelOptions]="{standalone: true}">
+    </mat-form-field>
+
+    <mat-grid-list *ngIf='!isATextArea("StrokeDashArray")' cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
+                <mat-label>StrokeDashArray</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.StrokeDashArray">
+            </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('StrokeDashArray')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("StrokeDashArray")' mat-form-field class="detail-full-width">
+        <mat-label>StrokeDashArray</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.StrokeDashArray"></textarea>
+    </mat-form-field>
+
     <mat-form-field class="detail-full-width">
         <mat-label>(Lane) Bars</mat-label>
         <mat-select [compareWith]="compareObjects" [(ngModel)]="bar.Lane_Bars_reverse" [ngModelOptions]="{standalone: true}">

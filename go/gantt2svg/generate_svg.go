@@ -219,6 +219,12 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 				barSVG.Stroke = bar.OptionnalStroke
 			}
 			barSVG.StrokeWidth = 0.5
+			if bar.StrokeWidth != 0.0 {
+				barSVG.StrokeWidth = bar.StrokeWidth
+			}
+			if bar.StrokeDashArray != "" {
+				barSVG.StrokeDashArray = bar.StrokeDashArray
+			}
 
 			// bar text
 			barText := new(gongsvg_models.Text).Stage()
