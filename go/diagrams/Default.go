@@ -24,7 +24,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						X: 1010.000000,
 						Y: 386.500000,
 					},
-					Multiplicity: "0..1",
+					TargetMultiplicity: "0..1",
 				},
 				{
 					Field: models.Arrow{}.To,
@@ -32,7 +32,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						X: 1190.000000,
 						Y: 356.500000,
 					},
-					Multiplicity: "0..1",
+					TargetMultiplicity: "0..1",
 				},
 			},
 		},
@@ -77,7 +77,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						X: 445.000000,
 						Y: 261.500000,
 					},
-					Multiplicity: "*",
+					TargetMultiplicity: "*",
 				},
 				{
 					Field: models.Gantt{}.Groups,
@@ -85,7 +85,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						X: 428.500000,
 						Y: 107.000000,
 					},
-					Multiplicity: "*",
+					TargetMultiplicity: "*",
 				},
 				{
 					Field: models.Gantt{}.Lanes,
@@ -93,7 +93,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						X: 411.500000,
 						Y: 175.000000,
 					},
-					Multiplicity: "*",
+					TargetMultiplicity: "*",
 				},
 				{
 					Field: models.Gantt{}.Milestones,
@@ -101,7 +101,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						X: 435.000000,
 						Y: 361.500000,
 					},
-					Multiplicity: "*",
+					TargetMultiplicity: "*",
 				},
 			},
 			Fields: []*uml.Field{
@@ -173,7 +173,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						X: 930.000000,
 						Y: 126.500000,
 					},
-					Multiplicity: "*",
+					TargetMultiplicity: "*",
 				},
 			},
 		},
@@ -192,7 +192,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						X: 870.000000,
 						Y: 171.500000,
 					},
-					Multiplicity: "*",
+					TargetMultiplicity: "*",
 				},
 			},
 			Fields: []*uml.Field{
@@ -228,7 +228,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						X: 1010.000000,
 						Y: 429.000000,
 					},
-					Multiplicity: "*",
+					TargetMultiplicity: "*",
 				},
 			},
 			Fields: []*uml.Field{
