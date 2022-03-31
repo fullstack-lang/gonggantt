@@ -262,7 +262,7 @@ export class BarDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.bar.Name == undefined) {
+		if (this.bar.Name == "") {
 			this.bar.Name = event.value.Name
 		}
 	}

@@ -246,7 +246,7 @@ export class GanttDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.gantt.Name == undefined) {
+		if (this.gantt.Name == "") {
 			this.gantt.Name = event.value.Name
 		}
 	}

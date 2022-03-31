@@ -262,7 +262,7 @@ export class GroupDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.group.Name == undefined) {
+		if (this.group.Name == "") {
 			this.group.Name = event.value.Name
 		}
 	}

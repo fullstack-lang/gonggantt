@@ -262,7 +262,7 @@ export class MilestoneDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.milestone.Name == undefined) {
+		if (this.milestone.Name == "") {
 			this.milestone.Name = event.value.Name
 		}
 	}

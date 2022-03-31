@@ -17,6 +17,14 @@ type __void struct{}
 // needed for creating set of instances in the stage
 var __member __void
 
+// GongStructInterface is the interface met by GongStructs
+// It allows runtime reflexion of instances (without the hassle of the "reflect" package)
+type GongStructInterface interface {
+	GetName() (res string)
+	GetFields() (res []string)
+	GetFieldStringValue(fieldName string) (res string)
+}
+
 // StageStruct enables storage of staged instances
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
@@ -257,6 +265,38 @@ func DeleteORMArrow(arrow *Arrow) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (arrow *Arrow) GetName() (res string) {
+	return arrow.Name
+}
+
+func (arrow *Arrow) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "From", "To", "OptionnalColor", "OptionnalStroke",  }
+	return
+}
+
+func (arrow *Arrow) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = arrow.Name
+	case "From":
+		if arrow.From != nil {
+			res = arrow.From.Name
+		}
+	case "To":
+		if arrow.To != nil {
+			res = arrow.To.Name
+		}
+	case "OptionnalColor":
+		res = arrow.OptionnalColor
+	case "OptionnalStroke":
+		res = arrow.OptionnalStroke
+	}
+	return
+}
+
 func (stage *StageStruct) getBarOrderedStructWithNameField() []*Bar {
 	// have alphabetical order generation
 	barOrdered := []*Bar{}
@@ -357,6 +397,40 @@ func DeleteORMBar(bar *Bar) {
 	if Stage.AllModelsStructDeleteCallback != nil {
 		Stage.AllModelsStructDeleteCallback.DeleteORMBar(bar)
 	}
+}
+
+// for satisfaction of GongStruct interface
+func (bar *Bar) GetName() (res string) {
+	return bar.Name
+}
+
+func (bar *Bar) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "Start", "End", "OptionnalColor", "OptionnalStroke", "FillOpacity", "StrokeWidth", "StrokeDashArray",  }
+	return
+}
+
+func (bar *Bar) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = bar.Name
+	case "Start":
+		res = bar.Start.String()
+	case "End":
+		res = bar.End.String()
+	case "OptionnalColor":
+		res = bar.OptionnalColor
+	case "OptionnalStroke":
+		res = bar.OptionnalStroke
+	case "FillOpacity":
+		res = fmt.Sprintf("%f", bar.FillOpacity)
+	case "StrokeWidth":
+		res = fmt.Sprintf("%f", bar.StrokeWidth)
+	case "StrokeDashArray":
+		res = bar.StrokeDashArray
+	}
+	return
 }
 
 func (stage *StageStruct) getGanttOrderedStructWithNameField() []*Gantt {
@@ -461,6 +535,100 @@ func DeleteORMGantt(gantt *Gantt) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (gantt *Gantt) GetName() (res string) {
+	return gantt.Name
+}
+
+func (gantt *Gantt) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "ComputedStart", "ComputedEnd", "UseManualStartAndEndDates", "ManualStart", "ManualEnd", "LaneHeight", "RatioBarToLaneHeight", "YTopMargin", "XLeftText", "TextHeight", "XLeftLanes", "XRightMargin", "ArrowLengthToTheRightOfStartBar", "ArrowTipLenght", "TimeLine_Color", "TimeLine_FillOpacity", "TimeLine_Stroke", "TimeLine_StrokeWidth", "Group_Stroke", "Group_StrokeWidth", "Group_StrokeDashArray", "DateYOffset", "AlignOnStartEndOnYearStart", "Lanes", "Milestones", "Groups", "Arrows",  }
+	return
+}
+
+func (gantt *Gantt) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = gantt.Name
+	case "ComputedStart":
+		res = gantt.ComputedStart.String()
+	case "ComputedEnd":
+		res = gantt.ComputedEnd.String()
+	case "UseManualStartAndEndDates":
+		res = fmt.Sprintf("%t", gantt.UseManualStartAndEndDates)
+	case "ManualStart":
+		res = gantt.ManualStart.String()
+	case "ManualEnd":
+		res = gantt.ManualEnd.String()
+	case "LaneHeight":
+		res = fmt.Sprintf("%f", gantt.LaneHeight)
+	case "RatioBarToLaneHeight":
+		res = fmt.Sprintf("%f", gantt.RatioBarToLaneHeight)
+	case "YTopMargin":
+		res = fmt.Sprintf("%f", gantt.YTopMargin)
+	case "XLeftText":
+		res = fmt.Sprintf("%f", gantt.XLeftText)
+	case "TextHeight":
+		res = fmt.Sprintf("%f", gantt.TextHeight)
+	case "XLeftLanes":
+		res = fmt.Sprintf("%f", gantt.XLeftLanes)
+	case "XRightMargin":
+		res = fmt.Sprintf("%f", gantt.XRightMargin)
+	case "ArrowLengthToTheRightOfStartBar":
+		res = fmt.Sprintf("%f", gantt.ArrowLengthToTheRightOfStartBar)
+	case "ArrowTipLenght":
+		res = fmt.Sprintf("%f", gantt.ArrowTipLenght)
+	case "TimeLine_Color":
+		res = gantt.TimeLine_Color
+	case "TimeLine_FillOpacity":
+		res = fmt.Sprintf("%f", gantt.TimeLine_FillOpacity)
+	case "TimeLine_Stroke":
+		res = gantt.TimeLine_Stroke
+	case "TimeLine_StrokeWidth":
+		res = fmt.Sprintf("%f", gantt.TimeLine_StrokeWidth)
+	case "Group_Stroke":
+		res = gantt.Group_Stroke
+	case "Group_StrokeWidth":
+		res = fmt.Sprintf("%f", gantt.Group_StrokeWidth)
+	case "Group_StrokeDashArray":
+		res = gantt.Group_StrokeDashArray
+	case "DateYOffset":
+		res = fmt.Sprintf("%f", gantt.DateYOffset)
+	case "AlignOnStartEndOnYearStart":
+		res = fmt.Sprintf("%t", gantt.AlignOnStartEndOnYearStart)
+	case "Lanes":
+		for idx, __instance__ := range gantt.Lanes {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	case "Milestones":
+		for idx, __instance__ := range gantt.Milestones {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	case "Groups":
+		for idx, __instance__ := range gantt.Groups {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	case "Arrows":
+		for idx, __instance__ := range gantt.Arrows {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
+}
+
 func (stage *StageStruct) getGroupOrderedStructWithNameField() []*Group {
 	// have alphabetical order generation
 	groupOrdered := []*Group{}
@@ -561,6 +729,33 @@ func DeleteORMGroup(group *Group) {
 	if Stage.AllModelsStructDeleteCallback != nil {
 		Stage.AllModelsStructDeleteCallback.DeleteORMGroup(group)
 	}
+}
+
+// for satisfaction of GongStruct interface
+func (group *Group) GetName() (res string) {
+	return group.Name
+}
+
+func (group *Group) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "GroupLanes",  }
+	return
+}
+
+func (group *Group) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = group.Name
+	case "GroupLanes":
+		for idx, __instance__ := range group.GroupLanes {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
 }
 
 func (stage *StageStruct) getLaneOrderedStructWithNameField() []*Lane {
@@ -665,6 +860,35 @@ func DeleteORMLane(lane *Lane) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (lane *Lane) GetName() (res string) {
+	return lane.Name
+}
+
+func (lane *Lane) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "Order", "Bars",  }
+	return
+}
+
+func (lane *Lane) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = lane.Name
+	case "Order":
+		res = fmt.Sprintf("%d", lane.Order)
+	case "Bars":
+		for idx, __instance__ := range lane.Bars {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
+}
+
 func (stage *StageStruct) getMilestoneOrderedStructWithNameField() []*Milestone {
 	// have alphabetical order generation
 	milestoneOrdered := []*Milestone{}
@@ -767,6 +991,35 @@ func DeleteORMMilestone(milestone *Milestone) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (milestone *Milestone) GetName() (res string) {
+	return milestone.Name
+}
+
+func (milestone *Milestone) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "Date", "LanesToDisplayMilestone",  }
+	return
+}
+
+func (milestone *Milestone) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = milestone.Name
+	case "Date":
+		res = milestone.Date.String()
+	case "LanesToDisplayMilestone":
+		for idx, __instance__ := range milestone.LanesToDisplayMilestone {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
+}
+
 // swagger:ignore
 type AllModelsStructCreateInterface interface { // insertion point for Callbacks on creation
 	CreateORMArrow(Arrow *Arrow)
@@ -859,6 +1112,9 @@ const IdentifiersDecls = `
 
 const StringInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = ` + "`" + `{{GeneratedFieldNameValue}}` + "`"
+
+const StringEnumInitStatement = `
+	{{Identifier}}.{{GeneratedFieldName}} = {{GeneratedFieldNameValue}}`
 
 const NumberInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = {{GeneratedFieldNameValue}}`

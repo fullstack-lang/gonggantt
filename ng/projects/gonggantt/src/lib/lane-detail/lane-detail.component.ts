@@ -306,7 +306,7 @@ export class LaneDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.lane.Name == undefined) {
+		if (this.lane.Name == "") {
 			this.lane.Name = event.value.Name
 		}
 	}

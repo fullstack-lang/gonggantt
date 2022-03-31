@@ -282,7 +282,7 @@ export class ArrowDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.arrow.Name == undefined) {
+		if (this.arrow.Name == "") {
 			this.arrow.Name = event.value.Name
 		}
 	}
