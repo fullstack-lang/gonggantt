@@ -252,6 +252,10 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 			continue
 		}
 		durationBetweenMilestoneAndGanttStart := milestone.Date.Sub(ganttToRender.ComputedStart)
+
+		durationBetweenMilestoneAndGanttStartString := durationBetweenMilestoneAndGanttStart.String()
+		_ = durationBetweenMilestoneAndGanttStartString
+
 		durationBetweenMilestoneAndGanttStartRelativeToGanttDuration :=
 			float64(durationBetweenMilestoneAndGanttStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))
 
