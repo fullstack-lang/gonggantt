@@ -563,16 +563,16 @@ export class FrontRepoService {
                 }
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field Milestone.LanesToDisplayMilestone redeeming
+                // insertion point for slice of pointer field Milestone.LanesToDisplayMilestoneUse redeeming
                 {
-                  let _milestone = FrontRepoSingloton.Milestones.get(laneuse.Milestone_LanesToDisplayMilestoneDBID.Int64)
+                  let _milestone = FrontRepoSingloton.Milestones.get(laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Int64)
                   if (_milestone) {
-                    if (_milestone.LanesToDisplayMilestone == undefined) {
-                      _milestone.LanesToDisplayMilestone = new Array<LaneUseDB>()
+                    if (_milestone.LanesToDisplayMilestoneUse == undefined) {
+                      _milestone.LanesToDisplayMilestoneUse = new Array<LaneUseDB>()
                     }
-                    _milestone.LanesToDisplayMilestone.push(laneuse)
-                    if (laneuse.Milestone_LanesToDisplayMilestone_reverse == undefined) {
-                      laneuse.Milestone_LanesToDisplayMilestone_reverse = _milestone
+                    _milestone.LanesToDisplayMilestoneUse.push(laneuse)
+                    if (laneuse.Milestone_LanesToDisplayMilestoneUse_reverse == undefined) {
+                      laneuse.Milestone_LanesToDisplayMilestoneUse_reverse = _milestone
                     }
                   }
                 }
@@ -977,16 +977,16 @@ export class FrontRepoService {
                 }
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field Milestone.LanesToDisplayMilestone redeeming
+                // insertion point for slice of pointer field Milestone.LanesToDisplayMilestoneUse redeeming
                 {
-                  let _milestone = FrontRepoSingloton.Milestones.get(laneuse.Milestone_LanesToDisplayMilestoneDBID.Int64)
+                  let _milestone = FrontRepoSingloton.Milestones.get(laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Int64)
                   if (_milestone) {
-                    if (_milestone.LanesToDisplayMilestone == undefined) {
-                      _milestone.LanesToDisplayMilestone = new Array<LaneUseDB>()
+                    if (_milestone.LanesToDisplayMilestoneUse == undefined) {
+                      _milestone.LanesToDisplayMilestoneUse = new Array<LaneUseDB>()
                     }
-                    _milestone.LanesToDisplayMilestone.push(laneuse)
-                    if (laneuse.Milestone_LanesToDisplayMilestone_reverse == undefined) {
-                      laneuse.Milestone_LanesToDisplayMilestone_reverse = _milestone
+                    _milestone.LanesToDisplayMilestoneUse.push(laneuse)
+                    if (laneuse.Milestone_LanesToDisplayMilestoneUse_reverse == undefined) {
+                      laneuse.Milestone_LanesToDisplayMilestoneUse_reverse = _milestone
                     }
                   }
                 }

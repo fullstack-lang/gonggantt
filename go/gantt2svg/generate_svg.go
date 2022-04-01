@@ -273,7 +273,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		// draw diamond
 		//
 		diamondWidth := 18.0
-		for _, lanesToDisplayMilestone := range milestone.LanesToDisplayMilestone {
+		for _, lanesToDisplayMilestone := range milestone.LanesToDisplayMilestoneUse {
 
 			diamond := new(gongsvg_models.Rect).Stage()
 			svg.Rects = append(svg.Rects, diamond)

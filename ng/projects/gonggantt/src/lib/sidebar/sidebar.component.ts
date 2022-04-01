@@ -853,22 +853,22 @@ export class SidebarComponent implements OnInit {
 
           // insertion point for per field code
           /**
-          * let append a node for the slide of pointer LanesToDisplayMilestone
+          * let append a node for the slide of pointer LanesToDisplayMilestoneUse
           */
-          let LanesToDisplayMilestoneGongNodeAssociation: GongNode = {
-            name: "(LaneUse) LanesToDisplayMilestone",
+          let LanesToDisplayMilestoneUseGongNodeAssociation: GongNode = {
+            name: "(LaneUse) LanesToDisplayMilestoneUse",
             type: GongNodeType.ONE__ZERO_MANY_ASSOCIATION,
             id: milestoneDB.ID,
             uniqueIdPerStack: 19 * nonInstanceNodeId,
             structName: "Milestone",
-            associationField: "LanesToDisplayMilestone",
+            associationField: "LanesToDisplayMilestoneUse",
             associatedStructName: "LaneUse",
             children: new Array<GongNode>()
           }
           nonInstanceNodeId = nonInstanceNodeId + 1
-          milestoneGongNodeInstance.children.push(LanesToDisplayMilestoneGongNodeAssociation)
+          milestoneGongNodeInstance.children.push(LanesToDisplayMilestoneUseGongNodeAssociation)
 
-          milestoneDB.LanesToDisplayMilestone?.forEach(laneuseDB => {
+          milestoneDB.LanesToDisplayMilestoneUse?.forEach(laneuseDB => {
             let laneuseNode: GongNode = {
               name: laneuseDB.Name,
               type: GongNodeType.INSTANCE,
@@ -881,7 +881,7 @@ export class SidebarComponent implements OnInit {
               associatedStructName: "",
               children: new Array<GongNode>()
             }
-            LanesToDisplayMilestoneGongNodeAssociation.children.push(laneuseNode)
+            LanesToDisplayMilestoneUseGongNodeAssociation.children.push(laneuseNode)
           })
 
         }

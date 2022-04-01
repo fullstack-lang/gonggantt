@@ -50,11 +50,11 @@ type LaneUsePointersEnconding struct {
 	// This field is generated into another field to enable AS ONE association
 	LaneID sql.NullInt64
 
-	// Implementation of a reverse ID for field Milestone{}.LanesToDisplayMilestone []*LaneUse
-	Milestone_LanesToDisplayMilestoneDBID sql.NullInt64
+	// Implementation of a reverse ID for field Milestone{}.LanesToDisplayMilestoneUse []*LaneUse
+	Milestone_LanesToDisplayMilestoneUseDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
-	Milestone_LanesToDisplayMilestoneDBID_Index sql.NullInt64
+	Milestone_LanesToDisplayMilestoneUseDBID_Index sql.NullInt64
 }
 
 // LaneUseDB describes a laneuse in the database
@@ -579,10 +579,10 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseTwo() {
 			laneuseDB.LaneID.Valid = true
 		}
 
-		// This reindex laneuse.LanesToDisplayMilestone
-		if laneuseDB.Milestone_LanesToDisplayMilestoneDBID.Int64 != 0 {
-			laneuseDB.Milestone_LanesToDisplayMilestoneDBID.Int64 =
-				int64(BackRepoMilestoneid_atBckpTime_newID[uint(laneuseDB.Milestone_LanesToDisplayMilestoneDBID.Int64)])
+		// This reindex laneuse.LanesToDisplayMilestoneUse
+		if laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 != 0 {
+			laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 =
+				int64(BackRepoMilestoneid_atBckpTime_newID[uint(laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64)])
 		}
 
 		// update databse with new index encoding

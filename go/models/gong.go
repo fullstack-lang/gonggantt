@@ -1133,7 +1133,7 @@ func (milestone *Milestone) GetName() (res string) {
 
 func (milestone *Milestone) GetFields() (res []string) {
 	// list of fields 
-	res = []string{"Name", "Date", "LanesToDisplayMilestone",  }
+	res = []string{"Name", "Date", "LanesToDisplayMilestoneUse",  }
 	return
 }
 
@@ -1144,8 +1144,8 @@ func (milestone *Milestone) GetFieldStringValue(fieldName string) (res string) {
 		res = milestone.Name
 	case "Date":
 		res = milestone.Date.String()
-	case "LanesToDisplayMilestone":
-		for idx, __instance__ := range milestone.LanesToDisplayMilestone {
+	case "LanesToDisplayMilestoneUse":
+		for idx, __instance__ := range milestone.LanesToDisplayMilestoneUse {
 			if idx > 0 {
 				res += "\n"
 			}
@@ -1867,10 +1867,10 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		map_Milestone_Identifiers[milestone] = id
 
 		// Initialisation of values
-		for _, _laneuse := range milestone.LanesToDisplayMilestone {
+		for _, _laneuse := range milestone.LanesToDisplayMilestoneUse {
 			setPointerField = SliceOfPointersFieldInitStatement
 			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "LanesToDisplayMilestone")
+			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "LanesToDisplayMilestoneUse")
 			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_LaneUse_Identifiers[_laneuse])
 			pointersInitializesStatements += setPointerField
 		}

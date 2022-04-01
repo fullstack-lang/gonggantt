@@ -31,11 +31,19 @@
 
     <mat-grid-list cols="5" rowHeight="2:1">
         <mat-grid-tile [colspan]="3">
-            <button mat-raised-button (click)="openReverseSelection('LaneUse', 'Milestone_LanesToDisplayMilestoneDBID', 'ONE_MANY_ASSOCIATION_MODE', '', '', '')">LanesToDisplayMilestone</button>
+            <button mat-raised-button (click)="openReverseSelection('LaneUse', 'Milestone_LanesToDisplayMilestoneUseDBID', 'ONE_MANY_ASSOCIATION_MODE', '', '', '')">LanesToDisplayMilestoneUse</button>
         </mat-grid-tile>
         <!-- insertion point for the button of the MANY_MANY association-->
         <mat-grid-tile>
-            <button mat-raised-button (click)="openDragAndDropOrdering('LaneUse', 'Milestone_LanesToDisplayMilestoneDBID')">
+            <button mat-raised-button (click)="openReverseSelection('LaneUse', 'Milestone_LanesToDisplayMilestoneUseDBID', 
+            'MANY_MANY_ASSOCIATION_MODE', 'LanesToDisplayMilestoneUse', 'Lane', 'Lane')">
+                <mat-icon>
+                    list
+                </mat-icon>
+            </button>
+        </mat-grid-tile> <!-- end of insertion -->
+        <mat-grid-tile>
+            <button mat-raised-button (click)="openDragAndDropOrdering('LaneUse', 'Milestone_LanesToDisplayMilestoneUseDBID')">
                 <mat-icon>
                     shuffle
                 </mat-icon>

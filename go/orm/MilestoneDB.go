@@ -244,20 +244,20 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 		milestoneDB.CopyBasicFieldsFromMilestone(milestone)
 
 		// insertion point for translating pointers encodings into actual pointers
-		// This loop encodes the slice of pointers milestone.LanesToDisplayMilestone into the back repo.
+		// This loop encodes the slice of pointers milestone.LanesToDisplayMilestoneUse into the back repo.
 		// Each back repo instance at the end of the association encode the ID of the association start
 		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, laneuseAssocEnd := range milestone.LanesToDisplayMilestone {
+		for idx, laneuseAssocEnd := range milestone.LanesToDisplayMilestoneUse {
 
 			// get the back repo instance at the association end
 			laneuseAssocEnd_DB :=
 				backRepo.BackRepoLaneUse.GetLaneUseDBFromLaneUsePtr(laneuseAssocEnd)
 
 			// encode reverse pointer in the association end back repo instance
-			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneDBID.Int64 = int64(milestoneDB.ID)
-			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneDBID.Valid = true
-			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneDBID_Index.Int64 = int64(idx)
-			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneDBID_Index.Valid = true
+			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 = int64(milestoneDB.ID)
+			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID.Valid = true
+			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64 = int64(idx)
+			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID_Index.Valid = true
 			if q := backRepoMilestone.db.Save(laneuseAssocEnd_DB); q.Error != nil {
 				return q.Error
 			}
@@ -368,31 +368,31 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwoInstance(backR
 	_ = milestone // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
-	// This loop redeem milestone.LanesToDisplayMilestone in the stage from the encode in the back repo
+	// This loop redeem milestone.LanesToDisplayMilestoneUse in the stage from the encode in the back repo
 	// It parses all LaneUseDB in the back repo and if the reverse pointer encoding matches the back repo ID
 	// it appends the stage instance
 	// 1. reset the slice
-	milestone.LanesToDisplayMilestone = milestone.LanesToDisplayMilestone[:0]
+	milestone.LanesToDisplayMilestoneUse = milestone.LanesToDisplayMilestoneUse[:0]
 	// 2. loop all instances in the type in the association end
 	for _, laneuseDB_AssocEnd := range *backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if laneuseDB_AssocEnd.Milestone_LanesToDisplayMilestoneDBID.Int64 == int64(milestoneDB.ID) {
+		if laneuseDB_AssocEnd.Milestone_LanesToDisplayMilestoneUseDBID.Int64 == int64(milestoneDB.ID) {
 			// 4. fetch the associated instance in the stage
 			laneuse_AssocEnd := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB_AssocEnd.ID]
 			// 5. append it the association slice
-			milestone.LanesToDisplayMilestone = append(milestone.LanesToDisplayMilestone, laneuse_AssocEnd)
+			milestone.LanesToDisplayMilestoneUse = append(milestone.LanesToDisplayMilestoneUse, laneuse_AssocEnd)
 		}
 	}
 
 	// sort the array according to the order
-	sort.Slice(milestone.LanesToDisplayMilestone, func(i, j int) bool {
-		laneuseDB_i_ID := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[milestone.LanesToDisplayMilestone[i]]
-		laneuseDB_j_ID := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[milestone.LanesToDisplayMilestone[j]]
+	sort.Slice(milestone.LanesToDisplayMilestoneUse, func(i, j int) bool {
+		laneuseDB_i_ID := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[milestone.LanesToDisplayMilestoneUse[i]]
+		laneuseDB_j_ID := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[milestone.LanesToDisplayMilestoneUse[j]]
 
 		laneuseDB_i := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[laneuseDB_i_ID]
 		laneuseDB_j := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[laneuseDB_j_ID]
 
-		return laneuseDB_i.Milestone_LanesToDisplayMilestoneDBID_Index.Int64 < laneuseDB_j.Milestone_LanesToDisplayMilestoneDBID_Index.Int64
+		return laneuseDB_i.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64 < laneuseDB_j.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64
 	})
 
 	return

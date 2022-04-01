@@ -74,8 +74,8 @@ export class LaneUsesTableComponent implements OnInit {
         case 'Lane':
           return (laneuseDB.Lane ? laneuseDB.Lane.Name : '');
 
-        case 'Milestone_LanesToDisplayMilestone':
-          return this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneDBID.Int64)!.Name;
+        case 'Milestone_LanesToDisplayMilestoneUse':
+          return this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64)!.Name;
 
         default:
           console.assert(false, "Unknown field")
@@ -95,8 +95,8 @@ export class LaneUsesTableComponent implements OnInit {
       if (laneuseDB.Lane) {
         mergedContent += laneuseDB.Lane.Name.toLowerCase()
       }
-      if (laneuseDB.Milestone_LanesToDisplayMilestoneDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneDBID.Int64)!.Name.toLowerCase()
+      if (laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -151,13 +151,13 @@ export class LaneUsesTableComponent implements OnInit {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
         "Lane",
-        "Milestone_LanesToDisplayMilestone",
+        "Milestone_LanesToDisplayMilestoneUse",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
         "Lane",
-        "Milestone_LanesToDisplayMilestone",
+        "Milestone_LanesToDisplayMilestoneUse",
       ]
       this.selection = new SelectionModel<LaneUseDB>(allowMultiSelect, this.initialSelection);
     }

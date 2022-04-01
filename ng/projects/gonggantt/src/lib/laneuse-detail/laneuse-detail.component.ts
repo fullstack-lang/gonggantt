@@ -24,7 +24,7 @@ enum LaneUseDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestone_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestoneUse_SET,
 }
 
 @Component({
@@ -83,9 +83,9 @@ export class LaneUseDetailComponent implements OnInit {
 			} else {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
-					case "LanesToDisplayMilestone":
-						// console.log("LaneUse" + " is instanciated with back pointer to instance " + this.id + " Milestone association LanesToDisplayMilestone")
-						this.state = LaneUseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestone_SET
+					case "LanesToDisplayMilestoneUse":
+						// console.log("LaneUse" + " is instanciated with back pointer to instance " + this.id + " Milestone association LanesToDisplayMilestoneUse")
+						this.state = LaneUseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestoneUse_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -123,9 +123,9 @@ export class LaneUseDetailComponent implements OnInit {
 						this.laneuse = laneuse!
 						break;
 					// insertion point for init of association field
-					case LaneUseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestone_SET:
+					case LaneUseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestoneUse_SET:
 						this.laneuse = new (LaneUseDB)
-						this.laneuse.Milestone_LanesToDisplayMilestone_reverse = frontRepo.Milestones.get(this.id)!
+						this.laneuse.Milestone_LanesToDisplayMilestoneUse_reverse = frontRepo.Milestones.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -158,17 +158,17 @@ export class LaneUseDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.laneuse.Milestone_LanesToDisplayMilestone_reverse != undefined) {
-			if (this.laneuse.Milestone_LanesToDisplayMilestoneDBID == undefined) {
-				this.laneuse.Milestone_LanesToDisplayMilestoneDBID = new NullInt64
+		if (this.laneuse.Milestone_LanesToDisplayMilestoneUse_reverse != undefined) {
+			if (this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID == undefined) {
+				this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID = new NullInt64
 			}
-			this.laneuse.Milestone_LanesToDisplayMilestoneDBID.Int64 = this.laneuse.Milestone_LanesToDisplayMilestone_reverse.ID
-			this.laneuse.Milestone_LanesToDisplayMilestoneDBID.Valid = true
-			if (this.laneuse.Milestone_LanesToDisplayMilestoneDBID_Index == undefined) {
-				this.laneuse.Milestone_LanesToDisplayMilestoneDBID_Index = new NullInt64
+			this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Int64 = this.laneuse.Milestone_LanesToDisplayMilestoneUse_reverse.ID
+			this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Valid = true
+			if (this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID_Index == undefined) {
+				this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID_Index = new NullInt64
 			}
-			this.laneuse.Milestone_LanesToDisplayMilestoneDBID_Index.Valid = true
-			this.laneuse.Milestone_LanesToDisplayMilestone_reverse = new MilestoneDB // very important, otherwise, circular JSON
+			this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID_Index.Valid = true
+			this.laneuse.Milestone_LanesToDisplayMilestoneUse_reverse = new MilestoneDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {

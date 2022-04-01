@@ -17,8 +17,8 @@ export class LaneUseDB {
 	Lane?: LaneDB
 	LaneID: NullInt64 = new NullInt64 // if pointer is null, Lane.ID = 0
 
-	Milestone_LanesToDisplayMilestoneDBID: NullInt64 = new NullInt64
-	Milestone_LanesToDisplayMilestoneDBID_Index: NullInt64  = new NullInt64 // store the index of the laneuse instance in Milestone.LanesToDisplayMilestone
-	Milestone_LanesToDisplayMilestone_reverse?: MilestoneDB 
+	Milestone_LanesToDisplayMilestoneUseDBID: NullInt64 = new NullInt64
+	Milestone_LanesToDisplayMilestoneUseDBID_Index: NullInt64  = new NullInt64 // store the index of the laneuse instance in Milestone.LanesToDisplayMilestoneUse
+	Milestone_LanesToDisplayMilestoneUse_reverse?: MilestoneDB 
 
 }

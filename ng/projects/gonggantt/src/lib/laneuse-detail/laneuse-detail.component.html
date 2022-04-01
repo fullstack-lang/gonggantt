@@ -32,8 +32,8 @@
     </mat-form-field>
 
     <mat-form-field class="detail-full-width">
-        <mat-label>(Milestone) LanesToDisplayMilestone</mat-label>
-        <mat-select [compareWith]="compareObjects" [(ngModel)]="laneuse.Milestone_LanesToDisplayMilestone_reverse" [ngModelOptions]="{standalone: true}">
+        <mat-label>(Milestone) LanesToDisplayMilestoneUse</mat-label>
+        <mat-select [compareWith]="compareObjects" [(ngModel)]="laneuse.Milestone_LanesToDisplayMilestoneUse_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let milestone of frontRepo.Milestones_array" [value]="milestone">
                 {{milestone.Name}}

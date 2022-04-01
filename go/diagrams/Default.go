@@ -223,7 +223,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 			Heigth: 78.000000,
 			Links: []*uml.Link{
 				{
-					Field: models.Milestone{}.LanesToDisplayMilestone,
+					Field: models.Milestone{}.LanesToDisplayMilestoneUse,
 					Middlevertice: &uml.Vertice{
 						X: 1010.000000,
 						Y: 429.000000,

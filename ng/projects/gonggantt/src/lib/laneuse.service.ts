@@ -73,13 +73,13 @@ export class LaneUseService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     laneusedb.Lane = new LaneDB
-    let _Milestone_LanesToDisplayMilestone_reverse = laneusedb.Milestone_LanesToDisplayMilestone_reverse
-    laneusedb.Milestone_LanesToDisplayMilestone_reverse = new MilestoneDB
+    let _Milestone_LanesToDisplayMilestoneUse_reverse = laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse
+    laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = new MilestoneDB
 
     return this.http.post<LaneUseDB>(this.laneusesUrl, laneusedb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        laneusedb.Milestone_LanesToDisplayMilestone_reverse = _Milestone_LanesToDisplayMilestone_reverse
+        laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = _Milestone_LanesToDisplayMilestoneUse_reverse
         this.log(`posted laneusedb id=${laneusedb.ID}`)
       }),
       catchError(this.handleError<LaneUseDB>('postLaneUse'))
@@ -104,13 +104,13 @@ export class LaneUseService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     laneusedb.Lane = new LaneDB
-    let _Milestone_LanesToDisplayMilestone_reverse = laneusedb.Milestone_LanesToDisplayMilestone_reverse
-    laneusedb.Milestone_LanesToDisplayMilestone_reverse = new MilestoneDB
+    let _Milestone_LanesToDisplayMilestoneUse_reverse = laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse
+    laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = new MilestoneDB
 
     return this.http.put<LaneUseDB>(url, laneusedb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        laneusedb.Milestone_LanesToDisplayMilestone_reverse = _Milestone_LanesToDisplayMilestone_reverse
+        laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = _Milestone_LanesToDisplayMilestoneUse_reverse
         this.log(`updated laneusedb id=${laneusedb.ID}`)
       }),
       catchError(this.handleError<LaneUseDB>('updateLaneUse'))
