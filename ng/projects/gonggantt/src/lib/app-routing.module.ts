@@ -22,6 +22,10 @@ import { LanesTableComponent } from './lanes-table/lanes-table.component'
 import { LaneDetailComponent } from './lane-detail/lane-detail.component'
 import { LanePresentationComponent } from './lane-presentation/lane-presentation.component'
 
+import { LaneUsesTableComponent } from './laneuses-table/laneuses-table.component'
+import { LaneUseDetailComponent } from './laneuse-detail/laneuse-detail.component'
+import { LaneUsePresentationComponent } from './laneuse-presentation/laneuse-presentation.component'
+
 import { MilestonesTableComponent } from './milestones-table/milestones-table.component'
 import { MilestoneDetailComponent } from './milestone-detail/milestone-detail.component'
 import { MilestonePresentationComponent } from './milestone-presentation/milestone-presentation.component'
@@ -62,6 +66,13 @@ const routes: Routes = [ // insertion point for routes declarations
 	{ path: 'github_com_fullstack_lang_gonggantt_go-lane-detail/:id', component: LaneDetailComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_editor' },
 	{ path: 'github_com_fullstack_lang_gonggantt_go-lane-presentation/:id', component: LanePresentationComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_presentation' },
 	{ path: 'github_com_fullstack_lang_gonggantt_go-lane-presentation-special/:id', component: LanePresentationComponent, outlet: 'github_com_fullstack_lang_gonggantt_golanepres' },
+
+	{ path: 'github_com_fullstack_lang_gonggantt_go-laneuses', component: LaneUsesTableComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_table' },
+	{ path: 'github_com_fullstack_lang_gonggantt_go-laneuse-adder', component: LaneUseDetailComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_editor' },
+	{ path: 'github_com_fullstack_lang_gonggantt_go-laneuse-adder/:id/:originStruct/:originStructFieldName', component: LaneUseDetailComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_editor' },
+	{ path: 'github_com_fullstack_lang_gonggantt_go-laneuse-detail/:id', component: LaneUseDetailComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_editor' },
+	{ path: 'github_com_fullstack_lang_gonggantt_go-laneuse-presentation/:id', component: LaneUsePresentationComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_presentation' },
+	{ path: 'github_com_fullstack_lang_gonggantt_go-laneuse-presentation-special/:id', component: LaneUsePresentationComponent, outlet: 'github_com_fullstack_lang_gonggantt_golaneusepres' },
 
 	{ path: 'github_com_fullstack_lang_gonggantt_go-milestones', component: MilestonesTableComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_table' },
 	{ path: 'github_com_fullstack_lang_gonggantt_go-milestone-adder', component: MilestoneDetailComponent, outlet: 'github_com_fullstack_lang_gonggantt_go_editor' },

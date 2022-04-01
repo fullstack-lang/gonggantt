@@ -2,16 +2,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { LaneDB } from '../lane-db'
-import { LaneService } from '../lane.service'
+import { LaneUseDB } from '../laneuse-db'
+import { LaneUseService } from '../laneuse.service'
 
 import { FrontRepoService, FrontRepo, SelectionMode, DialogData } from '../front-repo.service'
 import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
-import { GanttDB } from '../gantt-db'
-import { GroupDB } from '../group-db'
+import { MilestoneDB } from '../milestone-db'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
@@ -19,27 +18,26 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 
 import { NullInt64 } from '../null-int64'
 
-// LaneDetailComponent is initilizaed from different routes
-// LaneDetailComponentState detail different cases 
-enum LaneDetailComponentState {
+// LaneUseDetailComponent is initilizaed from different routes
+// LaneUseDetailComponentState detail different cases 
+enum LaneUseDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Lanes_SET,
-	CREATE_INSTANCE_WITH_ASSOCIATION_Group_GroupLanes_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestone_SET,
 }
 
 @Component({
-	selector: 'app-lane-detail',
-	templateUrl: './lane-detail.component.html',
-	styleUrls: ['./lane-detail.component.css'],
+	selector: 'app-laneuse-detail',
+	templateUrl: './laneuse-detail.component.html',
+	styleUrls: ['./laneuse-detail.component.css'],
 })
-export class LaneDetailComponent implements OnInit {
+export class LaneUseDetailComponent implements OnInit {
 
 	// insertion point for declarations
 
-	// the LaneDB of interest
-	lane: LaneDB = new LaneDB
+	// the LaneUseDB of interest
+	laneuse: LaneUseDB = new LaneUseDB
 
 	// front repo
 	frontRepo: FrontRepo = new FrontRepo
@@ -50,7 +48,7 @@ export class LaneDetailComponent implements OnInit {
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
 	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
-	state: LaneDetailComponentState = LaneDetailComponentState.CREATE_INSTANCE
+	state: LaneUseDetailComponentState = LaneUseDetailComponentState.CREATE_INSTANCE
 
 	// in UDPATE state, if is the id of the instance to update
 	// in CREATE state with one association set, this is the id of the associated instance
@@ -61,7 +59,7 @@ export class LaneDetailComponent implements OnInit {
 	originStructFieldName: string = ""
 
 	constructor(
-		private laneService: LaneService,
+		private laneuseService: LaneUseService,
 		private frontRepoService: FrontRepoService,
 		public dialog: MatDialog,
 		private route: ActivatedRoute,
@@ -78,20 +76,16 @@ export class LaneDetailComponent implements OnInit {
 
 		const association = this.route.snapshot.paramMap.get('association');
 		if (this.id == 0) {
-			this.state = LaneDetailComponentState.CREATE_INSTANCE
+			this.state = LaneUseDetailComponentState.CREATE_INSTANCE
 		} else {
 			if (this.originStruct == undefined) {
-				this.state = LaneDetailComponentState.UPDATE_INSTANCE
+				this.state = LaneUseDetailComponentState.UPDATE_INSTANCE
 			} else {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
-					case "Lanes":
-						// console.log("Lane" + " is instanciated with back pointer to instance " + this.id + " Gantt association Lanes")
-						this.state = LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Lanes_SET
-						break;
-					case "GroupLanes":
-						// console.log("Lane" + " is instanciated with back pointer to instance " + this.id + " Group association GroupLanes")
-						this.state = LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Group_GroupLanes_SET
+					case "LanesToDisplayMilestone":
+						// console.log("LaneUse" + " is instanciated with back pointer to instance " + this.id + " Milestone association LanesToDisplayMilestone")
+						this.state = LaneUseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestone_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -99,13 +93,13 @@ export class LaneDetailComponent implements OnInit {
 			}
 		}
 
-		this.getLane()
+		this.getLaneUse()
 
 		// observable for changes in structs
-		this.laneService.LaneServiceChanged.subscribe(
+		this.laneuseService.LaneUseServiceChanged.subscribe(
 			message => {
 				if (message == "post" || message == "update" || message == "delete") {
-					this.getLane()
+					this.getLaneUse()
 				}
 			}
 		)
@@ -113,29 +107,25 @@ export class LaneDetailComponent implements OnInit {
 		// insertion point for initialisation of enums list
 	}
 
-	getLane(): void {
+	getLaneUse(): void {
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
 				switch (this.state) {
-					case LaneDetailComponentState.CREATE_INSTANCE:
-						this.lane = new (LaneDB)
+					case LaneUseDetailComponentState.CREATE_INSTANCE:
+						this.laneuse = new (LaneUseDB)
 						break;
-					case LaneDetailComponentState.UPDATE_INSTANCE:
-						let lane = frontRepo.Lanes.get(this.id)
-						console.assert(lane != undefined, "missing lane with id:" + this.id)
-						this.lane = lane!
+					case LaneUseDetailComponentState.UPDATE_INSTANCE:
+						let laneuse = frontRepo.LaneUses.get(this.id)
+						console.assert(laneuse != undefined, "missing laneuse with id:" + this.id)
+						this.laneuse = laneuse!
 						break;
 					// insertion point for init of association field
-					case LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Lanes_SET:
-						this.lane = new (LaneDB)
-						this.lane.Gantt_Lanes_reverse = frontRepo.Gantts.get(this.id)!
-						break;
-					case LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Group_GroupLanes_SET:
-						this.lane = new (LaneDB)
-						this.lane.Group_GroupLanes_reverse = frontRepo.Groups.get(this.id)!
+					case LaneUseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestone_SET:
+						this.laneuse = new (LaneUseDB)
+						this.laneuse.Milestone_LanesToDisplayMilestone_reverse = frontRepo.Milestones.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -154,46 +144,44 @@ export class LaneDetailComponent implements OnInit {
 		// pointers fields, after the translation, are nulled in order to perform serialization
 
 		// insertion point for translation/nullation of each field
+		if (this.laneuse.LaneID == undefined) {
+			this.laneuse.LaneID = new NullInt64
+		}
+		if (this.laneuse.Lane != undefined) {
+			this.laneuse.LaneID.Int64 = this.laneuse.Lane.ID
+			this.laneuse.LaneID.Valid = true
+		} else {
+			this.laneuse.LaneID.Int64 = 0
+			this.laneuse.LaneID.Valid = true
+		}
 
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.lane.Gantt_Lanes_reverse != undefined) {
-			if (this.lane.Gantt_LanesDBID == undefined) {
-				this.lane.Gantt_LanesDBID = new NullInt64
+		if (this.laneuse.Milestone_LanesToDisplayMilestone_reverse != undefined) {
+			if (this.laneuse.Milestone_LanesToDisplayMilestoneDBID == undefined) {
+				this.laneuse.Milestone_LanesToDisplayMilestoneDBID = new NullInt64
 			}
-			this.lane.Gantt_LanesDBID.Int64 = this.lane.Gantt_Lanes_reverse.ID
-			this.lane.Gantt_LanesDBID.Valid = true
-			if (this.lane.Gantt_LanesDBID_Index == undefined) {
-				this.lane.Gantt_LanesDBID_Index = new NullInt64
+			this.laneuse.Milestone_LanesToDisplayMilestoneDBID.Int64 = this.laneuse.Milestone_LanesToDisplayMilestone_reverse.ID
+			this.laneuse.Milestone_LanesToDisplayMilestoneDBID.Valid = true
+			if (this.laneuse.Milestone_LanesToDisplayMilestoneDBID_Index == undefined) {
+				this.laneuse.Milestone_LanesToDisplayMilestoneDBID_Index = new NullInt64
 			}
-			this.lane.Gantt_LanesDBID_Index.Valid = true
-			this.lane.Gantt_Lanes_reverse = new GanttDB // very important, otherwise, circular JSON
-		}
-		if (this.lane.Group_GroupLanes_reverse != undefined) {
-			if (this.lane.Group_GroupLanesDBID == undefined) {
-				this.lane.Group_GroupLanesDBID = new NullInt64
-			}
-			this.lane.Group_GroupLanesDBID.Int64 = this.lane.Group_GroupLanes_reverse.ID
-			this.lane.Group_GroupLanesDBID.Valid = true
-			if (this.lane.Group_GroupLanesDBID_Index == undefined) {
-				this.lane.Group_GroupLanesDBID_Index = new NullInt64
-			}
-			this.lane.Group_GroupLanesDBID_Index.Valid = true
-			this.lane.Group_GroupLanes_reverse = new GroupDB // very important, otherwise, circular JSON
+			this.laneuse.Milestone_LanesToDisplayMilestoneDBID_Index.Valid = true
+			this.laneuse.Milestone_LanesToDisplayMilestone_reverse = new MilestoneDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {
-			case LaneDetailComponentState.UPDATE_INSTANCE:
-				this.laneService.updateLane(this.lane)
-					.subscribe(lane => {
-						this.laneService.LaneServiceChanged.next("update")
+			case LaneUseDetailComponentState.UPDATE_INSTANCE:
+				this.laneuseService.updateLaneUse(this.laneuse)
+					.subscribe(laneuse => {
+						this.laneuseService.LaneUseServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.laneService.postLane(this.lane).subscribe(lane => {
-					this.laneService.LaneServiceChanged.next("post")
-					this.lane = new (LaneDB) // reset fields
+				this.laneuseService.postLaneUse(this.laneuse).subscribe(laneuse => {
+					this.laneuseService.LaneUseServiceChanged.next("post")
+					this.laneuse = new (LaneUseDB) // reset fields
 				});
 		}
 	}
@@ -216,7 +204,7 @@ export class LaneDetailComponent implements OnInit {
 		dialogConfig.height = "50%"
 		if (selectionMode == SelectionMode.ONE_MANY_ASSOCIATION_MODE) {
 
-			dialogData.ID = this.lane.ID!
+			dialogData.ID = this.laneuse.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
@@ -232,13 +220,13 @@ export class LaneDetailComponent implements OnInit {
 			});
 		}
 		if (selectionMode == SelectionMode.MANY_MANY_ASSOCIATION_MODE) {
-			dialogData.ID = this.lane.ID!
+			dialogData.ID = this.laneuse.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
 
 			// set up the source
-			dialogData.SourceStruct = "Lane"
+			dialogData.SourceStruct = "LaneUse"
 			dialogData.SourceField = sourceField
 
 			// set up the intermediate struct
@@ -268,7 +256,7 @@ export class LaneDetailComponent implements OnInit {
 		// dialogConfig.disableClose = true;
 		dialogConfig.autoFocus = true;
 		dialogConfig.data = {
-			ID: this.lane.ID,
+			ID: this.laneuse.ID,
 			ReversePointer: reverseField,
 			OrderingMode: true,
 		};
@@ -284,8 +272,8 @@ export class LaneDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.lane.Name == "") {
-			this.lane.Name = event.value.Name
+		if (this.laneuse.Name == "") {
+			this.laneuse.Name = event.value.Name
 		}
 	}
 

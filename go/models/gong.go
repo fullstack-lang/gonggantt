@@ -43,6 +43,9 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	Lanes           map[*Lane]struct{}
 	Lanes_mapString map[string]*Lane
 
+	LaneUses           map[*LaneUse]struct{}
+	LaneUses_mapString map[string]*LaneUse
+
 	Milestones           map[*Milestone]struct{}
 	Milestones_mapString map[string]*Milestone
 
@@ -83,6 +86,8 @@ type BackRepoInterface interface {
 	CheckoutGroup(group *Group)
 	CommitLane(lane *Lane)
 	CheckoutLane(lane *Lane)
+	CommitLaneUse(laneuse *LaneUse)
+	CheckoutLaneUse(laneuse *LaneUse)
 	CommitMilestone(milestone *Milestone)
 	CheckoutMilestone(milestone *Milestone)
 	GetLastCommitFromBackNb() uint
@@ -106,6 +111,9 @@ var Stage StageStruct = StageStruct{ // insertion point for array initiatialisat
 	Lanes:           make(map[*Lane]struct{}),
 	Lanes_mapString: make(map[string]*Lane),
 
+	LaneUses:           make(map[*LaneUse]struct{}),
+	LaneUses_mapString: make(map[string]*LaneUse),
+
 	Milestones:           make(map[*Milestone]struct{}),
 	Milestones_mapString: make(map[string]*Milestone),
 
@@ -124,6 +132,7 @@ func (stage *StageStruct) Commit() {
 	stage.Map_GongStructName_InstancesNb["Gantt"] = len(stage.Gantts)
 	stage.Map_GongStructName_InstancesNb["Group"] = len(stage.Groups)
 	stage.Map_GongStructName_InstancesNb["Lane"] = len(stage.Lanes)
+	stage.Map_GongStructName_InstancesNb["LaneUse"] = len(stage.LaneUses)
 	stage.Map_GongStructName_InstancesNb["Milestone"] = len(stage.Milestones)
 
 }
@@ -889,6 +898,132 @@ func (lane *Lane) GetFieldStringValue(fieldName string) (res string) {
 	return
 }
 
+func (stage *StageStruct) getLaneUseOrderedStructWithNameField() []*LaneUse {
+	// have alphabetical order generation
+	laneuseOrdered := []*LaneUse{}
+	for laneuse := range stage.LaneUses {
+		laneuseOrdered = append(laneuseOrdered, laneuse)
+	}
+	sort.Slice(laneuseOrdered[:], func(i, j int) bool {
+		return laneuseOrdered[i].Name < laneuseOrdered[j].Name
+	})
+	return laneuseOrdered
+}
+
+// Stage puts laneuse to the model stage
+func (laneuse *LaneUse) Stage() *LaneUse {
+	Stage.LaneUses[laneuse] = __member
+	Stage.LaneUses_mapString[laneuse.Name] = laneuse
+
+	return laneuse
+}
+
+// Unstage removes laneuse off the model stage
+func (laneuse *LaneUse) Unstage() *LaneUse {
+	delete(Stage.LaneUses, laneuse)
+	delete(Stage.LaneUses_mapString, laneuse.Name)
+	return laneuse
+}
+
+// commit laneuse to the back repo (if it is already staged)
+func (laneuse *LaneUse) Commit() *LaneUse {
+	if _, ok := Stage.LaneUses[laneuse]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CommitLaneUse(laneuse)
+		}
+	}
+	return laneuse
+}
+
+// Checkout laneuse to the back repo (if it is already staged)
+func (laneuse *LaneUse) Checkout() *LaneUse {
+	if _, ok := Stage.LaneUses[laneuse]; ok {
+		if Stage.BackRepo != nil {
+			Stage.BackRepo.CheckoutLaneUse(laneuse)
+		}
+	}
+	return laneuse
+}
+
+//
+// Legacy, to be deleted
+//
+
+// StageCopy appends a copy of laneuse to the model stage
+func (laneuse *LaneUse) StageCopy() *LaneUse {
+	_laneuse := new(LaneUse)
+	*_laneuse = *laneuse
+	_laneuse.Stage()
+	return _laneuse
+}
+
+// StageAndCommit appends laneuse to the model stage and commit to the orm repo
+func (laneuse *LaneUse) StageAndCommit() *LaneUse {
+	laneuse.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMLaneUse(laneuse)
+	}
+	return laneuse
+}
+
+// DeleteStageAndCommit appends laneuse to the model stage and commit to the orm repo
+func (laneuse *LaneUse) DeleteStageAndCommit() *LaneUse {
+	laneuse.Unstage()
+	DeleteORMLaneUse(laneuse)
+	return laneuse
+}
+
+// StageCopyAndCommit appends a copy of laneuse to the model stage and commit to the orm repo
+func (laneuse *LaneUse) StageCopyAndCommit() *LaneUse {
+	_laneuse := new(LaneUse)
+	*_laneuse = *laneuse
+	_laneuse.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMLaneUse(laneuse)
+	}
+	return _laneuse
+}
+
+// CreateORMLaneUse enables dynamic staging of a LaneUse instance
+func CreateORMLaneUse(laneuse *LaneUse) {
+	laneuse.Stage()
+	if Stage.AllModelsStructCreateCallback != nil {
+		Stage.AllModelsStructCreateCallback.CreateORMLaneUse(laneuse)
+	}
+}
+
+// DeleteORMLaneUse enables dynamic staging of a LaneUse instance
+func DeleteORMLaneUse(laneuse *LaneUse) {
+	laneuse.Unstage()
+	if Stage.AllModelsStructDeleteCallback != nil {
+		Stage.AllModelsStructDeleteCallback.DeleteORMLaneUse(laneuse)
+	}
+}
+
+// for satisfaction of GongStruct interface
+func (laneuse *LaneUse) GetName() (res string) {
+	return laneuse.Name
+}
+
+func (laneuse *LaneUse) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "Lane",  }
+	return
+}
+
+func (laneuse *LaneUse) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = laneuse.Name
+	case "Lane":
+		if laneuse.Lane != nil {
+			res = laneuse.Lane.Name
+		}
+	}
+	return
+}
+
 func (stage *StageStruct) getMilestoneOrderedStructWithNameField() []*Milestone {
 	// have alphabetical order generation
 	milestoneOrdered := []*Milestone{}
@@ -1027,6 +1162,7 @@ type AllModelsStructCreateInterface interface { // insertion point for Callbacks
 	CreateORMGantt(Gantt *Gantt)
 	CreateORMGroup(Group *Group)
 	CreateORMLane(Lane *Lane)
+	CreateORMLaneUse(LaneUse *LaneUse)
 	CreateORMMilestone(Milestone *Milestone)
 }
 
@@ -1036,6 +1172,7 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 	DeleteORMGantt(Gantt *Gantt)
 	DeleteORMGroup(Group *Group)
 	DeleteORMLane(Lane *Lane)
+	DeleteORMLaneUse(LaneUse *LaneUse)
 	DeleteORMMilestone(Milestone *Milestone)
 }
 
@@ -1054,6 +1191,9 @@ func (stage *StageStruct) Reset() { // insertion point for array reset
 
 	stage.Lanes = make(map[*Lane]struct{})
 	stage.Lanes_mapString = make(map[string]*Lane)
+
+	stage.LaneUses = make(map[*LaneUse]struct{})
+	stage.LaneUses_mapString = make(map[string]*LaneUse)
 
 	stage.Milestones = make(map[*Milestone]struct{})
 	stage.Milestones_mapString = make(map[string]*Milestone)
@@ -1075,6 +1215,9 @@ func (stage *StageStruct) Nil() { // insertion point for array nil
 
 	stage.Lanes = nil
 	stage.Lanes_mapString = nil
+
+	stage.LaneUses = nil
+	stage.LaneUses_mapString = nil
 
 	stage.Milestones = nil
 	stage.Milestones_mapString = nil
@@ -1513,6 +1656,38 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
+	map_LaneUse_Identifiers := make(map[*LaneUse]string)
+	_ = map_LaneUse_Identifiers
+
+	laneuseOrdered := []*LaneUse{}
+	for laneuse := range stage.LaneUses {
+		laneuseOrdered = append(laneuseOrdered, laneuse)
+	}
+	sort.Slice(laneuseOrdered[:], func(i, j int) bool {
+		return laneuseOrdered[i].Name < laneuseOrdered[j].Name
+	})
+	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of LaneUse")
+	for idx, laneuse := range laneuseOrdered {
+
+		id = generatesIdentifier("LaneUse", idx, laneuse.Name)
+		map_LaneUse_Identifiers[laneuse] = id
+
+		decl = IdentifiersDecls
+		decl = strings.ReplaceAll(decl, "{{Identifier}}", id)
+		decl = strings.ReplaceAll(decl, "{{GeneratedStructName}}", "LaneUse")
+		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", laneuse.Name)
+		identifiersDecl += decl
+
+		initializerStatements += fmt.Sprintf("\n\n	// LaneUse %s values setup", laneuse.Name)
+		// Initialisation of values
+		setValueField = StringInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Name")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(laneuse.Name))
+		initializerStatements += setValueField
+
+	}
+
 	map_Milestone_Identifiers := make(map[*Milestone]string)
 	_ = map_Milestone_Identifiers
 
@@ -1666,6 +1841,24 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
+	for idx, laneuse := range laneuseOrdered {
+		var setPointerField string
+		_ = setPointerField
+
+		id = generatesIdentifier("LaneUse", idx, laneuse.Name)
+		map_LaneUse_Identifiers[laneuse] = id
+
+		// Initialisation of values
+		if laneuse.Lane != nil {
+			setPointerField = PointerFieldInitStatement
+			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
+			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "Lane")
+			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_Lane_Identifiers[laneuse.Lane])
+			pointersInitializesStatements += setPointerField
+		}
+
+	}
+
 	for idx, milestone := range milestoneOrdered {
 		var setPointerField string
 		_ = setPointerField
@@ -1674,11 +1867,11 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		map_Milestone_Identifiers[milestone] = id
 
 		// Initialisation of values
-		for _, _lane := range milestone.LanesToDisplayMilestone {
+		for _, _laneuse := range milestone.LanesToDisplayMilestone {
 			setPointerField = SliceOfPointersFieldInitStatement
 			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
 			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "LanesToDisplayMilestone")
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_Lane_Identifiers[_lane])
+			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_LaneUse_Identifiers[_laneuse])
 			pointersInitializesStatements += setPointerField
 		}
 

@@ -7,5 +7,5 @@ type Milestone struct {
 	Date time.Time
 
 	// a red diamond a text anchor will be displayed
-	LanesToDisplayMilestone []*Lane
+	LanesToDisplayMilestone []*LaneUse
 }

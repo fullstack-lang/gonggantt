@@ -57,12 +57,6 @@ type LanePointersEnconding struct {
 
 	// implementation of the index of the withing the slice
 	Group_GroupLanesDBID_Index sql.NullInt64
-
-	// Implementation of a reverse ID for field Milestone{}.LanesToDisplayMilestone []*Lane
-	Milestone_LanesToDisplayMilestoneDBID sql.NullInt64
-
-	// implementation of the index of the withing the slice
-	Milestone_LanesToDisplayMilestoneDBID_Index sql.NullInt64
 }
 
 // LaneDB describes a lane in the database
@@ -638,12 +632,6 @@ func (backRepoLane *BackRepoLaneStruct) RestorePhaseTwo() {
 		if laneDB.Group_GroupLanesDBID.Int64 != 0 {
 			laneDB.Group_GroupLanesDBID.Int64 =
 				int64(BackRepoGroupid_atBckpTime_newID[uint(laneDB.Group_GroupLanesDBID.Int64)])
-		}
-
-		// This reindex lane.LanesToDisplayMilestone
-		if laneDB.Milestone_LanesToDisplayMilestoneDBID.Int64 != 0 {
-			laneDB.Milestone_LanesToDisplayMilestoneDBID.Int64 =
-				int64(BackRepoMilestoneid_atBckpTime_newID[uint(laneDB.Milestone_LanesToDisplayMilestoneDBID.Int64)])
 		}
 
 		// update databse with new index encoding

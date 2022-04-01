@@ -49,6 +49,13 @@ export * from './lib/lanes-table/lanes-table.component'
 export * from './lib/lane-db'
 export * from './lib/lane.service'
 
+export * from './lib/laneuse-detail/laneuse-detail.component'
+export * from './lib/laneuse-presentation/laneuse-presentation.component'
+export * from './lib/laneuse-sorting/laneuse-sorting.component'
+export * from './lib/laneuses-table/laneuses-table.component'
+export * from './lib/laneuse-db'
+export * from './lib/laneuse.service'
+
 export * from './lib/milestone-detail/milestone-detail.component'
 export * from './lib/milestone-presentation/milestone-presentation.component'
 export * from './lib/milestone-sorting/milestone-sorting.component'

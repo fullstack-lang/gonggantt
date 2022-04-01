@@ -14,8 +14,8 @@ import { SelectionModel } from '@angular/cdk/collections';
 const allowMultiSelect = true;
 
 import { Router, RouterState } from '@angular/router';
-import { LaneDB } from '../lane-db'
-import { LaneService } from '../lane.service'
+import { LaneUseDB } from '../laneuse-db'
+import { LaneUseService } from '../laneuse.service'
 
 // insertion point for additional imports
 
@@ -29,24 +29,24 @@ enum TableComponentMode {
 
 // generated table component
 @Component({
-  selector: 'app-lanestable',
-  templateUrl: './lanes-table.component.html',
-  styleUrls: ['./lanes-table.component.css'],
+  selector: 'app-laneusestable',
+  templateUrl: './laneuses-table.component.html',
+  styleUrls: ['./laneuses-table.component.css'],
 })
-export class LanesTableComponent implements OnInit {
+export class LaneUsesTableComponent implements OnInit {
 
   // mode at invocation
   mode: TableComponentMode = TableComponentMode.DISPLAY_MODE
 
-  // used if the component is called as a selection component of Lane instances
-  selection: SelectionModel<LaneDB> = new (SelectionModel)
-  initialSelection = new Array<LaneDB>()
+  // used if the component is called as a selection component of LaneUse instances
+  selection: SelectionModel<LaneUseDB> = new (SelectionModel)
+  initialSelection = new Array<LaneUseDB>()
 
   // the data source for the table
-  lanes: LaneDB[] = []
-  matTableDataSource: MatTableDataSource<LaneDB> = new (MatTableDataSource)
+  laneuses: LaneUseDB[] = []
+  matTableDataSource: MatTableDataSource<LaneUseDB> = new (MatTableDataSource)
 
-  // front repo, that will be referenced by this.lanes
+  // front repo, that will be referenced by this.laneuses
   frontRepo: FrontRepo = new (FrontRepo)
 
   // displayedColumns is referenced by the MatTable component for specify what columns
@@ -62,23 +62,20 @@ export class LanesTableComponent implements OnInit {
   ngAfterViewInit() {
 
     // enable sorting on all fields (including pointers and reverse pointer)
-    this.matTableDataSource.sortingDataAccessor = (laneDB: LaneDB, property: string) => {
+    this.matTableDataSource.sortingDataAccessor = (laneuseDB: LaneUseDB, property: string) => {
       switch (property) {
         case 'ID':
-          return laneDB.ID
+          return laneuseDB.ID
 
         // insertion point for specific sorting accessor
         case 'Name':
-          return laneDB.Name;
+          return laneuseDB.Name;
 
-        case 'Order':
-          return laneDB.Order;
+        case 'Lane':
+          return (laneuseDB.Lane ? laneuseDB.Lane.Name : '');
 
-        case 'Gantt_Lanes':
-          return this.frontRepo.Gantts.get(laneDB.Gantt_LanesDBID.Int64)!.Name;
-
-        case 'Group_GroupLanes':
-          return this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64)!.Name;
+        case 'Milestone_LanesToDisplayMilestone':
+          return this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneDBID.Int64)!.Name;
 
         default:
           console.assert(false, "Unknown field")
@@ -87,21 +84,19 @@ export class LanesTableComponent implements OnInit {
     };
 
     // enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
-    this.matTableDataSource.filterPredicate = (laneDB: LaneDB, filter: string) => {
+    this.matTableDataSource.filterPredicate = (laneuseDB: LaneUseDB, filter: string) => {
 
       // filtering is based on finding a lower case filter into a concatenated string
-      // the laneDB properties
+      // the laneuseDB properties
       let mergedContent = ""
 
       // insertion point for merging of fields
-      mergedContent += laneDB.Name.toLowerCase()
-      mergedContent += laneDB.Order.toString()
-      if (laneDB.Gantt_LanesDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.Gantts.get(laneDB.Gantt_LanesDBID.Int64)!.Name.toLowerCase()
+      mergedContent += laneuseDB.Name.toLowerCase()
+      if (laneuseDB.Lane) {
+        mergedContent += laneuseDB.Lane.Name.toLowerCase()
       }
-
-      if (laneDB.Group_GroupLanesDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64)!.Name.toLowerCase()
+      if (laneuseDB.Milestone_LanesToDisplayMilestoneDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -119,11 +114,11 @@ export class LanesTableComponent implements OnInit {
   }
 
   constructor(
-    private laneService: LaneService,
+    private laneuseService: LaneUseService,
     private frontRepoService: FrontRepoService,
 
-    // not null if the component is called as a selection component of lane instances
-    public dialogRef: MatDialogRef<LanesTableComponent>,
+    // not null if the component is called as a selection component of laneuse instances
+    public dialogRef: MatDialogRef<LaneUsesTableComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public dialogData: DialogData,
 
     private router: Router,
@@ -145,118 +140,116 @@ export class LanesTableComponent implements OnInit {
     }
 
     // observable for changes in structs
-    this.laneService.LaneServiceChanged.subscribe(
+    this.laneuseService.LaneUseServiceChanged.subscribe(
       message => {
         if (message == "post" || message == "update" || message == "delete") {
-          this.getLanes()
+          this.getLaneUses()
         }
       }
     )
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
-        "Order",
-        "Gantt_Lanes",
-        "Group_GroupLanes",
+        "Lane",
+        "Milestone_LanesToDisplayMilestone",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
-        "Order",
-        "Gantt_Lanes",
-        "Group_GroupLanes",
+        "Lane",
+        "Milestone_LanesToDisplayMilestone",
       ]
-      this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
+      this.selection = new SelectionModel<LaneUseDB>(allowMultiSelect, this.initialSelection);
     }
 
   }
 
   ngOnInit(): void {
-    this.getLanes()
-    this.matTableDataSource = new MatTableDataSource(this.lanes)
+    this.getLaneUses()
+    this.matTableDataSource = new MatTableDataSource(this.laneuses)
   }
 
-  getLanes(): void {
+  getLaneUses(): void {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
-        this.lanes = this.frontRepo.Lanes_array;
+        this.laneuses = this.frontRepo.LaneUses_array;
 
         // insertion point for time duration Recoveries
         // insertion point for enum int Recoveries
         
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          for (let lane of this.lanes) {
+          for (let laneuse of this.laneuses) {
             let ID = this.dialogData.ID
-            let revPointer = lane[this.dialogData.ReversePointer as keyof LaneDB] as unknown as NullInt64
+            let revPointer = laneuse[this.dialogData.ReversePointer as keyof LaneUseDB] as unknown as NullInt64
             if (revPointer.Int64 == ID) {
-              this.initialSelection.push(lane)
+              this.initialSelection.push(laneuse)
             }
-            this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<LaneUseDB>(allowMultiSelect, this.initialSelection);
           }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
 
-          let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, LaneDB>
+          let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, LaneUseDB>
           let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
-          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as LaneDB[]
+          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as LaneUseDB[]
           for (let associationInstance of sourceField) {
-            let lane = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LaneDB
-            this.initialSelection.push(lane)
+            let laneuse = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LaneUseDB
+            this.initialSelection.push(laneuse)
           }
 
-          this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
+          this.selection = new SelectionModel<LaneUseDB>(allowMultiSelect, this.initialSelection);
         }
 
         // update the mat table data source
-        this.matTableDataSource.data = this.lanes
+        this.matTableDataSource.data = this.laneuses
       }
     )
   }
 
-  // newLane initiate a new lane
-  // create a new Lane objet
-  newLane() {
+  // newLaneUse initiate a new laneuse
+  // create a new LaneUse objet
+  newLaneUse() {
   }
 
-  deleteLane(laneID: number, lane: LaneDB) {
-    // list of lanes is truncated of lane before the delete
-    this.lanes = this.lanes.filter(h => h !== lane);
+  deleteLaneUse(laneuseID: number, laneuse: LaneUseDB) {
+    // list of laneuses is truncated of laneuse before the delete
+    this.laneuses = this.laneuses.filter(h => h !== laneuse);
 
-    this.laneService.deleteLane(laneID).subscribe(
-      lane => {
-        this.laneService.LaneServiceChanged.next("delete")
+    this.laneuseService.deleteLaneUse(laneuseID).subscribe(
+      laneuse => {
+        this.laneuseService.LaneUseServiceChanged.next("delete")
       }
     );
   }
 
-  editLane(laneID: number, lane: LaneDB) {
+  editLaneUse(laneuseID: number, laneuse: LaneUseDB) {
 
   }
 
-  // display lane in router
-  displayLaneInRouter(laneID: number) {
-    this.router.navigate(["github_com_fullstack_lang_gonggantt_go-" + "lane-display", laneID])
+  // display laneuse in router
+  displayLaneUseInRouter(laneuseID: number) {
+    this.router.navigate(["github_com_fullstack_lang_gonggantt_go-" + "laneuse-display", laneuseID])
   }
 
   // set editor outlet
-  setEditorRouterOutlet(laneID: number) {
+  setEditorRouterOutlet(laneuseID: number) {
     this.router.navigate([{
       outlets: {
-        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "lane-detail", laneID]
+        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "laneuse-detail", laneuseID]
       }
     }]);
   }
 
   // set presentation outlet
-  setPresentationRouterOutlet(laneID: number) {
+  setPresentationRouterOutlet(laneuseID: number) {
     this.router.navigate([{
       outlets: {
-        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "lane-presentation", laneID]
+        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "laneuse-presentation", laneuseID]
       }
     }]);
   }
@@ -264,7 +257,7 @@ export class LanesTableComponent implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.lanes.length;
+    const numRows = this.laneuses.length;
     return numSelected === numRows;
   }
 
@@ -272,39 +265,39 @@ export class LanesTableComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.lanes.forEach(row => this.selection.select(row));
+      this.laneuses.forEach(row => this.selection.select(row));
   }
 
   save() {
 
     if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
 
-      let toUpdate = new Set<LaneDB>()
+      let toUpdate = new Set<LaneUseDB>()
 
-      // reset all initial selection of lane that belong to lane
-      for (let lane of this.initialSelection) {
-        let index = lane[this.dialogData.ReversePointer as keyof LaneDB] as unknown as NullInt64
+      // reset all initial selection of laneuse that belong to laneuse
+      for (let laneuse of this.initialSelection) {
+        let index = laneuse[this.dialogData.ReversePointer as keyof LaneUseDB] as unknown as NullInt64
         index.Int64 = 0
         index.Valid = true
-        toUpdate.add(lane)
+        toUpdate.add(laneuse)
 
       }
 
-      // from selection, set lane that belong to lane
-      for (let lane of this.selection.selected) {
+      // from selection, set laneuse that belong to laneuse
+      for (let laneuse of this.selection.selected) {
         let ID = this.dialogData.ID as number
-        let reversePointer = lane[this.dialogData.ReversePointer as keyof LaneDB] as unknown as NullInt64
+        let reversePointer = laneuse[this.dialogData.ReversePointer as keyof LaneUseDB] as unknown as NullInt64
         reversePointer.Int64 = ID
         reversePointer.Valid = true
-        toUpdate.add(lane)
+        toUpdate.add(laneuse)
       }
 
 
-      // update all lane (only update selection & initial selection)
-      for (let lane of toUpdate) {
-        this.laneService.updateLane(lane)
-          .subscribe(lane => {
-            this.laneService.LaneServiceChanged.next("update")
+      // update all laneuse (only update selection & initial selection)
+      for (let laneuse of toUpdate) {
+        this.laneuseService.updateLaneUse(laneuse)
+          .subscribe(laneuse => {
+            this.laneuseService.LaneUseServiceChanged.next("update")
           });
       }
     }
@@ -312,26 +305,26 @@ export class LanesTableComponent implements OnInit {
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
 
       // get the source instance via the map of instances in the front repo
-      let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, LaneDB>
+      let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, LaneUseDB>
       let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
       // First, parse all instance of the association struct and remove the instance
       // that have unselect
-      let unselectedLane = new Set<number>()
-      for (let lane of this.initialSelection) {
-        if (this.selection.selected.includes(lane)) {
-          // console.log("lane " + lane.Name + " is still selected")
+      let unselectedLaneUse = new Set<number>()
+      for (let laneuse of this.initialSelection) {
+        if (this.selection.selected.includes(laneuse)) {
+          // console.log("laneuse " + laneuse.Name + " is still selected")
         } else {
-          console.log("lane " + lane.Name + " has been unselected")
-          unselectedLane.add(lane.ID)
-          console.log("is unselected " + unselectedLane.has(lane.ID))
+          console.log("laneuse " + laneuse.Name + " has been unselected")
+          unselectedLaneUse.add(laneuse.ID)
+          console.log("is unselected " + unselectedLaneUse.has(laneuse.ID))
         }
       }
 
       // delete the association instance
       let associationInstance = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]
-      let lane = associationInstance![this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LaneDB
-      if (unselectedLane.has(lane.ID)) {
+      let laneuse = associationInstance![this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LaneUseDB
+      if (unselectedLaneUse.has(laneuse.ID)) {
         this.frontRepoService.deleteService(this.dialogData.IntermediateStruct, associationInstance)
 
 
@@ -339,38 +332,38 @@ export class LanesTableComponent implements OnInit {
 
       // is the source array is empty create it
       if (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] == undefined) {
-        (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] as unknown as Array<LaneDB>) = new Array<LaneDB>()
+        (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] as unknown as Array<LaneUseDB>) = new Array<LaneUseDB>()
       }
 
       // second, parse all instance of the selected
       if (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]) {
         this.selection.selected.forEach(
-          lane => {
-            if (!this.initialSelection.includes(lane)) {
-              // console.log("lane " + lane.Name + " has been added to the selection")
+          laneuse => {
+            if (!this.initialSelection.includes(laneuse)) {
+              // console.log("laneuse " + laneuse.Name + " has been added to the selection")
 
               let associationInstance = {
-                Name: sourceInstance["Name"] + "-" + lane.Name,
+                Name: sourceInstance["Name"] + "-" + laneuse.Name,
               }
 
               let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
-              index.Int64 = lane.ID
+              index.Int64 = laneuse.ID
               index.Valid = true
 
               let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
-              indexDB.Int64 = lane.ID
+              indexDB.Int64 = laneuse.ID
               index.Valid = true
 
               this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
-              // console.log("lane " + lane.Name + " is still selected")
+              // console.log("laneuse " + laneuse.Name + " is still selected")
             }
           }
         )
       }
 
-      // this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
+      // this.selection = new SelectionModel<LaneUseDB>(allowMultiSelect, this.initialSelection);
     }
 
     // why pizza ?

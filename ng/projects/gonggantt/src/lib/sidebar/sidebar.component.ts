@@ -18,6 +18,8 @@ import { GroupService } from '../group.service'
 import { getGroupUniqueID } from '../front-repo.service'
 import { LaneService } from '../lane.service'
 import { getLaneUniqueID } from '../front-repo.service'
+import { LaneUseService } from '../laneuse.service'
+import { getLaneUseUniqueID } from '../front-repo.service'
 import { MilestoneService } from '../milestone.service'
 import { getMilestoneUniqueID } from '../front-repo.service'
 
@@ -160,6 +162,7 @@ export class SidebarComponent implements OnInit {
     private ganttService: GanttService,
     private groupService: GroupService,
     private laneService: LaneService,
+    private laneuseService: LaneUseService,
     private milestoneService: MilestoneService,
   ) { }
 
@@ -201,6 +204,14 @@ export class SidebarComponent implements OnInit {
     )
     // observable for changes in structs
     this.laneService.LaneServiceChanged.subscribe(
+      message => {
+        if (message == "post" || message == "update" || message == "delete") {
+          this.refresh()
+        }
+      }
+    )
+    // observable for changes in structs
+    this.laneuseService.LaneUseServiceChanged.subscribe(
       message => {
         if (message == "post" || message == "update" || message == "delete") {
           this.refresh()
@@ -722,6 +733,85 @@ export class SidebarComponent implements OnInit {
       )
 
       /**
+      * fill up the LaneUse part of the mat tree
+      */
+      let laneuseGongNodeStruct: GongNode = {
+        name: "LaneUse",
+        type: GongNodeType.STRUCT,
+        id: 0,
+        uniqueIdPerStack: 13 * nonInstanceNodeId,
+        structName: "LaneUse",
+        associationField: "",
+        associatedStructName: "",
+        children: new Array<GongNode>()
+      }
+      nonInstanceNodeId = nonInstanceNodeId + 1
+      this.gongNodeTree.push(laneuseGongNodeStruct)
+
+      this.frontRepo.LaneUses_array.sort((t1, t2) => {
+        if (t1.Name > t2.Name) {
+          return 1;
+        }
+        if (t1.Name < t2.Name) {
+          return -1;
+        }
+        return 0;
+      });
+
+      this.frontRepo.LaneUses_array.forEach(
+        laneuseDB => {
+          let laneuseGongNodeInstance: GongNode = {
+            name: laneuseDB.Name,
+            type: GongNodeType.INSTANCE,
+            id: laneuseDB.ID,
+            uniqueIdPerStack: getLaneUseUniqueID(laneuseDB.ID),
+            structName: "LaneUse",
+            associationField: "",
+            associatedStructName: "",
+            children: new Array<GongNode>()
+          }
+          laneuseGongNodeStruct.children!.push(laneuseGongNodeInstance)
+
+          // insertion point for per field code
+          /**
+          * let append a node for the association Lane
+          */
+          let LaneGongNodeAssociation: GongNode = {
+            name: "(Lane) Lane",
+            type: GongNodeType.ONE__ZERO_ONE_ASSOCIATION,
+            id: laneuseDB.ID,
+            uniqueIdPerStack: 17 * nonInstanceNodeId,
+            structName: "LaneUse",
+            associationField: "Lane",
+            associatedStructName: "Lane",
+            children: new Array<GongNode>()
+          }
+          nonInstanceNodeId = nonInstanceNodeId + 1
+          laneuseGongNodeInstance.children!.push(LaneGongNodeAssociation)
+
+          /**
+            * let append a node for the instance behind the asssociation Lane
+            */
+          if (laneuseDB.Lane != undefined) {
+            let laneuseGongNodeInstance_Lane: GongNode = {
+              name: laneuseDB.Lane.Name,
+              type: GongNodeType.INSTANCE,
+              id: laneuseDB.Lane.ID,
+              uniqueIdPerStack: // godel numbering (thank you kurt)
+                3 * getLaneUseUniqueID(laneuseDB.ID)
+                + 5 * getLaneUniqueID(laneuseDB.Lane.ID),
+              structName: "Lane",
+              associationField: "",
+              associatedStructName: "",
+              children: new Array<GongNode>()
+            }
+            LaneGongNodeAssociation.children.push(laneuseGongNodeInstance_Lane)
+          }
+
+        }
+      )
+
+      /**
       * fill up the Milestone part of the mat tree
       */
       let milestoneGongNodeStruct: GongNode = {
@@ -766,32 +856,32 @@ export class SidebarComponent implements OnInit {
           * let append a node for the slide of pointer LanesToDisplayMilestone
           */
           let LanesToDisplayMilestoneGongNodeAssociation: GongNode = {
-            name: "(Lane) LanesToDisplayMilestone",
+            name: "(LaneUse) LanesToDisplayMilestone",
             type: GongNodeType.ONE__ZERO_MANY_ASSOCIATION,
             id: milestoneDB.ID,
             uniqueIdPerStack: 19 * nonInstanceNodeId,
             structName: "Milestone",
             associationField: "LanesToDisplayMilestone",
-            associatedStructName: "Lane",
+            associatedStructName: "LaneUse",
             children: new Array<GongNode>()
           }
           nonInstanceNodeId = nonInstanceNodeId + 1
           milestoneGongNodeInstance.children.push(LanesToDisplayMilestoneGongNodeAssociation)
 
-          milestoneDB.LanesToDisplayMilestone?.forEach(laneDB => {
-            let laneNode: GongNode = {
-              name: laneDB.Name,
+          milestoneDB.LanesToDisplayMilestone?.forEach(laneuseDB => {
+            let laneuseNode: GongNode = {
+              name: laneuseDB.Name,
               type: GongNodeType.INSTANCE,
-              id: laneDB.ID,
+              id: laneuseDB.ID,
               uniqueIdPerStack: // godel numbering (thank you kurt)
                 7 * getMilestoneUniqueID(milestoneDB.ID)
-                + 11 * getLaneUniqueID(laneDB.ID),
-              structName: "Lane",
+                + 11 * getLaneUseUniqueID(laneuseDB.ID),
+              structName: "LaneUse",
               associationField: "",
               associatedStructName: "",
               children: new Array<GongNode>()
             }
-            LanesToDisplayMilestoneGongNodeAssociation.children.push(laneNode)
+            LanesToDisplayMilestoneGongNodeAssociation.children.push(laneuseNode)
           })
 
         }
