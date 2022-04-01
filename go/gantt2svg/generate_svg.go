@@ -279,7 +279,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 			svg.Rects = append(svg.Rects, diamond)
 			diamond.Name = milestone.Name
 			diamond.X = line.X1 - diamondWidth/2.0
-			diamond.Y = mapLane_TextY[lanesToDisplayMilestone] - diamondWidth + LaneHeight/2.0
+			diamond.Y = mapLane_TextY[lanesToDisplayMilestone.Lane] - diamondWidth + LaneHeight/2.0
 			diamond.Width = diamondWidth
 			diamond.Height = diamondWidth
 			diamond.Color = "red"

@@ -38,6 +38,10 @@ func gantt1Injection() {
 	__Lane__000002_Lane_3 := (&models.Lane{Name: "Lane-3"}).Stage()
 	__Lane__000003_Lane_4 := (&models.Lane{Name: "Lane-4"}).Stage()
 
+	// Declarations of staged instances of LaneUse
+	__LaneUse__000000_Lane_1 := (&models.LaneUse{Name: "Lane-1"}).Stage()
+	__LaneUse__000001_Lane_3 := (&models.LaneUse{Name: "Lane-3"}).Stage()
+
 	// Declarations of staged instances of Milestone
 	__Milestone__000000_june_2023_ := (&models.Milestone{Name: "june 2023 !"}).Stage()
 
@@ -133,6 +137,12 @@ func gantt1Injection() {
 	__Lane__000003_Lane_4.Name = `Lane-4`
 	__Lane__000003_Lane_4.Order = 23
 
+	// LaneUse Lane-1 values setup
+	__LaneUse__000000_Lane_1.Name = `Lane-1`
+
+	// LaneUse Lane-3 values setup
+	__LaneUse__000001_Lane_3.Name = `Lane-3`
+
 	// Milestone june 2023 ! values setup
 	__Milestone__000000_june_2023_.Name = `june 2023 !`
 	__Milestone__000000_june_2023_.Date, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-06-01 00:00:00 +0000 +0000")
@@ -153,8 +163,10 @@ func gantt1Injection() {
 	__Lane__000000_Lane_1.Bars = append(__Lane__000000_Lane_1.Bars, __Bar__000001_Lane_1_Bar_2)
 	__Lane__000001_Lane_2.Bars = append(__Lane__000001_Lane_2.Bars, __Bar__000002_Lane_2_Bar_1)
 	__Lane__000002_Lane_3.Bars = append(__Lane__000002_Lane_3.Bars, __Bar__000003_Lane_3_Bar_1)
-	__Milestone__000000_june_2023_.LanesToDisplayMilestone = append(__Milestone__000000_june_2023_.LanesToDisplayMilestone, __Lane__000000_Lane_1)
-	__Milestone__000000_june_2023_.LanesToDisplayMilestone = append(__Milestone__000000_june_2023_.LanesToDisplayMilestone, __Lane__000002_Lane_3)
+	__LaneUse__000000_Lane_1.Lane = __Lane__000000_Lane_1
+	__LaneUse__000001_Lane_3.Lane = __Lane__000002_Lane_3
+	__Milestone__000000_june_2023_.LanesToDisplayMilestone = append(__Milestone__000000_june_2023_.LanesToDisplayMilestone, __LaneUse__000000_Lane_1)
+	__Milestone__000000_june_2023_.LanesToDisplayMilestone = append(__Milestone__000000_june_2023_.LanesToDisplayMilestone, __LaneUse__000001_Lane_3)
 }
 
 

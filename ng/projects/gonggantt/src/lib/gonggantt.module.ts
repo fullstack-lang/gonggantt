@@ -63,6 +63,11 @@ import { LaneSortingComponent } from './lane-sorting/lane-sorting.component'
 import { LaneDetailComponent } from './lane-detail/lane-detail.component'
 import { LanePresentationComponent } from './lane-presentation/lane-presentation.component'
 
+import { LaneUsesTableComponent } from './laneuses-table/laneuses-table.component'
+import { LaneUseSortingComponent } from './laneuse-sorting/laneuse-sorting.component'
+import { LaneUseDetailComponent } from './laneuse-detail/laneuse-detail.component'
+import { LaneUsePresentationComponent } from './laneuse-presentation/laneuse-presentation.component'
+
 import { MilestonesTableComponent } from './milestones-table/milestones-table.component'
 import { MilestoneSortingComponent } from './milestone-sorting/milestone-sorting.component'
 import { MilestoneDetailComponent } from './milestone-detail/milestone-detail.component'
@@ -96,6 +101,11 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 		LaneSortingComponent,
 		LaneDetailComponent,
 		LanePresentationComponent,
+
+		LaneUsesTableComponent,
+		LaneUseSortingComponent,
+		LaneUseDetailComponent,
+		LaneUsePresentationComponent,
 
 		MilestonesTableComponent,
 		MilestoneSortingComponent,
@@ -165,6 +175,11 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 		LaneSortingComponent,
 		LaneDetailComponent,
 		LanePresentationComponent,
+
+		LaneUsesTableComponent,
+		LaneUseSortingComponent,
+		LaneUseDetailComponent,
+		LaneUsePresentationComponent,
 
 		MilestonesTableComponent,
 		MilestoneSortingComponent,

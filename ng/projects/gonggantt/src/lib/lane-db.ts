@@ -2,7 +2,6 @@
 import { BarDB } from './bar-db'
 import { GanttDB } from './gantt-db'
 import { GroupDB } from './group-db'
-import { MilestoneDB } from './milestone-db'
 
 // usefull for managing pointer ID values that can be nullable
 import { NullInt64 } from './null-int64'
@@ -25,9 +24,5 @@ export class LaneDB {
 	Group_GroupLanesDBID: NullInt64 = new NullInt64
 	Group_GroupLanesDBID_Index: NullInt64  = new NullInt64 // store the index of the lane instance in Group.GroupLanes
 	Group_GroupLanes_reverse?: GroupDB 
-
-	Milestone_LanesToDisplayMilestoneDBID: NullInt64 = new NullInt64
-	Milestone_LanesToDisplayMilestoneDBID_Index: NullInt64  = new NullInt64 // store the index of the lane instance in Milestone.LanesToDisplayMilestone
-	Milestone_LanesToDisplayMilestone_reverse?: MilestoneDB 
 
 }
