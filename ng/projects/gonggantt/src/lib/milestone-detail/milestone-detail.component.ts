@@ -35,6 +35,7 @@ enum MilestoneDetailComponentState {
 export class MilestoneDetailComponent implements OnInit {
 
 	// insertion point for declarations
+	DisplayVerticalBarFormControl = new FormControl(false);
 
 	// the MilestoneDB of interest
 	milestone: MilestoneDB = new MilestoneDB
@@ -132,6 +133,7 @@ export class MilestoneDetailComponent implements OnInit {
 				}
 
 				// insertion point for recovery of form controls value for bool fields
+				this.DisplayVerticalBarFormControl.setValue(this.milestone.DisplayVerticalBar)
 			}
 		)
 
@@ -144,6 +146,7 @@ export class MilestoneDetailComponent implements OnInit {
 		// pointers fields, after the translation, are nulled in order to perform serialization
 
 		// insertion point for translation/nullation of each field
+		this.milestone.DisplayVerticalBar = this.DisplayVerticalBarFormControl.value
 
 		// save from the front pointer space to the non pointer space for serialization
 

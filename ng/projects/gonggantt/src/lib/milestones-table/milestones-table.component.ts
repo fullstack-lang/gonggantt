@@ -72,10 +72,17 @@ export class MilestonesTableComponent implements OnInit {
           return milestoneDB.Name;
 
         case 'Date':
-          return milestoneDB.Date.getDate();
+          return (new Date(milestoneDB.Date)).getTime()
+
+        case 'DisplayVerticalBar':
+          return milestoneDB.DisplayVerticalBar?"true":"false";
 
         case 'Gantt_Milestones':
-          return this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64)!.Name;
+          if (this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64) != undefined) {
+            return this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")
@@ -148,12 +155,14 @@ export class MilestonesTableComponent implements OnInit {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
         "Date",
+        "DisplayVerticalBar",
         "Gantt_Milestones",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
         "Date",
+        "DisplayVerticalBar",
         "Gantt_Milestones",
       ]
       this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);

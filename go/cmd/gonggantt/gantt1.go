@@ -46,7 +46,7 @@ func gantt1Injection() {
 	__LaneUse__000004_Lane_4 := (&models.LaneUse{Name: "Lane-4"}).Stage()
 
 	// Declarations of staged instances of Milestone
-	__Milestone__000000_July_2024 := (&models.Milestone{Name: "July 2024"}).Stage()
+	__Milestone__000000_Oct_2024 := (&models.Milestone{Name: "Oct 2024"}).Stage()
 	__Milestone__000001_june_2023_ := (&models.Milestone{Name: "june 2023 !"}).Stage()
 
 	// Setup of values
@@ -156,13 +156,15 @@ func gantt1Injection() {
 	// LaneUse Lane-4 values setup
 	__LaneUse__000004_Lane_4.Name = `Lane-4`
 
-	// Milestone July 2024 values setup
-	__Milestone__000000_July_2024.Name = `July 2024`
-	__Milestone__000000_July_2024.Date, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-06-30 22:00:00 +0000 +0000")
+	// Milestone Oct 2024 values setup
+	__Milestone__000000_Oct_2024.Name = `Oct 2024`
+	__Milestone__000000_Oct_2024.Date, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-09-30 22:00:00 +0000 +0000")
+	__Milestone__000000_Oct_2024.DisplayVerticalBar = false
 
 	// Milestone june 2023 ! values setup
 	__Milestone__000001_june_2023_.Name = `june 2023 !`
 	__Milestone__000001_june_2023_.Date, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-06-01 00:00:00 +0000 +0000")
+	__Milestone__000001_june_2023_.DisplayVerticalBar = true
 
 	// Setup of pointers
 	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1.From = __Bar__000003_Lane_3_Bar_1
@@ -172,7 +174,7 @@ func gantt1Injection() {
 	__Gantt__000000_Test.Lanes = append(__Gantt__000000_Test.Lanes, __Lane__000002_Lane_3)
 	__Gantt__000000_Test.Lanes = append(__Gantt__000000_Test.Lanes, __Lane__000000_Lane_1)
 	__Gantt__000000_Test.Milestones = append(__Gantt__000000_Test.Milestones, __Milestone__000001_june_2023_)
-	__Gantt__000000_Test.Milestones = append(__Gantt__000000_Test.Milestones, __Milestone__000000_July_2024)
+	__Gantt__000000_Test.Milestones = append(__Gantt__000000_Test.Milestones, __Milestone__000000_Oct_2024)
 	__Gantt__000000_Test.Groups = append(__Gantt__000000_Test.Groups, __Group__000000_Group_of_lanes_3_4)
 	__Gantt__000000_Test.Arrows = append(__Gantt__000000_Test.Arrows, __Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1)
 	__Group__000000_Group_of_lanes_3_4.GroupLanes = append(__Group__000000_Group_of_lanes_3_4.GroupLanes, __Lane__000002_Lane_3)
@@ -186,9 +188,9 @@ func gantt1Injection() {
 	__LaneUse__000002_Lane_3.Lane = __Lane__000002_Lane_3
 	__LaneUse__000003_Lane_3.Lane = __Lane__000002_Lane_3
 	__LaneUse__000004_Lane_4.Lane = __Lane__000003_Lane_4
-	__Milestone__000000_July_2024.LanesToDisplayMilestoneUse = append(__Milestone__000000_July_2024.LanesToDisplayMilestoneUse, __LaneUse__000001_Lane_2)
-	__Milestone__000000_July_2024.LanesToDisplayMilestoneUse = append(__Milestone__000000_July_2024.LanesToDisplayMilestoneUse, __LaneUse__000004_Lane_4)
-	__Milestone__000000_July_2024.LanesToDisplayMilestoneUse = append(__Milestone__000000_July_2024.LanesToDisplayMilestoneUse, __LaneUse__000002_Lane_3)
+	__Milestone__000000_Oct_2024.LanesToDisplayMilestoneUse = append(__Milestone__000000_Oct_2024.LanesToDisplayMilestoneUse, __LaneUse__000001_Lane_2)
+	__Milestone__000000_Oct_2024.LanesToDisplayMilestoneUse = append(__Milestone__000000_Oct_2024.LanesToDisplayMilestoneUse, __LaneUse__000004_Lane_4)
+	__Milestone__000000_Oct_2024.LanesToDisplayMilestoneUse = append(__Milestone__000000_Oct_2024.LanesToDisplayMilestoneUse, __LaneUse__000002_Lane_3)
 	__Milestone__000001_june_2023_.LanesToDisplayMilestoneUse = append(__Milestone__000001_june_2023_.LanesToDisplayMilestoneUse, __LaneUse__000000_Lane_1)
 	__Milestone__000001_june_2023_.LanesToDisplayMilestoneUse = append(__Milestone__000001_june_2023_.LanesToDisplayMilestoneUse, __LaneUse__000003_Lane_3)
 }

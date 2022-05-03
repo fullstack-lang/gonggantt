@@ -262,16 +262,19 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		//
 		// draw the line
 		//
-		line := new(gongsvg_models.Line).Stage()
-		line.Name = milestone.Name
-		svg.Lines = append(svg.Lines, line)
-		line.X1 = XLeftLanes + (XRightMargin-XLeftLanes)*durationBetweenMilestoneAndGanttStartRelativeToGanttDuration
-		line.X2 = line.X1
-		line.Y1 = YTopMargin
-		line.Y2 = yTimeLine
-		line.Stroke = "black"
-		line.StrokeWidth = 0.5
-		line.StrokeDashArray = "2 2"
+		lineX := XLeftLanes + (XRightMargin-XLeftLanes)*durationBetweenMilestoneAndGanttStartRelativeToGanttDuration
+		if milestone.DisplayVerticalBar {
+			line := new(gongsvg_models.Line).Stage()
+			line.Name = milestone.Name
+			svg.Lines = append(svg.Lines, line)
+			line.X1 = lineX
+			line.X2 = line.X1
+			line.Y1 = YTopMargin
+			line.Y2 = yTimeLine
+			line.Stroke = "black"
+			line.StrokeWidth = 0.5
+			line.StrokeDashArray = "2 2"
+		}
 
 		//
 		// draw diamond
@@ -282,7 +285,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 			diamond := new(gongsvg_models.Rect).Stage()
 			svg.Rects = append(svg.Rects, diamond)
 			diamond.Name = milestone.Name
-			diamond.X = line.X1 - diamondWidth/2.0
+			diamond.X = lineX - diamondWidth/2.0
 			diamond.Y = mapLane_TextY[lanesToDisplayMilestone.Lane] - diamondWidth + LaneHeight/2.0
 			diamond.Width = diamondWidth
 			diamond.Height = diamondWidth

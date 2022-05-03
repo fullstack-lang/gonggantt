@@ -29,6 +29,9 @@
         <ngx-mat-datetime-picker [showSeconds]="true" #pickerDate></ngx-mat-datetime-picker>
     </mat-form-field>
 
+    <!-- -->
+    <mat-checkbox [formControl]="DisplayVerticalBarFormControl">DisplayVerticalBar</mat-checkbox>
+
     <mat-grid-list cols="5" rowHeight="2:1">
         <mat-grid-tile [colspan]="3">
             <button mat-raised-button (click)="openReverseSelection('LaneUse', 'Milestone_LanesToDisplayMilestoneUseDBID', 'ONE_MANY_ASSOCIATION_MODE', '', '', '')">LanesToDisplayMilestoneUse</button>

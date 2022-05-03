@@ -84,7 +84,11 @@ export class ArrowsTableComponent implements OnInit {
           return arrowDB.OptionnalStroke;
 
         case 'Gantt_Arrows':
-          return this.frontRepo.Gantts.get(arrowDB.Gantt_ArrowsDBID.Int64)!.Name;
+          if (this.frontRepo.Gantts.get(arrowDB.Gantt_ArrowsDBID.Int64) != undefined) {
+            return this.frontRepo.Gantts.get(arrowDB.Gantt_ArrowsDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

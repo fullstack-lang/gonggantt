@@ -13,6 +13,7 @@ export class MilestoneDB {
 	// insertion point for basic fields declarations
 	Name: string = ""
 	Date: Date = new Date
+	DisplayVerticalBar: boolean = false
 
 	// insertion point for other declarations
 	LanesToDisplayMilestoneUse?: Array<LaneUseDB>

@@ -75,7 +75,11 @@ export class LaneUsesTableComponent implements OnInit {
           return (laneuseDB.Lane ? laneuseDB.Lane.Name : '');
 
         case 'Milestone_LanesToDisplayMilestoneUse':
-          return this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64)!.Name;
+          if (this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64) != undefined) {
+            return this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

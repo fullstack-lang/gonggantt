@@ -69,6 +69,10 @@ type MilestoneDB struct {
 
 	// Declation for basic field milestoneDB.Date
 	Date_Data sql.NullTime
+
+	// Declation for basic field milestoneDB.DisplayVerticalBar bool (to be completed)
+	// provide the sql storage for the boolan
+	DisplayVerticalBar_Data sql.NullBool
 	// encoding of pointers
 	MilestonePointersEnconding
 }
@@ -93,6 +97,8 @@ type MilestoneWOP struct {
 	Name string `xlsx:"1"`
 
 	Date time.Time `xlsx:"2"`
+
+	DisplayVerticalBar bool `xlsx:"3"`
 	// insertion for WOP pointer fields
 }
 
@@ -101,6 +107,7 @@ var Milestone_Fields = []string{
 	"ID",
 	"Name",
 	"Date",
+	"DisplayVerticalBar",
 }
 
 type BackRepoMilestoneStruct struct {
@@ -433,6 +440,9 @@ func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestone(milestone *models.M
 
 	milestoneDB.Date_Data.Time = milestone.Date
 	milestoneDB.Date_Data.Valid = true
+
+	milestoneDB.DisplayVerticalBar_Data.Bool = milestone.DisplayVerticalBar
+	milestoneDB.DisplayVerticalBar_Data.Valid = true
 }
 
 // CopyBasicFieldsFromMilestoneWOP
@@ -444,6 +454,9 @@ func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestoneWOP(milestone *Miles
 
 	milestoneDB.Date_Data.Time = milestone.Date
 	milestoneDB.Date_Data.Valid = true
+
+	milestoneDB.DisplayVerticalBar_Data.Bool = milestone.DisplayVerticalBar
+	milestoneDB.DisplayVerticalBar_Data.Valid = true
 }
 
 // CopyBasicFieldsToMilestone
@@ -451,6 +464,7 @@ func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestone(milestone *models.Mil
 	// insertion point for checkout of basic fields (back repo to stage)
 	milestone.Name = milestoneDB.Name_Data.String
 	milestone.Date = milestoneDB.Date_Data.Time
+	milestone.DisplayVerticalBar = milestoneDB.DisplayVerticalBar_Data.Bool
 }
 
 // CopyBasicFieldsToMilestoneWOP
@@ -459,6 +473,7 @@ func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestoneWOP(milestone *Milesto
 	// insertion point for checkout of basic fields (back repo to stage)
 	milestone.Name = milestoneDB.Name_Data.String
 	milestone.Date = milestoneDB.Date_Data.Time
+	milestone.DisplayVerticalBar = milestoneDB.DisplayVerticalBar_Data.Bool
 }
 
 // Backup generates a json file from a slice of all MilestoneDB instances in the backrepo

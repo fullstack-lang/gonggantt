@@ -1133,7 +1133,7 @@ func (milestone *Milestone) GetName() (res string) {
 
 func (milestone *Milestone) GetFields() (res []string) {
 	// list of fields 
-	res = []string{"Name", "Date", "LanesToDisplayMilestoneUse",  }
+	res = []string{"Name", "Date", "DisplayVerticalBar", "LanesToDisplayMilestoneUse",  }
 	return
 }
 
@@ -1144,6 +1144,8 @@ func (milestone *Milestone) GetFieldStringValue(fieldName string) (res string) {
 		res = milestone.Name
 	case "Date":
 		res = milestone.Date.String()
+	case "DisplayVerticalBar":
+		res = fmt.Sprintf("%t", milestone.DisplayVerticalBar)
 	case "LanesToDisplayMilestoneUse":
 		for idx, __instance__ := range milestone.LanesToDisplayMilestoneUse {
 			if idx > 0 {
@@ -1722,6 +1724,12 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Date")
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", milestone.Date.String())
+		initializerStatements += setValueField
+
+		setValueField = NumberInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "DisplayVerticalBar")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", fmt.Sprintf("%t", milestone.DisplayVerticalBar))
 		initializerStatements += setValueField
 
 	}

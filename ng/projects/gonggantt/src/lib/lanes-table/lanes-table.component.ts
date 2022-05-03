@@ -75,10 +75,18 @@ export class LanesTableComponent implements OnInit {
           return laneDB.Order;
 
         case 'Gantt_Lanes':
-          return this.frontRepo.Gantts.get(laneDB.Gantt_LanesDBID.Int64)!.Name;
+          if (this.frontRepo.Gantts.get(laneDB.Gantt_LanesDBID.Int64) != undefined) {
+            return this.frontRepo.Gantts.get(laneDB.Gantt_LanesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         case 'Group_GroupLanes':
-          return this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64)!.Name;
+          if (this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64) != undefined) {
+            return this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")
