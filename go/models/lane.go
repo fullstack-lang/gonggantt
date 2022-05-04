@@ -7,3 +7,9 @@ type Lane struct {
 	Order int
 	Bars  []*Bar
 }
+
+type LaneUse struct {
+	Name string
+
+	Lane *Lane
+}

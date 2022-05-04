@@ -71,7 +71,7 @@ export class MilestoneService {
   postMilestone(milestonedb: MilestoneDB): Observable<MilestoneDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    milestonedb.LanesToDisplayMilestone = []
+    milestonedb.LanesToDisplayMilestoneUse = []
     let _Gantt_Milestones_reverse = milestonedb.Gantt_Milestones_reverse
     milestonedb.Gantt_Milestones_reverse = new GanttDB
 
@@ -102,7 +102,7 @@ export class MilestoneService {
     const url = `${this.milestonesUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    milestonedb.LanesToDisplayMilestone = []
+    milestonedb.LanesToDisplayMilestoneUse = []
     let _Gantt_Milestones_reverse = milestonedb.Gantt_Milestones_reverse
     milestonedb.Gantt_Milestones_reverse = new GanttDB
 

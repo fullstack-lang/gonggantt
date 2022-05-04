@@ -2,15 +2,15 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-import { MilestoneDB } from '../milestone-db'
-import { MilestoneService } from '../milestone.service'
+import { LaneUseDB } from '../laneuse-db'
+import { LaneUseService } from '../laneuse.service'
 
 import { FrontRepoService, FrontRepo, SelectionMode, DialogData } from '../front-repo.service'
 import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
-import { GanttDB } from '../gantt-db'
+import { MilestoneDB } from '../milestone-db'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
@@ -18,27 +18,26 @@ import { MatDialog, MAT_DIALOG_DATA, MatDialogRef, MatDialogConfig } from '@angu
 
 import { NullInt64 } from '../null-int64'
 
-// MilestoneDetailComponent is initilizaed from different routes
-// MilestoneDetailComponentState detail different cases 
-enum MilestoneDetailComponentState {
+// LaneUseDetailComponent is initilizaed from different routes
+// LaneUseDetailComponentState detail different cases 
+enum LaneUseDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Milestones_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestoneUse_SET,
 }
 
 @Component({
-	selector: 'app-milestone-detail',
-	templateUrl: './milestone-detail.component.html',
-	styleUrls: ['./milestone-detail.component.css'],
+	selector: 'app-laneuse-detail',
+	templateUrl: './laneuse-detail.component.html',
+	styleUrls: ['./laneuse-detail.component.css'],
 })
-export class MilestoneDetailComponent implements OnInit {
+export class LaneUseDetailComponent implements OnInit {
 
 	// insertion point for declarations
-	DisplayVerticalBarFormControl = new FormControl(false);
 
-	// the MilestoneDB of interest
-	milestone: MilestoneDB = new MilestoneDB
+	// the LaneUseDB of interest
+	laneuse: LaneUseDB = new LaneUseDB
 
 	// front repo
 	frontRepo: FrontRepo = new FrontRepo
@@ -49,7 +48,7 @@ export class MilestoneDetailComponent implements OnInit {
 	mapFields_displayAsTextArea = new Map<string, boolean>()
 
 	// the state at initialization (CREATION, UPDATE or CREATE with one association set)
-	state: MilestoneDetailComponentState = MilestoneDetailComponentState.CREATE_INSTANCE
+	state: LaneUseDetailComponentState = LaneUseDetailComponentState.CREATE_INSTANCE
 
 	// in UDPATE state, if is the id of the instance to update
 	// in CREATE state with one association set, this is the id of the associated instance
@@ -60,7 +59,7 @@ export class MilestoneDetailComponent implements OnInit {
 	originStructFieldName: string = ""
 
 	constructor(
-		private milestoneService: MilestoneService,
+		private laneuseService: LaneUseService,
 		private frontRepoService: FrontRepoService,
 		public dialog: MatDialog,
 		private route: ActivatedRoute,
@@ -77,16 +76,16 @@ export class MilestoneDetailComponent implements OnInit {
 
 		const association = this.route.snapshot.paramMap.get('association');
 		if (this.id == 0) {
-			this.state = MilestoneDetailComponentState.CREATE_INSTANCE
+			this.state = LaneUseDetailComponentState.CREATE_INSTANCE
 		} else {
 			if (this.originStruct == undefined) {
-				this.state = MilestoneDetailComponentState.UPDATE_INSTANCE
+				this.state = LaneUseDetailComponentState.UPDATE_INSTANCE
 			} else {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
-					case "Milestones":
-						// console.log("Milestone" + " is instanciated with back pointer to instance " + this.id + " Gantt association Milestones")
-						this.state = MilestoneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Milestones_SET
+					case "LanesToDisplayMilestoneUse":
+						// console.log("LaneUse" + " is instanciated with back pointer to instance " + this.id + " Milestone association LanesToDisplayMilestoneUse")
+						this.state = LaneUseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestoneUse_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -94,13 +93,13 @@ export class MilestoneDetailComponent implements OnInit {
 			}
 		}
 
-		this.getMilestone()
+		this.getLaneUse()
 
 		// observable for changes in structs
-		this.milestoneService.MilestoneServiceChanged.subscribe(
+		this.laneuseService.LaneUseServiceChanged.subscribe(
 			message => {
 				if (message == "post" || message == "update" || message == "delete") {
-					this.getMilestone()
+					this.getLaneUse()
 				}
 			}
 		)
@@ -108,32 +107,31 @@ export class MilestoneDetailComponent implements OnInit {
 		// insertion point for initialisation of enums list
 	}
 
-	getMilestone(): void {
+	getLaneUse(): void {
 
 		this.frontRepoService.pull().subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
 				switch (this.state) {
-					case MilestoneDetailComponentState.CREATE_INSTANCE:
-						this.milestone = new (MilestoneDB)
+					case LaneUseDetailComponentState.CREATE_INSTANCE:
+						this.laneuse = new (LaneUseDB)
 						break;
-					case MilestoneDetailComponentState.UPDATE_INSTANCE:
-						let milestone = frontRepo.Milestones.get(this.id)
-						console.assert(milestone != undefined, "missing milestone with id:" + this.id)
-						this.milestone = milestone!
+					case LaneUseDetailComponentState.UPDATE_INSTANCE:
+						let laneuse = frontRepo.LaneUses.get(this.id)
+						console.assert(laneuse != undefined, "missing laneuse with id:" + this.id)
+						this.laneuse = laneuse!
 						break;
 					// insertion point for init of association field
-					case MilestoneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Milestones_SET:
-						this.milestone = new (MilestoneDB)
-						this.milestone.Gantt_Milestones_reverse = frontRepo.Gantts.get(this.id)!
+					case LaneUseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestoneUse_SET:
+						this.laneuse = new (LaneUseDB)
+						this.laneuse.Milestone_LanesToDisplayMilestoneUse_reverse = frontRepo.Milestones.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
 				}
 
 				// insertion point for recovery of form controls value for bool fields
-				this.DisplayVerticalBarFormControl.setValue(this.milestone.DisplayVerticalBar)
 			}
 		)
 
@@ -146,35 +144,44 @@ export class MilestoneDetailComponent implements OnInit {
 		// pointers fields, after the translation, are nulled in order to perform serialization
 
 		// insertion point for translation/nullation of each field
-		this.milestone.DisplayVerticalBar = this.DisplayVerticalBarFormControl.value
+		if (this.laneuse.LaneID == undefined) {
+			this.laneuse.LaneID = new NullInt64
+		}
+		if (this.laneuse.Lane != undefined) {
+			this.laneuse.LaneID.Int64 = this.laneuse.Lane.ID
+			this.laneuse.LaneID.Valid = true
+		} else {
+			this.laneuse.LaneID.Int64 = 0
+			this.laneuse.LaneID.Valid = true
+		}
 
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.milestone.Gantt_Milestones_reverse != undefined) {
-			if (this.milestone.Gantt_MilestonesDBID == undefined) {
-				this.milestone.Gantt_MilestonesDBID = new NullInt64
+		if (this.laneuse.Milestone_LanesToDisplayMilestoneUse_reverse != undefined) {
+			if (this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID == undefined) {
+				this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID = new NullInt64
 			}
-			this.milestone.Gantt_MilestonesDBID.Int64 = this.milestone.Gantt_Milestones_reverse.ID
-			this.milestone.Gantt_MilestonesDBID.Valid = true
-			if (this.milestone.Gantt_MilestonesDBID_Index == undefined) {
-				this.milestone.Gantt_MilestonesDBID_Index = new NullInt64
+			this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Int64 = this.laneuse.Milestone_LanesToDisplayMilestoneUse_reverse.ID
+			this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Valid = true
+			if (this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID_Index == undefined) {
+				this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID_Index = new NullInt64
 			}
-			this.milestone.Gantt_MilestonesDBID_Index.Valid = true
-			this.milestone.Gantt_Milestones_reverse = new GanttDB // very important, otherwise, circular JSON
+			this.laneuse.Milestone_LanesToDisplayMilestoneUseDBID_Index.Valid = true
+			this.laneuse.Milestone_LanesToDisplayMilestoneUse_reverse = new MilestoneDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {
-			case MilestoneDetailComponentState.UPDATE_INSTANCE:
-				this.milestoneService.updateMilestone(this.milestone)
-					.subscribe(milestone => {
-						this.milestoneService.MilestoneServiceChanged.next("update")
+			case LaneUseDetailComponentState.UPDATE_INSTANCE:
+				this.laneuseService.updateLaneUse(this.laneuse)
+					.subscribe(laneuse => {
+						this.laneuseService.LaneUseServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.milestoneService.postMilestone(this.milestone).subscribe(milestone => {
-					this.milestoneService.MilestoneServiceChanged.next("post")
-					this.milestone = new (MilestoneDB) // reset fields
+				this.laneuseService.postLaneUse(this.laneuse).subscribe(laneuse => {
+					this.laneuseService.LaneUseServiceChanged.next("post")
+					this.laneuse = new (LaneUseDB) // reset fields
 				});
 		}
 	}
@@ -197,7 +204,7 @@ export class MilestoneDetailComponent implements OnInit {
 		dialogConfig.height = "50%"
 		if (selectionMode == SelectionMode.ONE_MANY_ASSOCIATION_MODE) {
 
-			dialogData.ID = this.milestone.ID!
+			dialogData.ID = this.laneuse.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
@@ -213,13 +220,13 @@ export class MilestoneDetailComponent implements OnInit {
 			});
 		}
 		if (selectionMode == SelectionMode.MANY_MANY_ASSOCIATION_MODE) {
-			dialogData.ID = this.milestone.ID!
+			dialogData.ID = this.laneuse.ID!
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
 
 			// set up the source
-			dialogData.SourceStruct = "Milestone"
+			dialogData.SourceStruct = "LaneUse"
 			dialogData.SourceField = sourceField
 
 			// set up the intermediate struct
@@ -249,7 +256,7 @@ export class MilestoneDetailComponent implements OnInit {
 		// dialogConfig.disableClose = true;
 		dialogConfig.autoFocus = true;
 		dialogConfig.data = {
-			ID: this.milestone.ID,
+			ID: this.laneuse.ID,
 			ReversePointer: reverseField,
 			OrderingMode: true,
 		};
@@ -265,8 +272,8 @@ export class MilestoneDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.milestone.Name == "") {
-			this.milestone.Name = event.value.Name
+		if (this.laneuse.Name == "") {
+			this.laneuse.Name = event.value.Name
 		}
 	}
 

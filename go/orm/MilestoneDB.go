@@ -69,6 +69,10 @@ type MilestoneDB struct {
 
 	// Declation for basic field milestoneDB.Date
 	Date_Data sql.NullTime
+
+	// Declation for basic field milestoneDB.DisplayVerticalBar bool (to be completed)
+	// provide the sql storage for the boolan
+	DisplayVerticalBar_Data sql.NullBool
 	// encoding of pointers
 	MilestonePointersEnconding
 }
@@ -93,6 +97,8 @@ type MilestoneWOP struct {
 	Name string `xlsx:"1"`
 
 	Date time.Time `xlsx:"2"`
+
+	DisplayVerticalBar bool `xlsx:"3"`
 	// insertion for WOP pointer fields
 }
 
@@ -101,6 +107,7 @@ var Milestone_Fields = []string{
 	"ID",
 	"Name",
 	"Date",
+	"DisplayVerticalBar",
 }
 
 type BackRepoMilestoneStruct struct {
@@ -244,21 +251,21 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 		milestoneDB.CopyBasicFieldsFromMilestone(milestone)
 
 		// insertion point for translating pointers encodings into actual pointers
-		// This loop encodes the slice of pointers milestone.LanesToDisplayMilestone into the back repo.
+		// This loop encodes the slice of pointers milestone.LanesToDisplayMilestoneUse into the back repo.
 		// Each back repo instance at the end of the association encode the ID of the association start
 		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, laneAssocEnd := range milestone.LanesToDisplayMilestone {
+		for idx, laneuseAssocEnd := range milestone.LanesToDisplayMilestoneUse {
 
 			// get the back repo instance at the association end
-			laneAssocEnd_DB :=
-				backRepo.BackRepoLane.GetLaneDBFromLanePtr(laneAssocEnd)
+			laneuseAssocEnd_DB :=
+				backRepo.BackRepoLaneUse.GetLaneUseDBFromLaneUsePtr(laneuseAssocEnd)
 
 			// encode reverse pointer in the association end back repo instance
-			laneAssocEnd_DB.Milestone_LanesToDisplayMilestoneDBID.Int64 = int64(milestoneDB.ID)
-			laneAssocEnd_DB.Milestone_LanesToDisplayMilestoneDBID.Valid = true
-			laneAssocEnd_DB.Milestone_LanesToDisplayMilestoneDBID_Index.Int64 = int64(idx)
-			laneAssocEnd_DB.Milestone_LanesToDisplayMilestoneDBID_Index.Valid = true
-			if q := backRepoMilestone.db.Save(laneAssocEnd_DB); q.Error != nil {
+			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 = int64(milestoneDB.ID)
+			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID.Valid = true
+			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64 = int64(idx)
+			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID_Index.Valid = true
+			if q := backRepoMilestone.db.Save(laneuseAssocEnd_DB); q.Error != nil {
 				return q.Error
 			}
 		}
@@ -368,31 +375,31 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwoInstance(backR
 	_ = milestone // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
-	// This loop redeem milestone.LanesToDisplayMilestone in the stage from the encode in the back repo
-	// It parses all LaneDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// This loop redeem milestone.LanesToDisplayMilestoneUse in the stage from the encode in the back repo
+	// It parses all LaneUseDB in the back repo and if the reverse pointer encoding matches the back repo ID
 	// it appends the stage instance
 	// 1. reset the slice
-	milestone.LanesToDisplayMilestone = milestone.LanesToDisplayMilestone[:0]
+	milestone.LanesToDisplayMilestoneUse = milestone.LanesToDisplayMilestoneUse[:0]
 	// 2. loop all instances in the type in the association end
-	for _, laneDB_AssocEnd := range *backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
+	for _, laneuseDB_AssocEnd := range *backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if laneDB_AssocEnd.Milestone_LanesToDisplayMilestoneDBID.Int64 == int64(milestoneDB.ID) {
+		if laneuseDB_AssocEnd.Milestone_LanesToDisplayMilestoneUseDBID.Int64 == int64(milestoneDB.ID) {
 			// 4. fetch the associated instance in the stage
-			lane_AssocEnd := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB_AssocEnd.ID]
+			laneuse_AssocEnd := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB_AssocEnd.ID]
 			// 5. append it the association slice
-			milestone.LanesToDisplayMilestone = append(milestone.LanesToDisplayMilestone, lane_AssocEnd)
+			milestone.LanesToDisplayMilestoneUse = append(milestone.LanesToDisplayMilestoneUse, laneuse_AssocEnd)
 		}
 	}
 
 	// sort the array according to the order
-	sort.Slice(milestone.LanesToDisplayMilestone, func(i, j int) bool {
-		laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[milestone.LanesToDisplayMilestone[i]]
-		laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[milestone.LanesToDisplayMilestone[j]]
+	sort.Slice(milestone.LanesToDisplayMilestoneUse, func(i, j int) bool {
+		laneuseDB_i_ID := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[milestone.LanesToDisplayMilestoneUse[i]]
+		laneuseDB_j_ID := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[milestone.LanesToDisplayMilestoneUse[j]]
 
-		laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
-		laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
+		laneuseDB_i := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[laneuseDB_i_ID]
+		laneuseDB_j := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[laneuseDB_j_ID]
 
-		return laneDB_i.Milestone_LanesToDisplayMilestoneDBID_Index.Int64 < laneDB_j.Milestone_LanesToDisplayMilestoneDBID_Index.Int64
+		return laneuseDB_i.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64 < laneuseDB_j.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64
 	})
 
 	return
@@ -433,6 +440,9 @@ func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestone(milestone *models.M
 
 	milestoneDB.Date_Data.Time = milestone.Date
 	milestoneDB.Date_Data.Valid = true
+
+	milestoneDB.DisplayVerticalBar_Data.Bool = milestone.DisplayVerticalBar
+	milestoneDB.DisplayVerticalBar_Data.Valid = true
 }
 
 // CopyBasicFieldsFromMilestoneWOP
@@ -444,6 +454,9 @@ func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestoneWOP(milestone *Miles
 
 	milestoneDB.Date_Data.Time = milestone.Date
 	milestoneDB.Date_Data.Valid = true
+
+	milestoneDB.DisplayVerticalBar_Data.Bool = milestone.DisplayVerticalBar
+	milestoneDB.DisplayVerticalBar_Data.Valid = true
 }
 
 // CopyBasicFieldsToMilestone
@@ -451,6 +464,7 @@ func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestone(milestone *models.Mil
 	// insertion point for checkout of basic fields (back repo to stage)
 	milestone.Name = milestoneDB.Name_Data.String
 	milestone.Date = milestoneDB.Date_Data.Time
+	milestone.DisplayVerticalBar = milestoneDB.DisplayVerticalBar_Data.Bool
 }
 
 // CopyBasicFieldsToMilestoneWOP
@@ -459,6 +473,7 @@ func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestoneWOP(milestone *Milesto
 	// insertion point for checkout of basic fields (back repo to stage)
 	milestone.Name = milestoneDB.Name_Data.String
 	milestone.Date = milestoneDB.Date_Data.Time
+	milestone.DisplayVerticalBar = milestoneDB.DisplayVerticalBar_Data.Bool
 }
 
 // Backup generates a json file from a slice of all MilestoneDB instances in the backrepo

@@ -14,8 +14,8 @@ import { SelectionModel } from '@angular/cdk/collections';
 const allowMultiSelect = true;
 
 import { Router, RouterState } from '@angular/router';
-import { MilestoneDB } from '../milestone-db'
-import { MilestoneService } from '../milestone.service'
+import { LaneUseDB } from '../laneuse-db'
+import { LaneUseService } from '../laneuse.service'
 
 // insertion point for additional imports
 
@@ -29,24 +29,24 @@ enum TableComponentMode {
 
 // generated table component
 @Component({
-  selector: 'app-milestonestable',
-  templateUrl: './milestones-table.component.html',
-  styleUrls: ['./milestones-table.component.css'],
+  selector: 'app-laneusestable',
+  templateUrl: './laneuses-table.component.html',
+  styleUrls: ['./laneuses-table.component.css'],
 })
-export class MilestonesTableComponent implements OnInit {
+export class LaneUsesTableComponent implements OnInit {
 
   // mode at invocation
   mode: TableComponentMode = TableComponentMode.DISPLAY_MODE
 
-  // used if the component is called as a selection component of Milestone instances
-  selection: SelectionModel<MilestoneDB> = new (SelectionModel)
-  initialSelection = new Array<MilestoneDB>()
+  // used if the component is called as a selection component of LaneUse instances
+  selection: SelectionModel<LaneUseDB> = new (SelectionModel)
+  initialSelection = new Array<LaneUseDB>()
 
   // the data source for the table
-  milestones: MilestoneDB[] = []
-  matTableDataSource: MatTableDataSource<MilestoneDB> = new (MatTableDataSource)
+  laneuses: LaneUseDB[] = []
+  matTableDataSource: MatTableDataSource<LaneUseDB> = new (MatTableDataSource)
 
-  // front repo, that will be referenced by this.milestones
+  // front repo, that will be referenced by this.laneuses
   frontRepo: FrontRepo = new (FrontRepo)
 
   // displayedColumns is referenced by the MatTable component for specify what columns
@@ -62,24 +62,21 @@ export class MilestonesTableComponent implements OnInit {
   ngAfterViewInit() {
 
     // enable sorting on all fields (including pointers and reverse pointer)
-    this.matTableDataSource.sortingDataAccessor = (milestoneDB: MilestoneDB, property: string) => {
+    this.matTableDataSource.sortingDataAccessor = (laneuseDB: LaneUseDB, property: string) => {
       switch (property) {
         case 'ID':
-          return milestoneDB.ID
+          return laneuseDB.ID
 
         // insertion point for specific sorting accessor
         case 'Name':
-          return milestoneDB.Name;
+          return laneuseDB.Name;
 
-        case 'Date':
-          return (new Date(milestoneDB.Date)).getTime()
+        case 'Lane':
+          return (laneuseDB.Lane ? laneuseDB.Lane.Name : '');
 
-        case 'DisplayVerticalBar':
-          return milestoneDB.DisplayVerticalBar ? "true" : "false";
-
-        case 'Gantt_Milestones':
-          if (this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64) != undefined) {
-            return this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64)!.Name
+        case 'Milestone_LanesToDisplayMilestoneUse':
+          if (this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64) != undefined) {
+            return this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64)!.Name
           } else {
             return ""
           }
@@ -91,16 +88,19 @@ export class MilestonesTableComponent implements OnInit {
     };
 
     // enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
-    this.matTableDataSource.filterPredicate = (milestoneDB: MilestoneDB, filter: string) => {
+    this.matTableDataSource.filterPredicate = (laneuseDB: LaneUseDB, filter: string) => {
 
       // filtering is based on finding a lower case filter into a concatenated string
-      // the milestoneDB properties
+      // the laneuseDB properties
       let mergedContent = ""
 
       // insertion point for merging of fields
-      mergedContent += milestoneDB.Name.toLowerCase()
-      if (milestoneDB.Gantt_MilestonesDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64)!.Name.toLowerCase()
+      mergedContent += laneuseDB.Name.toLowerCase()
+      if (laneuseDB.Lane) {
+        mergedContent += laneuseDB.Lane.Name.toLowerCase()
+      }
+      if (laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Milestones.get(laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -118,11 +118,11 @@ export class MilestonesTableComponent implements OnInit {
   }
 
   constructor(
-    private milestoneService: MilestoneService,
+    private laneuseService: LaneUseService,
     private frontRepoService: FrontRepoService,
 
-    // not null if the component is called as a selection component of milestone instances
-    public dialogRef: MatDialogRef<MilestonesTableComponent>,
+    // not null if the component is called as a selection component of laneuse instances
+    public dialogRef: MatDialogRef<LaneUsesTableComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public dialogData: DialogData,
 
     private router: Router,
@@ -144,118 +144,116 @@ export class MilestonesTableComponent implements OnInit {
     }
 
     // observable for changes in structs
-    this.milestoneService.MilestoneServiceChanged.subscribe(
+    this.laneuseService.LaneUseServiceChanged.subscribe(
       message => {
         if (message == "post" || message == "update" || message == "delete") {
-          this.getMilestones()
+          this.getLaneUses()
         }
       }
     )
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
       this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
         "Name",
-        "Date",
-        "DisplayVerticalBar",
-        "Gantt_Milestones",
+        "Lane",
+        "Milestone_LanesToDisplayMilestoneUse",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
-        "Date",
-        "DisplayVerticalBar",
-        "Gantt_Milestones",
+        "Lane",
+        "Milestone_LanesToDisplayMilestoneUse",
       ]
-      this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);
+      this.selection = new SelectionModel<LaneUseDB>(allowMultiSelect, this.initialSelection);
     }
 
   }
 
   ngOnInit(): void {
-    this.getMilestones()
-    this.matTableDataSource = new MatTableDataSource(this.milestones)
+    this.getLaneUses()
+    this.matTableDataSource = new MatTableDataSource(this.laneuses)
   }
 
-  getMilestones(): void {
+  getLaneUses(): void {
     this.frontRepoService.pull().subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
-        this.milestones = this.frontRepo.Milestones_array;
+        this.laneuses = this.frontRepo.LaneUses_array;
 
         // insertion point for time duration Recoveries
         // insertion point for enum int Recoveries
-
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          for (let milestone of this.milestones) {
+          for (let laneuse of this.laneuses) {
             let ID = this.dialogData.ID
-            let revPointer = milestone[this.dialogData.ReversePointer as keyof MilestoneDB] as unknown as NullInt64
+            let revPointer = laneuse[this.dialogData.ReversePointer as keyof LaneUseDB] as unknown as NullInt64
             if (revPointer.Int64 == ID) {
-              this.initialSelection.push(milestone)
+              this.initialSelection.push(laneuse)
             }
-            this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<LaneUseDB>(allowMultiSelect, this.initialSelection);
           }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
 
-          let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, MilestoneDB>
+          let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, LaneUseDB>
           let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
-          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as MilestoneDB[]
+          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as LaneUseDB[]
           for (let associationInstance of sourceField) {
-            let milestone = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as MilestoneDB
-            this.initialSelection.push(milestone)
+            let laneuse = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LaneUseDB
+            this.initialSelection.push(laneuse)
           }
 
-          this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);
+          this.selection = new SelectionModel<LaneUseDB>(allowMultiSelect, this.initialSelection);
         }
 
         // update the mat table data source
-        this.matTableDataSource.data = this.milestones
+        this.matTableDataSource.data = this.laneuses
       }
     )
   }
 
-  // newMilestone initiate a new milestone
-  // create a new Milestone objet
-  newMilestone() {
+  // newLaneUse initiate a new laneuse
+  // create a new LaneUse objet
+  newLaneUse() {
   }
 
-  deleteMilestone(milestoneID: number, milestone: MilestoneDB) {
-    // list of milestones is truncated of milestone before the delete
-    this.milestones = this.milestones.filter(h => h !== milestone);
+  deleteLaneUse(laneuseID: number, laneuse: LaneUseDB) {
+    // list of laneuses is truncated of laneuse before the delete
+    this.laneuses = this.laneuses.filter(h => h !== laneuse);
 
-    this.milestoneService.deleteMilestone(milestoneID).subscribe(
-      milestone => {
-        this.milestoneService.MilestoneServiceChanged.next("delete")
+    this.laneuseService.deleteLaneUse(laneuseID).subscribe(
+      laneuse => {
+        this.laneuseService.LaneUseServiceChanged.next("delete")
       }
     );
   }
 
-  editMilestone(milestoneID: number, milestone: MilestoneDB) {
+  editLaneUse(laneuseID: number, laneuse: LaneUseDB) {
 
   }
 
-  // display milestone in router
-  displayMilestoneInRouter(milestoneID: number) {
-    this.router.navigate(["github_com_fullstack_lang_gonggantt_go-" + "milestone-display", milestoneID])
+  // display laneuse in router
+  displayLaneUseInRouter(laneuseID: number) {
+    this.router.navigate(["github_com_fullstack_lang_gonggantt_go-" + "laneuse-display", laneuseID])
   }
 
   // set editor outlet
-  setEditorRouterOutlet(milestoneID: number) {
+  setEditorRouterOutlet(laneuseID: number) {
     this.router.navigate([{
       outlets: {
-        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "milestone-detail", milestoneID]
+        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "laneuse-detail", laneuseID]
       }
     }]);
   }
 
   // set presentation outlet
-  setPresentationRouterOutlet(milestoneID: number) {
+  setPresentationRouterOutlet(laneuseID: number) {
     this.router.navigate([{
       outlets: {
-        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "milestone-presentation", milestoneID]
+        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "laneuse-presentation", laneuseID]
       }
     }]);
   }
@@ -263,7 +261,7 @@ export class MilestonesTableComponent implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.milestones.length;
+    const numRows = this.laneuses.length;
     return numSelected === numRows;
   }
 
@@ -271,39 +269,39 @@ export class MilestonesTableComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.milestones.forEach(row => this.selection.select(row));
+      this.laneuses.forEach(row => this.selection.select(row));
   }
 
   save() {
 
     if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
 
-      let toUpdate = new Set<MilestoneDB>()
+      let toUpdate = new Set<LaneUseDB>()
 
-      // reset all initial selection of milestone that belong to milestone
-      for (let milestone of this.initialSelection) {
-        let index = milestone[this.dialogData.ReversePointer as keyof MilestoneDB] as unknown as NullInt64
+      // reset all initial selection of laneuse that belong to laneuse
+      for (let laneuse of this.initialSelection) {
+        let index = laneuse[this.dialogData.ReversePointer as keyof LaneUseDB] as unknown as NullInt64
         index.Int64 = 0
         index.Valid = true
-        toUpdate.add(milestone)
+        toUpdate.add(laneuse)
 
       }
 
-      // from selection, set milestone that belong to milestone
-      for (let milestone of this.selection.selected) {
+      // from selection, set laneuse that belong to laneuse
+      for (let laneuse of this.selection.selected) {
         let ID = this.dialogData.ID as number
-        let reversePointer = milestone[this.dialogData.ReversePointer as keyof MilestoneDB] as unknown as NullInt64
+        let reversePointer = laneuse[this.dialogData.ReversePointer as keyof LaneUseDB] as unknown as NullInt64
         reversePointer.Int64 = ID
         reversePointer.Valid = true
-        toUpdate.add(milestone)
+        toUpdate.add(laneuse)
       }
 
 
-      // update all milestone (only update selection & initial selection)
-      for (let milestone of toUpdate) {
-        this.milestoneService.updateMilestone(milestone)
-          .subscribe(milestone => {
-            this.milestoneService.MilestoneServiceChanged.next("update")
+      // update all laneuse (only update selection & initial selection)
+      for (let laneuse of toUpdate) {
+        this.laneuseService.updateLaneUse(laneuse)
+          .subscribe(laneuse => {
+            this.laneuseService.LaneUseServiceChanged.next("update")
           });
       }
     }
@@ -311,26 +309,26 @@ export class MilestonesTableComponent implements OnInit {
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
 
       // get the source instance via the map of instances in the front repo
-      let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, MilestoneDB>
+      let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, LaneUseDB>
       let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
       // First, parse all instance of the association struct and remove the instance
       // that have unselect
-      let unselectedMilestone = new Set<number>()
-      for (let milestone of this.initialSelection) {
-        if (this.selection.selected.includes(milestone)) {
-          // console.log("milestone " + milestone.Name + " is still selected")
+      let unselectedLaneUse = new Set<number>()
+      for (let laneuse of this.initialSelection) {
+        if (this.selection.selected.includes(laneuse)) {
+          // console.log("laneuse " + laneuse.Name + " is still selected")
         } else {
-          console.log("milestone " + milestone.Name + " has been unselected")
-          unselectedMilestone.add(milestone.ID)
-          console.log("is unselected " + unselectedMilestone.has(milestone.ID))
+          console.log("laneuse " + laneuse.Name + " has been unselected")
+          unselectedLaneUse.add(laneuse.ID)
+          console.log("is unselected " + unselectedLaneUse.has(laneuse.ID))
         }
       }
 
       // delete the association instance
       let associationInstance = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]
-      let milestone = associationInstance![this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as MilestoneDB
-      if (unselectedMilestone.has(milestone.ID)) {
+      let laneuse = associationInstance![this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LaneUseDB
+      if (unselectedLaneUse.has(laneuse.ID)) {
         this.frontRepoService.deleteService(this.dialogData.IntermediateStruct, associationInstance)
 
 
@@ -338,38 +336,38 @@ export class MilestonesTableComponent implements OnInit {
 
       // is the source array is empty create it
       if (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] == undefined) {
-        (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] as unknown as Array<MilestoneDB>) = new Array<MilestoneDB>()
+        (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] as unknown as Array<LaneUseDB>) = new Array<LaneUseDB>()
       }
 
       // second, parse all instance of the selected
       if (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]) {
         this.selection.selected.forEach(
-          milestone => {
-            if (!this.initialSelection.includes(milestone)) {
-              // console.log("milestone " + milestone.Name + " has been added to the selection")
+          laneuse => {
+            if (!this.initialSelection.includes(laneuse)) {
+              // console.log("laneuse " + laneuse.Name + " has been added to the selection")
 
               let associationInstance = {
-                Name: sourceInstance["Name"] + "-" + milestone.Name,
+                Name: sourceInstance["Name"] + "-" + laneuse.Name,
               }
 
               let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
-              index.Int64 = milestone.ID
+              index.Int64 = laneuse.ID
               index.Valid = true
 
               let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
-              indexDB.Int64 = milestone.ID
+              indexDB.Int64 = laneuse.ID
               index.Valid = true
 
               this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
-              // console.log("milestone " + milestone.Name + " is still selected")
+              // console.log("laneuse " + laneuse.Name + " is still selected")
             }
           }
         )
       }
 
-      // this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);
+      // this.selection = new SelectionModel<LaneUseDB>(allowMultiSelect, this.initialSelection);
     }
 
     // why pizza ?

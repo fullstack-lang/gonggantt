@@ -88,13 +88,6 @@ export class LanesTableComponent implements OnInit {
             return ""
           }
 
-        case 'Milestone_LanesToDisplayMilestone':
-          if (this.frontRepo.Milestones.get(laneDB.Milestone_LanesToDisplayMilestoneDBID.Int64) != undefined) {
-            return this.frontRepo.Milestones.get(laneDB.Milestone_LanesToDisplayMilestoneDBID.Int64)!.Name
-          } else {
-            return ""
-          }
-
         default:
           console.assert(false, "Unknown field")
           return "";
@@ -117,10 +110,6 @@ export class LanesTableComponent implements OnInit {
 
       if (laneDB.Group_GroupLanesDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Groups.get(laneDB.Group_GroupLanesDBID.Int64)!.Name.toLowerCase()
-      }
-
-      if (laneDB.Milestone_LanesToDisplayMilestoneDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.Milestones.get(laneDB.Milestone_LanesToDisplayMilestoneDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -177,7 +166,6 @@ export class LanesTableComponent implements OnInit {
         "Order",
         "Gantt_Lanes",
         "Group_GroupLanes",
-        "Milestone_LanesToDisplayMilestone",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -185,7 +173,6 @@ export class LanesTableComponent implements OnInit {
         "Order",
         "Gantt_Lanes",
         "Group_GroupLanes",
-        "Milestone_LanesToDisplayMilestone",
       ]
       this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
     }
@@ -206,7 +193,7 @@ export class LanesTableComponent implements OnInit {
 
         // insertion point for time duration Recoveries
         // insertion point for enum int Recoveries
-        
+
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let lane of this.lanes) {

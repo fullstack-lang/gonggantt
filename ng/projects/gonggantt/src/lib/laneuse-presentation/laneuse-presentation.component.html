@@ -1,8 +1,8 @@
 
-<div class="presentation__header" (click)="setEditorRouterOutlet(milestone.ID)">
-    <h1>Milestone's fields <span class="material-icons">edit</span></h1>
+<div class="presentation__header" (click)="setEditorRouterOutlet(laneuse.ID)">
+    <h1>LaneUse's fields <span class="material-icons">edit</span></h1>
 </div>
-<table *ngIf="milestone" class="presentation__table mat-table">
+<table *ngIf="laneuse" class="presentation__table mat-table">
     <tr class="mat-header-row">
         <th class="mat-header-cell">Name</th>
         <th class="mat-header-cell">Value</th>
@@ -10,18 +10,11 @@
     <!-- insertion point for fields specific code -->
     <tr class="mat-row">
         <td class="mat-cell">Name</td>
-        <td class="mat-cell">{{milestone.Name}}</td>
+        <td class="mat-cell">{{laneuse.Name}}</td>
     </tr>
     <tr class="mat-row">
-        <td class="mat-cell">Date</td>
-        <td class="mat-cell">{{milestone.Date}}</td>
-    </tr>
-    <tr class="mat-row">
-        <td class="mat-cell">DisplayVerticalBar</td>
-        <td class="mat-cell">
-            <mat-checkbox [checked]="milestone.DisplayVerticalBar" disabled=true>
-            </mat-checkbox>
-        </td>
+        <td class="mat-cell">Lane</td>
+        <td class="mat-cell">{{laneuse.Lane ? laneuse.Lane.Name : ""}}</td>
     </tr>
 </table>
 <!-- hack to force loading of mat table style an error is generated but it is a know angular issue https://github.com/angular/components/issues/10941 -->

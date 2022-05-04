@@ -29,6 +29,8 @@ type BackRepoStruct struct {
 
 	BackRepoLane BackRepoLaneStruct
 
+	BackRepoLaneUse BackRepoLaneUseStruct
+
 	BackRepoMilestone BackRepoMilestoneStruct
 
 	CommitFromBackNb uint // this ng is updated at the BackRepo level but also at the BackRepo<GongStruct> level
@@ -74,6 +76,7 @@ func (backRepo *BackRepoStruct) init(db *gorm.DB) {
 	backRepo.BackRepoGantt.Init(db)
 	backRepo.BackRepoGroup.Init(db)
 	backRepo.BackRepoLane.Init(db)
+	backRepo.BackRepoLaneUse.Init(db)
 	backRepo.BackRepoMilestone.Init(db)
 
 	models.Stage.BackRepo = backRepo
@@ -87,6 +90,7 @@ func (backRepo *BackRepoStruct) Commit(stage *models.StageStruct) {
 	backRepo.BackRepoGantt.CommitPhaseOne(stage)
 	backRepo.BackRepoGroup.CommitPhaseOne(stage)
 	backRepo.BackRepoLane.CommitPhaseOne(stage)
+	backRepo.BackRepoLaneUse.CommitPhaseOne(stage)
 	backRepo.BackRepoMilestone.CommitPhaseOne(stage)
 
 	// insertion point for per struct back repo phase two commit
@@ -95,6 +99,7 @@ func (backRepo *BackRepoStruct) Commit(stage *models.StageStruct) {
 	backRepo.BackRepoGantt.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoGroup.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoLane.CommitPhaseTwo(backRepo)
+	backRepo.BackRepoLaneUse.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoMilestone.CommitPhaseTwo(backRepo)
 
 	backRepo.IncrementCommitFromBackNb()
@@ -108,6 +113,7 @@ func (backRepo *BackRepoStruct) Checkout(stage *models.StageStruct) {
 	backRepo.BackRepoGantt.CheckoutPhaseOne()
 	backRepo.BackRepoGroup.CheckoutPhaseOne()
 	backRepo.BackRepoLane.CheckoutPhaseOne()
+	backRepo.BackRepoLaneUse.CheckoutPhaseOne()
 	backRepo.BackRepoMilestone.CheckoutPhaseOne()
 
 	// insertion point for per struct back repo phase two commit
@@ -116,6 +122,7 @@ func (backRepo *BackRepoStruct) Checkout(stage *models.StageStruct) {
 	backRepo.BackRepoGantt.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoGroup.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoLane.CheckoutPhaseTwo(backRepo)
+	backRepo.BackRepoLaneUse.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoMilestone.CheckoutPhaseTwo(backRepo)
 }
 
@@ -139,6 +146,7 @@ func (backRepo *BackRepoStruct) Backup(stage *models.StageStruct, dirPath string
 	backRepo.BackRepoGantt.Backup(dirPath)
 	backRepo.BackRepoGroup.Backup(dirPath)
 	backRepo.BackRepoLane.Backup(dirPath)
+	backRepo.BackRepoLaneUse.Backup(dirPath)
 	backRepo.BackRepoMilestone.Backup(dirPath)
 }
 
@@ -155,6 +163,7 @@ func (backRepo *BackRepoStruct) BackupXL(stage *models.StageStruct, dirPath stri
 	backRepo.BackRepoGantt.BackupXL(file)
 	backRepo.BackRepoGroup.BackupXL(file)
 	backRepo.BackRepoLane.BackupXL(file)
+	backRepo.BackRepoLaneUse.BackupXL(file)
 	backRepo.BackRepoMilestone.BackupXL(file)
 
 	var b bytes.Buffer
@@ -185,6 +194,7 @@ func (backRepo *BackRepoStruct) Restore(stage *models.StageStruct, dirPath strin
 	backRepo.BackRepoGantt.RestorePhaseOne(dirPath)
 	backRepo.BackRepoGroup.RestorePhaseOne(dirPath)
 	backRepo.BackRepoLane.RestorePhaseOne(dirPath)
+	backRepo.BackRepoLaneUse.RestorePhaseOne(dirPath)
 	backRepo.BackRepoMilestone.RestorePhaseOne(dirPath)
 
 	//
@@ -197,6 +207,7 @@ func (backRepo *BackRepoStruct) Restore(stage *models.StageStruct, dirPath strin
 	backRepo.BackRepoGantt.RestorePhaseTwo()
 	backRepo.BackRepoGroup.RestorePhaseTwo()
 	backRepo.BackRepoLane.RestorePhaseTwo()
+	backRepo.BackRepoLaneUse.RestorePhaseTwo()
 	backRepo.BackRepoMilestone.RestorePhaseTwo()
 
 	models.Stage.Checkout()
@@ -229,6 +240,7 @@ func (backRepo *BackRepoStruct) RestoreXL(stage *models.StageStruct, dirPath str
 	backRepo.BackRepoGantt.RestoreXLPhaseOne(file)
 	backRepo.BackRepoGroup.RestoreXLPhaseOne(file)
 	backRepo.BackRepoLane.RestoreXLPhaseOne(file)
+	backRepo.BackRepoLaneUse.RestoreXLPhaseOne(file)
 	backRepo.BackRepoMilestone.RestoreXLPhaseOne(file)
 
 	// commit the restored stage

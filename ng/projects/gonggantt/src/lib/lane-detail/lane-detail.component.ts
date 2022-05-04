@@ -12,7 +12,6 @@ import { MapOfSortingComponents } from '../map-components'
 // insertion point for imports
 import { GanttDB } from '../gantt-db'
 import { GroupDB } from '../group-db'
-import { MilestoneDB } from '../milestone-db'
 
 import { Router, RouterState, ActivatedRoute } from '@angular/router';
 
@@ -28,7 +27,6 @@ enum LaneDetailComponentState {
 	// insertion point for declarations of enum values of state
 	CREATE_INSTANCE_WITH_ASSOCIATION_Gantt_Lanes_SET,
 	CREATE_INSTANCE_WITH_ASSOCIATION_Group_GroupLanes_SET,
-	CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestone_SET,
 }
 
 @Component({
@@ -95,10 +93,6 @@ export class LaneDetailComponent implements OnInit {
 						// console.log("Lane" + " is instanciated with back pointer to instance " + this.id + " Group association GroupLanes")
 						this.state = LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Group_GroupLanes_SET
 						break;
-					case "LanesToDisplayMilestone":
-						// console.log("Lane" + " is instanciated with back pointer to instance " + this.id + " Milestone association LanesToDisplayMilestone")
-						this.state = LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestone_SET
-						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
 				}
@@ -142,10 +136,6 @@ export class LaneDetailComponent implements OnInit {
 					case LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Group_GroupLanes_SET:
 						this.lane = new (LaneDB)
 						this.lane.Group_GroupLanes_reverse = frontRepo.Groups.get(this.id)!
-						break;
-					case LaneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Milestone_LanesToDisplayMilestone_SET:
-						this.lane = new (LaneDB)
-						this.lane.Milestone_LanesToDisplayMilestone_reverse = frontRepo.Milestones.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -191,18 +181,6 @@ export class LaneDetailComponent implements OnInit {
 			}
 			this.lane.Group_GroupLanesDBID_Index.Valid = true
 			this.lane.Group_GroupLanes_reverse = new GroupDB // very important, otherwise, circular JSON
-		}
-		if (this.lane.Milestone_LanesToDisplayMilestone_reverse != undefined) {
-			if (this.lane.Milestone_LanesToDisplayMilestoneDBID == undefined) {
-				this.lane.Milestone_LanesToDisplayMilestoneDBID = new NullInt64
-			}
-			this.lane.Milestone_LanesToDisplayMilestoneDBID.Int64 = this.lane.Milestone_LanesToDisplayMilestone_reverse.ID
-			this.lane.Milestone_LanesToDisplayMilestoneDBID.Valid = true
-			if (this.lane.Milestone_LanesToDisplayMilestoneDBID_Index == undefined) {
-				this.lane.Milestone_LanesToDisplayMilestoneDBID_Index = new NullInt64
-			}
-			this.lane.Milestone_LanesToDisplayMilestoneDBID_Index.Valid = true
-			this.lane.Milestone_LanesToDisplayMilestone_reverse = new MilestoneDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {

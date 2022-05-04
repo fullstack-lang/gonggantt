@@ -16,7 +16,6 @@ import { LaneDB } from './lane-db';
 // insertion point for imports
 import { GanttDB } from './gantt-db'
 import { GroupDB } from './group-db'
-import { MilestoneDB } from './milestone-db'
 
 @Injectable({
   providedIn: 'root'
@@ -78,15 +77,12 @@ export class LaneService {
     lanedb.Gantt_Lanes_reverse = new GanttDB
     let _Group_GroupLanes_reverse = lanedb.Group_GroupLanes_reverse
     lanedb.Group_GroupLanes_reverse = new GroupDB
-    let _Milestone_LanesToDisplayMilestone_reverse = lanedb.Milestone_LanesToDisplayMilestone_reverse
-    lanedb.Milestone_LanesToDisplayMilestone_reverse = new MilestoneDB
 
     return this.http.post<LaneDB>(this.lanesUrl, lanedb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
         lanedb.Group_GroupLanes_reverse = _Group_GroupLanes_reverse
-        lanedb.Milestone_LanesToDisplayMilestone_reverse = _Milestone_LanesToDisplayMilestone_reverse
         this.log(`posted lanedb id=${lanedb.ID}`)
       }),
       catchError(this.handleError<LaneDB>('postLane'))
@@ -115,15 +111,12 @@ export class LaneService {
     lanedb.Gantt_Lanes_reverse = new GanttDB
     let _Group_GroupLanes_reverse = lanedb.Group_GroupLanes_reverse
     lanedb.Group_GroupLanes_reverse = new GroupDB
-    let _Milestone_LanesToDisplayMilestone_reverse = lanedb.Milestone_LanesToDisplayMilestone_reverse
-    lanedb.Milestone_LanesToDisplayMilestone_reverse = new MilestoneDB
 
     return this.http.put<LaneDB>(url, lanedb, this.httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
         lanedb.Group_GroupLanes_reverse = _Group_GroupLanes_reverse
-        lanedb.Milestone_LanesToDisplayMilestone_reverse = _Milestone_LanesToDisplayMilestone_reverse
         this.log(`updated lanedb id=${lanedb.ID}`)
       }),
       catchError(this.handleError<LaneDB>('updateLane'))

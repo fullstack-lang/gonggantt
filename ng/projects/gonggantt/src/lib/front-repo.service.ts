@@ -19,6 +19,9 @@ import { GroupService } from './group.service'
 import { LaneDB } from './lane-db'
 import { LaneService } from './lane.service'
 
+import { LaneUseDB } from './laneuse-db'
+import { LaneUseService } from './laneuse.service'
+
 import { MilestoneDB } from './milestone-db'
 import { MilestoneService } from './milestone.service'
 
@@ -40,6 +43,9 @@ export class FrontRepo { // insertion point sub template
   Lanes_array = new Array<LaneDB>(); // array of repo instances
   Lanes = new Map<number, LaneDB>(); // map of repo instances
   Lanes_batch = new Map<number, LaneDB>(); // same but only in last GET (for finding repo instances to delete)
+  LaneUses_array = new Array<LaneUseDB>(); // array of repo instances
+  LaneUses = new Map<number, LaneUseDB>(); // map of repo instances
+  LaneUses_batch = new Map<number, LaneUseDB>(); // same but only in last GET (for finding repo instances to delete)
   Milestones_array = new Array<MilestoneDB>(); // array of repo instances
   Milestones = new Map<number, MilestoneDB>(); // map of repo instances
   Milestones_batch = new Map<number, MilestoneDB>(); // same but only in last GET (for finding repo instances to delete)
@@ -106,6 +112,7 @@ export class FrontRepoService {
     private ganttService: GanttService,
     private groupService: GroupService,
     private laneService: LaneService,
+    private laneuseService: LaneUseService,
     private milestoneService: MilestoneService,
   ) { }
 
@@ -142,6 +149,7 @@ export class FrontRepoService {
     Observable<GanttDB[]>,
     Observable<GroupDB[]>,
     Observable<LaneDB[]>,
+    Observable<LaneUseDB[]>,
     Observable<MilestoneDB[]>,
   ] = [ // insertion point sub template 
       this.arrowService.getArrows(),
@@ -149,6 +157,7 @@ export class FrontRepoService {
       this.ganttService.getGantts(),
       this.groupService.getGroups(),
       this.laneService.getLanes(),
+      this.laneuseService.getLaneUses(),
       this.milestoneService.getMilestones(),
     ];
 
@@ -170,6 +179,7 @@ export class FrontRepoService {
             gantts_,
             groups_,
             lanes_,
+            laneuses_,
             milestones_,
           ]) => {
             // Typing can be messy with many items. Therefore, type casting is necessary here
@@ -184,6 +194,8 @@ export class FrontRepoService {
             groups = groups_ as GroupDB[]
             var lanes: LaneDB[]
             lanes = lanes_ as LaneDB[]
+            var laneuses: LaneUseDB[]
+            laneuses = laneuses_ as LaneUseDB[]
             var milestones: MilestoneDB[]
             milestones = milestones_ as MilestoneDB[]
 
@@ -356,6 +368,39 @@ export class FrontRepoService {
             });
 
             // init the array
+            FrontRepoSingloton.LaneUses_array = laneuses
+
+            // clear the map that counts LaneUse in the GET
+            FrontRepoSingloton.LaneUses_batch.clear()
+
+            laneuses.forEach(
+              laneuse => {
+                FrontRepoSingloton.LaneUses.set(laneuse.ID, laneuse)
+                FrontRepoSingloton.LaneUses_batch.set(laneuse.ID, laneuse)
+              }
+            )
+
+            // clear laneuses that are absent from the batch
+            FrontRepoSingloton.LaneUses.forEach(
+              laneuse => {
+                if (FrontRepoSingloton.LaneUses_batch.get(laneuse.ID) == undefined) {
+                  FrontRepoSingloton.LaneUses.delete(laneuse.ID)
+                }
+              }
+            )
+
+            // sort LaneUses_array array
+            FrontRepoSingloton.LaneUses_array.sort((t1, t2) => {
+              if (t1.Name > t2.Name) {
+                return 1;
+              }
+              if (t1.Name < t2.Name) {
+                return -1;
+              }
+              return 0;
+            });
+
+            // init the array
             FrontRepoSingloton.Milestones_array = milestones
 
             // clear the map that counts Milestone in the GET
@@ -504,16 +549,30 @@ export class FrontRepoService {
                     }
                   }
                 }
-                // insertion point for slice of pointer field Milestone.LanesToDisplayMilestone redeeming
+              }
+            )
+            laneuses.forEach(
+              laneuse => {
+                // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
+                // insertion point for pointer field Lane redeeming
                 {
-                  let _milestone = FrontRepoSingloton.Milestones.get(lane.Milestone_LanesToDisplayMilestoneDBID.Int64)
+                  let _lane = FrontRepoSingloton.Lanes.get(laneuse.LaneID.Int64)
+                  if (_lane) {
+                    laneuse.Lane = _lane
+                  }
+                }
+
+                // insertion point for redeeming ONE-MANY associations
+                // insertion point for slice of pointer field Milestone.LanesToDisplayMilestoneUse redeeming
+                {
+                  let _milestone = FrontRepoSingloton.Milestones.get(laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Int64)
                   if (_milestone) {
-                    if (_milestone.LanesToDisplayMilestone == undefined) {
-                      _milestone.LanesToDisplayMilestone = new Array<LaneDB>()
+                    if (_milestone.LanesToDisplayMilestoneUse == undefined) {
+                      _milestone.LanesToDisplayMilestoneUse = new Array<LaneUseDB>()
                     }
-                    _milestone.LanesToDisplayMilestone.push(lane)
-                    if (lane.Milestone_LanesToDisplayMilestone_reverse == undefined) {
-                      lane.Milestone_LanesToDisplayMilestone_reverse = _milestone
+                    _milestone.LanesToDisplayMilestoneUse.push(laneuse)
+                    if (laneuse.Milestone_LanesToDisplayMilestoneUse_reverse == undefined) {
+                      laneuse.Milestone_LanesToDisplayMilestoneUse_reverse = _milestone
                     }
                   }
                 }
@@ -860,19 +919,6 @@ export class FrontRepoService {
                     }
                   }
                 }
-                // insertion point for slice of pointer field Milestone.LanesToDisplayMilestone redeeming
-                {
-                  let _milestone = FrontRepoSingloton.Milestones.get(lane.Milestone_LanesToDisplayMilestoneDBID.Int64)
-                  if (_milestone) {
-                    if (_milestone.LanesToDisplayMilestone == undefined) {
-                      _milestone.LanesToDisplayMilestone = new Array<LaneDB>()
-                    }
-                    _milestone.LanesToDisplayMilestone.push(lane)
-                    if (lane.Milestone_LanesToDisplayMilestone_reverse == undefined) {
-                      lane.Milestone_LanesToDisplayMilestone_reverse = _milestone
-                    }
-                  }
-                }
               }
             )
 
@@ -881,6 +927,77 @@ export class FrontRepoService {
               lane => {
                 if (FrontRepoSingloton.Lanes_batch.get(lane.ID) == undefined) {
                   FrontRepoSingloton.Lanes.delete(lane.ID)
+                }
+              }
+            )
+
+            // 
+            // Second Step: redeem pointers between instances (thanks to maps in the First Step)
+            // insertion point sub template 
+
+            // hand over control flow to observer
+            observer.next(FrontRepoSingloton)
+          }
+        )
+      }
+    )
+  }
+
+  // LaneUsePull performs a GET on LaneUse of the stack and redeem association pointers 
+  LaneUsePull(): Observable<FrontRepo> {
+    return new Observable<FrontRepo>(
+      (observer) => {
+        combineLatest([
+          this.laneuseService.getLaneUses()
+        ]).subscribe(
+          ([ // insertion point sub template 
+            laneuses,
+          ]) => {
+            // init the array
+            FrontRepoSingloton.LaneUses_array = laneuses
+
+            // clear the map that counts LaneUse in the GET
+            FrontRepoSingloton.LaneUses_batch.clear()
+
+            // 
+            // First Step: init map of instances
+            // insertion point sub template 
+            laneuses.forEach(
+              laneuse => {
+                FrontRepoSingloton.LaneUses.set(laneuse.ID, laneuse)
+                FrontRepoSingloton.LaneUses_batch.set(laneuse.ID, laneuse)
+
+                // insertion point for redeeming ONE/ZERO-ONE associations
+                // insertion point for pointer field Lane redeeming
+                {
+                  let _lane = FrontRepoSingloton.Lanes.get(laneuse.LaneID.Int64)
+                  if (_lane) {
+                    laneuse.Lane = _lane
+                  }
+                }
+
+                // insertion point for redeeming ONE-MANY associations
+                // insertion point for slice of pointer field Milestone.LanesToDisplayMilestoneUse redeeming
+                {
+                  let _milestone = FrontRepoSingloton.Milestones.get(laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Int64)
+                  if (_milestone) {
+                    if (_milestone.LanesToDisplayMilestoneUse == undefined) {
+                      _milestone.LanesToDisplayMilestoneUse = new Array<LaneUseDB>()
+                    }
+                    _milestone.LanesToDisplayMilestoneUse.push(laneuse)
+                    if (laneuse.Milestone_LanesToDisplayMilestoneUse_reverse == undefined) {
+                      laneuse.Milestone_LanesToDisplayMilestoneUse_reverse = _milestone
+                    }
+                  }
+                }
+              }
+            )
+
+            // clear laneuses that are absent from the GET
+            FrontRepoSingloton.LaneUses.forEach(
+              laneuse => {
+                if (FrontRepoSingloton.LaneUses_batch.get(laneuse.ID) == undefined) {
+                  FrontRepoSingloton.LaneUses.delete(laneuse.ID)
                 }
               }
             )
@@ -978,6 +1095,9 @@ export function getGroupUniqueID(id: number): number {
 export function getLaneUniqueID(id: number): number {
   return 47 * id
 }
-export function getMilestoneUniqueID(id: number): number {
+export function getLaneUseUniqueID(id: number): number {
   return 53 * id
+}
+export function getMilestoneUniqueID(id: number): number {
+  return 59 * id
 }

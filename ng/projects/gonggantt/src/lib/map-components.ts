@@ -9,6 +9,8 @@
   import { GroupSortingComponent } from './group-sorting/group-sorting.component'
   import { LanesTableComponent } from './lanes-table/lanes-table.component'
   import { LaneSortingComponent } from './lane-sorting/lane-sorting.component'
+  import { LaneUsesTableComponent } from './laneuses-table/laneuses-table.component'
+  import { LaneUseSortingComponent } from './laneuse-sorting/laneuse-sorting.component'
   import { MilestonesTableComponent } from './milestones-table/milestones-table.component'
   import { MilestoneSortingComponent } from './milestone-sorting/milestone-sorting.component'
 
@@ -23,6 +25,8 @@
   export const MapOfGroupSortingComponents: Map<string, any> = new Map([["GroupSortingComponent", GroupSortingComponent],])
   export const MapOfLanesComponents: Map<string, any> = new Map([["LanesTableComponent", LanesTableComponent],])
   export const MapOfLaneSortingComponents: Map<string, any> = new Map([["LaneSortingComponent", LaneSortingComponent],])
+  export const MapOfLaneUsesComponents: Map<string, any> = new Map([["LaneUsesTableComponent", LaneUsesTableComponent],])
+  export const MapOfLaneUseSortingComponents: Map<string, any> = new Map([["LaneUseSortingComponent", LaneUseSortingComponent],])
   export const MapOfMilestonesComponents: Map<string, any> = new Map([["MilestonesTableComponent", MilestonesTableComponent],])
   export const MapOfMilestoneSortingComponents: Map<string, any> = new Map([["MilestoneSortingComponent", MilestoneSortingComponent],])
 
@@ -36,6 +40,7 @@ export const MapOfComponents: Map<string, any> =
       ["Gantt", MapOfGanttsComponents],
       ["Group", MapOfGroupsComponents],
       ["Lane", MapOfLanesComponents],
+      ["LaneUse", MapOfLaneUsesComponents],
       ["Milestone", MapOfMilestonesComponents],
     ]
   )
@@ -50,6 +55,7 @@ export const MapOfSortingComponents: Map<string, any> =
       ["Gantt", MapOfGanttSortingComponents],
       ["Group", MapOfGroupSortingComponents],
       ["Lane", MapOfLaneSortingComponents],
+      ["LaneUse", MapOfLaneUseSortingComponents],
       ["Milestone", MapOfMilestoneSortingComponents],
     ]
   )
