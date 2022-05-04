@@ -72,7 +72,11 @@ export class GroupsTableComponent implements OnInit {
           return groupDB.Name;
 
         case 'Gantt_Groups':
-          return this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64)!.Name;
+          if (this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64) != undefined) {
+            return this.frontRepo.Gantts.get(groupDB.Gantt_GroupsDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

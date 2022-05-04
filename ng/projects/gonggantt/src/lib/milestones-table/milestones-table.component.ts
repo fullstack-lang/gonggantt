@@ -72,10 +72,14 @@ export class MilestonesTableComponent implements OnInit {
           return milestoneDB.Name;
 
         case 'Date':
-          return milestoneDB.Date.getDate();
+          return (new Date(milestoneDB.Date)).getTime()
 
         case 'Gantt_Milestones':
-          return this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64)!.Name;
+          if (this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64) != undefined) {
+            return this.frontRepo.Gantts.get(milestoneDB.Gantt_MilestonesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

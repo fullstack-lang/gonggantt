@@ -72,10 +72,10 @@ export class BarsTableComponent implements OnInit {
           return barDB.Name;
 
         case 'Start':
-          return barDB.Start.getDate();
+          return (new Date(barDB.Start)).getTime()
 
         case 'End':
-          return barDB.End.getDate();
+          return (new Date(barDB.End)).getTime()
 
         case 'OptionnalColor':
           return barDB.OptionnalColor;
@@ -93,7 +93,11 @@ export class BarsTableComponent implements OnInit {
           return barDB.StrokeDashArray;
 
         case 'Lane_Bars':
-          return this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)!.Name;
+          if (this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64) != undefined) {
+            return this.frontRepo.Lanes.get(barDB.Lane_BarsDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

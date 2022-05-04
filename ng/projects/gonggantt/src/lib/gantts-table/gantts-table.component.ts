@@ -72,19 +72,19 @@ export class GanttsTableComponent implements OnInit {
           return ganttDB.Name;
 
         case 'ComputedStart':
-          return ganttDB.ComputedStart.getDate();
+          return (new Date(ganttDB.ComputedStart)).getTime()
 
         case 'ComputedEnd':
-          return ganttDB.ComputedEnd.getDate();
+          return (new Date(ganttDB.ComputedEnd)).getTime()
 
         case 'UseManualStartAndEndDates':
           return ganttDB.UseManualStartAndEndDates?"true":"false";
 
         case 'ManualStart':
-          return ganttDB.ManualStart.getDate();
+          return (new Date(ganttDB.ManualStart)).getTime()
 
         case 'ManualEnd':
-          return ganttDB.ManualEnd.getDate();
+          return (new Date(ganttDB.ManualEnd)).getTime()
 
         case 'LaneHeight':
           return ganttDB.LaneHeight;
