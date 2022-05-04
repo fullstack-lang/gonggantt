@@ -84,28 +84,60 @@ export class AnimatesTableComponent implements OnInit {
           return animateDB.RepeatCount;
 
         case 'Circle_Animations':
-          return this.frontRepo.Circles.get(animateDB.Circle_AnimationsDBID.Int64)!.Name;
+          if (this.frontRepo.Circles.get(animateDB.Circle_AnimationsDBID.Int64) != undefined) {
+            return this.frontRepo.Circles.get(animateDB.Circle_AnimationsDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         case 'Ellipse_Animates':
-          return this.frontRepo.Ellipses.get(animateDB.Ellipse_AnimatesDBID.Int64)!.Name;
+          if (this.frontRepo.Ellipses.get(animateDB.Ellipse_AnimatesDBID.Int64) != undefined) {
+            return this.frontRepo.Ellipses.get(animateDB.Ellipse_AnimatesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         case 'Line_Animates':
-          return this.frontRepo.Lines.get(animateDB.Line_AnimatesDBID.Int64)!.Name;
+          if (this.frontRepo.Lines.get(animateDB.Line_AnimatesDBID.Int64) != undefined) {
+            return this.frontRepo.Lines.get(animateDB.Line_AnimatesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         case 'Path_Animates':
-          return this.frontRepo.Paths.get(animateDB.Path_AnimatesDBID.Int64)!.Name;
+          if (this.frontRepo.Paths.get(animateDB.Path_AnimatesDBID.Int64) != undefined) {
+            return this.frontRepo.Paths.get(animateDB.Path_AnimatesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         case 'Polygone_Animates':
-          return this.frontRepo.Polygones.get(animateDB.Polygone_AnimatesDBID.Int64)!.Name;
+          if (this.frontRepo.Polygones.get(animateDB.Polygone_AnimatesDBID.Int64) != undefined) {
+            return this.frontRepo.Polygones.get(animateDB.Polygone_AnimatesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         case 'Polyline_Animates':
-          return this.frontRepo.Polylines.get(animateDB.Polyline_AnimatesDBID.Int64)!.Name;
+          if (this.frontRepo.Polylines.get(animateDB.Polyline_AnimatesDBID.Int64) != undefined) {
+            return this.frontRepo.Polylines.get(animateDB.Polyline_AnimatesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         case 'Rect_Animations':
-          return this.frontRepo.Rects.get(animateDB.Rect_AnimationsDBID.Int64)!.Name;
+          if (this.frontRepo.Rects.get(animateDB.Rect_AnimationsDBID.Int64) != undefined) {
+            return this.frontRepo.Rects.get(animateDB.Rect_AnimationsDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         case 'Text_Animates':
-          return this.frontRepo.Texts.get(animateDB.Text_AnimatesDBID.Int64)!.Name;
+          if (this.frontRepo.Texts.get(animateDB.Text_AnimatesDBID.Int64) != undefined) {
+            return this.frontRepo.Texts.get(animateDB.Text_AnimatesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

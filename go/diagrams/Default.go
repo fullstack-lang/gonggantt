@@ -13,10 +13,10 @@ var Default uml.Classdiagram = uml.Classdiagram{
 			Struct: &(models.Arrow{}),
 			Position: &uml.Position{
 				X: 570.000000,
-				Y: 310.000000,
+				Y: 280.000000,
 			},
 			Width:  240.000000,
-			Heigth: 63.000000,
+			Heigth: 93.000000,
 			Links: []*uml.Link{
 				{
 					Field: models.Arrow{}.From,
@@ -25,6 +25,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						Y: 386.500000,
 					},
 					TargetMultiplicity: "0..1",
+					SourceMultiplicity: "*",
 				},
 				{
 					Field: models.Arrow{}.To,
@@ -33,6 +34,18 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						Y: 356.500000,
 					},
 					TargetMultiplicity: "0..1",
+					SourceMultiplicity: "*",
+				},
+			},
+			Fields: []*uml.Field{
+				{
+					Field: models.Arrow{}.Name,
+				},
+				{
+					Field: models.Arrow{}.OptionnalColor,
+				},
+				{
+					Field: models.Arrow{}.OptionnalStroke,
 				},
 			},
 		},
@@ -43,7 +56,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 				Y: 140.000000,
 			},
 			Width:  240.000000,
-			Heigth: 138.000000,
+			Heigth: 123.000000,
 			Fields: []*uml.Field{
 				{
 					Field: models.Bar{}.End,
@@ -69,7 +82,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 				Y: 40.000000,
 			},
 			Width:  240.000000,
-			Heigth: 318.000000,
+			Heigth: 333.000000,
 			Links: []*uml.Link{
 				{
 					Field: models.Gantt{}.Arrows,
@@ -78,6 +91,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						Y: 261.500000,
 					},
 					TargetMultiplicity: "*",
+					SourceMultiplicity: "0..1",
 				},
 				{
 					Field: models.Gantt{}.Groups,
@@ -86,6 +100,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						Y: 107.000000,
 					},
 					TargetMultiplicity: "*",
+					SourceMultiplicity: "0..1",
 				},
 				{
 					Field: models.Gantt{}.Lanes,
@@ -94,6 +109,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						Y: 175.000000,
 					},
 					TargetMultiplicity: "*",
+					SourceMultiplicity: "0..1",
 				},
 				{
 					Field: models.Gantt{}.Milestones,
@@ -102,6 +118,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						Y: 361.500000,
 					},
 					TargetMultiplicity: "*",
+					SourceMultiplicity: "0..1",
 				},
 			},
 			Fields: []*uml.Field{
@@ -115,7 +132,16 @@ var Default uml.Classdiagram = uml.Classdiagram{
 					Field: models.Gantt{}.ArrowTipLenght,
 				},
 				{
+					Field: models.Gantt{}.ComputedStart,
+				},
+				{
+					Field: models.Gantt{}.DateYOffset,
+				},
+				{
 					Field: models.Gantt{}.Group_Stroke,
+				},
+				{
+					Field: models.Gantt{}.Group_StrokeDashArray,
 				},
 				{
 					Field: models.Gantt{}.Group_StrokeWidth,
@@ -128,9 +154,6 @@ var Default uml.Classdiagram = uml.Classdiagram{
 				},
 				{
 					Field: models.Gantt{}.RatioBarToLaneHeight,
-				},
-				{
-					Field: models.Gantt{}.ComputedStart,
 				},
 				{
 					Field: models.Gantt{}.TextHeight,
@@ -170,10 +193,16 @@ var Default uml.Classdiagram = uml.Classdiagram{
 				{
 					Field: models.Group{}.GroupLanes,
 					Middlevertice: &uml.Vertice{
-						X: 930.000000,
-						Y: 126.500000,
+						X: 1080.000000,
+						Y: 76.500000,
 					},
 					TargetMultiplicity: "*",
+					SourceMultiplicity: "0..1",
+				},
+			},
+			Fields: []*uml.Field{
+				{
+					Field: models.Group{}.Name,
 				},
 			},
 		},
@@ -184,7 +213,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 				Y: 140.000000,
 			},
 			Width:  240.000000,
-			Heigth: 138.000000,
+			Heigth: 78.000000,
 			Links: []*uml.Link{
 				{
 					Field: models.Lane{}.Bars,
@@ -193,6 +222,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 						Y: 171.500000,
 					},
 					TargetMultiplicity: "*",
+					SourceMultiplicity: "0..1",
 				},
 			},
 			Fields: []*uml.Field{
@@ -200,16 +230,27 @@ var Default uml.Classdiagram = uml.Classdiagram{
 					Field: models.Lane{}.Name,
 				},
 				{
-					Field: models.Lane{}.Name,
-				},
-				{
 					Field: models.Lane{}.Order,
 				},
+			},
+		},
+		{
+			Struct: &(models.LaneUse{}),
+			Position: &uml.Position{
+				X: 930.000000,
+				Y: 520.000000,
+			},
+			Width:  240.000000,
+			Heigth: 48.000000,
+			Links: []*uml.Link{
 				{
-					Field: models.Lane{}.Order,
-				},
-				{
-					Field: models.Lane{}.Order,
+					Field: models.LaneUse{}.Lane,
+					Middlevertice: &uml.Vertice{
+						X: 885.000000,
+						Y: 306.500000,
+					},
+					TargetMultiplicity: "0..1",
+					SourceMultiplicity: "*",
 				},
 			},
 		},
@@ -220,20 +261,27 @@ var Default uml.Classdiagram = uml.Classdiagram{
 				Y: 400.000000,
 			},
 			Width:  240.000000,
-			Heigth: 78.000000,
+			Heigth: 93.000000,
 			Links: []*uml.Link{
 				{
 					Field: models.Milestone{}.LanesToDisplayMilestoneUse,
 					Middlevertice: &uml.Vertice{
-						X: 1010.000000,
-						Y: 429.000000,
+						X: 510.000000,
+						Y: 559.000000,
 					},
 					TargetMultiplicity: "*",
+					SourceMultiplicity: "0..1",
 				},
 			},
 			Fields: []*uml.Field{
 				{
 					Field: models.Milestone{}.Date,
+				},
+				{
+					Field: models.Milestone{}.DisplayVerticalBar,
+				},
+				{
+					Field: models.Milestone{}.Name,
 				},
 			},
 		},

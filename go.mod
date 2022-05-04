@@ -3,9 +3,9 @@ module github.com/fullstack-lang/gonggantt
 go 1.17
 
 require (
-	github.com/fullstack-lang/gong v0.0.0-20220322095008-72d84910b231
-	github.com/fullstack-lang/gongdoc v0.0.0-20220325104006-b061f982cca1
-	github.com/fullstack-lang/gongsvg v0.0.0-20220322013227-19ea53db59cc
+	github.com/fullstack-lang/gong v0.0.0-20220504014832-faa6fb35ee3a
+	github.com/fullstack-lang/gongdoc v0.0.0-20220504014833-e8251ad86c89
+	github.com/fullstack-lang/gongsvg v0.0.0-20220504014837-832593769f1a
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.7.4

@@ -99,7 +99,11 @@ export class CirclesTableComponent implements OnInit {
           return circleDB.Transform;
 
         case 'SVG_Circles':
-          return this.frontRepo.SVGs.get(circleDB.SVG_CirclesDBID.Int64)!.Name;
+          if (this.frontRepo.SVGs.get(circleDB.SVG_CirclesDBID.Int64) != undefined) {
+            return this.frontRepo.SVGs.get(circleDB.SVG_CirclesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

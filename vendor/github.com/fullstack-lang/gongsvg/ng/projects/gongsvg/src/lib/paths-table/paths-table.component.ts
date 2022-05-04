@@ -93,7 +93,11 @@ export class PathsTableComponent implements OnInit {
           return pathDB.Transform;
 
         case 'SVG_Paths':
-          return this.frontRepo.SVGs.get(pathDB.SVG_PathsDBID.Int64)!.Name;
+          if (this.frontRepo.SVGs.get(pathDB.SVG_PathsDBID.Int64) != undefined) {
+            return this.frontRepo.SVGs.get(pathDB.SVG_PathsDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

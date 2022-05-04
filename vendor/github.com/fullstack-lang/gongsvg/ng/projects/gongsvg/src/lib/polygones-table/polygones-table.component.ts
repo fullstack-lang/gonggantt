@@ -93,7 +93,11 @@ export class PolygonesTableComponent implements OnInit {
           return polygoneDB.Transform;
 
         case 'SVG_Polygones':
-          return this.frontRepo.SVGs.get(polygoneDB.SVG_PolygonesDBID.Int64)!.Name;
+          if (this.frontRepo.SVGs.get(polygoneDB.SVG_PolygonesDBID.Int64) != undefined) {
+            return this.frontRepo.SVGs.get(polygoneDB.SVG_PolygonesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

@@ -17,6 +17,14 @@ type __void struct{}
 // needed for creating set of instances in the stage
 var __member __void
 
+// GongStructInterface is the interface met by GongStructs
+// It allows runtime reflexion of instances (without the hassle of the "reflect" package)
+type GongStructInterface interface {
+	GetName() (res string)
+	GetFields() (res []string)
+	GetFieldStringValue(fieldName string) (res string)
+}
+
 // StageStruct enables storage of staged instances
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
@@ -293,6 +301,34 @@ func DeleteORMAnimate(animate *Animate) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (animate *Animate) GetName() (res string) {
+	return animate.Name
+}
+
+func (animate *Animate) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "AttributeName", "Values", "Dur", "RepeatCount",  }
+	return
+}
+
+func (animate *Animate) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = animate.Name
+	case "AttributeName":
+		res = animate.AttributeName
+	case "Values":
+		res = animate.Values
+	case "Dur":
+		res = animate.Dur
+	case "RepeatCount":
+		res = animate.RepeatCount
+	}
+	return
+}
+
 func (stage *StageStruct) getCircleOrderedStructWithNameField() []*Circle {
 	// have alphabetical order generation
 	circleOrdered := []*Circle{}
@@ -393,6 +429,51 @@ func DeleteORMCircle(circle *Circle) {
 	if Stage.AllModelsStructDeleteCallback != nil {
 		Stage.AllModelsStructDeleteCallback.DeleteORMCircle(circle)
 	}
+}
+
+// for satisfaction of GongStruct interface
+func (circle *Circle) GetName() (res string) {
+	return circle.Name
+}
+
+func (circle *Circle) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "CX", "CY", "Radius", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations",  }
+	return
+}
+
+func (circle *Circle) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = circle.Name
+	case "CX":
+		res = fmt.Sprintf("%f", circle.CX)
+	case "CY":
+		res = fmt.Sprintf("%f", circle.CY)
+	case "Radius":
+		res = fmt.Sprintf("%f", circle.Radius)
+	case "Color":
+		res = circle.Color
+	case "FillOpacity":
+		res = fmt.Sprintf("%f", circle.FillOpacity)
+	case "Stroke":
+		res = circle.Stroke
+	case "StrokeWidth":
+		res = fmt.Sprintf("%f", circle.StrokeWidth)
+	case "StrokeDashArray":
+		res = circle.StrokeDashArray
+	case "Transform":
+		res = circle.Transform
+	case "Animations":
+		for idx, __instance__ := range circle.Animations {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
 }
 
 func (stage *StageStruct) getEllipseOrderedStructWithNameField() []*Ellipse {
@@ -497,6 +578,53 @@ func DeleteORMEllipse(ellipse *Ellipse) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (ellipse *Ellipse) GetName() (res string) {
+	return ellipse.Name
+}
+
+func (ellipse *Ellipse) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "CX", "CY", "RX", "RY", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
+	return
+}
+
+func (ellipse *Ellipse) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = ellipse.Name
+	case "CX":
+		res = fmt.Sprintf("%f", ellipse.CX)
+	case "CY":
+		res = fmt.Sprintf("%f", ellipse.CY)
+	case "RX":
+		res = fmt.Sprintf("%f", ellipse.RX)
+	case "RY":
+		res = fmt.Sprintf("%f", ellipse.RY)
+	case "Color":
+		res = ellipse.Color
+	case "FillOpacity":
+		res = fmt.Sprintf("%f", ellipse.FillOpacity)
+	case "Stroke":
+		res = ellipse.Stroke
+	case "StrokeWidth":
+		res = fmt.Sprintf("%f", ellipse.StrokeWidth)
+	case "StrokeDashArray":
+		res = ellipse.StrokeDashArray
+	case "Transform":
+		res = ellipse.Transform
+	case "Animates":
+		for idx, __instance__ := range ellipse.Animates {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
+}
+
 func (stage *StageStruct) getLineOrderedStructWithNameField() []*Line {
 	// have alphabetical order generation
 	lineOrdered := []*Line{}
@@ -597,6 +725,53 @@ func DeleteORMLine(line *Line) {
 	if Stage.AllModelsStructDeleteCallback != nil {
 		Stage.AllModelsStructDeleteCallback.DeleteORMLine(line)
 	}
+}
+
+// for satisfaction of GongStruct interface
+func (line *Line) GetName() (res string) {
+	return line.Name
+}
+
+func (line *Line) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "X1", "Y1", "X2", "Y2", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
+	return
+}
+
+func (line *Line) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = line.Name
+	case "X1":
+		res = fmt.Sprintf("%f", line.X1)
+	case "Y1":
+		res = fmt.Sprintf("%f", line.Y1)
+	case "X2":
+		res = fmt.Sprintf("%f", line.X2)
+	case "Y2":
+		res = fmt.Sprintf("%f", line.Y2)
+	case "Color":
+		res = line.Color
+	case "FillOpacity":
+		res = fmt.Sprintf("%f", line.FillOpacity)
+	case "Stroke":
+		res = line.Stroke
+	case "StrokeWidth":
+		res = fmt.Sprintf("%f", line.StrokeWidth)
+	case "StrokeDashArray":
+		res = line.StrokeDashArray
+	case "Transform":
+		res = line.Transform
+	case "Animates":
+		for idx, __instance__ := range line.Animates {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
 }
 
 func (stage *StageStruct) getPathOrderedStructWithNameField() []*Path {
@@ -701,6 +876,47 @@ func DeleteORMPath(path *Path) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (path *Path) GetName() (res string) {
+	return path.Name
+}
+
+func (path *Path) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "Definition", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
+	return
+}
+
+func (path *Path) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = path.Name
+	case "Definition":
+		res = path.Definition
+	case "Color":
+		res = path.Color
+	case "FillOpacity":
+		res = fmt.Sprintf("%f", path.FillOpacity)
+	case "Stroke":
+		res = path.Stroke
+	case "StrokeWidth":
+		res = fmt.Sprintf("%f", path.StrokeWidth)
+	case "StrokeDashArray":
+		res = path.StrokeDashArray
+	case "Transform":
+		res = path.Transform
+	case "Animates":
+		for idx, __instance__ := range path.Animates {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
+}
+
 func (stage *StageStruct) getPolygoneOrderedStructWithNameField() []*Polygone {
 	// have alphabetical order generation
 	polygoneOrdered := []*Polygone{}
@@ -801,6 +1017,47 @@ func DeleteORMPolygone(polygone *Polygone) {
 	if Stage.AllModelsStructDeleteCallback != nil {
 		Stage.AllModelsStructDeleteCallback.DeleteORMPolygone(polygone)
 	}
+}
+
+// for satisfaction of GongStruct interface
+func (polygone *Polygone) GetName() (res string) {
+	return polygone.Name
+}
+
+func (polygone *Polygone) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "Points", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
+	return
+}
+
+func (polygone *Polygone) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = polygone.Name
+	case "Points":
+		res = polygone.Points
+	case "Color":
+		res = polygone.Color
+	case "FillOpacity":
+		res = fmt.Sprintf("%f", polygone.FillOpacity)
+	case "Stroke":
+		res = polygone.Stroke
+	case "StrokeWidth":
+		res = fmt.Sprintf("%f", polygone.StrokeWidth)
+	case "StrokeDashArray":
+		res = polygone.StrokeDashArray
+	case "Transform":
+		res = polygone.Transform
+	case "Animates":
+		for idx, __instance__ := range polygone.Animates {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
 }
 
 func (stage *StageStruct) getPolylineOrderedStructWithNameField() []*Polyline {
@@ -905,6 +1162,47 @@ func DeleteORMPolyline(polyline *Polyline) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (polyline *Polyline) GetName() (res string) {
+	return polyline.Name
+}
+
+func (polyline *Polyline) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "Points", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
+	return
+}
+
+func (polyline *Polyline) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = polyline.Name
+	case "Points":
+		res = polyline.Points
+	case "Color":
+		res = polyline.Color
+	case "FillOpacity":
+		res = fmt.Sprintf("%f", polyline.FillOpacity)
+	case "Stroke":
+		res = polyline.Stroke
+	case "StrokeWidth":
+		res = fmt.Sprintf("%f", polyline.StrokeWidth)
+	case "StrokeDashArray":
+		res = polyline.StrokeDashArray
+	case "Transform":
+		res = polyline.Transform
+	case "Animates":
+		for idx, __instance__ := range polyline.Animates {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
+}
+
 func (stage *StageStruct) getRectOrderedStructWithNameField() []*Rect {
 	// have alphabetical order generation
 	rectOrdered := []*Rect{}
@@ -1005,6 +1303,55 @@ func DeleteORMRect(rect *Rect) {
 	if Stage.AllModelsStructDeleteCallback != nil {
 		Stage.AllModelsStructDeleteCallback.DeleteORMRect(rect)
 	}
+}
+
+// for satisfaction of GongStruct interface
+func (rect *Rect) GetName() (res string) {
+	return rect.Name
+}
+
+func (rect *Rect) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations",  }
+	return
+}
+
+func (rect *Rect) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = rect.Name
+	case "X":
+		res = fmt.Sprintf("%f", rect.X)
+	case "Y":
+		res = fmt.Sprintf("%f", rect.Y)
+	case "Width":
+		res = fmt.Sprintf("%f", rect.Width)
+	case "Height":
+		res = fmt.Sprintf("%f", rect.Height)
+	case "RX":
+		res = fmt.Sprintf("%f", rect.RX)
+	case "Color":
+		res = rect.Color
+	case "FillOpacity":
+		res = fmt.Sprintf("%f", rect.FillOpacity)
+	case "Stroke":
+		res = rect.Stroke
+	case "StrokeWidth":
+		res = fmt.Sprintf("%f", rect.StrokeWidth)
+	case "StrokeDashArray":
+		res = rect.StrokeDashArray
+	case "Transform":
+		res = rect.Transform
+	case "Animations":
+		for idx, __instance__ := range rect.Animations {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
 }
 
 func (stage *StageStruct) getSVGOrderedStructWithNameField() []*SVG {
@@ -1109,6 +1456,84 @@ func DeleteORMSVG(svg *SVG) {
 	}
 }
 
+// for satisfaction of GongStruct interface
+func (svg *SVG) GetName() (res string) {
+	return svg.Name
+}
+
+func (svg *SVG) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Display", "Name", "Rects", "Texts", "Circles", "Lines", "Ellipses", "Polylines", "Polygones", "Paths",  }
+	return
+}
+
+func (svg *SVG) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Display":
+		res = fmt.Sprintf("%t", svg.Display)
+	case "Name":
+		res = svg.Name
+	case "Rects":
+		for idx, __instance__ := range svg.Rects {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	case "Texts":
+		for idx, __instance__ := range svg.Texts {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	case "Circles":
+		for idx, __instance__ := range svg.Circles {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	case "Lines":
+		for idx, __instance__ := range svg.Lines {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	case "Ellipses":
+		for idx, __instance__ := range svg.Ellipses {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	case "Polylines":
+		for idx, __instance__ := range svg.Polylines {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	case "Polygones":
+		for idx, __instance__ := range svg.Polygones {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	case "Paths":
+		for idx, __instance__ := range svg.Paths {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
+}
+
 func (stage *StageStruct) getTextOrderedStructWithNameField() []*Text {
 	// have alphabetical order generation
 	textOrdered := []*Text{}
@@ -1209,6 +1634,51 @@ func DeleteORMText(text *Text) {
 	if Stage.AllModelsStructDeleteCallback != nil {
 		Stage.AllModelsStructDeleteCallback.DeleteORMText(text)
 	}
+}
+
+// for satisfaction of GongStruct interface
+func (text *Text) GetName() (res string) {
+	return text.Name
+}
+
+func (text *Text) GetFields() (res []string) {
+	// list of fields 
+	res = []string{"Name", "X", "Y", "Content", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
+	return
+}
+
+func (text *Text) GetFieldStringValue(fieldName string) (res string) {
+	switch fieldName {
+	// string value of fields
+	case "Name":
+		res = text.Name
+	case "X":
+		res = fmt.Sprintf("%f", text.X)
+	case "Y":
+		res = fmt.Sprintf("%f", text.Y)
+	case "Content":
+		res = text.Content
+	case "Color":
+		res = text.Color
+	case "FillOpacity":
+		res = fmt.Sprintf("%f", text.FillOpacity)
+	case "Stroke":
+		res = text.Stroke
+	case "StrokeWidth":
+		res = fmt.Sprintf("%f", text.StrokeWidth)
+	case "StrokeDashArray":
+		res = text.StrokeDashArray
+	case "Transform":
+		res = text.Transform
+	case "Animates":
+		for idx, __instance__ := range text.Animates {
+			if idx > 0 {
+				res += "\n"
+			}
+			res += __instance__.Name
+		}
+	}
+	return
 }
 
 // swagger:ignore
@@ -1335,6 +1805,9 @@ const IdentifiersDecls = `
 
 const StringInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = ` + "`" + `{{GeneratedFieldNameValue}}` + "`"
+
+const StringEnumInitStatement = `
+	{{Identifier}}.{{GeneratedFieldName}} = {{GeneratedFieldNameValue}}`
 
 const NumberInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = {{GeneratedFieldNameValue}}`
@@ -3003,5 +3476,307 @@ func (colortype *ColorType) FromString(input string) {
 	case "yellowgreen":
 		*colortype = Yellowgreen
 	}
+}
+
+func (colortype *ColorType) ToCodeString() (res string) {
+
+	switch *colortype {
+	// insertion code per enum code
+	case Aliceblue:
+		res = "Aliceblue"
+	case Antiquewhite:
+		res = "Antiquewhite"
+	case Aqua:
+		res = "Aqua"
+	case Aquamarine:
+		res = "Aquamarine"
+	case Azure:
+		res = "Azure"
+	case Beige:
+		res = "Beige"
+	case Bisque:
+		res = "Bisque"
+	case Black:
+		res = "Black"
+	case Blanchedalmond:
+		res = "Blanchedalmond"
+	case Blue:
+		res = "Blue"
+	case Blueviolet:
+		res = "Blueviolet"
+	case Brown:
+		res = "Brown"
+	case Burlywood:
+		res = "Burlywood"
+	case Cadetblue:
+		res = "Cadetblue"
+	case Chartreuse:
+		res = "Chartreuse"
+	case Chocolate:
+		res = "Chocolate"
+	case Coral:
+		res = "Coral"
+	case Cornflowerblue:
+		res = "Cornflowerblue"
+	case Cornsilk:
+		res = "Cornsilk"
+	case Crimson:
+		res = "Crimson"
+	case Cyan:
+		res = "Cyan"
+	case Darkblue:
+		res = "Darkblue"
+	case Darkcyan:
+		res = "Darkcyan"
+	case Darkgoldenrod:
+		res = "Darkgoldenrod"
+	case Darkgray:
+		res = "Darkgray"
+	case Darkgreen:
+		res = "Darkgreen"
+	case Darkgrey:
+		res = "Darkgrey"
+	case Darkkhaki:
+		res = "Darkkhaki"
+	case Darkmagenta:
+		res = "Darkmagenta"
+	case Darkolivegreen:
+		res = "Darkolivegreen"
+	case Darkorange:
+		res = "Darkorange"
+	case Darkorchid:
+		res = "Darkorchid"
+	case Darkred:
+		res = "Darkred"
+	case Darksalmon:
+		res = "Darksalmon"
+	case Darkseagreen:
+		res = "Darkseagreen"
+	case Darkslateblue:
+		res = "Darkslateblue"
+	case Darkslategray:
+		res = "Darkslategray"
+	case Darkslategrey:
+		res = "Darkslategrey"
+	case Darkturquoise:
+		res = "Darkturquoise"
+	case Darkviolet:
+		res = "Darkviolet"
+	case Deeppink:
+		res = "Deeppink"
+	case Deepskyblue:
+		res = "Deepskyblue"
+	case Dimgray:
+		res = "Dimgray"
+	case Dimgrey:
+		res = "Dimgrey"
+	case Dodgerblue:
+		res = "Dodgerblue"
+	case Firebrick:
+		res = "Firebrick"
+	case Floralwhite:
+		res = "Floralwhite"
+	case Forestgreen:
+		res = "Forestgreen"
+	case Fuchsia:
+		res = "Fuchsia"
+	case Gainsboro:
+		res = "Gainsboro"
+	case Ghostwhite:
+		res = "Ghostwhite"
+	case Gold:
+		res = "Gold"
+	case Goldenrod:
+		res = "Goldenrod"
+	case Gray:
+		res = "Gray"
+	case Green:
+		res = "Green"
+	case Greenyellow:
+		res = "Greenyellow"
+	case Grey:
+		res = "Grey"
+	case Honeydew:
+		res = "Honeydew"
+	case Hotpink:
+		res = "Hotpink"
+	case Indianred:
+		res = "Indianred"
+	case Indigo:
+		res = "Indigo"
+	case Ivory:
+		res = "Ivory"
+	case Khaki:
+		res = "Khaki"
+	case Lavender:
+		res = "Lavender"
+	case Lavenderblush:
+		res = "Lavenderblush"
+	case Lawngreen:
+		res = "Lawngreen"
+	case Lemonchiffon:
+		res = "Lemonchiffon"
+	case Lightblue:
+		res = "Lightblue"
+	case Lightcoral:
+		res = "Lightcoral"
+	case Lightcyan:
+		res = "Lightcyan"
+	case Lightgoldenrodyellow:
+		res = "Lightgoldenrodyellow"
+	case Lightgray:
+		res = "Lightgray"
+	case Lightgreen:
+		res = "Lightgreen"
+	case Lightgrey:
+		res = "Lightgrey"
+	case Lightpink:
+		res = "Lightpink"
+	case Lightsalmon:
+		res = "Lightsalmon"
+	case Lightseagreen:
+		res = "Lightseagreen"
+	case Lightskyblue:
+		res = "Lightskyblue"
+	case Lightslategray:
+		res = "Lightslategray"
+	case Lightslategrey:
+		res = "Lightslategrey"
+	case Lightsteelblue:
+		res = "Lightsteelblue"
+	case Lightyellow:
+		res = "Lightyellow"
+	case Lime:
+		res = "Lime"
+	case Limegreen:
+		res = "Limegreen"
+	case Linen:
+		res = "Linen"
+	case Magenta:
+		res = "Magenta"
+	case Maroon:
+		res = "Maroon"
+	case Mediumaquamarine:
+		res = "Mediumaquamarine"
+	case Mediumblue:
+		res = "Mediumblue"
+	case Mediumorchid:
+		res = "Mediumorchid"
+	case Mediumpurple:
+		res = "Mediumpurple"
+	case Mediumseagreen:
+		res = "Mediumseagreen"
+	case Mediumslateblue:
+		res = "Mediumslateblue"
+	case Mediumspringgreen:
+		res = "Mediumspringgreen"
+	case Mediumturquoise:
+		res = "Mediumturquoise"
+	case Mediumvioletred:
+		res = "Mediumvioletred"
+	case Midnightblue:
+		res = "Midnightblue"
+	case Mintcream:
+		res = "Mintcream"
+	case Mistyrose:
+		res = "Mistyrose"
+	case Moccasin:
+		res = "Moccasin"
+	case Navajowhite:
+		res = "Navajowhite"
+	case Navy:
+		res = "Navy"
+	case Oldlace:
+		res = "Oldlace"
+	case Olive:
+		res = "Olive"
+	case Olivedrab:
+		res = "Olivedrab"
+	case Orange:
+		res = "Orange"
+	case Orangered:
+		res = "Orangered"
+	case Orchid:
+		res = "Orchid"
+	case Palegoldenrod:
+		res = "Palegoldenrod"
+	case Palegreen:
+		res = "Palegreen"
+	case Paleturquoise:
+		res = "Paleturquoise"
+	case Palevioletred:
+		res = "Palevioletred"
+	case Papayawhip:
+		res = "Papayawhip"
+	case Peachpuff:
+		res = "Peachpuff"
+	case Peru:
+		res = "Peru"
+	case Pink:
+		res = "Pink"
+	case Plum:
+		res = "Plum"
+	case Powderblue:
+		res = "Powderblue"
+	case Purple:
+		res = "Purple"
+	case Red:
+		res = "Red"
+	case Rosybrown:
+		res = "Rosybrown"
+	case Royalblue:
+		res = "Royalblue"
+	case Saddlebrown:
+		res = "Saddlebrown"
+	case Salmon:
+		res = "Salmon"
+	case Sandybrown:
+		res = "Sandybrown"
+	case Seagreen:
+		res = "Seagreen"
+	case Seashell:
+		res = "Seashell"
+	case Sienna:
+		res = "Sienna"
+	case Silver:
+		res = "Silver"
+	case Skyblue:
+		res = "Skyblue"
+	case Slateblue:
+		res = "Slateblue"
+	case Slategray:
+		res = "Slategray"
+	case Slategrey:
+		res = "Slategrey"
+	case Snow:
+		res = "Snow"
+	case Springgreen:
+		res = "Springgreen"
+	case Steelblue:
+		res = "Steelblue"
+	case Tan:
+		res = "Tan"
+	case Teal:
+		res = "Teal"
+	case Thistle:
+		res = "Thistle"
+	case Tomato:
+		res = "Tomato"
+	case Turquoise:
+		res = "Turquoise"
+	case Violet:
+		res = "Violet"
+	case Wheat:
+		res = "Wheat"
+	case White:
+		res = "White"
+	case Whitesmoke:
+		res = "Whitesmoke"
+	case Yellow:
+		res = "Yellow"
+	case Yellowgreen:
+		res = "Yellowgreen"
+	}
+	return
 }
 

@@ -243,7 +243,7 @@ export class SVGDetailComponent implements OnInit {
 	}
 
 	fillUpNameIfEmpty(event: { value: { Name: string; }; }) {
-		if (this.svg.Name == undefined) {
+		if (this.svg.Name == "") {
 			this.svg.Name = event.value.Name
 		}
 	}

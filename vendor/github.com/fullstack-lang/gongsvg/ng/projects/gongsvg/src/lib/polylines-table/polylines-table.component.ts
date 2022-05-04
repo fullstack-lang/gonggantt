@@ -93,7 +93,11 @@ export class PolylinesTableComponent implements OnInit {
           return polylineDB.Transform;
 
         case 'SVG_Polylines':
-          return this.frontRepo.SVGs.get(polylineDB.SVG_PolylinesDBID.Int64)!.Name;
+          if (this.frontRepo.SVGs.get(polylineDB.SVG_PolylinesDBID.Int64) != undefined) {
+            return this.frontRepo.SVGs.get(polylineDB.SVG_PolylinesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

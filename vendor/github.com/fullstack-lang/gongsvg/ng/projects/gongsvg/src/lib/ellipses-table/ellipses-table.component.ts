@@ -102,7 +102,11 @@ export class EllipsesTableComponent implements OnInit {
           return ellipseDB.Transform;
 
         case 'SVG_Ellipses':
-          return this.frontRepo.SVGs.get(ellipseDB.SVG_EllipsesDBID.Int64)!.Name;
+          if (this.frontRepo.SVGs.get(ellipseDB.SVG_EllipsesDBID.Int64) != undefined) {
+            return this.frontRepo.SVGs.get(ellipseDB.SVG_EllipsesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")

@@ -193,7 +193,7 @@ export class LanesTableComponent implements OnInit {
 
         // insertion point for time duration Recoveries
         // insertion point for enum int Recoveries
-
+        
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
           for (let lane of this.lanes) {

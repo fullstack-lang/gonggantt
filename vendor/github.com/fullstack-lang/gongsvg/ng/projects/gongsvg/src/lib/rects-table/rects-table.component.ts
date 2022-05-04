@@ -105,7 +105,11 @@ export class RectsTableComponent implements OnInit {
           return rectDB.Transform;
 
         case 'SVG_Rects':
-          return this.frontRepo.SVGs.get(rectDB.SVG_RectsDBID.Int64)!.Name;
+          if (this.frontRepo.SVGs.get(rectDB.SVG_RectsDBID.Int64) != undefined) {
+            return this.frontRepo.SVGs.get(rectDB.SVG_RectsDBID.Int64)!.Name
+          } else {
+            return ""
+          }
 
         default:
           console.assert(false, "Unknown field")
