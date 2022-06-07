@@ -299,7 +299,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error erro
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	milestoneInstancesToBeRemovedFromTheStage := make(map[*models.Milestone]struct{})
+	milestoneInstancesToBeRemovedFromTheStage := make(map[*models.Milestone]any)
 	for key, value := range models.Stage.Milestones {
 		milestoneInstancesToBeRemovedFromTheStage[key] = value
 	}

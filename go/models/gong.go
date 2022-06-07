@@ -12,7 +12,7 @@ import (
 )
 
 // swagger:ignore
-type __void struct{}
+type __void any
 
 // needed for creating set of instances in the stage
 var __member __void
@@ -28,25 +28,25 @@ type GongStructInterface interface {
 // StageStruct enables storage of staged instances
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
-	Arrows           map[*Arrow]struct{}
+	Arrows           map[*Arrow]any
 	Arrows_mapString map[string]*Arrow
 
-	Bars           map[*Bar]struct{}
+	Bars           map[*Bar]any
 	Bars_mapString map[string]*Bar
 
-	Gantts           map[*Gantt]struct{}
+	Gantts           map[*Gantt]any
 	Gantts_mapString map[string]*Gantt
 
-	Groups           map[*Group]struct{}
+	Groups           map[*Group]any
 	Groups_mapString map[string]*Group
 
-	Lanes           map[*Lane]struct{}
+	Lanes           map[*Lane]any
 	Lanes_mapString map[string]*Lane
 
-	LaneUses           map[*LaneUse]struct{}
+	LaneUses           map[*LaneUse]any
 	LaneUses_mapString map[string]*LaneUse
 
-	Milestones           map[*Milestone]struct{}
+	Milestones           map[*Milestone]any
 	Milestones_mapString map[string]*Milestone
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
@@ -96,25 +96,25 @@ type BackRepoInterface interface {
 
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
-	Arrows:           make(map[*Arrow]struct{}),
+	Arrows:           make(map[*Arrow]any),
 	Arrows_mapString: make(map[string]*Arrow),
 
-	Bars:           make(map[*Bar]struct{}),
+	Bars:           make(map[*Bar]any),
 	Bars_mapString: make(map[string]*Bar),
 
-	Gantts:           make(map[*Gantt]struct{}),
+	Gantts:           make(map[*Gantt]any),
 	Gantts_mapString: make(map[string]*Gantt),
 
-	Groups:           make(map[*Group]struct{}),
+	Groups:           make(map[*Group]any),
 	Groups_mapString: make(map[string]*Group),
 
-	Lanes:           make(map[*Lane]struct{}),
+	Lanes:           make(map[*Lane]any),
 	Lanes_mapString: make(map[string]*Lane),
 
-	LaneUses:           make(map[*LaneUse]struct{}),
+	LaneUses:           make(map[*LaneUse]any),
 	LaneUses_mapString: make(map[string]*LaneUse),
 
-	Milestones:           make(map[*Milestone]struct{}),
+	Milestones:           make(map[*Milestone]any),
 	Milestones_mapString: make(map[string]*Milestone),
 
 	// end of insertion point
@@ -1179,25 +1179,25 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 }
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
-	stage.Arrows = make(map[*Arrow]struct{})
+	stage.Arrows = make(map[*Arrow]any)
 	stage.Arrows_mapString = make(map[string]*Arrow)
 
-	stage.Bars = make(map[*Bar]struct{})
+	stage.Bars = make(map[*Bar]any)
 	stage.Bars_mapString = make(map[string]*Bar)
 
-	stage.Gantts = make(map[*Gantt]struct{})
+	stage.Gantts = make(map[*Gantt]any)
 	stage.Gantts_mapString = make(map[string]*Gantt)
 
-	stage.Groups = make(map[*Group]struct{})
+	stage.Groups = make(map[*Group]any)
 	stage.Groups_mapString = make(map[string]*Group)
 
-	stage.Lanes = make(map[*Lane]struct{})
+	stage.Lanes = make(map[*Lane]any)
 	stage.Lanes_mapString = make(map[string]*Lane)
 
-	stage.LaneUses = make(map[*LaneUse]struct{})
+	stage.LaneUses = make(map[*LaneUse]any)
 	stage.LaneUses_mapString = make(map[string]*LaneUse)
 
-	stage.Milestones = make(map[*Milestone]struct{})
+	stage.Milestones = make(map[*Milestone]any)
 	stage.Milestones_mapString = make(map[string]*Milestone)
 
 }
@@ -1909,6 +1909,7 @@ func generatesIdentifier(gongStructName string, idx int, instanceName string) (i
 }
 
 // insertion point of functions that provide maps for reverse associations
+
 // generate function for reverse association maps of Arrow
 func (stageStruct *StageStruct) CreateReverseMap_Arrow_From() (res map[*Bar][]*Arrow) {
 	res = make(map[*Bar][]*Arrow)
@@ -1930,7 +1931,6 @@ func (stageStruct *StageStruct) CreateReverseMap_Arrow_From() (res map[*Bar][]*A
 
 	return
 }
-
 func (stageStruct *StageStruct) CreateReverseMap_Arrow_To() (res map[*Bar][]*Arrow) {
 	res = make(map[*Bar][]*Arrow)
 
@@ -1953,6 +1953,7 @@ func (stageStruct *StageStruct) CreateReverseMap_Arrow_To() (res map[*Bar][]*Arr
 }
 
 // generate function for reverse association maps of Bar
+
 // generate function for reverse association maps of Gantt
 func (stageStruct *StageStruct) CreateReverseMap_Gantt_Lanes() (res map[*Lane]*Gantt) {
 	res = make(map[*Lane]*Gantt)
@@ -2002,6 +2003,7 @@ func (stageStruct *StageStruct) CreateReverseMap_Gantt_Arrows() (res map[*Arrow]
 	return
 }
 
+
 // generate function for reverse association maps of Group
 func (stageStruct *StageStruct) CreateReverseMap_Group_GroupLanes() (res map[*Lane]*Group) {
 	res = make(map[*Lane]*Group)
@@ -2015,6 +2017,7 @@ func (stageStruct *StageStruct) CreateReverseMap_Group_GroupLanes() (res map[*La
 	return
 }
 
+
 // generate function for reverse association maps of Lane
 func (stageStruct *StageStruct) CreateReverseMap_Lane_Bars() (res map[*Bar]*Lane) {
 	res = make(map[*Bar]*Lane)
@@ -2027,6 +2030,7 @@ func (stageStruct *StageStruct) CreateReverseMap_Lane_Bars() (res map[*Bar]*Lane
 
 	return
 }
+
 
 // generate function for reverse association maps of LaneUse
 func (stageStruct *StageStruct) CreateReverseMap_LaneUse_Lane() (res map[*Lane][]*LaneUse) {
@@ -2063,5 +2067,83 @@ func (stageStruct *StageStruct) CreateReverseMap_Milestone_LanesToDisplayMilesto
 	return
 }
 
+
+type GongstructSet interface {
+	map[any]any |
+		// insertion point for generic types
+		map[*Arrow]any |
+		map[*Bar]any |
+		map[*Gantt]any |
+		map[*Group]any |
+		map[*Lane]any |
+		map[*LaneUse]any |
+		map[*Milestone]any |
+		map[*any]any // because go does not support an extra "|" at the end of type specifications
+}
+
+type GongstructMapString interface {
+	map[any]any |
+		// insertion point for generic types
+		map[string]*Arrow |
+		map[string]*Bar |
+		map[string]*Gantt |
+		map[string]*Group |
+		map[string]*Lane |
+		map[string]*LaneUse |
+		map[string]*Milestone |
+		map[*any]any // because go does not support an extra "|" at the end of type specifications
+}
+
+// GongGetSet returns the set staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GongGetSet[Type GongstructSet]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case map[*Arrow]any:
+		return any(&Stage.Arrows).(*Type)
+	case map[*Bar]any:
+		return any(&Stage.Bars).(*Type)
+	case map[*Gantt]any:
+		return any(&Stage.Gantts).(*Type)
+	case map[*Group]any:
+		return any(&Stage.Groups).(*Type)
+	case map[*Lane]any:
+		return any(&Stage.Lanes).(*Type)
+	case map[*LaneUse]any:
+		return any(&Stage.LaneUses).(*Type)
+	case map[*Milestone]any:
+		return any(&Stage.Milestones).(*Type)
+	default:
+		return nil
+	}
+}
+
+// GongGetMap returns the map of staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GongGetMap[Type GongstructMapString]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case map[string]*Arrow:
+		return any(&Stage.Arrows_mapString).(*Type)
+	case map[string]*Bar:
+		return any(&Stage.Bars_mapString).(*Type)
+	case map[string]*Gantt:
+		return any(&Stage.Gantts_mapString).(*Type)
+	case map[string]*Group:
+		return any(&Stage.Groups_mapString).(*Type)
+	case map[string]*Lane:
+		return any(&Stage.Lanes_mapString).(*Type)
+	case map[string]*LaneUse:
+		return any(&Stage.LaneUses_mapString).(*Type)
+	case map[string]*Milestone:
+		return any(&Stage.Milestones_mapString).(*Type)
+	default:
+		return nil
+	}
+}
 
 // insertion point of enum utility functions

@@ -286,7 +286,7 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOne() (Error error) {
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	groupInstancesToBeRemovedFromTheStage := make(map[*models.Group]struct{})
+	groupInstancesToBeRemovedFromTheStage := make(map[*models.Group]any)
 	for key, value := range models.Stage.Groups {
 		groupInstancesToBeRemovedFromTheStage[key] = value
 	}

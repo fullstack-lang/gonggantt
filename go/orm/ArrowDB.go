@@ -305,7 +305,7 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOne() (Error error) {
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	arrowInstancesToBeRemovedFromTheStage := make(map[*models.Arrow]struct{})
+	arrowInstancesToBeRemovedFromTheStage := make(map[*models.Arrow]any)
 	for key, value := range models.Stage.Arrows {
 		arrowInstancesToBeRemovedFromTheStage[key] = value
 	}

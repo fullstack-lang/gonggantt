@@ -477,7 +477,7 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	ganttInstancesToBeRemovedFromTheStage := make(map[*models.Gantt]struct{})
+	ganttInstancesToBeRemovedFromTheStage := make(map[*models.Gantt]any)
 	for key, value := range models.Stage.Gantts {
 		ganttInstancesToBeRemovedFromTheStage[key] = value
 	}

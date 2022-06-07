@@ -280,7 +280,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOne() (Error error) {
 
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
-	laneuseInstancesToBeRemovedFromTheStage := make(map[*models.LaneUse]struct{})
+	laneuseInstancesToBeRemovedFromTheStage := make(map[*models.LaneUse]any)
 	for key, value := range models.Stage.LaneUses {
 		laneuseInstancesToBeRemovedFromTheStage[key] = value
 	}

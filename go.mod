@@ -1,6 +1,6 @@
 module github.com/fullstack-lang/gonggantt
 
-go 1.17
+go 1.18
 
 require (
 	github.com/fullstack-lang/gong v0.0.0-20220504014832-faa6fb35ee3a
