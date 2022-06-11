@@ -2068,6 +2068,15 @@ func (stageStruct *StageStruct) CreateReverseMap_Milestone_LanesToDisplayMilesto
 }
 
 
+// Gongstruct is the type paramter for generated generic function that allows 
+// - access to staged instances
+// - navigation between staged instances by going backward association links between gongstruct
+// - full refactoring of Gongstruct identifiers / fields
+type Gongstruct interface {
+	// insertion point for generic types
+	Arrow | Bar | Gantt | Group | Lane | LaneUse | Milestone
+}
+
 type GongstructSet interface {
 	map[any]any |
 		// insertion point for generic types
@@ -2145,5 +2154,328 @@ func GongGetMap[Type GongstructMapString]() *Type {
 		return nil
 	}
 }
+
+// GetGongstructInstancesSet returns the set staged GongstructType instances
+// it is usefull because it allows refactoring of gongstruct identifier
+func GetGongstructInstancesSet[Type Gongstruct]() *map[*Type]any {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case Arrow:
+		return any(&Stage.Arrows).(*map[*Type]any)
+	case Bar:
+		return any(&Stage.Bars).(*map[*Type]any)
+	case Gantt:
+		return any(&Stage.Gantts).(*map[*Type]any)
+	case Group:
+		return any(&Stage.Groups).(*map[*Type]any)
+	case Lane:
+		return any(&Stage.Lanes).(*map[*Type]any)
+	case LaneUse:
+		return any(&Stage.LaneUses).(*map[*Type]any)
+	case Milestone:
+		return any(&Stage.Milestones).(*map[*Type]any)
+	default:
+		return nil
+	}
+}
+
+// GetGongstructInstancesMap returns the map of staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GetGongstructInstancesMap[Type Gongstruct]() *map[string]*Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case Arrow:
+		return any(&Stage.Arrows_mapString).(*map[string]*Type)
+	case Bar:
+		return any(&Stage.Bars_mapString).(*map[string]*Type)
+	case Gantt:
+		return any(&Stage.Gantts_mapString).(*map[string]*Type)
+	case Group:
+		return any(&Stage.Groups_mapString).(*map[string]*Type)
+	case Lane:
+		return any(&Stage.Lanes_mapString).(*map[string]*Type)
+	case LaneUse:
+		return any(&Stage.LaneUses_mapString).(*map[string]*Type)
+	case Milestone:
+		return any(&Stage.Milestones_mapString).(*map[string]*Type)
+	default:
+		return nil
+	}
+}
+
+// GetAssociationName is a generic function that returns an instance of Type
+// where each association is filled with an instance whose name is the name of the association
+//
+// This function can be handy for generating navigation function that are refactorable
+func GetAssociationName[Type Gongstruct]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for instance with special fields
+	case Arrow:
+		return any(&Arrow{
+			// Initialisation of associations
+			// field is initialized with an instance of Bar with the name of the field
+			From: &Bar{Name: "From"},
+			// field is initialized with an instance of Bar with the name of the field
+			To: &Bar{Name: "To"},
+		}).(*Type)
+	case Bar:
+		return any(&Bar{
+			// Initialisation of associations
+		}).(*Type)
+	case Gantt:
+		return any(&Gantt{
+			// Initialisation of associations
+			// field is initialized with an instance of Lane with the name of the field
+			Lanes: []*Lane{{Name: "Lanes"}},
+			// field is initialized with an instance of Milestone with the name of the field
+			Milestones: []*Milestone{{Name: "Milestones"}},
+			// field is initialized with an instance of Group with the name of the field
+			Groups: []*Group{{Name: "Groups"}},
+			// field is initialized with an instance of Arrow with the name of the field
+			Arrows: []*Arrow{{Name: "Arrows"}},
+		}).(*Type)
+	case Group:
+		return any(&Group{
+			// Initialisation of associations
+			// field is initialized with an instance of Lane with the name of the field
+			GroupLanes: []*Lane{{Name: "GroupLanes"}},
+		}).(*Type)
+	case Lane:
+		return any(&Lane{
+			// Initialisation of associations
+			// field is initialized with an instance of Bar with the name of the field
+			Bars: []*Bar{{Name: "Bars"}},
+		}).(*Type)
+	case LaneUse:
+		return any(&LaneUse{
+			// Initialisation of associations
+			// field is initialized with an instance of Lane with the name of the field
+			Lane: &Lane{Name: "Lane"},
+		}).(*Type)
+	case Milestone:
+		return any(&Milestone{
+			// Initialisation of associations
+			// field is initialized with an instance of LaneUse with the name of the field
+			LanesToDisplayMilestoneUse: []*LaneUse{{Name: "LanesToDisplayMilestoneUse"}},
+		}).(*Type)
+	default:
+		return nil
+	}
+}
+
+// GetPointerReverseMap allows backtrack navigation of any Start.Fieldname
+// associations (0..1) that is a pointer from one staged Gongstruct (type Start)
+// instances to another (type End)
+//
+// The function provides a map with keys as instances of End and values to arrays of *Start
+// the map is construed by iterating over all Start instances and populationg keys with End instances
+// and values with slice of Start instances
+func GetPointerReverseMap[Start, End Gongstruct](fieldname string) map[*End][]*Start {
+	var ret Start
+
+	switch any(ret).(type) {
+	// insertion point of functions that provide maps for reverse associations
+	// reverse maps of direct associations of Arrow
+	case Arrow:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "From":
+			res := make(map[*Bar][]*Arrow)
+			for arrow := range Stage.Arrows {
+				if arrow.From != nil {
+					bar_ := arrow.From
+					var arrows []*Arrow
+					_, ok := res[bar_]
+					if ok {
+						arrows = res[bar_]
+					} else {
+						arrows = make([]*Arrow, 0)
+					}
+					arrows = append(arrows, arrow)
+					res[bar_] = arrows
+				}
+			}
+			return any(res).(map[*End][]*Start)
+		case "To":
+			res := make(map[*Bar][]*Arrow)
+			for arrow := range Stage.Arrows {
+				if arrow.To != nil {
+					bar_ := arrow.To
+					var arrows []*Arrow
+					_, ok := res[bar_]
+					if ok {
+						arrows = res[bar_]
+					} else {
+						arrows = make([]*Arrow, 0)
+					}
+					arrows = append(arrows, arrow)
+					res[bar_] = arrows
+				}
+			}
+			return any(res).(map[*End][]*Start)
+		}
+	// reverse maps of direct associations of Bar
+	case Bar:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Gantt
+	case Gantt:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Group
+	case Group:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Lane
+	case Lane:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of LaneUse
+	case LaneUse:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Lane":
+			res := make(map[*Lane][]*LaneUse)
+			for laneuse := range Stage.LaneUses {
+				if laneuse.Lane != nil {
+					lane_ := laneuse.Lane
+					var laneuses []*LaneUse
+					_, ok := res[lane_]
+					if ok {
+						laneuses = res[lane_]
+					} else {
+						laneuses = make([]*LaneUse, 0)
+					}
+					laneuses = append(laneuses, laneuse)
+					res[lane_] = laneuses
+				}
+			}
+			return any(res).(map[*End][]*Start)
+		}
+	// reverse maps of direct associations of Milestone
+	case Milestone:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	}
+	return nil
+}
+
+// GetSliceOfPointersReverseMap allows backtrack navigation of any Start.Fieldname
+// associations (0..N) between one staged Gongstruct instances and many others
+//
+// The function provides a map with keys as instances of End and values to *Start instances
+// the map is construed by iterating over all Start instances and populating keys with End instances
+// and values with the Start instances
+func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*End]*Start {
+	var ret Start
+
+	switch any(ret).(type) {
+	// insertion point of functions that provide maps for reverse associations
+	// reverse maps of direct associations of Arrow
+	case Arrow:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Bar
+	case Bar:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Gantt
+	case Gantt:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Lanes":
+			res := make(map[*Lane]*Gantt)
+			for gantt := range Stage.Gantts {
+				for _, lane_ := range gantt.Lanes {
+					res[lane_] = gantt
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Milestones":
+			res := make(map[*Milestone]*Gantt)
+			for gantt := range Stage.Gantts {
+				for _, milestone_ := range gantt.Milestones {
+					res[milestone_] = gantt
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Groups":
+			res := make(map[*Group]*Gantt)
+			for gantt := range Stage.Gantts {
+				for _, group_ := range gantt.Groups {
+					res[group_] = gantt
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Arrows":
+			res := make(map[*Arrow]*Gantt)
+			for gantt := range Stage.Gantts {
+				for _, arrow_ := range gantt.Arrows {
+					res[arrow_] = gantt
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Group
+	case Group:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "GroupLanes":
+			res := make(map[*Lane]*Group)
+			for group := range Stage.Groups {
+				for _, lane_ := range group.GroupLanes {
+					res[lane_] = group
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Lane
+	case Lane:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Bars":
+			res := make(map[*Bar]*Lane)
+			for lane := range Stage.Lanes {
+				for _, bar_ := range lane.Bars {
+					res[bar_] = lane
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of LaneUse
+	case LaneUse:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Milestone
+	case Milestone:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "LanesToDisplayMilestoneUse":
+			res := make(map[*LaneUse]*Milestone)
+			for milestone := range Stage.Milestones {
+				for _, laneuse_ := range milestone.LanesToDisplayMilestoneUse {
+					res[laneuse_] = milestone
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	}
+	return nil
+}
+
 
 // insertion point of enum utility functions
