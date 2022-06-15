@@ -279,33 +279,6 @@ func (arrow *Arrow) GetName() (res string) {
 	return arrow.Name
 }
 
-func (arrow *Arrow) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "From", "To", "OptionnalColor", "OptionnalStroke"}
-	return
-}
-
-func (arrow *Arrow) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = arrow.Name
-	case "From":
-		if arrow.From != nil {
-			res = arrow.From.Name
-		}
-	case "To":
-		if arrow.To != nil {
-			res = arrow.To.Name
-		}
-	case "OptionnalColor":
-		res = arrow.OptionnalColor
-	case "OptionnalStroke":
-		res = arrow.OptionnalStroke
-	}
-	return
-}
-
 func (stage *StageStruct) getBarOrderedStructWithNameField() []*Bar {
 	// have alphabetical order generation
 	barOrdered := []*Bar{}
@@ -411,35 +384,6 @@ func DeleteORMBar(bar *Bar) {
 // for satisfaction of GongStruct interface
 func (bar *Bar) GetName() (res string) {
 	return bar.Name
-}
-
-func (bar *Bar) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Start", "End", "OptionnalColor", "OptionnalStroke", "FillOpacity", "StrokeWidth", "StrokeDashArray"}
-	return
-}
-
-func (bar *Bar) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = bar.Name
-	case "Start":
-		res = bar.Start.String()
-	case "End":
-		res = bar.End.String()
-	case "OptionnalColor":
-		res = bar.OptionnalColor
-	case "OptionnalStroke":
-		res = bar.OptionnalStroke
-	case "FillOpacity":
-		res = fmt.Sprintf("%f", bar.FillOpacity)
-	case "StrokeWidth":
-		res = fmt.Sprintf("%f", bar.StrokeWidth)
-	case "StrokeDashArray":
-		res = bar.StrokeDashArray
-	}
-	return
 }
 
 func (stage *StageStruct) getGanttOrderedStructWithNameField() []*Gantt {
@@ -549,95 +493,6 @@ func (gantt *Gantt) GetName() (res string) {
 	return gantt.Name
 }
 
-func (gantt *Gantt) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "ComputedStart", "ComputedEnd", "UseManualStartAndEndDates", "ManualStart", "ManualEnd", "LaneHeight", "RatioBarToLaneHeight", "YTopMargin", "XLeftText", "TextHeight", "XLeftLanes", "XRightMargin", "ArrowLengthToTheRightOfStartBar", "ArrowTipLenght", "TimeLine_Color", "TimeLine_FillOpacity", "TimeLine_Stroke", "TimeLine_StrokeWidth", "Group_Stroke", "Group_StrokeWidth", "Group_StrokeDashArray", "DateYOffset", "AlignOnStartEndOnYearStart", "Lanes", "Milestones", "Groups", "Arrows"}
-	return
-}
-
-func (gantt *Gantt) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = gantt.Name
-	case "ComputedStart":
-		res = gantt.ComputedStart.String()
-	case "ComputedEnd":
-		res = gantt.ComputedEnd.String()
-	case "UseManualStartAndEndDates":
-		res = fmt.Sprintf("%t", gantt.UseManualStartAndEndDates)
-	case "ManualStart":
-		res = gantt.ManualStart.String()
-	case "ManualEnd":
-		res = gantt.ManualEnd.String()
-	case "LaneHeight":
-		res = fmt.Sprintf("%f", gantt.LaneHeight)
-	case "RatioBarToLaneHeight":
-		res = fmt.Sprintf("%f", gantt.RatioBarToLaneHeight)
-	case "YTopMargin":
-		res = fmt.Sprintf("%f", gantt.YTopMargin)
-	case "XLeftText":
-		res = fmt.Sprintf("%f", gantt.XLeftText)
-	case "TextHeight":
-		res = fmt.Sprintf("%f", gantt.TextHeight)
-	case "XLeftLanes":
-		res = fmt.Sprintf("%f", gantt.XLeftLanes)
-	case "XRightMargin":
-		res = fmt.Sprintf("%f", gantt.XRightMargin)
-	case "ArrowLengthToTheRightOfStartBar":
-		res = fmt.Sprintf("%f", gantt.ArrowLengthToTheRightOfStartBar)
-	case "ArrowTipLenght":
-		res = fmt.Sprintf("%f", gantt.ArrowTipLenght)
-	case "TimeLine_Color":
-		res = gantt.TimeLine_Color
-	case "TimeLine_FillOpacity":
-		res = fmt.Sprintf("%f", gantt.TimeLine_FillOpacity)
-	case "TimeLine_Stroke":
-		res = gantt.TimeLine_Stroke
-	case "TimeLine_StrokeWidth":
-		res = fmt.Sprintf("%f", gantt.TimeLine_StrokeWidth)
-	case "Group_Stroke":
-		res = gantt.Group_Stroke
-	case "Group_StrokeWidth":
-		res = fmt.Sprintf("%f", gantt.Group_StrokeWidth)
-	case "Group_StrokeDashArray":
-		res = gantt.Group_StrokeDashArray
-	case "DateYOffset":
-		res = fmt.Sprintf("%f", gantt.DateYOffset)
-	case "AlignOnStartEndOnYearStart":
-		res = fmt.Sprintf("%t", gantt.AlignOnStartEndOnYearStart)
-	case "Lanes":
-		for idx, __instance__ := range gantt.Lanes {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Milestones":
-		for idx, __instance__ := range gantt.Milestones {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Groups":
-		for idx, __instance__ := range gantt.Groups {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Arrows":
-		for idx, __instance__ := range gantt.Arrows {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
 func (stage *StageStruct) getGroupOrderedStructWithNameField() []*Group {
 	// have alphabetical order generation
 	groupOrdered := []*Group{}
@@ -743,28 +598,6 @@ func DeleteORMGroup(group *Group) {
 // for satisfaction of GongStruct interface
 func (group *Group) GetName() (res string) {
 	return group.Name
-}
-
-func (group *Group) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "GroupLanes"}
-	return
-}
-
-func (group *Group) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = group.Name
-	case "GroupLanes":
-		for idx, __instance__ := range group.GroupLanes {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
 }
 
 func (stage *StageStruct) getLaneOrderedStructWithNameField() []*Lane {
@@ -874,30 +707,6 @@ func (lane *Lane) GetName() (res string) {
 	return lane.Name
 }
 
-func (lane *Lane) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Order", "Bars"}
-	return
-}
-
-func (lane *Lane) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = lane.Name
-	case "Order":
-		res = fmt.Sprintf("%d", lane.Order)
-	case "Bars":
-		for idx, __instance__ := range lane.Bars {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
 func (stage *StageStruct) getLaneUseOrderedStructWithNameField() []*LaneUse {
 	// have alphabetical order generation
 	laneuseOrdered := []*LaneUse{}
@@ -1005,25 +814,6 @@ func (laneuse *LaneUse) GetName() (res string) {
 	return laneuse.Name
 }
 
-func (laneuse *LaneUse) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Lane"}
-	return
-}
-
-func (laneuse *LaneUse) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = laneuse.Name
-	case "Lane":
-		if laneuse.Lane != nil {
-			res = laneuse.Lane.Name
-		}
-	}
-	return
-}
-
 func (stage *StageStruct) getMilestoneOrderedStructWithNameField() []*Milestone {
 	// have alphabetical order generation
 	milestoneOrdered := []*Milestone{}
@@ -1129,32 +919,6 @@ func DeleteORMMilestone(milestone *Milestone) {
 // for satisfaction of GongStruct interface
 func (milestone *Milestone) GetName() (res string) {
 	return milestone.Name
-}
-
-func (milestone *Milestone) GetFields() (res []string) {
-	// list of fields
-	res = []string{"Name", "Date", "DisplayVerticalBar", "LanesToDisplayMilestoneUse"}
-	return
-}
-
-func (milestone *Milestone) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = milestone.Name
-	case "Date":
-		res = milestone.Date.String()
-	case "DisplayVerticalBar":
-		res = fmt.Sprintf("%t", milestone.DisplayVerticalBar)
-	case "LanesToDisplayMilestoneUse":
-		for idx, __instance__ := range milestone.LanesToDisplayMilestoneUse {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
 }
 
 // swagger:ignore
@@ -1310,7 +1074,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(arrowOrdered[:], func(i, j int) bool {
 		return arrowOrdered[i].Name < arrowOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Arrow")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Arrow"
 	for idx, arrow := range arrowOrdered {
 
 		id = generatesIdentifier("Arrow", idx, arrow.Name)
@@ -1354,7 +1118,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(barOrdered[:], func(i, j int) bool {
 		return barOrdered[i].Name < barOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Bar")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Bar"
 	for idx, bar := range barOrdered {
 
 		id = generatesIdentifier("Bar", idx, bar.Name)
@@ -1428,7 +1192,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(ganttOrdered[:], func(i, j int) bool {
 		return ganttOrdered[i].Name < ganttOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Gantt")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Gantt"
 	for idx, gantt := range ganttOrdered {
 
 		id = generatesIdentifier("Gantt", idx, gantt.Name)
@@ -1598,7 +1362,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(groupOrdered[:], func(i, j int) bool {
 		return groupOrdered[i].Name < groupOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Group")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Group"
 	for idx, group := range groupOrdered {
 
 		id = generatesIdentifier("Group", idx, group.Name)
@@ -1630,7 +1394,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(laneOrdered[:], func(i, j int) bool {
 		return laneOrdered[i].Name < laneOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Lane")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Lane"
 	for idx, lane := range laneOrdered {
 
 		id = generatesIdentifier("Lane", idx, lane.Name)
@@ -1668,7 +1432,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(laneuseOrdered[:], func(i, j int) bool {
 		return laneuseOrdered[i].Name < laneuseOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of LaneUse")
+	identifiersDecl += "\n\n	// Declarations of staged instances of LaneUse"
 	for idx, laneuse := range laneuseOrdered {
 
 		id = generatesIdentifier("LaneUse", idx, laneuse.Name)
@@ -1700,7 +1464,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(milestoneOrdered[:], func(i, j int) bool {
 		return milestoneOrdered[i].Name < milestoneOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Milestone")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Milestone"
 	for idx, milestone := range milestoneOrdered {
 
 		id = generatesIdentifier("Milestone", idx, milestone.Name)
@@ -2068,7 +1832,7 @@ func (stageStruct *StageStruct) CreateReverseMap_Milestone_LanesToDisplayMilesto
 }
 
 
-// Gongstruct is the type paramter for generated generic function that allows 
+// Gongstruct is the type paramter for generated generic function that allows
 // - access to staged instances
 // - navigation between staged instances by going backward association links between gongstruct
 // - full refactoring of Gongstruct identifiers / fields
@@ -2477,5 +2241,237 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 	return nil
 }
 
+// GetGongstructName returns the name of the Gongstruct
+// this can be usefull if one want program robust to refactoring
+func GetGongstructName[Type Gongstruct]() (res string) {
+
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct name
+	case Arrow:
+		res = "Arrow"
+	case Bar:
+		res = "Bar"
+	case Gantt:
+		res = "Gantt"
+	case Group:
+		res = "Group"
+	case Lane:
+		res = "Lane"
+	case LaneUse:
+		res = "LaneUse"
+	case Milestone:
+		res = "Milestone"
+	}
+	return res
+}
+
+// GetFields return the array of the fields
+func GetFields[Type Gongstruct]() (res []string) {
+
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct name
+	case Arrow:
+		res = []string{"Name", "From", "To", "OptionnalColor", "OptionnalStroke"}
+	case Bar:
+		res = []string{"Name", "Start", "End", "OptionnalColor", "OptionnalStroke", "FillOpacity", "StrokeWidth", "StrokeDashArray"}
+	case Gantt:
+		res = []string{"Name", "ComputedStart", "ComputedEnd", "UseManualStartAndEndDates", "ManualStart", "ManualEnd", "LaneHeight", "RatioBarToLaneHeight", "YTopMargin", "XLeftText", "TextHeight", "XLeftLanes", "XRightMargin", "ArrowLengthToTheRightOfStartBar", "ArrowTipLenght", "TimeLine_Color", "TimeLine_FillOpacity", "TimeLine_Stroke", "TimeLine_StrokeWidth", "Group_Stroke", "Group_StrokeWidth", "Group_StrokeDashArray", "DateYOffset", "AlignOnStartEndOnYearStart", "Lanes", "Milestones", "Groups", "Arrows"}
+	case Group:
+		res = []string{"Name", "GroupLanes"}
+	case Lane:
+		res = []string{"Name", "Order", "Bars"}
+	case LaneUse:
+		res = []string{"Name", "Lane"}
+	case Milestone:
+		res = []string{"Name", "Date", "DisplayVerticalBar", "LanesToDisplayMilestoneUse"}
+	}
+	return
+}
+
+func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res string) {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct field value
+	case Arrow:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Arrow).Name
+		case "From":
+			if any(instance).(Arrow).From != nil {
+				res = any(instance).(Arrow).From.Name
+			}
+		case "To":
+			if any(instance).(Arrow).To != nil {
+				res = any(instance).(Arrow).To.Name
+			}
+		case "OptionnalColor":
+			res = any(instance).(Arrow).OptionnalColor
+		case "OptionnalStroke":
+			res = any(instance).(Arrow).OptionnalStroke
+		}
+	case Bar:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Bar).Name
+		case "Start":
+			res = any(instance).(Bar).Start.String()
+		case "End":
+			res = any(instance).(Bar).End.String()
+		case "OptionnalColor":
+			res = any(instance).(Bar).OptionnalColor
+		case "OptionnalStroke":
+			res = any(instance).(Bar).OptionnalStroke
+		case "FillOpacity":
+			res = fmt.Sprintf("%f", any(instance).(Bar).FillOpacity)
+		case "StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Bar).StrokeWidth)
+		case "StrokeDashArray":
+			res = any(instance).(Bar).StrokeDashArray
+		}
+	case Gantt:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Gantt).Name
+		case "ComputedStart":
+			res = any(instance).(Gantt).ComputedStart.String()
+		case "ComputedEnd":
+			res = any(instance).(Gantt).ComputedEnd.String()
+		case "UseManualStartAndEndDates":
+			res = fmt.Sprintf("%t", any(instance).(Gantt).UseManualStartAndEndDates)
+		case "ManualStart":
+			res = any(instance).(Gantt).ManualStart.String()
+		case "ManualEnd":
+			res = any(instance).(Gantt).ManualEnd.String()
+		case "LaneHeight":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).LaneHeight)
+		case "RatioBarToLaneHeight":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).RatioBarToLaneHeight)
+		case "YTopMargin":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).YTopMargin)
+		case "XLeftText":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).XLeftText)
+		case "TextHeight":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).TextHeight)
+		case "XLeftLanes":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).XLeftLanes)
+		case "XRightMargin":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).XRightMargin)
+		case "ArrowLengthToTheRightOfStartBar":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).ArrowLengthToTheRightOfStartBar)
+		case "ArrowTipLenght":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).ArrowTipLenght)
+		case "TimeLine_Color":
+			res = any(instance).(Gantt).TimeLine_Color
+		case "TimeLine_FillOpacity":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).TimeLine_FillOpacity)
+		case "TimeLine_Stroke":
+			res = any(instance).(Gantt).TimeLine_Stroke
+		case "TimeLine_StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).TimeLine_StrokeWidth)
+		case "Group_Stroke":
+			res = any(instance).(Gantt).Group_Stroke
+		case "Group_StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).Group_StrokeWidth)
+		case "Group_StrokeDashArray":
+			res = any(instance).(Gantt).Group_StrokeDashArray
+		case "DateYOffset":
+			res = fmt.Sprintf("%f", any(instance).(Gantt).DateYOffset)
+		case "AlignOnStartEndOnYearStart":
+			res = fmt.Sprintf("%t", any(instance).(Gantt).AlignOnStartEndOnYearStart)
+		case "Lanes":
+			for idx, __instance__ := range any(instance).(Gantt).Lanes {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Milestones":
+			for idx, __instance__ := range any(instance).(Gantt).Milestones {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Groups":
+			for idx, __instance__ := range any(instance).(Gantt).Groups {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Arrows":
+			for idx, __instance__ := range any(instance).(Gantt).Arrows {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case Group:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Group).Name
+		case "GroupLanes":
+			for idx, __instance__ := range any(instance).(Group).GroupLanes {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case Lane:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Lane).Name
+		case "Order":
+			res = fmt.Sprintf("%d", any(instance).(Lane).Order)
+		case "Bars":
+			for idx, __instance__ := range any(instance).(Lane).Bars {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case LaneUse:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(LaneUse).Name
+		case "Lane":
+			if any(instance).(LaneUse).Lane != nil {
+				res = any(instance).(LaneUse).Lane.Name
+			}
+		}
+	case Milestone:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Milestone).Name
+		case "Date":
+			res = any(instance).(Milestone).Date.String()
+		case "DisplayVerticalBar":
+			res = fmt.Sprintf("%t", any(instance).(Milestone).DisplayVerticalBar)
+		case "LanesToDisplayMilestoneUse":
+			for idx, __instance__ := range any(instance).(Milestone).LanesToDisplayMilestoneUse {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	}
+	return
+}
 
 // insertion point of enum utility functions
