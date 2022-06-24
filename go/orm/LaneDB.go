@@ -70,10 +70,10 @@ type LaneDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field laneDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field laneDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field laneDB.Order {{BasicKind}} (to be completed)
+	// Declation for basic field laneDB.Order
 	Order_Data sql.NullInt64
 	// encoding of pointers
 	LanePointersEnconding

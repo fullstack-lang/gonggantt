@@ -68,7 +68,7 @@ type LaneUseDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field laneuseDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field laneuseDB.Name
 	Name_Data sql.NullString
 	// encoding of pointers
 	LaneUsePointersEnconding

@@ -58,7 +58,7 @@ type GanttDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field ganttDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.Name
 	Name_Data sql.NullString
 
 	// Declation for basic field ganttDB.ComputedStart
@@ -67,7 +67,7 @@ type GanttDB struct {
 	// Declation for basic field ganttDB.ComputedEnd
 	ComputedEnd_Data sql.NullTime
 
-	// Declation for basic field ganttDB.UseManualStartAndEndDates bool (to be completed)
+	// Declation for basic field ganttDB.UseManualStartAndEndDates
 	// provide the sql storage for the boolan
 	UseManualStartAndEndDates_Data sql.NullBool
 
@@ -77,58 +77,58 @@ type GanttDB struct {
 	// Declation for basic field ganttDB.ManualEnd
 	ManualEnd_Data sql.NullTime
 
-	// Declation for basic field ganttDB.LaneHeight {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.LaneHeight
 	LaneHeight_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.RatioBarToLaneHeight {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.RatioBarToLaneHeight
 	RatioBarToLaneHeight_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.YTopMargin {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.YTopMargin
 	YTopMargin_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.XLeftText {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.XLeftText
 	XLeftText_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.TextHeight {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.TextHeight
 	TextHeight_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.XLeftLanes {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.XLeftLanes
 	XLeftLanes_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.XRightMargin {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.XRightMargin
 	XRightMargin_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.ArrowLengthToTheRightOfStartBar {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.ArrowLengthToTheRightOfStartBar
 	ArrowLengthToTheRightOfStartBar_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.ArrowTipLenght {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.ArrowTipLenght
 	ArrowTipLenght_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.TimeLine_Color {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.TimeLine_Color
 	TimeLine_Color_Data sql.NullString
 
-	// Declation for basic field ganttDB.TimeLine_FillOpacity {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.TimeLine_FillOpacity
 	TimeLine_FillOpacity_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.TimeLine_Stroke {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.TimeLine_Stroke
 	TimeLine_Stroke_Data sql.NullString
 
-	// Declation for basic field ganttDB.TimeLine_StrokeWidth {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.TimeLine_StrokeWidth
 	TimeLine_StrokeWidth_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.Group_Stroke {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.Group_Stroke
 	Group_Stroke_Data sql.NullString
 
-	// Declation for basic field ganttDB.Group_StrokeWidth {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.Group_StrokeWidth
 	Group_StrokeWidth_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.Group_StrokeDashArray {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.Group_StrokeDashArray
 	Group_StrokeDashArray_Data sql.NullString
 
-	// Declation for basic field ganttDB.DateYOffset {{BasicKind}} (to be completed)
+	// Declation for basic field ganttDB.DateYOffset
 	DateYOffset_Data sql.NullFloat64
 
-	// Declation for basic field ganttDB.AlignOnStartEndOnYearStart bool (to be completed)
+	// Declation for basic field ganttDB.AlignOnStartEndOnYearStart
 	// provide the sql storage for the boolan
 	AlignOnStartEndOnYearStart_Data sql.NullBool
 	// encoding of pointers

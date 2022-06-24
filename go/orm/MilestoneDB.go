@@ -64,13 +64,13 @@ type MilestoneDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field milestoneDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field milestoneDB.Name
 	Name_Data sql.NullString
 
 	// Declation for basic field milestoneDB.Date
 	Date_Data sql.NullTime
 
-	// Declation for basic field milestoneDB.DisplayVerticalBar bool (to be completed)
+	// Declation for basic field milestoneDB.DisplayVerticalBar
 	// provide the sql storage for the boolan
 	DisplayVerticalBar_Data sql.NullBool
 	// encoding of pointers

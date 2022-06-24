@@ -72,13 +72,13 @@ type ArrowDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field arrowDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field arrowDB.Name
 	Name_Data sql.NullString
 
-	// Declation for basic field arrowDB.OptionnalColor {{BasicKind}} (to be completed)
+	// Declation for basic field arrowDB.OptionnalColor
 	OptionnalColor_Data sql.NullString
 
-	// Declation for basic field arrowDB.OptionnalStroke {{BasicKind}} (to be completed)
+	// Declation for basic field arrowDB.OptionnalStroke
 	OptionnalStroke_Data sql.NullString
 	// encoding of pointers
 	ArrowPointersEnconding

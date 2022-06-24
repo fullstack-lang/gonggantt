@@ -64,7 +64,7 @@ type BarDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field barDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field barDB.Name
 	Name_Data sql.NullString
 
 	// Declation for basic field barDB.Start
@@ -73,19 +73,19 @@ type BarDB struct {
 	// Declation for basic field barDB.End
 	End_Data sql.NullTime
 
-	// Declation for basic field barDB.OptionnalColor {{BasicKind}} (to be completed)
+	// Declation for basic field barDB.OptionnalColor
 	OptionnalColor_Data sql.NullString
 
-	// Declation for basic field barDB.OptionnalStroke {{BasicKind}} (to be completed)
+	// Declation for basic field barDB.OptionnalStroke
 	OptionnalStroke_Data sql.NullString
 
-	// Declation for basic field barDB.FillOpacity {{BasicKind}} (to be completed)
+	// Declation for basic field barDB.FillOpacity
 	FillOpacity_Data sql.NullFloat64
 
-	// Declation for basic field barDB.StrokeWidth {{BasicKind}} (to be completed)
+	// Declation for basic field barDB.StrokeWidth
 	StrokeWidth_Data sql.NullFloat64
 
-	// Declation for basic field barDB.StrokeDashArray {{BasicKind}} (to be completed)
+	// Declation for basic field barDB.StrokeDashArray
 	StrokeDashArray_Data sql.NullString
 	// encoding of pointers
 	BarPointersEnconding

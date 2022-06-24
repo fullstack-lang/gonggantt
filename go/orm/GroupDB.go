@@ -64,7 +64,7 @@ type GroupDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field groupDB.Name {{BasicKind}} (to be completed)
+	// Declation for basic field groupDB.Name
 	Name_Data sql.NullString
 	// encoding of pointers
 	GroupPointersEnconding
