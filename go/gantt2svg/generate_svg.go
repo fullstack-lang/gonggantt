@@ -52,7 +52,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 	RatioBarToLaneHeight := ganttToRender.RatioBarToLaneHeight
 	barHeigth := LaneHeight * RatioBarToLaneHeight
 	YTopMargin := ganttToRender.YTopMargin
-	yTimeLine := LaneHeight*float64(len(stage.Lanes)) + YTopMargin
+	yTimeLine := LaneHeight*float64(len(*gonggantt_models.GetGongstructInstancesSet[gonggantt_models.Lane]())) + YTopMargin
 
 	XLeftText := ganttToRender.XLeftText
 	TextHeight := ganttToRender.TextHeight

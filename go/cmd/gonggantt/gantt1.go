@@ -194,5 +194,3 @@ func gantt1Injection() {
 	__Milestone__000001_june_2023_.LanesToDisplayMilestoneUse = append(__Milestone__000001_june_2023_.LanesToDisplayMilestoneUse, __LaneUse__000000_Lane_1)
 	__Milestone__000001_june_2023_.LanesToDisplayMilestoneUse = append(__Milestone__000001_june_2023_.LanesToDisplayMilestoneUse, __LaneUse__000003_Lane_3)
 }
-
-
