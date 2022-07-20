@@ -26,13 +26,13 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 	gongsvg_models.Stage.Reset()
 	gongsvg_models.Stage.Commit()
 
-	if len(gonggantt_models.Stage.Gantts) != 1 {
+	if len(*gonggantt_models.GetGongstructInstancesSet[gonggantt_models.Gantt]()) != 1 {
 		log.Printf("It is supposed to have only one gantt chart")
 		return
 	}
 
 	var ganttToRender *gonggantt_models.Gantt
-	for gantt := range gonggantt_models.Stage.Gantts {
+	for gantt := range *gonggantt_models.GetGongstructInstancesSet[gonggantt_models.Gantt]() {
 		ganttToRender = gantt
 	}
 	ganttToRender.ComputeStartAndEndDate()
