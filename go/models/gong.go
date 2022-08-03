@@ -182,18 +182,6 @@ func (stage *StageStruct) RestoreXL(dirPath string) {
 }
 
 // insertion point for cumulative sub template with model space calls
-func (stage *StageStruct) getArrowOrderedStructWithNameField() []*Arrow {
-	// have alphabetical order generation
-	arrowOrdered := []*Arrow{}
-	for arrow := range stage.Arrows {
-		arrowOrdered = append(arrowOrdered, arrow)
-	}
-	sort.Slice(arrowOrdered[:], func(i, j int) bool {
-		return arrowOrdered[i].Name < arrowOrdered[j].Name
-	})
-	return arrowOrdered
-}
-
 // Stage puts arrow to the model stage
 func (arrow *Arrow) Stage() *Arrow {
 	Stage.Arrows[arrow] = __member
@@ -287,18 +275,6 @@ func DeleteORMArrow(arrow *Arrow) {
 // for satisfaction of GongStruct interface
 func (arrow *Arrow) GetName() (res string) {
 	return arrow.Name
-}
-
-func (stage *StageStruct) getBarOrderedStructWithNameField() []*Bar {
-	// have alphabetical order generation
-	barOrdered := []*Bar{}
-	for bar := range stage.Bars {
-		barOrdered = append(barOrdered, bar)
-	}
-	sort.Slice(barOrdered[:], func(i, j int) bool {
-		return barOrdered[i].Name < barOrdered[j].Name
-	})
-	return barOrdered
 }
 
 // Stage puts bar to the model stage
@@ -396,18 +372,6 @@ func (bar *Bar) GetName() (res string) {
 	return bar.Name
 }
 
-func (stage *StageStruct) getGanttOrderedStructWithNameField() []*Gantt {
-	// have alphabetical order generation
-	ganttOrdered := []*Gantt{}
-	for gantt := range stage.Gantts {
-		ganttOrdered = append(ganttOrdered, gantt)
-	}
-	sort.Slice(ganttOrdered[:], func(i, j int) bool {
-		return ganttOrdered[i].Name < ganttOrdered[j].Name
-	})
-	return ganttOrdered
-}
-
 // Stage puts gantt to the model stage
 func (gantt *Gantt) Stage() *Gantt {
 	Stage.Gantts[gantt] = __member
@@ -501,18 +465,6 @@ func DeleteORMGantt(gantt *Gantt) {
 // for satisfaction of GongStruct interface
 func (gantt *Gantt) GetName() (res string) {
 	return gantt.Name
-}
-
-func (stage *StageStruct) getGroupOrderedStructWithNameField() []*Group {
-	// have alphabetical order generation
-	groupOrdered := []*Group{}
-	for group := range stage.Groups {
-		groupOrdered = append(groupOrdered, group)
-	}
-	sort.Slice(groupOrdered[:], func(i, j int) bool {
-		return groupOrdered[i].Name < groupOrdered[j].Name
-	})
-	return groupOrdered
 }
 
 // Stage puts group to the model stage
@@ -610,18 +562,6 @@ func (group *Group) GetName() (res string) {
 	return group.Name
 }
 
-func (stage *StageStruct) getLaneOrderedStructWithNameField() []*Lane {
-	// have alphabetical order generation
-	laneOrdered := []*Lane{}
-	for lane := range stage.Lanes {
-		laneOrdered = append(laneOrdered, lane)
-	}
-	sort.Slice(laneOrdered[:], func(i, j int) bool {
-		return laneOrdered[i].Name < laneOrdered[j].Name
-	})
-	return laneOrdered
-}
-
 // Stage puts lane to the model stage
 func (lane *Lane) Stage() *Lane {
 	Stage.Lanes[lane] = __member
@@ -717,18 +657,6 @@ func (lane *Lane) GetName() (res string) {
 	return lane.Name
 }
 
-func (stage *StageStruct) getLaneUseOrderedStructWithNameField() []*LaneUse {
-	// have alphabetical order generation
-	laneuseOrdered := []*LaneUse{}
-	for laneuse := range stage.LaneUses {
-		laneuseOrdered = append(laneuseOrdered, laneuse)
-	}
-	sort.Slice(laneuseOrdered[:], func(i, j int) bool {
-		return laneuseOrdered[i].Name < laneuseOrdered[j].Name
-	})
-	return laneuseOrdered
-}
-
 // Stage puts laneuse to the model stage
 func (laneuse *LaneUse) Stage() *LaneUse {
 	Stage.LaneUses[laneuse] = __member
@@ -822,18 +750,6 @@ func DeleteORMLaneUse(laneuse *LaneUse) {
 // for satisfaction of GongStruct interface
 func (laneuse *LaneUse) GetName() (res string) {
 	return laneuse.Name
-}
-
-func (stage *StageStruct) getMilestoneOrderedStructWithNameField() []*Milestone {
-	// have alphabetical order generation
-	milestoneOrdered := []*Milestone{}
-	for milestone := range stage.Milestones {
-		milestoneOrdered = append(milestoneOrdered, milestone)
-	}
-	sort.Slice(milestoneOrdered[:], func(i, j int) bool {
-		return milestoneOrdered[i].Name < milestoneOrdered[j].Name
-	})
-	return milestoneOrdered
 }
 
 // Stage puts milestone to the model stage
@@ -1842,13 +1758,23 @@ func (stageStruct *StageStruct) CreateReverseMap_Milestone_LanesToDisplayMilesto
 }
 
 
-// Gongstruct is the type paramter for generated generic function that allows
+// Gongstruct is the type parameter for generated generic function that allows
 // - access to staged instances
 // - navigation between staged instances by going backward association links between gongstruct
 // - full refactoring of Gongstruct identifiers / fields
 type Gongstruct interface {
 	// insertion point for generic types
 	Arrow | Bar | Gantt | Group | Lane | LaneUse | Milestone
+}
+
+// Gongstruct is the type parameter for generated generic function that allows
+// - access to staged instances
+// - navigation between staged instances by going backward association links between gongstruct
+// - full refactoring of Gongstruct identifiers / fields
+type PointerToGongstruct interface {
+	// insertion point for generic types
+	*Arrow | *Bar | *Gantt | *Group | *Lane | *LaneUse | *Milestone
+	GetName() string
 }
 
 type GongstructSet interface {
@@ -2485,3 +2411,4 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 }
 
 // insertion point of enum utility functions
+// Last line of the template
