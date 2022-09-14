@@ -75,26 +75,26 @@
 			"group": "build"
 		},
 		{
-			"label": "01 - gongc -backendOnly",
+			"label": "01 - gongc -skipNg",
 			"type": "shell",
 			"options": {
 				"cwd": "go/models"
 			},
 			"command": "gongc",
 			"args": [
-				"-backendOnly"
+				"-skipNg"
 			],
 			"group": "build"
 		},
 		{
-			"label": "01 - gongc -backendOnly -skipGoModCommands",
+			"label": "01 - gongc -skipNg -skipGoModCommands",
 			"type": "shell",
 			"options": {
 				"cwd": "go/models"
 			},
 			"command": "gongc",
 			"args": [
-				"-backendOnly",
+				"-skipNg",
 				"-skipGoModCommands"
 			],
 			"group": "build"

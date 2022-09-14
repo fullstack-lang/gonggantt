@@ -12,7 +12,7 @@ import (
 )
 
 // swagger:ignore
-type __void struct{}
+type __void any
 
 // needed for creating set of instances in the stage
 var __member __void
@@ -28,34 +28,34 @@ type GongStructInterface interface {
 // StageStruct enables storage of staged instances
 // swagger:ignore
 type StageStruct struct { // insertion point for definition of arrays registering instances
-	Animates           map[*Animate]struct{}
+	Animates           map[*Animate]any
 	Animates_mapString map[string]*Animate
 
-	Circles           map[*Circle]struct{}
+	Circles           map[*Circle]any
 	Circles_mapString map[string]*Circle
 
-	Ellipses           map[*Ellipse]struct{}
+	Ellipses           map[*Ellipse]any
 	Ellipses_mapString map[string]*Ellipse
 
-	Lines           map[*Line]struct{}
+	Lines           map[*Line]any
 	Lines_mapString map[string]*Line
 
-	Paths           map[*Path]struct{}
+	Paths           map[*Path]any
 	Paths_mapString map[string]*Path
 
-	Polygones           map[*Polygone]struct{}
+	Polygones           map[*Polygone]any
 	Polygones_mapString map[string]*Polygone
 
-	Polylines           map[*Polyline]struct{}
+	Polylines           map[*Polyline]any
 	Polylines_mapString map[string]*Polyline
 
-	Rects           map[*Rect]struct{}
+	Rects           map[*Rect]any
 	Rects_mapString map[string]*Rect
 
-	SVGs           map[*SVG]struct{}
+	SVGs           map[*SVG]any
 	SVGs_mapString map[string]*SVG
 
-	Texts           map[*Text]struct{}
+	Texts           map[*Text]any
 	Texts_mapString map[string]*Text
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
@@ -111,34 +111,34 @@ type BackRepoInterface interface {
 
 // swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
 var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
-	Animates:           make(map[*Animate]struct{}),
+	Animates:           make(map[*Animate]any),
 	Animates_mapString: make(map[string]*Animate),
 
-	Circles:           make(map[*Circle]struct{}),
+	Circles:           make(map[*Circle]any),
 	Circles_mapString: make(map[string]*Circle),
 
-	Ellipses:           make(map[*Ellipse]struct{}),
+	Ellipses:           make(map[*Ellipse]any),
 	Ellipses_mapString: make(map[string]*Ellipse),
 
-	Lines:           make(map[*Line]struct{}),
+	Lines:           make(map[*Line]any),
 	Lines_mapString: make(map[string]*Line),
 
-	Paths:           make(map[*Path]struct{}),
+	Paths:           make(map[*Path]any),
 	Paths_mapString: make(map[string]*Path),
 
-	Polygones:           make(map[*Polygone]struct{}),
+	Polygones:           make(map[*Polygone]any),
 	Polygones_mapString: make(map[string]*Polygone),
 
-	Polylines:           make(map[*Polyline]struct{}),
+	Polylines:           make(map[*Polyline]any),
 	Polylines_mapString: make(map[string]*Polyline),
 
-	Rects:           make(map[*Rect]struct{}),
+	Rects:           make(map[*Rect]any),
 	Rects_mapString: make(map[string]*Rect),
 
-	SVGs:           make(map[*SVG]struct{}),
+	SVGs:           make(map[*SVG]any),
 	SVGs_mapString: make(map[string]*SVG),
 
-	Texts:           make(map[*Text]struct{}),
+	Texts:           make(map[*Text]any),
 	Texts_mapString: make(map[string]*Text),
 
 	// end of insertion point
@@ -168,6 +168,19 @@ func (stage *StageStruct) Checkout() {
 	if stage.BackRepo != nil {
 		stage.BackRepo.Checkout(stage)
 	}
+
+	// insertion point for computing the map of number of instances per gongstruct
+	stage.Map_GongStructName_InstancesNb["Animate"] = len(stage.Animates)
+	stage.Map_GongStructName_InstancesNb["Circle"] = len(stage.Circles)
+	stage.Map_GongStructName_InstancesNb["Ellipse"] = len(stage.Ellipses)
+	stage.Map_GongStructName_InstancesNb["Line"] = len(stage.Lines)
+	stage.Map_GongStructName_InstancesNb["Path"] = len(stage.Paths)
+	stage.Map_GongStructName_InstancesNb["Polygone"] = len(stage.Polygones)
+	stage.Map_GongStructName_InstancesNb["Polyline"] = len(stage.Polylines)
+	stage.Map_GongStructName_InstancesNb["Rect"] = len(stage.Rects)
+	stage.Map_GongStructName_InstancesNb["SVG"] = len(stage.SVGs)
+	stage.Map_GongStructName_InstancesNb["Text"] = len(stage.Texts)
+
 }
 
 // backup generates backup files in the dirPath
@@ -199,18 +212,6 @@ func (stage *StageStruct) RestoreXL(dirPath string) {
 }
 
 // insertion point for cumulative sub template with model space calls
-func (stage *StageStruct) getAnimateOrderedStructWithNameField() []*Animate {
-	// have alphabetical order generation
-	animateOrdered := []*Animate{}
-	for animate := range stage.Animates {
-		animateOrdered = append(animateOrdered, animate)
-	}
-	sort.Slice(animateOrdered[:], func(i, j int) bool {
-		return animateOrdered[i].Name < animateOrdered[j].Name
-	})
-	return animateOrdered
-}
-
 // Stage puts animate to the model stage
 func (animate *Animate) Stage() *Animate {
 	Stage.Animates[animate] = __member
@@ -304,41 +305,6 @@ func DeleteORMAnimate(animate *Animate) {
 // for satisfaction of GongStruct interface
 func (animate *Animate) GetName() (res string) {
 	return animate.Name
-}
-
-func (animate *Animate) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Name", "AttributeName", "Values", "Dur", "RepeatCount",  }
-	return
-}
-
-func (animate *Animate) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = animate.Name
-	case "AttributeName":
-		res = animate.AttributeName
-	case "Values":
-		res = animate.Values
-	case "Dur":
-		res = animate.Dur
-	case "RepeatCount":
-		res = animate.RepeatCount
-	}
-	return
-}
-
-func (stage *StageStruct) getCircleOrderedStructWithNameField() []*Circle {
-	// have alphabetical order generation
-	circleOrdered := []*Circle{}
-	for circle := range stage.Circles {
-		circleOrdered = append(circleOrdered, circle)
-	}
-	sort.Slice(circleOrdered[:], func(i, j int) bool {
-		return circleOrdered[i].Name < circleOrdered[j].Name
-	})
-	return circleOrdered
 }
 
 // Stage puts circle to the model stage
@@ -436,58 +402,6 @@ func (circle *Circle) GetName() (res string) {
 	return circle.Name
 }
 
-func (circle *Circle) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Name", "CX", "CY", "Radius", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations",  }
-	return
-}
-
-func (circle *Circle) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = circle.Name
-	case "CX":
-		res = fmt.Sprintf("%f", circle.CX)
-	case "CY":
-		res = fmt.Sprintf("%f", circle.CY)
-	case "Radius":
-		res = fmt.Sprintf("%f", circle.Radius)
-	case "Color":
-		res = circle.Color
-	case "FillOpacity":
-		res = fmt.Sprintf("%f", circle.FillOpacity)
-	case "Stroke":
-		res = circle.Stroke
-	case "StrokeWidth":
-		res = fmt.Sprintf("%f", circle.StrokeWidth)
-	case "StrokeDashArray":
-		res = circle.StrokeDashArray
-	case "Transform":
-		res = circle.Transform
-	case "Animations":
-		for idx, __instance__ := range circle.Animations {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
-func (stage *StageStruct) getEllipseOrderedStructWithNameField() []*Ellipse {
-	// have alphabetical order generation
-	ellipseOrdered := []*Ellipse{}
-	for ellipse := range stage.Ellipses {
-		ellipseOrdered = append(ellipseOrdered, ellipse)
-	}
-	sort.Slice(ellipseOrdered[:], func(i, j int) bool {
-		return ellipseOrdered[i].Name < ellipseOrdered[j].Name
-	})
-	return ellipseOrdered
-}
-
 // Stage puts ellipse to the model stage
 func (ellipse *Ellipse) Stage() *Ellipse {
 	Stage.Ellipses[ellipse] = __member
@@ -581,60 +495,6 @@ func DeleteORMEllipse(ellipse *Ellipse) {
 // for satisfaction of GongStruct interface
 func (ellipse *Ellipse) GetName() (res string) {
 	return ellipse.Name
-}
-
-func (ellipse *Ellipse) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Name", "CX", "CY", "RX", "RY", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
-	return
-}
-
-func (ellipse *Ellipse) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = ellipse.Name
-	case "CX":
-		res = fmt.Sprintf("%f", ellipse.CX)
-	case "CY":
-		res = fmt.Sprintf("%f", ellipse.CY)
-	case "RX":
-		res = fmt.Sprintf("%f", ellipse.RX)
-	case "RY":
-		res = fmt.Sprintf("%f", ellipse.RY)
-	case "Color":
-		res = ellipse.Color
-	case "FillOpacity":
-		res = fmt.Sprintf("%f", ellipse.FillOpacity)
-	case "Stroke":
-		res = ellipse.Stroke
-	case "StrokeWidth":
-		res = fmt.Sprintf("%f", ellipse.StrokeWidth)
-	case "StrokeDashArray":
-		res = ellipse.StrokeDashArray
-	case "Transform":
-		res = ellipse.Transform
-	case "Animates":
-		for idx, __instance__ := range ellipse.Animates {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
-func (stage *StageStruct) getLineOrderedStructWithNameField() []*Line {
-	// have alphabetical order generation
-	lineOrdered := []*Line{}
-	for line := range stage.Lines {
-		lineOrdered = append(lineOrdered, line)
-	}
-	sort.Slice(lineOrdered[:], func(i, j int) bool {
-		return lineOrdered[i].Name < lineOrdered[j].Name
-	})
-	return lineOrdered
 }
 
 // Stage puts line to the model stage
@@ -732,60 +592,6 @@ func (line *Line) GetName() (res string) {
 	return line.Name
 }
 
-func (line *Line) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Name", "X1", "Y1", "X2", "Y2", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
-	return
-}
-
-func (line *Line) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = line.Name
-	case "X1":
-		res = fmt.Sprintf("%f", line.X1)
-	case "Y1":
-		res = fmt.Sprintf("%f", line.Y1)
-	case "X2":
-		res = fmt.Sprintf("%f", line.X2)
-	case "Y2":
-		res = fmt.Sprintf("%f", line.Y2)
-	case "Color":
-		res = line.Color
-	case "FillOpacity":
-		res = fmt.Sprintf("%f", line.FillOpacity)
-	case "Stroke":
-		res = line.Stroke
-	case "StrokeWidth":
-		res = fmt.Sprintf("%f", line.StrokeWidth)
-	case "StrokeDashArray":
-		res = line.StrokeDashArray
-	case "Transform":
-		res = line.Transform
-	case "Animates":
-		for idx, __instance__ := range line.Animates {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
-func (stage *StageStruct) getPathOrderedStructWithNameField() []*Path {
-	// have alphabetical order generation
-	pathOrdered := []*Path{}
-	for path := range stage.Paths {
-		pathOrdered = append(pathOrdered, path)
-	}
-	sort.Slice(pathOrdered[:], func(i, j int) bool {
-		return pathOrdered[i].Name < pathOrdered[j].Name
-	})
-	return pathOrdered
-}
-
 // Stage puts path to the model stage
 func (path *Path) Stage() *Path {
 	Stage.Paths[path] = __member
@@ -879,54 +685,6 @@ func DeleteORMPath(path *Path) {
 // for satisfaction of GongStruct interface
 func (path *Path) GetName() (res string) {
 	return path.Name
-}
-
-func (path *Path) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Name", "Definition", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
-	return
-}
-
-func (path *Path) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = path.Name
-	case "Definition":
-		res = path.Definition
-	case "Color":
-		res = path.Color
-	case "FillOpacity":
-		res = fmt.Sprintf("%f", path.FillOpacity)
-	case "Stroke":
-		res = path.Stroke
-	case "StrokeWidth":
-		res = fmt.Sprintf("%f", path.StrokeWidth)
-	case "StrokeDashArray":
-		res = path.StrokeDashArray
-	case "Transform":
-		res = path.Transform
-	case "Animates":
-		for idx, __instance__ := range path.Animates {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
-func (stage *StageStruct) getPolygoneOrderedStructWithNameField() []*Polygone {
-	// have alphabetical order generation
-	polygoneOrdered := []*Polygone{}
-	for polygone := range stage.Polygones {
-		polygoneOrdered = append(polygoneOrdered, polygone)
-	}
-	sort.Slice(polygoneOrdered[:], func(i, j int) bool {
-		return polygoneOrdered[i].Name < polygoneOrdered[j].Name
-	})
-	return polygoneOrdered
 }
 
 // Stage puts polygone to the model stage
@@ -1024,54 +782,6 @@ func (polygone *Polygone) GetName() (res string) {
 	return polygone.Name
 }
 
-func (polygone *Polygone) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Name", "Points", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
-	return
-}
-
-func (polygone *Polygone) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = polygone.Name
-	case "Points":
-		res = polygone.Points
-	case "Color":
-		res = polygone.Color
-	case "FillOpacity":
-		res = fmt.Sprintf("%f", polygone.FillOpacity)
-	case "Stroke":
-		res = polygone.Stroke
-	case "StrokeWidth":
-		res = fmt.Sprintf("%f", polygone.StrokeWidth)
-	case "StrokeDashArray":
-		res = polygone.StrokeDashArray
-	case "Transform":
-		res = polygone.Transform
-	case "Animates":
-		for idx, __instance__ := range polygone.Animates {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
-func (stage *StageStruct) getPolylineOrderedStructWithNameField() []*Polyline {
-	// have alphabetical order generation
-	polylineOrdered := []*Polyline{}
-	for polyline := range stage.Polylines {
-		polylineOrdered = append(polylineOrdered, polyline)
-	}
-	sort.Slice(polylineOrdered[:], func(i, j int) bool {
-		return polylineOrdered[i].Name < polylineOrdered[j].Name
-	})
-	return polylineOrdered
-}
-
 // Stage puts polyline to the model stage
 func (polyline *Polyline) Stage() *Polyline {
 	Stage.Polylines[polyline] = __member
@@ -1165,54 +875,6 @@ func DeleteORMPolyline(polyline *Polyline) {
 // for satisfaction of GongStruct interface
 func (polyline *Polyline) GetName() (res string) {
 	return polyline.Name
-}
-
-func (polyline *Polyline) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Name", "Points", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
-	return
-}
-
-func (polyline *Polyline) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = polyline.Name
-	case "Points":
-		res = polyline.Points
-	case "Color":
-		res = polyline.Color
-	case "FillOpacity":
-		res = fmt.Sprintf("%f", polyline.FillOpacity)
-	case "Stroke":
-		res = polyline.Stroke
-	case "StrokeWidth":
-		res = fmt.Sprintf("%f", polyline.StrokeWidth)
-	case "StrokeDashArray":
-		res = polyline.StrokeDashArray
-	case "Transform":
-		res = polyline.Transform
-	case "Animates":
-		for idx, __instance__ := range polyline.Animates {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
-func (stage *StageStruct) getRectOrderedStructWithNameField() []*Rect {
-	// have alphabetical order generation
-	rectOrdered := []*Rect{}
-	for rect := range stage.Rects {
-		rectOrdered = append(rectOrdered, rect)
-	}
-	sort.Slice(rectOrdered[:], func(i, j int) bool {
-		return rectOrdered[i].Name < rectOrdered[j].Name
-	})
-	return rectOrdered
 }
 
 // Stage puts rect to the model stage
@@ -1310,62 +972,6 @@ func (rect *Rect) GetName() (res string) {
 	return rect.Name
 }
 
-func (rect *Rect) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations",  }
-	return
-}
-
-func (rect *Rect) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = rect.Name
-	case "X":
-		res = fmt.Sprintf("%f", rect.X)
-	case "Y":
-		res = fmt.Sprintf("%f", rect.Y)
-	case "Width":
-		res = fmt.Sprintf("%f", rect.Width)
-	case "Height":
-		res = fmt.Sprintf("%f", rect.Height)
-	case "RX":
-		res = fmt.Sprintf("%f", rect.RX)
-	case "Color":
-		res = rect.Color
-	case "FillOpacity":
-		res = fmt.Sprintf("%f", rect.FillOpacity)
-	case "Stroke":
-		res = rect.Stroke
-	case "StrokeWidth":
-		res = fmt.Sprintf("%f", rect.StrokeWidth)
-	case "StrokeDashArray":
-		res = rect.StrokeDashArray
-	case "Transform":
-		res = rect.Transform
-	case "Animations":
-		for idx, __instance__ := range rect.Animations {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
-func (stage *StageStruct) getSVGOrderedStructWithNameField() []*SVG {
-	// have alphabetical order generation
-	svgOrdered := []*SVG{}
-	for svg := range stage.SVGs {
-		svgOrdered = append(svgOrdered, svg)
-	}
-	sort.Slice(svgOrdered[:], func(i, j int) bool {
-		return svgOrdered[i].Name < svgOrdered[j].Name
-	})
-	return svgOrdered
-}
-
 // Stage puts svg to the model stage
 func (svg *SVG) Stage() *SVG {
 	Stage.SVGs[svg] = __member
@@ -1459,91 +1065,6 @@ func DeleteORMSVG(svg *SVG) {
 // for satisfaction of GongStruct interface
 func (svg *SVG) GetName() (res string) {
 	return svg.Name
-}
-
-func (svg *SVG) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Display", "Name", "Rects", "Texts", "Circles", "Lines", "Ellipses", "Polylines", "Polygones", "Paths",  }
-	return
-}
-
-func (svg *SVG) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Display":
-		res = fmt.Sprintf("%t", svg.Display)
-	case "Name":
-		res = svg.Name
-	case "Rects":
-		for idx, __instance__ := range svg.Rects {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Texts":
-		for idx, __instance__ := range svg.Texts {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Circles":
-		for idx, __instance__ := range svg.Circles {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Lines":
-		for idx, __instance__ := range svg.Lines {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Ellipses":
-		for idx, __instance__ := range svg.Ellipses {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Polylines":
-		for idx, __instance__ := range svg.Polylines {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Polygones":
-		for idx, __instance__ := range svg.Polygones {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	case "Paths":
-		for idx, __instance__ := range svg.Paths {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
-func (stage *StageStruct) getTextOrderedStructWithNameField() []*Text {
-	// have alphabetical order generation
-	textOrdered := []*Text{}
-	for text := range stage.Texts {
-		textOrdered = append(textOrdered, text)
-	}
-	sort.Slice(textOrdered[:], func(i, j int) bool {
-		return textOrdered[i].Name < textOrdered[j].Name
-	})
-	return textOrdered
 }
 
 // Stage puts text to the model stage
@@ -1641,46 +1162,6 @@ func (text *Text) GetName() (res string) {
 	return text.Name
 }
 
-func (text *Text) GetFields() (res []string) {
-	// list of fields 
-	res = []string{"Name", "X", "Y", "Content", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates",  }
-	return
-}
-
-func (text *Text) GetFieldStringValue(fieldName string) (res string) {
-	switch fieldName {
-	// string value of fields
-	case "Name":
-		res = text.Name
-	case "X":
-		res = fmt.Sprintf("%f", text.X)
-	case "Y":
-		res = fmt.Sprintf("%f", text.Y)
-	case "Content":
-		res = text.Content
-	case "Color":
-		res = text.Color
-	case "FillOpacity":
-		res = fmt.Sprintf("%f", text.FillOpacity)
-	case "Stroke":
-		res = text.Stroke
-	case "StrokeWidth":
-		res = fmt.Sprintf("%f", text.StrokeWidth)
-	case "StrokeDashArray":
-		res = text.StrokeDashArray
-	case "Transform":
-		res = text.Transform
-	case "Animates":
-		for idx, __instance__ := range text.Animates {
-			if idx > 0 {
-				res += "\n"
-			}
-			res += __instance__.Name
-		}
-	}
-	return
-}
-
 // swagger:ignore
 type AllModelsStructCreateInterface interface { // insertion point for Callbacks on creation
 	CreateORMAnimate(Animate *Animate)
@@ -1709,34 +1190,34 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 }
 
 func (stage *StageStruct) Reset() { // insertion point for array reset
-	stage.Animates = make(map[*Animate]struct{})
+	stage.Animates = make(map[*Animate]any)
 	stage.Animates_mapString = make(map[string]*Animate)
 
-	stage.Circles = make(map[*Circle]struct{})
+	stage.Circles = make(map[*Circle]any)
 	stage.Circles_mapString = make(map[string]*Circle)
 
-	stage.Ellipses = make(map[*Ellipse]struct{})
+	stage.Ellipses = make(map[*Ellipse]any)
 	stage.Ellipses_mapString = make(map[string]*Ellipse)
 
-	stage.Lines = make(map[*Line]struct{})
+	stage.Lines = make(map[*Line]any)
 	stage.Lines_mapString = make(map[string]*Line)
 
-	stage.Paths = make(map[*Path]struct{})
+	stage.Paths = make(map[*Path]any)
 	stage.Paths_mapString = make(map[string]*Path)
 
-	stage.Polygones = make(map[*Polygone]struct{})
+	stage.Polygones = make(map[*Polygone]any)
 	stage.Polygones_mapString = make(map[string]*Polygone)
 
-	stage.Polylines = make(map[*Polyline]struct{})
+	stage.Polylines = make(map[*Polyline]any)
 	stage.Polylines_mapString = make(map[string]*Polyline)
 
-	stage.Rects = make(map[*Rect]struct{})
+	stage.Rects = make(map[*Rect]any)
 	stage.Rects_mapString = make(map[string]*Rect)
 
-	stage.SVGs = make(map[*SVG]struct{})
+	stage.SVGs = make(map[*SVG]any)
 	stage.SVGs_mapString = make(map[string]*SVG)
 
-	stage.Texts = make(map[*Text]struct{})
+	stage.Texts = make(map[*Text]any)
 	stage.Texts_mapString = make(map[string]*Text)
 
 }
@@ -1858,7 +1339,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(animateOrdered[:], func(i, j int) bool {
 		return animateOrdered[i].Name < animateOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Animate")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Animate"
 	for idx, animate := range animateOrdered {
 
 		id = generatesIdentifier("Animate", idx, animate.Name)
@@ -1914,7 +1395,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(circleOrdered[:], func(i, j int) bool {
 		return circleOrdered[i].Name < circleOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Circle")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Circle"
 	for idx, circle := range circleOrdered {
 
 		id = generatesIdentifier("Circle", idx, circle.Name)
@@ -2000,7 +1481,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(ellipseOrdered[:], func(i, j int) bool {
 		return ellipseOrdered[i].Name < ellipseOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Ellipse")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Ellipse"
 	for idx, ellipse := range ellipseOrdered {
 
 		id = generatesIdentifier("Ellipse", idx, ellipse.Name)
@@ -2092,7 +1573,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(lineOrdered[:], func(i, j int) bool {
 		return lineOrdered[i].Name < lineOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Line")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Line"
 	for idx, line := range lineOrdered {
 
 		id = generatesIdentifier("Line", idx, line.Name)
@@ -2184,7 +1665,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(pathOrdered[:], func(i, j int) bool {
 		return pathOrdered[i].Name < pathOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Path")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Path"
 	for idx, path := range pathOrdered {
 
 		id = generatesIdentifier("Path", idx, path.Name)
@@ -2258,7 +1739,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(polygoneOrdered[:], func(i, j int) bool {
 		return polygoneOrdered[i].Name < polygoneOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Polygone")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Polygone"
 	for idx, polygone := range polygoneOrdered {
 
 		id = generatesIdentifier("Polygone", idx, polygone.Name)
@@ -2332,7 +1813,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(polylineOrdered[:], func(i, j int) bool {
 		return polylineOrdered[i].Name < polylineOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Polyline")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Polyline"
 	for idx, polyline := range polylineOrdered {
 
 		id = generatesIdentifier("Polyline", idx, polyline.Name)
@@ -2406,7 +1887,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(rectOrdered[:], func(i, j int) bool {
 		return rectOrdered[i].Name < rectOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Rect")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Rect"
 	for idx, rect := range rectOrdered {
 
 		id = generatesIdentifier("Rect", idx, rect.Name)
@@ -2504,7 +1985,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(svgOrdered[:], func(i, j int) bool {
 		return svgOrdered[i].Name < svgOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of SVG")
+	identifiersDecl += "\n\n	// Declarations of staged instances of SVG"
 	for idx, svg := range svgOrdered {
 
 		id = generatesIdentifier("SVG", idx, svg.Name)
@@ -2542,7 +2023,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(textOrdered[:], func(i, j int) bool {
 		return textOrdered[i].Name < textOrdered[j].Name
 	})
-	identifiersDecl += fmt.Sprintf("\n\n	// Declarations of staged instances of Text")
+	identifiersDecl += "\n\n	// Declarations of staged instances of Text"
 	for idx, text := range textOrdered {
 
 		id = generatesIdentifier("Text", idx, text.Name)
@@ -2867,6 +2348,1138 @@ func generatesIdentifier(gongStructName string, idx int, instanceName string) (i
 
 	identifier = fmt.Sprintf("__%s__%06d_%s", gongStructName, idx, processedString)
 
+	return
+}
+
+// insertion point of functions that provide maps for reverse associations
+
+// generate function for reverse association maps of Animate
+
+// generate function for reverse association maps of Circle
+func (stageStruct *StageStruct) CreateReverseMap_Circle_Animations() (res map[*Animate]*Circle) {
+	res = make(map[*Animate]*Circle)
+
+	for circle := range stageStruct.Circles {
+		for _, animate_ := range circle.Animations {
+			res[animate_] = circle
+		}
+	}
+
+	return
+}
+
+
+// generate function for reverse association maps of Ellipse
+func (stageStruct *StageStruct) CreateReverseMap_Ellipse_Animates() (res map[*Animate]*Ellipse) {
+	res = make(map[*Animate]*Ellipse)
+
+	for ellipse := range stageStruct.Ellipses {
+		for _, animate_ := range ellipse.Animates {
+			res[animate_] = ellipse
+		}
+	}
+
+	return
+}
+
+
+// generate function for reverse association maps of Line
+func (stageStruct *StageStruct) CreateReverseMap_Line_Animates() (res map[*Animate]*Line) {
+	res = make(map[*Animate]*Line)
+
+	for line := range stageStruct.Lines {
+		for _, animate_ := range line.Animates {
+			res[animate_] = line
+		}
+	}
+
+	return
+}
+
+
+// generate function for reverse association maps of Path
+func (stageStruct *StageStruct) CreateReverseMap_Path_Animates() (res map[*Animate]*Path) {
+	res = make(map[*Animate]*Path)
+
+	for path := range stageStruct.Paths {
+		for _, animate_ := range path.Animates {
+			res[animate_] = path
+		}
+	}
+
+	return
+}
+
+
+// generate function for reverse association maps of Polygone
+func (stageStruct *StageStruct) CreateReverseMap_Polygone_Animates() (res map[*Animate]*Polygone) {
+	res = make(map[*Animate]*Polygone)
+
+	for polygone := range stageStruct.Polygones {
+		for _, animate_ := range polygone.Animates {
+			res[animate_] = polygone
+		}
+	}
+
+	return
+}
+
+
+// generate function for reverse association maps of Polyline
+func (stageStruct *StageStruct) CreateReverseMap_Polyline_Animates() (res map[*Animate]*Polyline) {
+	res = make(map[*Animate]*Polyline)
+
+	for polyline := range stageStruct.Polylines {
+		for _, animate_ := range polyline.Animates {
+			res[animate_] = polyline
+		}
+	}
+
+	return
+}
+
+
+// generate function for reverse association maps of Rect
+func (stageStruct *StageStruct) CreateReverseMap_Rect_Animations() (res map[*Animate]*Rect) {
+	res = make(map[*Animate]*Rect)
+
+	for rect := range stageStruct.Rects {
+		for _, animate_ := range rect.Animations {
+			res[animate_] = rect
+		}
+	}
+
+	return
+}
+
+
+// generate function for reverse association maps of SVG
+func (stageStruct *StageStruct) CreateReverseMap_SVG_Rects() (res map[*Rect]*SVG) {
+	res = make(map[*Rect]*SVG)
+
+	for svg := range stageStruct.SVGs {
+		for _, rect_ := range svg.Rects {
+			res[rect_] = svg
+		}
+	}
+
+	return
+}
+
+func (stageStruct *StageStruct) CreateReverseMap_SVG_Texts() (res map[*Text]*SVG) {
+	res = make(map[*Text]*SVG)
+
+	for svg := range stageStruct.SVGs {
+		for _, text_ := range svg.Texts {
+			res[text_] = svg
+		}
+	}
+
+	return
+}
+
+func (stageStruct *StageStruct) CreateReverseMap_SVG_Circles() (res map[*Circle]*SVG) {
+	res = make(map[*Circle]*SVG)
+
+	for svg := range stageStruct.SVGs {
+		for _, circle_ := range svg.Circles {
+			res[circle_] = svg
+		}
+	}
+
+	return
+}
+
+func (stageStruct *StageStruct) CreateReverseMap_SVG_Lines() (res map[*Line]*SVG) {
+	res = make(map[*Line]*SVG)
+
+	for svg := range stageStruct.SVGs {
+		for _, line_ := range svg.Lines {
+			res[line_] = svg
+		}
+	}
+
+	return
+}
+
+func (stageStruct *StageStruct) CreateReverseMap_SVG_Ellipses() (res map[*Ellipse]*SVG) {
+	res = make(map[*Ellipse]*SVG)
+
+	for svg := range stageStruct.SVGs {
+		for _, ellipse_ := range svg.Ellipses {
+			res[ellipse_] = svg
+		}
+	}
+
+	return
+}
+
+func (stageStruct *StageStruct) CreateReverseMap_SVG_Polylines() (res map[*Polyline]*SVG) {
+	res = make(map[*Polyline]*SVG)
+
+	for svg := range stageStruct.SVGs {
+		for _, polyline_ := range svg.Polylines {
+			res[polyline_] = svg
+		}
+	}
+
+	return
+}
+
+func (stageStruct *StageStruct) CreateReverseMap_SVG_Polygones() (res map[*Polygone]*SVG) {
+	res = make(map[*Polygone]*SVG)
+
+	for svg := range stageStruct.SVGs {
+		for _, polygone_ := range svg.Polygones {
+			res[polygone_] = svg
+		}
+	}
+
+	return
+}
+
+func (stageStruct *StageStruct) CreateReverseMap_SVG_Paths() (res map[*Path]*SVG) {
+	res = make(map[*Path]*SVG)
+
+	for svg := range stageStruct.SVGs {
+		for _, path_ := range svg.Paths {
+			res[path_] = svg
+		}
+	}
+
+	return
+}
+
+
+// generate function for reverse association maps of Text
+func (stageStruct *StageStruct) CreateReverseMap_Text_Animates() (res map[*Animate]*Text) {
+	res = make(map[*Animate]*Text)
+
+	for text := range stageStruct.Texts {
+		for _, animate_ := range text.Animates {
+			res[animate_] = text
+		}
+	}
+
+	return
+}
+
+
+// Gongstruct is the type parameter for generated generic function that allows
+// - access to staged instances
+// - navigation between staged instances by going backward association links between gongstruct
+// - full refactoring of Gongstruct identifiers / fields
+type Gongstruct interface {
+	// insertion point for generic types
+	Animate | Circle | Ellipse | Line | Path | Polygone | Polyline | Rect | SVG | Text
+}
+
+// Gongstruct is the type parameter for generated generic function that allows
+// - access to staged instances
+// - navigation between staged instances by going backward association links between gongstruct
+// - full refactoring of Gongstruct identifiers / fields
+type PointerToGongstruct interface {
+	// insertion point for generic types
+	*Animate | *Circle | *Ellipse | *Line | *Path | *Polygone | *Polyline | *Rect | *SVG | *Text
+	GetName() string
+}
+
+type GongstructSet interface {
+	map[any]any |
+		// insertion point for generic types
+		map[*Animate]any |
+		map[*Circle]any |
+		map[*Ellipse]any |
+		map[*Line]any |
+		map[*Path]any |
+		map[*Polygone]any |
+		map[*Polyline]any |
+		map[*Rect]any |
+		map[*SVG]any |
+		map[*Text]any |
+		map[*any]any // because go does not support an extra "|" at the end of type specifications
+}
+
+type GongstructMapString interface {
+	map[any]any |
+		// insertion point for generic types
+		map[string]*Animate |
+		map[string]*Circle |
+		map[string]*Ellipse |
+		map[string]*Line |
+		map[string]*Path |
+		map[string]*Polygone |
+		map[string]*Polyline |
+		map[string]*Rect |
+		map[string]*SVG |
+		map[string]*Text |
+		map[*any]any // because go does not support an extra "|" at the end of type specifications
+}
+
+// GongGetSet returns the set staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GongGetSet[Type GongstructSet]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case map[*Animate]any:
+		return any(&Stage.Animates).(*Type)
+	case map[*Circle]any:
+		return any(&Stage.Circles).(*Type)
+	case map[*Ellipse]any:
+		return any(&Stage.Ellipses).(*Type)
+	case map[*Line]any:
+		return any(&Stage.Lines).(*Type)
+	case map[*Path]any:
+		return any(&Stage.Paths).(*Type)
+	case map[*Polygone]any:
+		return any(&Stage.Polygones).(*Type)
+	case map[*Polyline]any:
+		return any(&Stage.Polylines).(*Type)
+	case map[*Rect]any:
+		return any(&Stage.Rects).(*Type)
+	case map[*SVG]any:
+		return any(&Stage.SVGs).(*Type)
+	case map[*Text]any:
+		return any(&Stage.Texts).(*Type)
+	default:
+		return nil
+	}
+}
+
+// GongGetMap returns the map of staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GongGetMap[Type GongstructMapString]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case map[string]*Animate:
+		return any(&Stage.Animates_mapString).(*Type)
+	case map[string]*Circle:
+		return any(&Stage.Circles_mapString).(*Type)
+	case map[string]*Ellipse:
+		return any(&Stage.Ellipses_mapString).(*Type)
+	case map[string]*Line:
+		return any(&Stage.Lines_mapString).(*Type)
+	case map[string]*Path:
+		return any(&Stage.Paths_mapString).(*Type)
+	case map[string]*Polygone:
+		return any(&Stage.Polygones_mapString).(*Type)
+	case map[string]*Polyline:
+		return any(&Stage.Polylines_mapString).(*Type)
+	case map[string]*Rect:
+		return any(&Stage.Rects_mapString).(*Type)
+	case map[string]*SVG:
+		return any(&Stage.SVGs_mapString).(*Type)
+	case map[string]*Text:
+		return any(&Stage.Texts_mapString).(*Type)
+	default:
+		return nil
+	}
+}
+
+// GetGongstructInstancesSet returns the set staged GongstructType instances
+// it is usefull because it allows refactoring of gongstruct identifier
+func GetGongstructInstancesSet[Type Gongstruct]() *map[*Type]any {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case Animate:
+		return any(&Stage.Animates).(*map[*Type]any)
+	case Circle:
+		return any(&Stage.Circles).(*map[*Type]any)
+	case Ellipse:
+		return any(&Stage.Ellipses).(*map[*Type]any)
+	case Line:
+		return any(&Stage.Lines).(*map[*Type]any)
+	case Path:
+		return any(&Stage.Paths).(*map[*Type]any)
+	case Polygone:
+		return any(&Stage.Polygones).(*map[*Type]any)
+	case Polyline:
+		return any(&Stage.Polylines).(*map[*Type]any)
+	case Rect:
+		return any(&Stage.Rects).(*map[*Type]any)
+	case SVG:
+		return any(&Stage.SVGs).(*map[*Type]any)
+	case Text:
+		return any(&Stage.Texts).(*map[*Type]any)
+	default:
+		return nil
+	}
+}
+
+// GetGongstructInstancesMap returns the map of staged GongstructType instances
+// it is usefull because it allows refactoring of gong struct identifier
+func GetGongstructInstancesMap[Type Gongstruct]() *map[string]*Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get functions
+	case Animate:
+		return any(&Stage.Animates_mapString).(*map[string]*Type)
+	case Circle:
+		return any(&Stage.Circles_mapString).(*map[string]*Type)
+	case Ellipse:
+		return any(&Stage.Ellipses_mapString).(*map[string]*Type)
+	case Line:
+		return any(&Stage.Lines_mapString).(*map[string]*Type)
+	case Path:
+		return any(&Stage.Paths_mapString).(*map[string]*Type)
+	case Polygone:
+		return any(&Stage.Polygones_mapString).(*map[string]*Type)
+	case Polyline:
+		return any(&Stage.Polylines_mapString).(*map[string]*Type)
+	case Rect:
+		return any(&Stage.Rects_mapString).(*map[string]*Type)
+	case SVG:
+		return any(&Stage.SVGs_mapString).(*map[string]*Type)
+	case Text:
+		return any(&Stage.Texts_mapString).(*map[string]*Type)
+	default:
+		return nil
+	}
+}
+
+// GetAssociationName is a generic function that returns an instance of Type
+// where each association is filled with an instance whose name is the name of the association
+//
+// This function can be handy for generating navigation function that are refactorable
+func GetAssociationName[Type Gongstruct]() *Type {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for instance with special fields
+	case Animate:
+		return any(&Animate{
+			// Initialisation of associations
+		}).(*Type)
+	case Circle:
+		return any(&Circle{
+			// Initialisation of associations
+			// field is initialized with an instance of Animate with the name of the field
+			Animations: []*Animate{{Name: "Animations"}},
+		}).(*Type)
+	case Ellipse:
+		return any(&Ellipse{
+			// Initialisation of associations
+			// field is initialized with an instance of Animate with the name of the field
+			Animates: []*Animate{{Name: "Animates"}},
+		}).(*Type)
+	case Line:
+		return any(&Line{
+			// Initialisation of associations
+			// field is initialized with an instance of Animate with the name of the field
+			Animates: []*Animate{{Name: "Animates"}},
+		}).(*Type)
+	case Path:
+		return any(&Path{
+			// Initialisation of associations
+			// field is initialized with an instance of Animate with the name of the field
+			Animates: []*Animate{{Name: "Animates"}},
+		}).(*Type)
+	case Polygone:
+		return any(&Polygone{
+			// Initialisation of associations
+			// field is initialized with an instance of Animate with the name of the field
+			Animates: []*Animate{{Name: "Animates"}},
+		}).(*Type)
+	case Polyline:
+		return any(&Polyline{
+			// Initialisation of associations
+			// field is initialized with an instance of Animate with the name of the field
+			Animates: []*Animate{{Name: "Animates"}},
+		}).(*Type)
+	case Rect:
+		return any(&Rect{
+			// Initialisation of associations
+			// field is initialized with an instance of Animate with the name of the field
+			Animations: []*Animate{{Name: "Animations"}},
+		}).(*Type)
+	case SVG:
+		return any(&SVG{
+			// Initialisation of associations
+			// field is initialized with an instance of Rect with the name of the field
+			Rects: []*Rect{{Name: "Rects"}},
+			// field is initialized with an instance of Text with the name of the field
+			Texts: []*Text{{Name: "Texts"}},
+			// field is initialized with an instance of Circle with the name of the field
+			Circles: []*Circle{{Name: "Circles"}},
+			// field is initialized with an instance of Line with the name of the field
+			Lines: []*Line{{Name: "Lines"}},
+			// field is initialized with an instance of Ellipse with the name of the field
+			Ellipses: []*Ellipse{{Name: "Ellipses"}},
+			// field is initialized with an instance of Polyline with the name of the field
+			Polylines: []*Polyline{{Name: "Polylines"}},
+			// field is initialized with an instance of Polygone with the name of the field
+			Polygones: []*Polygone{{Name: "Polygones"}},
+			// field is initialized with an instance of Path with the name of the field
+			Paths: []*Path{{Name: "Paths"}},
+		}).(*Type)
+	case Text:
+		return any(&Text{
+			// Initialisation of associations
+			// field is initialized with an instance of Animate with the name of the field
+			Animates: []*Animate{{Name: "Animates"}},
+		}).(*Type)
+	default:
+		return nil
+	}
+}
+
+// GetPointerReverseMap allows backtrack navigation of any Start.Fieldname
+// associations (0..1) that is a pointer from one staged Gongstruct (type Start)
+// instances to another (type End)
+//
+// The function provides a map with keys as instances of End and values to arrays of *Start
+// the map is construed by iterating over all Start instances and populationg keys with End instances
+// and values with slice of Start instances
+func GetPointerReverseMap[Start, End Gongstruct](fieldname string) map[*End][]*Start {
+	var ret Start
+
+	switch any(ret).(type) {
+	// insertion point of functions that provide maps for reverse associations
+	// reverse maps of direct associations of Animate
+	case Animate:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Circle
+	case Circle:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Ellipse
+	case Ellipse:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Line
+	case Line:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Path
+	case Path:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Polygone
+	case Polygone:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Polyline
+	case Polyline:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Rect
+	case Rect:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of SVG
+	case SVG:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Text
+	case Text:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	}
+	return nil
+}
+
+// GetSliceOfPointersReverseMap allows backtrack navigation of any Start.Fieldname
+// associations (0..N) between one staged Gongstruct instances and many others
+//
+// The function provides a map with keys as instances of End and values to *Start instances
+// the map is construed by iterating over all Start instances and populating keys with End instances
+// and values with the Start instances
+func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*End]*Start {
+	var ret Start
+
+	switch any(ret).(type) {
+	// insertion point of functions that provide maps for reverse associations
+	// reverse maps of direct associations of Animate
+	case Animate:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Circle
+	case Circle:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Animations":
+			res := make(map[*Animate]*Circle)
+			for circle := range Stage.Circles {
+				for _, animate_ := range circle.Animations {
+					res[animate_] = circle
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Ellipse
+	case Ellipse:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Animates":
+			res := make(map[*Animate]*Ellipse)
+			for ellipse := range Stage.Ellipses {
+				for _, animate_ := range ellipse.Animates {
+					res[animate_] = ellipse
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Line
+	case Line:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Animates":
+			res := make(map[*Animate]*Line)
+			for line := range Stage.Lines {
+				for _, animate_ := range line.Animates {
+					res[animate_] = line
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Path
+	case Path:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Animates":
+			res := make(map[*Animate]*Path)
+			for path := range Stage.Paths {
+				for _, animate_ := range path.Animates {
+					res[animate_] = path
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Polygone
+	case Polygone:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Animates":
+			res := make(map[*Animate]*Polygone)
+			for polygone := range Stage.Polygones {
+				for _, animate_ := range polygone.Animates {
+					res[animate_] = polygone
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Polyline
+	case Polyline:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Animates":
+			res := make(map[*Animate]*Polyline)
+			for polyline := range Stage.Polylines {
+				for _, animate_ := range polyline.Animates {
+					res[animate_] = polyline
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Rect
+	case Rect:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Animations":
+			res := make(map[*Animate]*Rect)
+			for rect := range Stage.Rects {
+				for _, animate_ := range rect.Animations {
+					res[animate_] = rect
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of SVG
+	case SVG:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Rects":
+			res := make(map[*Rect]*SVG)
+			for svg := range Stage.SVGs {
+				for _, rect_ := range svg.Rects {
+					res[rect_] = svg
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Texts":
+			res := make(map[*Text]*SVG)
+			for svg := range Stage.SVGs {
+				for _, text_ := range svg.Texts {
+					res[text_] = svg
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Circles":
+			res := make(map[*Circle]*SVG)
+			for svg := range Stage.SVGs {
+				for _, circle_ := range svg.Circles {
+					res[circle_] = svg
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Lines":
+			res := make(map[*Line]*SVG)
+			for svg := range Stage.SVGs {
+				for _, line_ := range svg.Lines {
+					res[line_] = svg
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Ellipses":
+			res := make(map[*Ellipse]*SVG)
+			for svg := range Stage.SVGs {
+				for _, ellipse_ := range svg.Ellipses {
+					res[ellipse_] = svg
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Polylines":
+			res := make(map[*Polyline]*SVG)
+			for svg := range Stage.SVGs {
+				for _, polyline_ := range svg.Polylines {
+					res[polyline_] = svg
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Polygones":
+			res := make(map[*Polygone]*SVG)
+			for svg := range Stage.SVGs {
+				for _, polygone_ := range svg.Polygones {
+					res[polygone_] = svg
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Paths":
+			res := make(map[*Path]*SVG)
+			for svg := range Stage.SVGs {
+				for _, path_ := range svg.Paths {
+					res[path_] = svg
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	// reverse maps of direct associations of Text
+	case Text:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Animates":
+			res := make(map[*Animate]*Text)
+			for text := range Stage.Texts {
+				for _, animate_ := range text.Animates {
+					res[animate_] = text
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
+	}
+	return nil
+}
+
+// GetGongstructName returns the name of the Gongstruct
+// this can be usefull if one want program robust to refactoring
+func GetGongstructName[Type Gongstruct]() (res string) {
+
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct name
+	case Animate:
+		res = "Animate"
+	case Circle:
+		res = "Circle"
+	case Ellipse:
+		res = "Ellipse"
+	case Line:
+		res = "Line"
+	case Path:
+		res = "Path"
+	case Polygone:
+		res = "Polygone"
+	case Polyline:
+		res = "Polyline"
+	case Rect:
+		res = "Rect"
+	case SVG:
+		res = "SVG"
+	case Text:
+		res = "Text"
+	}
+	return res
+}
+
+// GetFields return the array of the fields
+func GetFields[Type Gongstruct]() (res []string) {
+
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct name
+	case Animate:
+		res = []string{"Name", "AttributeName", "Values", "Dur", "RepeatCount"}
+	case Circle:
+		res = []string{"Name", "CX", "CY", "Radius", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations"}
+	case Ellipse:
+		res = []string{"Name", "CX", "CY", "RX", "RY", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
+	case Line:
+		res = []string{"Name", "X1", "Y1", "X2", "Y2", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
+	case Path:
+		res = []string{"Name", "Definition", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
+	case Polygone:
+		res = []string{"Name", "Points", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
+	case Polyline:
+		res = []string{"Name", "Points", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
+	case Rect:
+		res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations"}
+	case SVG:
+		res = []string{"Display", "Name", "Rects", "Texts", "Circles", "Lines", "Ellipses", "Polylines", "Polygones", "Paths"}
+	case Text:
+		res = []string{"Name", "X", "Y", "Content", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
+	}
+	return
+}
+
+func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res string) {
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct field value
+	case Animate:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Animate).Name
+		case "AttributeName":
+			res = any(instance).(Animate).AttributeName
+		case "Values":
+			res = any(instance).(Animate).Values
+		case "Dur":
+			res = any(instance).(Animate).Dur
+		case "RepeatCount":
+			res = any(instance).(Animate).RepeatCount
+		}
+	case Circle:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Circle).Name
+		case "CX":
+			res = fmt.Sprintf("%f", any(instance).(Circle).CX)
+		case "CY":
+			res = fmt.Sprintf("%f", any(instance).(Circle).CY)
+		case "Radius":
+			res = fmt.Sprintf("%f", any(instance).(Circle).Radius)
+		case "Color":
+			res = any(instance).(Circle).Color
+		case "FillOpacity":
+			res = fmt.Sprintf("%f", any(instance).(Circle).FillOpacity)
+		case "Stroke":
+			res = any(instance).(Circle).Stroke
+		case "StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Circle).StrokeWidth)
+		case "StrokeDashArray":
+			res = any(instance).(Circle).StrokeDashArray
+		case "Transform":
+			res = any(instance).(Circle).Transform
+		case "Animations":
+			for idx, __instance__ := range any(instance).(Circle).Animations {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case Ellipse:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Ellipse).Name
+		case "CX":
+			res = fmt.Sprintf("%f", any(instance).(Ellipse).CX)
+		case "CY":
+			res = fmt.Sprintf("%f", any(instance).(Ellipse).CY)
+		case "RX":
+			res = fmt.Sprintf("%f", any(instance).(Ellipse).RX)
+		case "RY":
+			res = fmt.Sprintf("%f", any(instance).(Ellipse).RY)
+		case "Color":
+			res = any(instance).(Ellipse).Color
+		case "FillOpacity":
+			res = fmt.Sprintf("%f", any(instance).(Ellipse).FillOpacity)
+		case "Stroke":
+			res = any(instance).(Ellipse).Stroke
+		case "StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Ellipse).StrokeWidth)
+		case "StrokeDashArray":
+			res = any(instance).(Ellipse).StrokeDashArray
+		case "Transform":
+			res = any(instance).(Ellipse).Transform
+		case "Animates":
+			for idx, __instance__ := range any(instance).(Ellipse).Animates {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case Line:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Line).Name
+		case "X1":
+			res = fmt.Sprintf("%f", any(instance).(Line).X1)
+		case "Y1":
+			res = fmt.Sprintf("%f", any(instance).(Line).Y1)
+		case "X2":
+			res = fmt.Sprintf("%f", any(instance).(Line).X2)
+		case "Y2":
+			res = fmt.Sprintf("%f", any(instance).(Line).Y2)
+		case "Color":
+			res = any(instance).(Line).Color
+		case "FillOpacity":
+			res = fmt.Sprintf("%f", any(instance).(Line).FillOpacity)
+		case "Stroke":
+			res = any(instance).(Line).Stroke
+		case "StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Line).StrokeWidth)
+		case "StrokeDashArray":
+			res = any(instance).(Line).StrokeDashArray
+		case "Transform":
+			res = any(instance).(Line).Transform
+		case "Animates":
+			for idx, __instance__ := range any(instance).(Line).Animates {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case Path:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Path).Name
+		case "Definition":
+			res = any(instance).(Path).Definition
+		case "Color":
+			res = any(instance).(Path).Color
+		case "FillOpacity":
+			res = fmt.Sprintf("%f", any(instance).(Path).FillOpacity)
+		case "Stroke":
+			res = any(instance).(Path).Stroke
+		case "StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Path).StrokeWidth)
+		case "StrokeDashArray":
+			res = any(instance).(Path).StrokeDashArray
+		case "Transform":
+			res = any(instance).(Path).Transform
+		case "Animates":
+			for idx, __instance__ := range any(instance).(Path).Animates {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case Polygone:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Polygone).Name
+		case "Points":
+			res = any(instance).(Polygone).Points
+		case "Color":
+			res = any(instance).(Polygone).Color
+		case "FillOpacity":
+			res = fmt.Sprintf("%f", any(instance).(Polygone).FillOpacity)
+		case "Stroke":
+			res = any(instance).(Polygone).Stroke
+		case "StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Polygone).StrokeWidth)
+		case "StrokeDashArray":
+			res = any(instance).(Polygone).StrokeDashArray
+		case "Transform":
+			res = any(instance).(Polygone).Transform
+		case "Animates":
+			for idx, __instance__ := range any(instance).(Polygone).Animates {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case Polyline:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Polyline).Name
+		case "Points":
+			res = any(instance).(Polyline).Points
+		case "Color":
+			res = any(instance).(Polyline).Color
+		case "FillOpacity":
+			res = fmt.Sprintf("%f", any(instance).(Polyline).FillOpacity)
+		case "Stroke":
+			res = any(instance).(Polyline).Stroke
+		case "StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Polyline).StrokeWidth)
+		case "StrokeDashArray":
+			res = any(instance).(Polyline).StrokeDashArray
+		case "Transform":
+			res = any(instance).(Polyline).Transform
+		case "Animates":
+			for idx, __instance__ := range any(instance).(Polyline).Animates {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case Rect:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Rect).Name
+		case "X":
+			res = fmt.Sprintf("%f", any(instance).(Rect).X)
+		case "Y":
+			res = fmt.Sprintf("%f", any(instance).(Rect).Y)
+		case "Width":
+			res = fmt.Sprintf("%f", any(instance).(Rect).Width)
+		case "Height":
+			res = fmt.Sprintf("%f", any(instance).(Rect).Height)
+		case "RX":
+			res = fmt.Sprintf("%f", any(instance).(Rect).RX)
+		case "Color":
+			res = any(instance).(Rect).Color
+		case "FillOpacity":
+			res = fmt.Sprintf("%f", any(instance).(Rect).FillOpacity)
+		case "Stroke":
+			res = any(instance).(Rect).Stroke
+		case "StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Rect).StrokeWidth)
+		case "StrokeDashArray":
+			res = any(instance).(Rect).StrokeDashArray
+		case "Transform":
+			res = any(instance).(Rect).Transform
+		case "Animations":
+			for idx, __instance__ := range any(instance).(Rect).Animations {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case SVG:
+		switch fieldName {
+		// string value of fields
+		case "Display":
+			res = fmt.Sprintf("%t", any(instance).(SVG).Display)
+		case "Name":
+			res = any(instance).(SVG).Name
+		case "Rects":
+			for idx, __instance__ := range any(instance).(SVG).Rects {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Texts":
+			for idx, __instance__ := range any(instance).(SVG).Texts {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Circles":
+			for idx, __instance__ := range any(instance).(SVG).Circles {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Lines":
+			for idx, __instance__ := range any(instance).(SVG).Lines {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Ellipses":
+			for idx, __instance__ := range any(instance).(SVG).Ellipses {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Polylines":
+			for idx, __instance__ := range any(instance).(SVG).Polylines {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Polygones":
+			for idx, __instance__ := range any(instance).(SVG).Polygones {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Paths":
+			for idx, __instance__ := range any(instance).(SVG).Paths {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case Text:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(Text).Name
+		case "X":
+			res = fmt.Sprintf("%f", any(instance).(Text).X)
+		case "Y":
+			res = fmt.Sprintf("%f", any(instance).(Text).Y)
+		case "Content":
+			res = any(instance).(Text).Content
+		case "Color":
+			res = any(instance).(Text).Color
+		case "FillOpacity":
+			res = fmt.Sprintf("%f", any(instance).(Text).FillOpacity)
+		case "Stroke":
+			res = any(instance).(Text).Stroke
+		case "StrokeWidth":
+			res = fmt.Sprintf("%f", any(instance).(Text).StrokeWidth)
+		case "StrokeDashArray":
+			res = any(instance).(Text).StrokeDashArray
+		case "Transform":
+			res = any(instance).(Text).Transform
+		case "Animates":
+			for idx, __instance__ := range any(instance).(Text).Animates {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	}
 	return
 }
 
@@ -3780,3 +4393,4 @@ func (colortype *ColorType) ToCodeString() (res string) {
 	return
 }
 
+// Last line of the template
