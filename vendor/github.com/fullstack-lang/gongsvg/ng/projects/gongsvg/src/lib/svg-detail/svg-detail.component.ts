@@ -33,7 +33,7 @@ enum SVGDetailComponentState {
 export class SVGDetailComponent implements OnInit {
 
 	// insertion point for declarations
-	DisplayFormControl = new FormControl(false);
+	DisplayFormControl: FormControl = new FormControl(false);
 
 	// the SVGDB of interest
 	svg: SVGDB = new SVGDB

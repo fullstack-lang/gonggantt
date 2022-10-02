@@ -33,8 +33,8 @@ enum GanttDetailComponentState {
 export class GanttDetailComponent implements OnInit {
 
 	// insertion point for declarations
-	UseManualStartAndEndDatesFormControl = new FormControl(false);
-	AlignOnStartEndOnYearStartFormControl = new FormControl(false);
+	UseManualStartAndEndDatesFormControl: FormControl = new FormControl(false);
+	AlignOnStartEndOnYearStartFormControl: FormControl = new FormControl(false);
 
 	// the GanttDB of interest
 	gantt: GanttDB = new GanttDB

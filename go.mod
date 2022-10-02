@@ -3,15 +3,15 @@ module github.com/fullstack-lang/gonggantt
 go 1.18
 
 require (
-	github.com/fullstack-lang/gong v0.0.0-20220909154848-8e79c10d34be
-	github.com/fullstack-lang/gongdoc v0.0.0-20220909091506-479f6b7780b4
-	github.com/fullstack-lang/gongsvg v0.0.0-20220914140202-91cfb37683a8
+	github.com/fullstack-lang/gong v0.0.0-20221002094639-34bbbff0c04a
+	github.com/fullstack-lang/gongdoc v0.0.0-20221002094654-e53186a904a6
+	github.com/fullstack-lang/gongsvg v0.0.0-20221002104329-617835941a79
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.8.1
-	github.com/glebarez/sqlite v1.3.5
-	github.com/tealeg/xlsx/v3 v3.2.3
-	gorm.io/gorm v1.22.5
+	github.com/glebarez/sqlite v1.4.7
+	github.com/tealeg/xlsx/v3 v3.2.4
+	gorm.io/gorm v1.23.10
 )
 
 require (
@@ -23,7 +23,7 @@ require (
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.13.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/glebarez/go-sqlite v1.14.7 // indirect
+	github.com/glebarez/go-sqlite v1.18.2 // indirect
 	github.com/go-latex/latex v0.0.0-20210823091927-c0d11ff05a81 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
@@ -61,8 +61,8 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	modernc.org/libc v1.14.3 // indirect
-	modernc.org/mathutil v1.4.1 // indirect
-	modernc.org/memory v1.0.5 // indirect
-	modernc.org/sqlite v1.14.5 // indirect
+	modernc.org/libc v1.18.0 // indirect
+	modernc.org/mathutil v1.5.0 // indirect
+	modernc.org/memory v1.3.0 // indirect
+	modernc.org/sqlite v1.18.2 // indirect
 )

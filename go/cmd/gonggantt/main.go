@@ -230,6 +230,8 @@ func main() {
 			pkgelt.Unmarshall(modelPkg, pkgParser, fset, "go/diagrams")
 		}
 		pkgelt.SerializeToStage()
+		gong_models.Stage.Commit()
+		gongdoc_models.Stage.Commit()
 	}
 	// provide the static route for the angular pages
 	r.Use(static.Serve("/", EmbedFolder(gonggantt.NgDistNg, "ng/dist/ng")))

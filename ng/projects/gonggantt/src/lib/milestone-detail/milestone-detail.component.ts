@@ -35,7 +35,7 @@ enum MilestoneDetailComponentState {
 export class MilestoneDetailComponent implements OnInit {
 
 	// insertion point for declarations
-	DisplayVerticalBarFormControl = new FormControl(false);
+	DisplayVerticalBarFormControl: FormControl = new FormControl(false);
 
 	// the MilestoneDB of interest
 	milestone: MilestoneDB = new MilestoneDB
