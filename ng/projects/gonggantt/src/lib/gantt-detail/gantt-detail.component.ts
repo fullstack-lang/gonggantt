@@ -1,6 +1,6 @@
 // generated from NgDetailTemplateTS
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 
 import { GanttDB } from '../gantt-db'
 import { GanttService } from '../gantt.service'
@@ -33,8 +33,8 @@ enum GanttDetailComponentState {
 export class GanttDetailComponent implements OnInit {
 
 	// insertion point for declarations
-	UseManualStartAndEndDatesFormControl: FormControl = new FormControl(false);
-	AlignOnStartEndOnYearStartFormControl: FormControl = new FormControl(false);
+	UseManualStartAndEndDatesFormControl: UntypedFormControl = new UntypedFormControl(false);
+	AlignOnStartEndOnYearStartFormControl: UntypedFormControl = new UntypedFormControl(false);
 
 	// the GanttDB of interest
 	gantt: GanttDB = new GanttDB

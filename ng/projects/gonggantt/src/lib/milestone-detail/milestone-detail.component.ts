@@ -1,6 +1,6 @@
 // generated from NgDetailTemplateTS
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 
 import { MilestoneDB } from '../milestone-db'
 import { MilestoneService } from '../milestone.service'
@@ -35,7 +35,7 @@ enum MilestoneDetailComponentState {
 export class MilestoneDetailComponent implements OnInit {
 
 	// insertion point for declarations
-	DisplayVerticalBarFormControl: FormControl = new FormControl(false);
+	DisplayVerticalBarFormControl: UntypedFormControl = new UntypedFormControl(false);
 
 	// the MilestoneDB of interest
 	milestone: MilestoneDB = new MilestoneDB
