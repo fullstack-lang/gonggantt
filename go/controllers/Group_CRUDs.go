@@ -41,11 +41,12 @@ type GroupInput struct {
 //
 // swagger:route GET /groups groups getGroups
 //
-// Get all groups
+// # Get all groups
 //
 // Responses:
-//    default: genericError
-//        200: groupDBsResponse
+// default: genericError
+//
+//	200: groupDBResponse
 func GetGroups(c *gin.Context) {
 	db := orm.BackRepo.BackRepoGroup.GetDB()
 
@@ -85,14 +86,15 @@ func GetGroups(c *gin.Context) {
 // swagger:route POST /groups groups postGroup
 //
 // Creates a group
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: groupDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostGroup(c *gin.Context) {
 	db := orm.BackRepo.BackRepoGroup.GetDB()
 
@@ -124,6 +126,14 @@ func PostGroup(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoGroup.CheckoutPhaseOneInstance(&groupDB)
+	group := (*orm.BackRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+
+	if group != nil {
+		models.AfterCreateFromFront(&models.Stage, group)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostGroup(c *gin.Context) {
 // Gets the details for a group.
 //
 // Responses:
-//    default: genericError
-//        200: groupDBResponse
+// default: genericError
+//
+//	200: groupDBResponse
 func GetGroup(c *gin.Context) {
 	db := orm.BackRepo.BackRepoGroup.GetDB()
 
@@ -166,11 +177,12 @@ func GetGroup(c *gin.Context) {
 //
 // swagger:route PATCH /groups/{ID} groups updateGroup
 //
-// Update a group
+// # Update a group
 //
 // Responses:
-//    default: genericError
-//        200: groupDBResponse
+// default: genericError
+//
+//	200: groupDBResponse
 func UpdateGroup(c *gin.Context) {
 	db := orm.BackRepo.BackRepoGroup.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateGroup(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	groupNew := new(models.Group)
+	groupDB.CopyBasicFieldsToGroup(groupNew)
+
+	// get stage instance from DB instance, and call callback function
+	groupOld := (*orm.BackRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	if groupOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, groupOld, groupNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the groupDB
@@ -223,10 +247,11 @@ func UpdateGroup(c *gin.Context) {
 //
 // swagger:route DELETE /groups/{ID} groups deleteGroup
 //
-// Delete a group
+// # Delete a group
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: groupDBResponse
 func DeleteGroup(c *gin.Context) {
 	db := orm.BackRepo.BackRepoGroup.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteGroup(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&groupDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	groupDeleted := new(models.Group)
+	groupDB.CopyBasicFieldsToGroup(groupDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	groupStaged := (*orm.BackRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	if groupStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, groupStaged, groupDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

@@ -41,11 +41,12 @@ type LaneInput struct {
 //
 // swagger:route GET /lanes lanes getLanes
 //
-// Get all lanes
+// # Get all lanes
 //
 // Responses:
-//    default: genericError
-//        200: laneDBsResponse
+// default: genericError
+//
+//	200: laneDBResponse
 func GetLanes(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLane.GetDB()
 
@@ -85,14 +86,15 @@ func GetLanes(c *gin.Context) {
 // swagger:route POST /lanes lanes postLane
 //
 // Creates a lane
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: laneDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostLane(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLane.GetDB()
 
@@ -124,6 +126,14 @@ func PostLane(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoLane.CheckoutPhaseOneInstance(&laneDB)
+	lane := (*orm.BackRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+
+	if lane != nil {
+		models.AfterCreateFromFront(&models.Stage, lane)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostLane(c *gin.Context) {
 // Gets the details for a lane.
 //
 // Responses:
-//    default: genericError
-//        200: laneDBResponse
+// default: genericError
+//
+//	200: laneDBResponse
 func GetLane(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLane.GetDB()
 
@@ -166,11 +177,12 @@ func GetLane(c *gin.Context) {
 //
 // swagger:route PATCH /lanes/{ID} lanes updateLane
 //
-// Update a lane
+// # Update a lane
 //
 // Responses:
-//    default: genericError
-//        200: laneDBResponse
+// default: genericError
+//
+//	200: laneDBResponse
 func UpdateLane(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLane.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateLane(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	laneNew := new(models.Lane)
+	laneDB.CopyBasicFieldsToLane(laneNew)
+
+	// get stage instance from DB instance, and call callback function
+	laneOld := (*orm.BackRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+	if laneOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, laneOld, laneNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the laneDB
@@ -223,10 +247,11 @@ func UpdateLane(c *gin.Context) {
 //
 // swagger:route DELETE /lanes/{ID} lanes deleteLane
 //
-// Delete a lane
+// # Delete a lane
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: laneDBResponse
 func DeleteLane(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLane.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteLane(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&laneDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	laneDeleted := new(models.Lane)
+	laneDB.CopyBasicFieldsToLane(laneDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	laneStaged := (*orm.BackRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+	if laneStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, laneStaged, laneDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

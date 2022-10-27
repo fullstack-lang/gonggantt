@@ -41,11 +41,12 @@ type ArrowInput struct {
 //
 // swagger:route GET /arrows arrows getArrows
 //
-// Get all arrows
+// # Get all arrows
 //
 // Responses:
-//    default: genericError
-//        200: arrowDBsResponse
+// default: genericError
+//
+//	200: arrowDBResponse
 func GetArrows(c *gin.Context) {
 	db := orm.BackRepo.BackRepoArrow.GetDB()
 
@@ -85,14 +86,15 @@ func GetArrows(c *gin.Context) {
 // swagger:route POST /arrows arrows postArrow
 //
 // Creates a arrow
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: arrowDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostArrow(c *gin.Context) {
 	db := orm.BackRepo.BackRepoArrow.GetDB()
 
@@ -124,6 +126,14 @@ func PostArrow(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoArrow.CheckoutPhaseOneInstance(&arrowDB)
+	arrow := (*orm.BackRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+
+	if arrow != nil {
+		models.AfterCreateFromFront(&models.Stage, arrow)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostArrow(c *gin.Context) {
 // Gets the details for a arrow.
 //
 // Responses:
-//    default: genericError
-//        200: arrowDBResponse
+// default: genericError
+//
+//	200: arrowDBResponse
 func GetArrow(c *gin.Context) {
 	db := orm.BackRepo.BackRepoArrow.GetDB()
 
@@ -166,11 +177,12 @@ func GetArrow(c *gin.Context) {
 //
 // swagger:route PATCH /arrows/{ID} arrows updateArrow
 //
-// Update a arrow
+// # Update a arrow
 //
 // Responses:
-//    default: genericError
-//        200: arrowDBResponse
+// default: genericError
+//
+//	200: arrowDBResponse
 func UpdateArrow(c *gin.Context) {
 	db := orm.BackRepo.BackRepoArrow.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateArrow(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	arrowNew := new(models.Arrow)
+	arrowDB.CopyBasicFieldsToArrow(arrowNew)
+
+	// get stage instance from DB instance, and call callback function
+	arrowOld := (*orm.BackRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+	if arrowOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, arrowOld, arrowNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the arrowDB
@@ -223,10 +247,11 @@ func UpdateArrow(c *gin.Context) {
 //
 // swagger:route DELETE /arrows/{ID} arrows deleteArrow
 //
-// Delete a arrow
+// # Delete a arrow
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: arrowDBResponse
 func DeleteArrow(c *gin.Context) {
 	db := orm.BackRepo.BackRepoArrow.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteArrow(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&arrowDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	arrowDeleted := new(models.Arrow)
+	arrowDB.CopyBasicFieldsToArrow(arrowDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	arrowStaged := (*orm.BackRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+	if arrowStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, arrowStaged, arrowDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

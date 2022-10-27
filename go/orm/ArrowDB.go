@@ -398,6 +398,7 @@ func (backRepo *BackRepoStruct) CommitArrow(arrow *models.Arrow) {
 	if id, ok := (*backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID)[arrow]; ok {
 		backRepo.BackRepoArrow.CommitPhaseTwoInstance(backRepo, id, arrow)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitArrow allows checkout of a single arrow (if already staged and with a BackRepo id)

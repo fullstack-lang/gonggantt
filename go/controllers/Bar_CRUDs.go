@@ -41,11 +41,12 @@ type BarInput struct {
 //
 // swagger:route GET /bars bars getBars
 //
-// Get all bars
+// # Get all bars
 //
 // Responses:
-//    default: genericError
-//        200: barDBsResponse
+// default: genericError
+//
+//	200: barDBResponse
 func GetBars(c *gin.Context) {
 	db := orm.BackRepo.BackRepoBar.GetDB()
 
@@ -85,14 +86,15 @@ func GetBars(c *gin.Context) {
 // swagger:route POST /bars bars postBar
 //
 // Creates a bar
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: barDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostBar(c *gin.Context) {
 	db := orm.BackRepo.BackRepoBar.GetDB()
 
@@ -124,6 +126,14 @@ func PostBar(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoBar.CheckoutPhaseOneInstance(&barDB)
+	bar := (*orm.BackRepo.BackRepoBar.Map_BarDBID_BarPtr)[barDB.ID]
+
+	if bar != nil {
+		models.AfterCreateFromFront(&models.Stage, bar)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostBar(c *gin.Context) {
 // Gets the details for a bar.
 //
 // Responses:
-//    default: genericError
-//        200: barDBResponse
+// default: genericError
+//
+//	200: barDBResponse
 func GetBar(c *gin.Context) {
 	db := orm.BackRepo.BackRepoBar.GetDB()
 
@@ -166,11 +177,12 @@ func GetBar(c *gin.Context) {
 //
 // swagger:route PATCH /bars/{ID} bars updateBar
 //
-// Update a bar
+// # Update a bar
 //
 // Responses:
-//    default: genericError
-//        200: barDBResponse
+// default: genericError
+//
+//	200: barDBResponse
 func UpdateBar(c *gin.Context) {
 	db := orm.BackRepo.BackRepoBar.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateBar(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	barNew := new(models.Bar)
+	barDB.CopyBasicFieldsToBar(barNew)
+
+	// get stage instance from DB instance, and call callback function
+	barOld := (*orm.BackRepo.BackRepoBar.Map_BarDBID_BarPtr)[barDB.ID]
+	if barOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, barOld, barNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the barDB
@@ -223,10 +247,11 @@ func UpdateBar(c *gin.Context) {
 //
 // swagger:route DELETE /bars/{ID} bars deleteBar
 //
-// Delete a bar
+// # Delete a bar
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: barDBResponse
 func DeleteBar(c *gin.Context) {
 	db := orm.BackRepo.BackRepoBar.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteBar(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&barDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	barDeleted := new(models.Bar)
+	barDB.CopyBasicFieldsToBar(barDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	barStaged := (*orm.BackRepo.BackRepoBar.Map_BarDBID_BarPtr)[barDB.ID]
+	if barStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, barStaged, barDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

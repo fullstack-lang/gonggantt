@@ -398,6 +398,7 @@ func (backRepo *BackRepoStruct) CommitGroup(group *models.Group) {
 	if id, ok := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[group]; ok {
 		backRepo.BackRepoGroup.CommitPhaseTwoInstance(backRepo, id, group)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitGroup allows checkout of a single group (if already staged and with a BackRepo id)

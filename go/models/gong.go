@@ -2,6 +2,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,9 @@ import (
 	"sort"
 	"strings"
 )
+
+// errUnkownEnum is returns when a value cannot match enum values
+var errUnkownEnum = errors.New("unkown enum")
 
 // swagger:ignore
 type __void any
@@ -31,23 +35,65 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	Arrows           map[*Arrow]any
 	Arrows_mapString map[string]*Arrow
 
+	OnAfterArrowCreateCallback OnAfterCreateInterface[Arrow]
+	OnAfterArrowUpdateCallback OnAfterUpdateInterface[Arrow]
+	OnAfterArrowDeleteCallback OnAfterDeleteInterface[Arrow]
+	OnAfterArrowReadCallback   OnAfterReadInterface[Arrow]
+
+
 	Bars           map[*Bar]any
 	Bars_mapString map[string]*Bar
+
+	OnAfterBarCreateCallback OnAfterCreateInterface[Bar]
+	OnAfterBarUpdateCallback OnAfterUpdateInterface[Bar]
+	OnAfterBarDeleteCallback OnAfterDeleteInterface[Bar]
+	OnAfterBarReadCallback   OnAfterReadInterface[Bar]
+
 
 	Gantts           map[*Gantt]any
 	Gantts_mapString map[string]*Gantt
 
+	OnAfterGanttCreateCallback OnAfterCreateInterface[Gantt]
+	OnAfterGanttUpdateCallback OnAfterUpdateInterface[Gantt]
+	OnAfterGanttDeleteCallback OnAfterDeleteInterface[Gantt]
+	OnAfterGanttReadCallback   OnAfterReadInterface[Gantt]
+
+
 	Groups           map[*Group]any
 	Groups_mapString map[string]*Group
+
+	OnAfterGroupCreateCallback OnAfterCreateInterface[Group]
+	OnAfterGroupUpdateCallback OnAfterUpdateInterface[Group]
+	OnAfterGroupDeleteCallback OnAfterDeleteInterface[Group]
+	OnAfterGroupReadCallback   OnAfterReadInterface[Group]
+
 
 	Lanes           map[*Lane]any
 	Lanes_mapString map[string]*Lane
 
+	OnAfterLaneCreateCallback OnAfterCreateInterface[Lane]
+	OnAfterLaneUpdateCallback OnAfterUpdateInterface[Lane]
+	OnAfterLaneDeleteCallback OnAfterDeleteInterface[Lane]
+	OnAfterLaneReadCallback   OnAfterReadInterface[Lane]
+
+
 	LaneUses           map[*LaneUse]any
 	LaneUses_mapString map[string]*LaneUse
 
+	OnAfterLaneUseCreateCallback OnAfterCreateInterface[LaneUse]
+	OnAfterLaneUseUpdateCallback OnAfterUpdateInterface[LaneUse]
+	OnAfterLaneUseDeleteCallback OnAfterDeleteInterface[LaneUse]
+	OnAfterLaneUseReadCallback   OnAfterReadInterface[LaneUse]
+
+
 	Milestones           map[*Milestone]any
 	Milestones_mapString map[string]*Milestone
+
+	OnAfterMilestoneCreateCallback OnAfterCreateInterface[Milestone]
+	OnAfterMilestoneUpdateCallback OnAfterUpdateInterface[Milestone]
+	OnAfterMilestoneDeleteCallback OnAfterDeleteInterface[Milestone]
+	OnAfterMilestoneReadCallback   OnAfterReadInterface[Milestone]
+
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
 
@@ -66,6 +112,29 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 
 type OnInitCommitInterface interface {
 	BeforeCommit(stage *StageStruct)
+}
+
+// OnAfterCreateInterface callback when an instance is updated from the front
+type OnAfterCreateInterface[Type Gongstruct] interface {
+	OnAfterCreate(stage *StageStruct,
+		instance *Type)
+}
+
+// OnAfterReadInterface callback when an instance is updated from the front
+type OnAfterReadInterface[Type Gongstruct] interface {
+	OnAfterRead(stage *StageStruct,
+		instance *Type)
+}
+
+// OnAfterUpdateInterface callback when an instance is updated from the front
+type OnAfterUpdateInterface[Type Gongstruct] interface {
+	OnAfterUpdate(stage *StageStruct, old, new *Type)
+}
+
+// OnAfterDeleteInterface callback when an instance is updated from the front
+type OnAfterDeleteInterface[Type Gongstruct] interface {
+	OnAfterDelete(stage *StageStruct,
+		staged, front *Type)
 }
 
 type BackRepoInterface interface {

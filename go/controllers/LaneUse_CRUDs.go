@@ -41,11 +41,12 @@ type LaneUseInput struct {
 //
 // swagger:route GET /laneuses laneuses getLaneUses
 //
-// Get all laneuses
+// # Get all laneuses
 //
 // Responses:
-//    default: genericError
-//        200: laneuseDBsResponse
+// default: genericError
+//
+//	200: laneuseDBResponse
 func GetLaneUses(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLaneUse.GetDB()
 
@@ -85,14 +86,15 @@ func GetLaneUses(c *gin.Context) {
 // swagger:route POST /laneuses laneuses postLaneUse
 //
 // Creates a laneuse
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: laneuseDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostLaneUse(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLaneUse.GetDB()
 
@@ -124,6 +126,14 @@ func PostLaneUse(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoLaneUse.CheckoutPhaseOneInstance(&laneuseDB)
+	laneuse := (*orm.BackRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+
+	if laneuse != nil {
+		models.AfterCreateFromFront(&models.Stage, laneuse)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostLaneUse(c *gin.Context) {
 // Gets the details for a laneuse.
 //
 // Responses:
-//    default: genericError
-//        200: laneuseDBResponse
+// default: genericError
+//
+//	200: laneuseDBResponse
 func GetLaneUse(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLaneUse.GetDB()
 
@@ -166,11 +177,12 @@ func GetLaneUse(c *gin.Context) {
 //
 // swagger:route PATCH /laneuses/{ID} laneuses updateLaneUse
 //
-// Update a laneuse
+// # Update a laneuse
 //
 // Responses:
-//    default: genericError
-//        200: laneuseDBResponse
+// default: genericError
+//
+//	200: laneuseDBResponse
 func UpdateLaneUse(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLaneUse.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateLaneUse(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	laneuseNew := new(models.LaneUse)
+	laneuseDB.CopyBasicFieldsToLaneUse(laneuseNew)
+
+	// get stage instance from DB instance, and call callback function
+	laneuseOld := (*orm.BackRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+	if laneuseOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, laneuseOld, laneuseNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the laneuseDB
@@ -223,10 +247,11 @@ func UpdateLaneUse(c *gin.Context) {
 //
 // swagger:route DELETE /laneuses/{ID} laneuses deleteLaneUse
 //
-// Delete a laneuse
+// # Delete a laneuse
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: laneuseDBResponse
 func DeleteLaneUse(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLaneUse.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteLaneUse(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&laneuseDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	laneuseDeleted := new(models.LaneUse)
+	laneuseDB.CopyBasicFieldsToLaneUse(laneuseDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	laneuseStaged := (*orm.BackRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+	if laneuseStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, laneuseStaged, laneuseDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

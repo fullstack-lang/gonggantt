@@ -410,6 +410,7 @@ func (backRepo *BackRepoStruct) CommitLane(lane *models.Lane) {
 	if id, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[lane]; ok {
 		backRepo.BackRepoLane.CommitPhaseTwoInstance(backRepo, id, lane)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitLane allows checkout of a single lane (if already staged and with a BackRepo id)

@@ -411,6 +411,7 @@ func (backRepo *BackRepoStruct) CommitMilestone(milestone *models.Milestone) {
 	if id, ok := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]; ok {
 		backRepo.BackRepoMilestone.CommitPhaseTwoInstance(backRepo, id, milestone)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitMilestone allows checkout of a single milestone (if already staged and with a BackRepo id)

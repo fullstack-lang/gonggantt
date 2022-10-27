@@ -369,6 +369,7 @@ func (backRepo *BackRepoStruct) CommitLaneUse(laneuse *models.LaneUse) {
 	if id, ok := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[laneuse]; ok {
 		backRepo.BackRepoLaneUse.CommitPhaseTwoInstance(backRepo, id, laneuse)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitLaneUse allows checkout of a single laneuse (if already staged and with a BackRepo id)

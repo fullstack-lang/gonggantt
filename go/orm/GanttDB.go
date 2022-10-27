@@ -670,6 +670,7 @@ func (backRepo *BackRepoStruct) CommitGantt(gantt *models.Gantt) {
 	if id, ok := (*backRepo.BackRepoGantt.Map_GanttPtr_GanttDBID)[gantt]; ok {
 		backRepo.BackRepoGantt.CommitPhaseTwoInstance(backRepo, id, gantt)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitGantt allows checkout of a single gantt (if already staged and with a BackRepo id)

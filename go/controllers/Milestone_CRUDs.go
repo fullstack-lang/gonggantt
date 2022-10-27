@@ -41,11 +41,12 @@ type MilestoneInput struct {
 //
 // swagger:route GET /milestones milestones getMilestones
 //
-// Get all milestones
+// # Get all milestones
 //
 // Responses:
-//    default: genericError
-//        200: milestoneDBsResponse
+// default: genericError
+//
+//	200: milestoneDBResponse
 func GetMilestones(c *gin.Context) {
 	db := orm.BackRepo.BackRepoMilestone.GetDB()
 
@@ -85,14 +86,15 @@ func GetMilestones(c *gin.Context) {
 // swagger:route POST /milestones milestones postMilestone
 //
 // Creates a milestone
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: milestoneDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostMilestone(c *gin.Context) {
 	db := orm.BackRepo.BackRepoMilestone.GetDB()
 
@@ -124,6 +126,14 @@ func PostMilestone(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoMilestone.CheckoutPhaseOneInstance(&milestoneDB)
+	milestone := (*orm.BackRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+
+	if milestone != nil {
+		models.AfterCreateFromFront(&models.Stage, milestone)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostMilestone(c *gin.Context) {
 // Gets the details for a milestone.
 //
 // Responses:
-//    default: genericError
-//        200: milestoneDBResponse
+// default: genericError
+//
+//	200: milestoneDBResponse
 func GetMilestone(c *gin.Context) {
 	db := orm.BackRepo.BackRepoMilestone.GetDB()
 
@@ -166,11 +177,12 @@ func GetMilestone(c *gin.Context) {
 //
 // swagger:route PATCH /milestones/{ID} milestones updateMilestone
 //
-// Update a milestone
+// # Update a milestone
 //
 // Responses:
-//    default: genericError
-//        200: milestoneDBResponse
+// default: genericError
+//
+//	200: milestoneDBResponse
 func UpdateMilestone(c *gin.Context) {
 	db := orm.BackRepo.BackRepoMilestone.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateMilestone(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	milestoneNew := new(models.Milestone)
+	milestoneDB.CopyBasicFieldsToMilestone(milestoneNew)
+
+	// get stage instance from DB instance, and call callback function
+	milestoneOld := (*orm.BackRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	if milestoneOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, milestoneOld, milestoneNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the milestoneDB
@@ -223,10 +247,11 @@ func UpdateMilestone(c *gin.Context) {
 //
 // swagger:route DELETE /milestones/{ID} milestones deleteMilestone
 //
-// Delete a milestone
+// # Delete a milestone
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: milestoneDBResponse
 func DeleteMilestone(c *gin.Context) {
 	db := orm.BackRepo.BackRepoMilestone.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteMilestone(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&milestoneDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	milestoneDeleted := new(models.Milestone)
+	milestoneDB.CopyBasicFieldsToMilestone(milestoneDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	milestoneStaged := (*orm.BackRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	if milestoneStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, milestoneStaged, milestoneDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

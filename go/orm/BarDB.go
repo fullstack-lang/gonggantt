@@ -394,6 +394,7 @@ func (backRepo *BackRepoStruct) CommitBar(bar *models.Bar) {
 	if id, ok := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[bar]; ok {
 		backRepo.BackRepoBar.CommitPhaseTwoInstance(backRepo, id, bar)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitBar allows checkout of a single bar (if already staged and with a BackRepo id)

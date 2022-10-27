@@ -41,11 +41,12 @@ type GanttInput struct {
 //
 // swagger:route GET /gantts gantts getGantts
 //
-// Get all gantts
+// # Get all gantts
 //
 // Responses:
-//    default: genericError
-//        200: ganttDBsResponse
+// default: genericError
+//
+//	200: ganttDBResponse
 func GetGantts(c *gin.Context) {
 	db := orm.BackRepo.BackRepoGantt.GetDB()
 
@@ -85,14 +86,15 @@ func GetGantts(c *gin.Context) {
 // swagger:route POST /gantts gantts postGantt
 //
 // Creates a gantt
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: ganttDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostGantt(c *gin.Context) {
 	db := orm.BackRepo.BackRepoGantt.GetDB()
 
@@ -124,6 +126,14 @@ func PostGantt(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoGantt.CheckoutPhaseOneInstance(&ganttDB)
+	gantt := (*orm.BackRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+
+	if gantt != nil {
+		models.AfterCreateFromFront(&models.Stage, gantt)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostGantt(c *gin.Context) {
 // Gets the details for a gantt.
 //
 // Responses:
-//    default: genericError
-//        200: ganttDBResponse
+// default: genericError
+//
+//	200: ganttDBResponse
 func GetGantt(c *gin.Context) {
 	db := orm.BackRepo.BackRepoGantt.GetDB()
 
@@ -166,11 +177,12 @@ func GetGantt(c *gin.Context) {
 //
 // swagger:route PATCH /gantts/{ID} gantts updateGantt
 //
-// Update a gantt
+// # Update a gantt
 //
 // Responses:
-//    default: genericError
-//        200: ganttDBResponse
+// default: genericError
+//
+//	200: ganttDBResponse
 func UpdateGantt(c *gin.Context) {
 	db := orm.BackRepo.BackRepoGantt.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateGantt(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	ganttNew := new(models.Gantt)
+	ganttDB.CopyBasicFieldsToGantt(ganttNew)
+
+	// get stage instance from DB instance, and call callback function
+	ganttOld := (*orm.BackRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	if ganttOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, ganttOld, ganttNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the ganttDB
@@ -223,10 +247,11 @@ func UpdateGantt(c *gin.Context) {
 //
 // swagger:route DELETE /gantts/{ID} gantts deleteGantt
 //
-// Delete a gantt
+// # Delete a gantt
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: ganttDBResponse
 func DeleteGantt(c *gin.Context) {
 	db := orm.BackRepo.BackRepoGantt.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteGantt(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&ganttDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	ganttDeleted := new(models.Gantt)
+	ganttDB.CopyBasicFieldsToGantt(ganttDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	ganttStaged := (*orm.BackRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	if ganttStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, ganttStaged, ganttDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
