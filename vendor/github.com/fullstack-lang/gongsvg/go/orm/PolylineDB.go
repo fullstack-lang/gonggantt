@@ -440,6 +440,7 @@ func (backRepo *BackRepoStruct) CommitPolyline(polyline *models.Polyline) {
 	if id, ok := (*backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID)[polyline]; ok {
 		backRepo.BackRepoPolyline.CommitPhaseTwoInstance(backRepo, id, polyline)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitPolyline allows checkout of a single polyline (if already staged and with a BackRepo id)

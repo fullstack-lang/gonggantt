@@ -41,11 +41,12 @@ type SVGInput struct {
 //
 // swagger:route GET /svgs svgs getSVGs
 //
-// Get all svgs
+// # Get all svgs
 //
 // Responses:
-//    default: genericError
-//        200: svgDBsResponse
+// default: genericError
+//
+//	200: svgDBResponse
 func GetSVGs(c *gin.Context) {
 	db := orm.BackRepo.BackRepoSVG.GetDB()
 
@@ -85,14 +86,15 @@ func GetSVGs(c *gin.Context) {
 // swagger:route POST /svgs svgs postSVG
 //
 // Creates a svg
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: svgDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostSVG(c *gin.Context) {
 	db := orm.BackRepo.BackRepoSVG.GetDB()
 
@@ -124,6 +126,14 @@ func PostSVG(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoSVG.CheckoutPhaseOneInstance(&svgDB)
+	svg := (*orm.BackRepo.BackRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID]
+
+	if svg != nil {
+		models.AfterCreateFromFront(&models.Stage, svg)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostSVG(c *gin.Context) {
 // Gets the details for a svg.
 //
 // Responses:
-//    default: genericError
-//        200: svgDBResponse
+// default: genericError
+//
+//	200: svgDBResponse
 func GetSVG(c *gin.Context) {
 	db := orm.BackRepo.BackRepoSVG.GetDB()
 
@@ -166,11 +177,12 @@ func GetSVG(c *gin.Context) {
 //
 // swagger:route PATCH /svgs/{ID} svgs updateSVG
 //
-// Update a svg
+// # Update a svg
 //
 // Responses:
-//    default: genericError
-//        200: svgDBResponse
+// default: genericError
+//
+//	200: svgDBResponse
 func UpdateSVG(c *gin.Context) {
 	db := orm.BackRepo.BackRepoSVG.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateSVG(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	svgNew := new(models.SVG)
+	svgDB.CopyBasicFieldsToSVG(svgNew)
+
+	// get stage instance from DB instance, and call callback function
+	svgOld := (*orm.BackRepo.BackRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID]
+	if svgOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, svgOld, svgNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the svgDB
@@ -223,10 +247,11 @@ func UpdateSVG(c *gin.Context) {
 //
 // swagger:route DELETE /svgs/{ID} svgs deleteSVG
 //
-// Delete a svg
+// # Delete a svg
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: svgDBResponse
 func DeleteSVG(c *gin.Context) {
 	db := orm.BackRepo.BackRepoSVG.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteSVG(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&svgDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	svgDeleted := new(models.SVG)
+	svgDB.CopyBasicFieldsToSVG(svgDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	svgStaged := (*orm.BackRepo.BackRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID]
+	if svgStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, svgStaged, svgDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

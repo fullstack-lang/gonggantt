@@ -1,6 +1,6 @@
 // generated from NgDetailTemplateTS
 import { Component, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 
 import { SVGDB } from '../svg-db'
 import { SVGService } from '../svg.service'
@@ -33,7 +33,7 @@ enum SVGDetailComponentState {
 export class SVGDetailComponent implements OnInit {
 
 	// insertion point for declarations
-	DisplayFormControl: FormControl = new FormControl(false);
+	DisplayFormControl: UntypedFormControl = new UntypedFormControl(false);
 
 	// the SVGDB of interest
 	svg: SVGDB = new SVGDB

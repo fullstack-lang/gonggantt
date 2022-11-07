@@ -10,7 +10,7 @@ import (
 var Default uml.Classdiagram = uml.Classdiagram{
 	Classshapes: []*uml.Classshape{
 		{
-			Struct: &(models.Arrow{}),
+			ReferencedGong: &(models.Arrow{}),
 			Position: &uml.Position{
 				X: 570.000000,
 				Y: 280.000000,
@@ -50,7 +50,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 			},
 		},
 		{
-			Struct: &(models.Bar{}),
+			ReferencedGong: &(models.Bar{}),
 			Position: &uml.Position{
 				X: 950.000000,
 				Y: 140.000000,
@@ -76,7 +76,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 			},
 		},
 		{
-			Struct: &(models.Gantt{}),
+			ReferencedGong: &(models.Gantt{}),
 			Position: &uml.Position{
 				X: 60.000000,
 				Y: 40.000000,
@@ -182,7 +182,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 			},
 		},
 		{
-			Struct: &(models.Group{}),
+			ReferencedGong: &(models.Group{}),
 			Position: &uml.Position{
 				X: 570.000000,
 				Y: 50.000000,
@@ -207,7 +207,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 			},
 		},
 		{
-			Struct: &(models.Lane{}),
+			ReferencedGong: &(models.Lane{}),
 			Position: &uml.Position{
 				X: 570.000000,
 				Y: 140.000000,
@@ -235,7 +235,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 			},
 		},
 		{
-			Struct: &(models.LaneUse{}),
+			ReferencedGong: &(models.LaneUse{}),
 			Position: &uml.Position{
 				X: 930.000000,
 				Y: 520.000000,
@@ -255,7 +255,7 @@ var Default uml.Classdiagram = uml.Classdiagram{
 			},
 		},
 		{
-			Struct: &(models.Milestone{}),
+			ReferencedGong: &(models.Milestone{}),
 			Position: &uml.Position{
 				X: 570.000000,
 				Y: 400.000000,

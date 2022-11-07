@@ -41,11 +41,12 @@ type LineInput struct {
 //
 // swagger:route GET /lines lines getLines
 //
-// Get all lines
+// # Get all lines
 //
 // Responses:
-//    default: genericError
-//        200: lineDBsResponse
+// default: genericError
+//
+//	200: lineDBResponse
 func GetLines(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLine.GetDB()
 
@@ -85,14 +86,15 @@ func GetLines(c *gin.Context) {
 // swagger:route POST /lines lines postLine
 //
 // Creates a line
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: lineDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostLine(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLine.GetDB()
 
@@ -124,6 +126,14 @@ func PostLine(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoLine.CheckoutPhaseOneInstance(&lineDB)
+	line := (*orm.BackRepo.BackRepoLine.Map_LineDBID_LinePtr)[lineDB.ID]
+
+	if line != nil {
+		models.AfterCreateFromFront(&models.Stage, line)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostLine(c *gin.Context) {
 // Gets the details for a line.
 //
 // Responses:
-//    default: genericError
-//        200: lineDBResponse
+// default: genericError
+//
+//	200: lineDBResponse
 func GetLine(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLine.GetDB()
 
@@ -166,11 +177,12 @@ func GetLine(c *gin.Context) {
 //
 // swagger:route PATCH /lines/{ID} lines updateLine
 //
-// Update a line
+// # Update a line
 //
 // Responses:
-//    default: genericError
-//        200: lineDBResponse
+// default: genericError
+//
+//	200: lineDBResponse
 func UpdateLine(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLine.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateLine(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	lineNew := new(models.Line)
+	lineDB.CopyBasicFieldsToLine(lineNew)
+
+	// get stage instance from DB instance, and call callback function
+	lineOld := (*orm.BackRepo.BackRepoLine.Map_LineDBID_LinePtr)[lineDB.ID]
+	if lineOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, lineOld, lineNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the lineDB
@@ -223,10 +247,11 @@ func UpdateLine(c *gin.Context) {
 //
 // swagger:route DELETE /lines/{ID} lines deleteLine
 //
-// Delete a line
+// # Delete a line
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: lineDBResponse
 func DeleteLine(c *gin.Context) {
 	db := orm.BackRepo.BackRepoLine.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteLine(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&lineDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	lineDeleted := new(models.Line)
+	lineDB.CopyBasicFieldsToLine(lineDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	lineStaged := (*orm.BackRepo.BackRepoLine.Map_LineDBID_LinePtr)[lineDB.ID]
+	if lineStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, lineStaged, lineDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

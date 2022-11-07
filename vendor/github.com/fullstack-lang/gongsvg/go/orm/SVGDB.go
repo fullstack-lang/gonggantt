@@ -721,6 +721,7 @@ func (backRepo *BackRepoStruct) CommitSVG(svg *models.SVG) {
 	if id, ok := (*backRepo.BackRepoSVG.Map_SVGPtr_SVGDBID)[svg]; ok {
 		backRepo.BackRepoSVG.CommitPhaseTwoInstance(backRepo, id, svg)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitSVG allows checkout of a single svg (if already staged and with a BackRepo id)

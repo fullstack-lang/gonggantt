@@ -41,11 +41,12 @@ type AnimateInput struct {
 //
 // swagger:route GET /animates animates getAnimates
 //
-// Get all animates
+// # Get all animates
 //
 // Responses:
-//    default: genericError
-//        200: animateDBsResponse
+// default: genericError
+//
+//	200: animateDBResponse
 func GetAnimates(c *gin.Context) {
 	db := orm.BackRepo.BackRepoAnimate.GetDB()
 
@@ -85,14 +86,15 @@ func GetAnimates(c *gin.Context) {
 // swagger:route POST /animates animates postAnimate
 //
 // Creates a animate
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: animateDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostAnimate(c *gin.Context) {
 	db := orm.BackRepo.BackRepoAnimate.GetDB()
 
@@ -124,6 +126,14 @@ func PostAnimate(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoAnimate.CheckoutPhaseOneInstance(&animateDB)
+	animate := (*orm.BackRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+
+	if animate != nil {
+		models.AfterCreateFromFront(&models.Stage, animate)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostAnimate(c *gin.Context) {
 // Gets the details for a animate.
 //
 // Responses:
-//    default: genericError
-//        200: animateDBResponse
+// default: genericError
+//
+//	200: animateDBResponse
 func GetAnimate(c *gin.Context) {
 	db := orm.BackRepo.BackRepoAnimate.GetDB()
 
@@ -166,11 +177,12 @@ func GetAnimate(c *gin.Context) {
 //
 // swagger:route PATCH /animates/{ID} animates updateAnimate
 //
-// Update a animate
+// # Update a animate
 //
 // Responses:
-//    default: genericError
-//        200: animateDBResponse
+// default: genericError
+//
+//	200: animateDBResponse
 func UpdateAnimate(c *gin.Context) {
 	db := orm.BackRepo.BackRepoAnimate.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateAnimate(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	animateNew := new(models.Animate)
+	animateDB.CopyBasicFieldsToAnimate(animateNew)
+
+	// get stage instance from DB instance, and call callback function
+	animateOld := (*orm.BackRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+	if animateOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, animateOld, animateNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the animateDB
@@ -223,10 +247,11 @@ func UpdateAnimate(c *gin.Context) {
 //
 // swagger:route DELETE /animates/{ID} animates deleteAnimate
 //
-// Delete a animate
+// # Delete a animate
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: animateDBResponse
 func DeleteAnimate(c *gin.Context) {
 	db := orm.BackRepo.BackRepoAnimate.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteAnimate(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&animateDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	animateDeleted := new(models.Animate)
+	animateDB.CopyBasicFieldsToAnimate(animateDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	animateStaged := (*orm.BackRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+	if animateStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, animateStaged, animateDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

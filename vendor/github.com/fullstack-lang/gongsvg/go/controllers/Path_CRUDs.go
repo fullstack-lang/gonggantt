@@ -41,11 +41,12 @@ type PathInput struct {
 //
 // swagger:route GET /paths paths getPaths
 //
-// Get all paths
+// # Get all paths
 //
 // Responses:
-//    default: genericError
-//        200: pathDBsResponse
+// default: genericError
+//
+//	200: pathDBResponse
 func GetPaths(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPath.GetDB()
 
@@ -85,14 +86,15 @@ func GetPaths(c *gin.Context) {
 // swagger:route POST /paths paths postPath
 //
 // Creates a path
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: pathDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostPath(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPath.GetDB()
 
@@ -124,6 +126,14 @@ func PostPath(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoPath.CheckoutPhaseOneInstance(&pathDB)
+	path := (*orm.BackRepo.BackRepoPath.Map_PathDBID_PathPtr)[pathDB.ID]
+
+	if path != nil {
+		models.AfterCreateFromFront(&models.Stage, path)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostPath(c *gin.Context) {
 // Gets the details for a path.
 //
 // Responses:
-//    default: genericError
-//        200: pathDBResponse
+// default: genericError
+//
+//	200: pathDBResponse
 func GetPath(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPath.GetDB()
 
@@ -166,11 +177,12 @@ func GetPath(c *gin.Context) {
 //
 // swagger:route PATCH /paths/{ID} paths updatePath
 //
-// Update a path
+// # Update a path
 //
 // Responses:
-//    default: genericError
-//        200: pathDBResponse
+// default: genericError
+//
+//	200: pathDBResponse
 func UpdatePath(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPath.GetDB()
 
@@ -211,8 +223,20 @@ func UpdatePath(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	pathNew := new(models.Path)
+	pathDB.CopyBasicFieldsToPath(pathNew)
+
+	// get stage instance from DB instance, and call callback function
+	pathOld := (*orm.BackRepo.BackRepoPath.Map_PathDBID_PathPtr)[pathDB.ID]
+	if pathOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, pathOld, pathNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the pathDB
@@ -223,10 +247,11 @@ func UpdatePath(c *gin.Context) {
 //
 // swagger:route DELETE /paths/{ID} paths deletePath
 //
-// Delete a path
+// # Delete a path
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: pathDBResponse
 func DeletePath(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPath.GetDB()
 
@@ -243,6 +268,16 @@ func DeletePath(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&pathDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	pathDeleted := new(models.Path)
+	pathDB.CopyBasicFieldsToPath(pathDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	pathStaged := (*orm.BackRepo.BackRepoPath.Map_PathDBID_PathPtr)[pathDB.ID]
+	if pathStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, pathStaged, pathDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

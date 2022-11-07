@@ -41,11 +41,12 @@ type PolygoneInput struct {
 //
 // swagger:route GET /polygones polygones getPolygones
 //
-// Get all polygones
+// # Get all polygones
 //
 // Responses:
-//    default: genericError
-//        200: polygoneDBsResponse
+// default: genericError
+//
+//	200: polygoneDBResponse
 func GetPolygones(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPolygone.GetDB()
 
@@ -85,14 +86,15 @@ func GetPolygones(c *gin.Context) {
 // swagger:route POST /polygones polygones postPolygone
 //
 // Creates a polygone
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: polygoneDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostPolygone(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPolygone.GetDB()
 
@@ -124,6 +126,14 @@ func PostPolygone(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoPolygone.CheckoutPhaseOneInstance(&polygoneDB)
+	polygone := (*orm.BackRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+
+	if polygone != nil {
+		models.AfterCreateFromFront(&models.Stage, polygone)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostPolygone(c *gin.Context) {
 // Gets the details for a polygone.
 //
 // Responses:
-//    default: genericError
-//        200: polygoneDBResponse
+// default: genericError
+//
+//	200: polygoneDBResponse
 func GetPolygone(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPolygone.GetDB()
 
@@ -166,11 +177,12 @@ func GetPolygone(c *gin.Context) {
 //
 // swagger:route PATCH /polygones/{ID} polygones updatePolygone
 //
-// Update a polygone
+// # Update a polygone
 //
 // Responses:
-//    default: genericError
-//        200: polygoneDBResponse
+// default: genericError
+//
+//	200: polygoneDBResponse
 func UpdatePolygone(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPolygone.GetDB()
 
@@ -211,8 +223,20 @@ func UpdatePolygone(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	polygoneNew := new(models.Polygone)
+	polygoneDB.CopyBasicFieldsToPolygone(polygoneNew)
+
+	// get stage instance from DB instance, and call callback function
+	polygoneOld := (*orm.BackRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+	if polygoneOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, polygoneOld, polygoneNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the polygoneDB
@@ -223,10 +247,11 @@ func UpdatePolygone(c *gin.Context) {
 //
 // swagger:route DELETE /polygones/{ID} polygones deletePolygone
 //
-// Delete a polygone
+// # Delete a polygone
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: polygoneDBResponse
 func DeletePolygone(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPolygone.GetDB()
 
@@ -243,6 +268,16 @@ func DeletePolygone(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&polygoneDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	polygoneDeleted := new(models.Polygone)
+	polygoneDB.CopyBasicFieldsToPolygone(polygoneDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	polygoneStaged := (*orm.BackRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+	if polygoneStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, polygoneStaged, polygoneDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

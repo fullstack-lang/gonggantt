@@ -418,6 +418,7 @@ func (backRepo *BackRepoStruct) CommitAnimate(animate *models.Animate) {
 	if id, ok := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[animate]; ok {
 		backRepo.BackRepoAnimate.CommitPhaseTwoInstance(backRepo, id, animate)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitAnimate allows checkout of a single animate (if already staged and with a BackRepo id)

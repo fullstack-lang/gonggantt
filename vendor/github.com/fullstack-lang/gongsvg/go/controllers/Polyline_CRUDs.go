@@ -41,11 +41,12 @@ type PolylineInput struct {
 //
 // swagger:route GET /polylines polylines getPolylines
 //
-// Get all polylines
+// # Get all polylines
 //
 // Responses:
-//    default: genericError
-//        200: polylineDBsResponse
+// default: genericError
+//
+//	200: polylineDBResponse
 func GetPolylines(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPolyline.GetDB()
 
@@ -85,14 +86,15 @@ func GetPolylines(c *gin.Context) {
 // swagger:route POST /polylines polylines postPolyline
 //
 // Creates a polyline
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: polylineDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostPolyline(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPolyline.GetDB()
 
@@ -124,6 +126,14 @@ func PostPolyline(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoPolyline.CheckoutPhaseOneInstance(&polylineDB)
+	polyline := (*orm.BackRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+
+	if polyline != nil {
+		models.AfterCreateFromFront(&models.Stage, polyline)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostPolyline(c *gin.Context) {
 // Gets the details for a polyline.
 //
 // Responses:
-//    default: genericError
-//        200: polylineDBResponse
+// default: genericError
+//
+//	200: polylineDBResponse
 func GetPolyline(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPolyline.GetDB()
 
@@ -166,11 +177,12 @@ func GetPolyline(c *gin.Context) {
 //
 // swagger:route PATCH /polylines/{ID} polylines updatePolyline
 //
-// Update a polyline
+// # Update a polyline
 //
 // Responses:
-//    default: genericError
-//        200: polylineDBResponse
+// default: genericError
+//
+//	200: polylineDBResponse
 func UpdatePolyline(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPolyline.GetDB()
 
@@ -211,8 +223,20 @@ func UpdatePolyline(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	polylineNew := new(models.Polyline)
+	polylineDB.CopyBasicFieldsToPolyline(polylineNew)
+
+	// get stage instance from DB instance, and call callback function
+	polylineOld := (*orm.BackRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+	if polylineOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, polylineOld, polylineNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the polylineDB
@@ -223,10 +247,11 @@ func UpdatePolyline(c *gin.Context) {
 //
 // swagger:route DELETE /polylines/{ID} polylines deletePolyline
 //
-// Delete a polyline
+// # Delete a polyline
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: polylineDBResponse
 func DeletePolyline(c *gin.Context) {
 	db := orm.BackRepo.BackRepoPolyline.GetDB()
 
@@ -243,6 +268,16 @@ func DeletePolyline(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&polylineDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	polylineDeleted := new(models.Polyline)
+	polylineDB.CopyBasicFieldsToPolyline(polylineDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	polylineStaged := (*orm.BackRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+	if polylineStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, polylineStaged, polylineDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

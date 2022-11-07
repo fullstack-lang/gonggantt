@@ -452,6 +452,7 @@ func (backRepo *BackRepoStruct) CommitText(text *models.Text) {
 	if id, ok := (*backRepo.BackRepoText.Map_TextPtr_TextDBID)[text]; ok {
 		backRepo.BackRepoText.CommitPhaseTwoInstance(backRepo, id, text)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitText allows checkout of a single text (if already staged and with a BackRepo id)

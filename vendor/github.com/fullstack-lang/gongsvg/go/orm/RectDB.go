@@ -464,6 +464,7 @@ func (backRepo *BackRepoStruct) CommitRect(rect *models.Rect) {
 	if id, ok := (*backRepo.BackRepoRect.Map_RectPtr_RectDBID)[rect]; ok {
 		backRepo.BackRepoRect.CommitPhaseTwoInstance(backRepo, id, rect)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitRect allows checkout of a single rect (if already staged and with a BackRepo id)

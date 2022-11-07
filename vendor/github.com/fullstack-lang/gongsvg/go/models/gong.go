@@ -2,6 +2,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,9 @@ import (
 	"sort"
 	"strings"
 )
+
+// errUnkownEnum is returns when a value cannot match enum values
+var errUnkownEnum = errors.New("unkown enum")
 
 // swagger:ignore
 type __void any
@@ -31,32 +35,92 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	Animates           map[*Animate]any
 	Animates_mapString map[string]*Animate
 
+	OnAfterAnimateCreateCallback OnAfterCreateInterface[Animate]
+	OnAfterAnimateUpdateCallback OnAfterUpdateInterface[Animate]
+	OnAfterAnimateDeleteCallback OnAfterDeleteInterface[Animate]
+	OnAfterAnimateReadCallback   OnAfterReadInterface[Animate]
+
+
 	Circles           map[*Circle]any
 	Circles_mapString map[string]*Circle
+
+	OnAfterCircleCreateCallback OnAfterCreateInterface[Circle]
+	OnAfterCircleUpdateCallback OnAfterUpdateInterface[Circle]
+	OnAfterCircleDeleteCallback OnAfterDeleteInterface[Circle]
+	OnAfterCircleReadCallback   OnAfterReadInterface[Circle]
+
 
 	Ellipses           map[*Ellipse]any
 	Ellipses_mapString map[string]*Ellipse
 
+	OnAfterEllipseCreateCallback OnAfterCreateInterface[Ellipse]
+	OnAfterEllipseUpdateCallback OnAfterUpdateInterface[Ellipse]
+	OnAfterEllipseDeleteCallback OnAfterDeleteInterface[Ellipse]
+	OnAfterEllipseReadCallback   OnAfterReadInterface[Ellipse]
+
+
 	Lines           map[*Line]any
 	Lines_mapString map[string]*Line
+
+	OnAfterLineCreateCallback OnAfterCreateInterface[Line]
+	OnAfterLineUpdateCallback OnAfterUpdateInterface[Line]
+	OnAfterLineDeleteCallback OnAfterDeleteInterface[Line]
+	OnAfterLineReadCallback   OnAfterReadInterface[Line]
+
 
 	Paths           map[*Path]any
 	Paths_mapString map[string]*Path
 
+	OnAfterPathCreateCallback OnAfterCreateInterface[Path]
+	OnAfterPathUpdateCallback OnAfterUpdateInterface[Path]
+	OnAfterPathDeleteCallback OnAfterDeleteInterface[Path]
+	OnAfterPathReadCallback   OnAfterReadInterface[Path]
+
+
 	Polygones           map[*Polygone]any
 	Polygones_mapString map[string]*Polygone
+
+	OnAfterPolygoneCreateCallback OnAfterCreateInterface[Polygone]
+	OnAfterPolygoneUpdateCallback OnAfterUpdateInterface[Polygone]
+	OnAfterPolygoneDeleteCallback OnAfterDeleteInterface[Polygone]
+	OnAfterPolygoneReadCallback   OnAfterReadInterface[Polygone]
+
 
 	Polylines           map[*Polyline]any
 	Polylines_mapString map[string]*Polyline
 
+	OnAfterPolylineCreateCallback OnAfterCreateInterface[Polyline]
+	OnAfterPolylineUpdateCallback OnAfterUpdateInterface[Polyline]
+	OnAfterPolylineDeleteCallback OnAfterDeleteInterface[Polyline]
+	OnAfterPolylineReadCallback   OnAfterReadInterface[Polyline]
+
+
 	Rects           map[*Rect]any
 	Rects_mapString map[string]*Rect
+
+	OnAfterRectCreateCallback OnAfterCreateInterface[Rect]
+	OnAfterRectUpdateCallback OnAfterUpdateInterface[Rect]
+	OnAfterRectDeleteCallback OnAfterDeleteInterface[Rect]
+	OnAfterRectReadCallback   OnAfterReadInterface[Rect]
+
 
 	SVGs           map[*SVG]any
 	SVGs_mapString map[string]*SVG
 
+	OnAfterSVGCreateCallback OnAfterCreateInterface[SVG]
+	OnAfterSVGUpdateCallback OnAfterUpdateInterface[SVG]
+	OnAfterSVGDeleteCallback OnAfterDeleteInterface[SVG]
+	OnAfterSVGReadCallback   OnAfterReadInterface[SVG]
+
+
 	Texts           map[*Text]any
 	Texts_mapString map[string]*Text
+
+	OnAfterTextCreateCallback OnAfterCreateInterface[Text]
+	OnAfterTextUpdateCallback OnAfterUpdateInterface[Text]
+	OnAfterTextDeleteCallback OnAfterDeleteInterface[Text]
+	OnAfterTextReadCallback   OnAfterReadInterface[Text]
+
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
 
@@ -75,6 +139,29 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 
 type OnInitCommitInterface interface {
 	BeforeCommit(stage *StageStruct)
+}
+
+// OnAfterCreateInterface callback when an instance is updated from the front
+type OnAfterCreateInterface[Type Gongstruct] interface {
+	OnAfterCreate(stage *StageStruct,
+		instance *Type)
+}
+
+// OnAfterReadInterface callback when an instance is updated from the front
+type OnAfterReadInterface[Type Gongstruct] interface {
+	OnAfterRead(stage *StageStruct,
+		instance *Type)
+}
+
+// OnAfterUpdateInterface callback when an instance is updated from the front
+type OnAfterUpdateInterface[Type Gongstruct] interface {
+	OnAfterUpdate(stage *StageStruct, old, new *Type)
+}
+
+// OnAfterDeleteInterface callback when an instance is updated from the front
+type OnAfterDeleteInterface[Type Gongstruct] interface {
+	OnAfterDelete(stage *StageStruct,
+		staged, front *Type)
 }
 
 type BackRepoInterface interface {
@@ -3790,7 +3877,7 @@ func (colortype ColorType) ToString() (res string) {
 	return
 }
 
-func (colortype *ColorType) FromString(input string) {
+func (colortype *ColorType) FromString(input string) (err error) {
 
 	switch input {
 	// insertion code per enum code
@@ -4088,7 +4175,10 @@ func (colortype *ColorType) FromString(input string) {
 		*colortype = Yellow
 	case "yellowgreen":
 		*colortype = Yellowgreen
+	default:
+		return errUnkownEnum
 	}
+	return
 }
 
 func (colortype *ColorType) ToCodeString() (res string) {

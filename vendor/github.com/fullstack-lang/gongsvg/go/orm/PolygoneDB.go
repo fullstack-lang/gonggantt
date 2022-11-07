@@ -440,6 +440,7 @@ func (backRepo *BackRepoStruct) CommitPolygone(polygone *models.Polygone) {
 	if id, ok := (*backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID)[polygone]; ok {
 		backRepo.BackRepoPolygone.CommitPhaseTwoInstance(backRepo, id, polygone)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitPolygone allows checkout of a single polygone (if already staged and with a BackRepo id)

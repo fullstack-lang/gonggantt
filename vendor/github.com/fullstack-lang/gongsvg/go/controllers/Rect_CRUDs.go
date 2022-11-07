@@ -41,11 +41,12 @@ type RectInput struct {
 //
 // swagger:route GET /rects rects getRects
 //
-// Get all rects
+// # Get all rects
 //
 // Responses:
-//    default: genericError
-//        200: rectDBsResponse
+// default: genericError
+//
+//	200: rectDBResponse
 func GetRects(c *gin.Context) {
 	db := orm.BackRepo.BackRepoRect.GetDB()
 
@@ -85,14 +86,15 @@ func GetRects(c *gin.Context) {
 // swagger:route POST /rects rects postRect
 //
 // Creates a rect
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: rectDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostRect(c *gin.Context) {
 	db := orm.BackRepo.BackRepoRect.GetDB()
 
@@ -124,6 +126,14 @@ func PostRect(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoRect.CheckoutPhaseOneInstance(&rectDB)
+	rect := (*orm.BackRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+
+	if rect != nil {
+		models.AfterCreateFromFront(&models.Stage, rect)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostRect(c *gin.Context) {
 // Gets the details for a rect.
 //
 // Responses:
-//    default: genericError
-//        200: rectDBResponse
+// default: genericError
+//
+//	200: rectDBResponse
 func GetRect(c *gin.Context) {
 	db := orm.BackRepo.BackRepoRect.GetDB()
 
@@ -166,11 +177,12 @@ func GetRect(c *gin.Context) {
 //
 // swagger:route PATCH /rects/{ID} rects updateRect
 //
-// Update a rect
+// # Update a rect
 //
 // Responses:
-//    default: genericError
-//        200: rectDBResponse
+// default: genericError
+//
+//	200: rectDBResponse
 func UpdateRect(c *gin.Context) {
 	db := orm.BackRepo.BackRepoRect.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateRect(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	rectNew := new(models.Rect)
+	rectDB.CopyBasicFieldsToRect(rectNew)
+
+	// get stage instance from DB instance, and call callback function
+	rectOld := (*orm.BackRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+	if rectOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, rectOld, rectNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the rectDB
@@ -223,10 +247,11 @@ func UpdateRect(c *gin.Context) {
 //
 // swagger:route DELETE /rects/{ID} rects deleteRect
 //
-// Delete a rect
+// # Delete a rect
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: rectDBResponse
 func DeleteRect(c *gin.Context) {
 	db := orm.BackRepo.BackRepoRect.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteRect(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&rectDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	rectDeleted := new(models.Rect)
+	rectDB.CopyBasicFieldsToRect(rectDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	rectStaged := (*orm.BackRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+	if rectStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, rectStaged, rectDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

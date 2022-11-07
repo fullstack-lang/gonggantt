@@ -4,11 +4,11 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"go/token"
 	"io/fs"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/gin-contrib/cors"
@@ -16,30 +16,23 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/fullstack-lang/gonggantt"
-	gonggantt_controllers "github.com/fullstack-lang/gonggantt/go/controllers"
+	gonggantt_fullstack "github.com/fullstack-lang/gonggantt/go/fullstack"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
-	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
 
 	// gong stack for model analysis
-	gong_controllers "github.com/fullstack-lang/gong/go/controllers"
+	gong_fullstack "github.com/fullstack-lang/gong/go/fullstack"
 	gong_models "github.com/fullstack-lang/gong/go/models"
-	gong_orm "github.com/fullstack-lang/gong/go/orm"
-	_ "github.com/fullstack-lang/gong/ng"
 
 	// for diagrams
-	gongdoc_controllers "github.com/fullstack-lang/gongdoc/go/controllers"
+	gongdoc_fullstack "github.com/fullstack-lang/gongdoc/go/fullstack"
 	gongdoc_models "github.com/fullstack-lang/gongdoc/go/models"
-	gongdoc_orm "github.com/fullstack-lang/gongdoc/go/orm"
-	_ "github.com/fullstack-lang/gongdoc/ng"
 
 	// import this package in order to have the scheduler start a thread that will
 	// generate a new svg diagram each time the repo has been modified
 	_ "github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
-	gongsvg_controllers "github.com/fullstack-lang/gongsvg/go/controllers"
+	gongsvg_fullstack "github.com/fullstack-lang/gongsvg/go/fullstack"
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
-	gongsvg_orm "github.com/fullstack-lang/gongsvg/go/orm"
-	_ "github.com/fullstack-lang/gongsvg/ng"
 )
 
 var (
@@ -54,6 +47,8 @@ var (
 	marshallOnCommit  = flag.String("marshallOnCommit", "", "on all commits, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
 
 	diagrams = flag.Bool("diagrams", true, "parse diagrams (takes a few seconds)")
+
+	embeddedDiagrams = flag.Bool("embeddedDiagrams", false, "parse/analysis go/models and go/embeddedDiagrams")
 )
 
 // InjectionGateway is the singloton that stores all functions
@@ -84,26 +79,6 @@ func main() {
 	// parse program arguments
 	flag.Parse()
 
-	if *backupFlag {
-
-		// setup GORM
-		db := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
-		gonggantt_orm.AutoMigrate(db)
-		gonggantt_models.Stage.Checkout()
-		gonggantt_models.Stage.Backup("bckp")
-
-		return
-	}
-	if *restoreFlag {
-
-		// setup GORM
-		db := gonggantt_orm.SetupModels(*logDBFlag, "./test.db")
-		gonggantt_orm.AutoMigrate(db)
-		gonggantt_models.Stage.Restore("bckp")
-
-		return
-	}
-
 	// setup controlers
 	if !*logGINFlag {
 		myfile, _ := os.Create("/tmp/server.log")
@@ -112,9 +87,8 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
-	//
-	// gonggantt
-	gonggantt_orm.SetupModels(*logDBFlag, "file:memdb2?mode=memory&cache=shared")
+	gonggantt_fullstack.Init(r)
+	gongsvg_fullstack.Init(r)
 
 	// generate injection code from the stage
 	if *marshallOnStartup != "" {
@@ -157,82 +131,43 @@ func main() {
 		gonggantt_models.Stage.OnInitCommitFromFrontCallback = hook
 	}
 
-	//
-	// gongsvg database
-	//
-	db_inMemory := gongsvg_orm.SetupModels(*logDBFlag, "file:memdb1?mode=memory&cache=shared")
-	// mandatory, otherwise, bizarre errors occurs
-
-	// since gongsim is a multi threaded application. It is important to set up
-	// only one open connexion at a time
-	dbDB, err := db_inMemory.DB()
-	if err != nil {
-		panic("cannot access DB of db" + err.Error())
-	}
-	dbDB.SetMaxOpenConns(1)
-
-	// add gongdoc database
-	gongdoc_orm.AutoMigrate(db_inMemory)
-
-	// add gong database
-	gong_orm.AutoMigrate(db_inMemory)
-
-	gonggantt_controllers.RegisterControllers(r)
-	gongsvg_controllers.RegisterControllers(r)
-	gongdoc_controllers.RegisterControllers(r)
-	gong_controllers.RegisterControllers(r)
-
 	// put all to database
 	gonggantt_models.Stage.Commit()
 	gongsvg_models.Stage.Commit()
-	gongdoc_models.Stage.Commit()
-	gong_models.Stage.Commit()
 
-	// from the commited stage, get the number of instances per struct
-	// before unmarshalling diagrams
 	if *diagrams {
 
 		// Analyse package
-		modelPkg := &gong_models.ModelPkg{}
-
-		// since the source is embedded, one needs to
-		// compute the Abstract syntax tree in a special manner
-		pkgs := gong_models.ParseEmbedModel(gonggantt.GoDir, "go/models")
-
-		gong_models.WalkParser(pkgs, modelPkg)
-		modelPkg.SerializeToStage()
-		gong_models.Stage.Commit()
+		gong_fullstack.Init(r)
+		gongdoc_fullstack.Init(r)
+		modelPackage, _ := gong_models.LoadEmbedded(gonggantt.GoDir)
 
 		// create the diagrams
 		// prepare the model views
-		pkgelt := new(gongdoc_models.Pkgelt)
+		diagramPackage := new(gongdoc_models.DiagramPackage)
 
 		// first, get all gong struct in the model
 		for gongStruct := range gong_models.Stage.GongStructs {
 
 			// let create the gong struct in the gongdoc models
 			// and put the numbre of instances
-			gongStruct_ := (&gongdoc_models.GongStruct{Name: gongStruct.Name}).Stage()
+			reference := (&gongdoc_models.Reference{Name: gongStruct.Name}).Stage()
+			reference.Type = gongdoc_models.REFERENCE_GONG_STRUCT
 			nbInstances, ok := gonggantt_models.Stage.Map_GongStructName_InstancesNb[gongStruct.Name]
 			if ok {
-				gongStruct_.NbInstances = nbInstances
+				reference.NbInstances = nbInstances
 			}
 		}
 
-		// classdiagram can only be fully in memory when they are Unmarshalled
-		// for instance, the Name of diagrams or the Name of the Link
-		fset := new(token.FileSet)
-		pkgsParser := gong_models.ParseEmbedModel(gonggantt.GoDir, "go/diagrams")
-		if len(pkgsParser) != 1 {
-			log.Panic("Unable to parser, wrong number of parsers ", len(pkgsParser))
+		if *embeddedDiagrams {
+			gongdoc_models.LoadEmbedded(gonggantt.GoDir, modelPackage)
+		} else {
+			gongdoc_models.Load(filepath.Join("../../diagrams"), modelPackage, true)
 		}
-		if pkgParser, ok := pkgsParser["diagrams"]; ok {
-			pkgelt.Unmarshall(modelPkg, pkgParser, fset, "go/diagrams")
-		}
-		pkgelt.SerializeToStage()
-		gong_models.Stage.Commit()
-		gongdoc_models.Stage.Commit()
+
+		diagramPackage.GongModelPath = "github.com/fullstack-lang/gonggantt/go/models"
 	}
+
 	// provide the static route for the angular pages
 	r.Use(static.Serve("/", EmbedFolder(gonggantt.NgDistNg, "ng/dist/ng")))
 	r.NoRoute(func(c *gin.Context) {

@@ -41,11 +41,12 @@ type EllipseInput struct {
 //
 // swagger:route GET /ellipses ellipses getEllipses
 //
-// Get all ellipses
+// # Get all ellipses
 //
 // Responses:
-//    default: genericError
-//        200: ellipseDBsResponse
+// default: genericError
+//
+//	200: ellipseDBResponse
 func GetEllipses(c *gin.Context) {
 	db := orm.BackRepo.BackRepoEllipse.GetDB()
 
@@ -85,14 +86,15 @@ func GetEllipses(c *gin.Context) {
 // swagger:route POST /ellipses ellipses postEllipse
 //
 // Creates a ellipse
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: ellipseDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostEllipse(c *gin.Context) {
 	db := orm.BackRepo.BackRepoEllipse.GetDB()
 
@@ -124,6 +126,14 @@ func PostEllipse(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoEllipse.CheckoutPhaseOneInstance(&ellipseDB)
+	ellipse := (*orm.BackRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+
+	if ellipse != nil {
+		models.AfterCreateFromFront(&models.Stage, ellipse)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostEllipse(c *gin.Context) {
 // Gets the details for a ellipse.
 //
 // Responses:
-//    default: genericError
-//        200: ellipseDBResponse
+// default: genericError
+//
+//	200: ellipseDBResponse
 func GetEllipse(c *gin.Context) {
 	db := orm.BackRepo.BackRepoEllipse.GetDB()
 
@@ -166,11 +177,12 @@ func GetEllipse(c *gin.Context) {
 //
 // swagger:route PATCH /ellipses/{ID} ellipses updateEllipse
 //
-// Update a ellipse
+// # Update a ellipse
 //
 // Responses:
-//    default: genericError
-//        200: ellipseDBResponse
+// default: genericError
+//
+//	200: ellipseDBResponse
 func UpdateEllipse(c *gin.Context) {
 	db := orm.BackRepo.BackRepoEllipse.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateEllipse(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	ellipseNew := new(models.Ellipse)
+	ellipseDB.CopyBasicFieldsToEllipse(ellipseNew)
+
+	// get stage instance from DB instance, and call callback function
+	ellipseOld := (*orm.BackRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+	if ellipseOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, ellipseOld, ellipseNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the ellipseDB
@@ -223,10 +247,11 @@ func UpdateEllipse(c *gin.Context) {
 //
 // swagger:route DELETE /ellipses/{ID} ellipses deleteEllipse
 //
-// Delete a ellipse
+// # Delete a ellipse
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: ellipseDBResponse
 func DeleteEllipse(c *gin.Context) {
 	db := orm.BackRepo.BackRepoEllipse.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteEllipse(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&ellipseDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	ellipseDeleted := new(models.Ellipse)
+	ellipseDB.CopyBasicFieldsToEllipse(ellipseDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	ellipseStaged := (*orm.BackRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+	if ellipseStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, ellipseStaged, ellipseDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)

@@ -458,6 +458,7 @@ func (backRepo *BackRepoStruct) CommitLine(line *models.Line) {
 	if id, ok := (*backRepo.BackRepoLine.Map_LinePtr_LineDBID)[line]; ok {
 		backRepo.BackRepoLine.CommitPhaseTwoInstance(backRepo, id, line)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitLine allows checkout of a single line (if already staged and with a BackRepo id)

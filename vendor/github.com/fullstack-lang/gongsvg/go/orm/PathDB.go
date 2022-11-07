@@ -440,6 +440,7 @@ func (backRepo *BackRepoStruct) CommitPath(path *models.Path) {
 	if id, ok := (*backRepo.BackRepoPath.Map_PathPtr_PathDBID)[path]; ok {
 		backRepo.BackRepoPath.CommitPhaseTwoInstance(backRepo, id, path)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitPath allows checkout of a single path (if already staged and with a BackRepo id)

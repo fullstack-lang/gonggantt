@@ -458,6 +458,7 @@ func (backRepo *BackRepoStruct) CommitEllipse(ellipse *models.Ellipse) {
 	if id, ok := (*backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID)[ellipse]; ok {
 		backRepo.BackRepoEllipse.CommitPhaseTwoInstance(backRepo, id, ellipse)
 	}
+	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 }
 
 // CommitEllipse allows checkout of a single ellipse (if already staged and with a BackRepo id)

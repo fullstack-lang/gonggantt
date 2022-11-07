@@ -28,11 +28,11 @@ export class SvgComponent implements OnInit {
   /**
  * the component is refreshed when modification are performed in the back repo 
  * 
- * the checkCommitNbTimer polls the commit number of the back repo
+ * the checkCommiNbFromBagetCommitNbFromBackTimer polls the commit number of the back repo
  * if the commit number has increased, it pulls the front repo and redraw the diagram
  */
-  checkCommitNbTimer: Observable<number> = timer(500, 500);
-  lastCommitNb = -1
+  checkCommiNbFromBagetCommitNbFromBackTimer: Observable<number> = timer(500, 500);
+  lastCommiNbFromBagetCommitNbFromBack = -1
   lastPushFromFrontNb = -1
   currTime: number = 0
 
@@ -40,24 +40,24 @@ export class SvgComponent implements OnInit {
 
   constructor(
     private gongsvgFrontRepoService: gongsvg.FrontRepoService,
-    private gongsvgCommitNbService: gongsvg.CommitNbService,
+    private gongsvgNbFromBackService: gongsvg.CommitNbFromBackService,
     private gongsvgPushFromFrontNbService: gongsvg.PushFromFrontNbService,
   ) { }
 
   ngOnInit(): void {
 
-    this.checkCommitNbTimer.subscribe(
+    this.checkCommiNbFromBagetCommitNbFromBackTimer.subscribe(
       currTime => {
         this.currTime = currTime
 
         // see above for the explanation
-        this.gongsvgCommitNbService.getCommitNb().subscribe(
-          commitNb => {
-            if (this.lastCommitNb < commitNb) {
+        this.gongsvgNbFromBackService.getCommitNbFromBack().subscribe(
+          commiNbFromBagetCommitNbFromBack => {
+            if (this.lastCommiNbFromBagetCommitNbFromBack < commiNbFromBagetCommitNbFromBack) {
 
-              console.log("last commit nb " + this.lastCommitNb + " new: " + commitNb)
+              console.log("last commit nb " + this.lastCommiNbFromBagetCommitNbFromBack + " new: " + commiNbFromBagetCommitNbFromBack)
               this.refresh()
-              this.lastCommitNb = commitNb
+              this.lastCommiNbFromBagetCommitNbFromBack = commiNbFromBagetCommitNbFromBack
             }
           }
         )

@@ -41,11 +41,12 @@ type TextInput struct {
 //
 // swagger:route GET /texts texts getTexts
 //
-// Get all texts
+// # Get all texts
 //
 // Responses:
-//    default: genericError
-//        200: textDBsResponse
+// default: genericError
+//
+//	200: textDBResponse
 func GetTexts(c *gin.Context) {
 	db := orm.BackRepo.BackRepoText.GetDB()
 
@@ -85,14 +86,15 @@ func GetTexts(c *gin.Context) {
 // swagger:route POST /texts texts postText
 //
 // Creates a text
-//     Consumes:
-//     - application/json
 //
-//     Produces:
-//     - application/json
+//	Consumes:
+//	- application/json
 //
-//     Responses:
-//       200: textDBResponse
+//	Produces:
+//	- application/json
+//
+//	Responses:
+//	  200: nodeDBResponse
 func PostText(c *gin.Context) {
 	db := orm.BackRepo.BackRepoText.GetDB()
 
@@ -124,6 +126,14 @@ func PostText(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	orm.BackRepo.BackRepoText.CheckoutPhaseOneInstance(&textDB)
+	text := (*orm.BackRepo.BackRepoText.Map_TextDBID_TextPtr)[textDB.ID]
+
+	if text != nil {
+		models.AfterCreateFromFront(&models.Stage, text)
+	}
+
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	orm.BackRepo.IncrementPushFromFrontNb()
@@ -138,8 +148,9 @@ func PostText(c *gin.Context) {
 // Gets the details for a text.
 //
 // Responses:
-//    default: genericError
-//        200: textDBResponse
+// default: genericError
+//
+//	200: textDBResponse
 func GetText(c *gin.Context) {
 	db := orm.BackRepo.BackRepoText.GetDB()
 
@@ -166,11 +177,12 @@ func GetText(c *gin.Context) {
 //
 // swagger:route PATCH /texts/{ID} texts updateText
 //
-// Update a text
+// # Update a text
 //
 // Responses:
-//    default: genericError
-//        200: textDBResponse
+// default: genericError
+//
+//	200: textDBResponse
 func UpdateText(c *gin.Context) {
 	db := orm.BackRepo.BackRepoText.GetDB()
 
@@ -211,8 +223,20 @@ func UpdateText(c *gin.Context) {
 		return
 	}
 
+	// get an instance (not staged) from DB instance, and call callback function
+	textNew := new(models.Text)
+	textDB.CopyBasicFieldsToText(textNew)
+
+	// get stage instance from DB instance, and call callback function
+	textOld := (*orm.BackRepo.BackRepoText.Map_TextDBID_TextPtr)[textDB.ID]
+	if textOld != nil {
+		models.AfterUpdateFromFront(&models.Stage, textOld, textNew)
+	}
+
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
+	// in some cases, with the marshalling of the stage, this operation might
+	// generates a checkout
 	orm.BackRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the textDB
@@ -223,10 +247,11 @@ func UpdateText(c *gin.Context) {
 //
 // swagger:route DELETE /texts/{ID} texts deleteText
 //
-// Delete a text
+// # Delete a text
 //
-// Responses:
-//    default: genericError
+// default: genericError
+//
+//	200: textDBResponse
 func DeleteText(c *gin.Context) {
 	db := orm.BackRepo.BackRepoText.GetDB()
 
@@ -243,6 +268,16 @@ func DeleteText(c *gin.Context) {
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
 	db.Unscoped().Delete(&textDB)
+
+	// get an instance (not staged) from DB instance, and call callback function
+	textDeleted := new(models.Text)
+	textDB.CopyBasicFieldsToText(textDeleted)
+
+	// get stage instance from DB instance, and call callback function
+	textStaged := (*orm.BackRepo.BackRepoText.Map_TextDBID_TextPtr)[textDB.ID]
+	if textStaged != nil {
+		models.AfterDeleteFromFront(&models.Stage, textStaged, textDeleted)
+	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
