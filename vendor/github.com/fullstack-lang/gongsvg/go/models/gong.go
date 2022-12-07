@@ -40,7 +40,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterAnimateDeleteCallback OnAfterDeleteInterface[Animate]
 	OnAfterAnimateReadCallback   OnAfterReadInterface[Animate]
 
-
 	Circles           map[*Circle]any
 	Circles_mapString map[string]*Circle
 
@@ -48,7 +47,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterCircleUpdateCallback OnAfterUpdateInterface[Circle]
 	OnAfterCircleDeleteCallback OnAfterDeleteInterface[Circle]
 	OnAfterCircleReadCallback   OnAfterReadInterface[Circle]
-
 
 	Ellipses           map[*Ellipse]any
 	Ellipses_mapString map[string]*Ellipse
@@ -58,7 +56,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterEllipseDeleteCallback OnAfterDeleteInterface[Ellipse]
 	OnAfterEllipseReadCallback   OnAfterReadInterface[Ellipse]
 
-
 	Lines           map[*Line]any
 	Lines_mapString map[string]*Line
 
@@ -66,7 +63,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterLineUpdateCallback OnAfterUpdateInterface[Line]
 	OnAfterLineDeleteCallback OnAfterDeleteInterface[Line]
 	OnAfterLineReadCallback   OnAfterReadInterface[Line]
-
 
 	Paths           map[*Path]any
 	Paths_mapString map[string]*Path
@@ -76,7 +72,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterPathDeleteCallback OnAfterDeleteInterface[Path]
 	OnAfterPathReadCallback   OnAfterReadInterface[Path]
 
-
 	Polygones           map[*Polygone]any
 	Polygones_mapString map[string]*Polygone
 
@@ -84,7 +79,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterPolygoneUpdateCallback OnAfterUpdateInterface[Polygone]
 	OnAfterPolygoneDeleteCallback OnAfterDeleteInterface[Polygone]
 	OnAfterPolygoneReadCallback   OnAfterReadInterface[Polygone]
-
 
 	Polylines           map[*Polyline]any
 	Polylines_mapString map[string]*Polyline
@@ -94,7 +88,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterPolylineDeleteCallback OnAfterDeleteInterface[Polyline]
 	OnAfterPolylineReadCallback   OnAfterReadInterface[Polyline]
 
-
 	Rects           map[*Rect]any
 	Rects_mapString map[string]*Rect
 
@@ -102,7 +95,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterRectUpdateCallback OnAfterUpdateInterface[Rect]
 	OnAfterRectDeleteCallback OnAfterDeleteInterface[Rect]
 	OnAfterRectReadCallback   OnAfterReadInterface[Rect]
-
 
 	SVGs           map[*SVG]any
 	SVGs_mapString map[string]*SVG
@@ -112,7 +104,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterSVGDeleteCallback OnAfterDeleteInterface[SVG]
 	OnAfterSVGReadCallback   OnAfterReadInterface[SVG]
 
-
 	Texts           map[*Text]any
 	Texts_mapString map[string]*Text
 
@@ -120,7 +111,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterTextUpdateCallback OnAfterUpdateInterface[Text]
 	OnAfterTextDeleteCallback OnAfterDeleteInterface[Text]
 	OnAfterTextReadCallback   OnAfterReadInterface[Text]
-
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
 
@@ -1350,6 +1340,10 @@ import (
 	"{{ModelsPackageName}}"
 )
 
+// generated in order to avoid error in the package import
+// if there are no elements in the stage to marshall
+var ___dummy__Stage models.StageStruct
+
 func init() {
 	var __Dummy_time_variable time.Time
 	_ = __Dummy_time_variable
@@ -1369,7 +1363,7 @@ func {{databaseName}}Injection() {
 `
 
 const IdentifiersDecls = `
-	{{Identifier}} := (&models.{{GeneratedStructName}}{Name: "{{GeneratedFieldNameValue}}"}).Stage()`
+	{{Identifier}} := (&models.{{GeneratedStructName}}{Name: ` + "`" + `{{GeneratedFieldNameValue}}` + "`" + `}).Stage()`
 
 const StringInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = ` + "`" + `{{GeneratedFieldNameValue}}` + "`"
@@ -1438,7 +1432,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", animate.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Animate %s values setup", animate.Name)
+		initializerStatements += "\n\n	// Animate values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1494,7 +1488,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", circle.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Circle %s values setup", circle.Name)
+		initializerStatements += "\n\n	// Circle values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1580,7 +1574,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", ellipse.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Ellipse %s values setup", ellipse.Name)
+		initializerStatements += "\n\n	// Ellipse values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1672,7 +1666,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", line.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Line %s values setup", line.Name)
+		initializerStatements += "\n\n	// Line values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1764,7 +1758,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", path.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Path %s values setup", path.Name)
+		initializerStatements += "\n\n	// Path values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1838,7 +1832,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", polygone.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Polygone %s values setup", polygone.Name)
+		initializerStatements += "\n\n	// Polygone values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1912,7 +1906,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", polyline.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Polyline %s values setup", polyline.Name)
+		initializerStatements += "\n\n	// Polyline values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1986,7 +1980,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", rect.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Rect %s values setup", rect.Name)
+		initializerStatements += "\n\n	// Rect values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -2084,7 +2078,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", svg.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// SVG %s values setup", svg.Name)
+		initializerStatements += "\n\n	// SVG values setup"
 		// Initialisation of values
 		setValueField = NumberInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -2122,7 +2116,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", text.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Text %s values setup", text.Name)
+		initializerStatements += "\n\n	// Text values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -4174,6 +4168,310 @@ func (colortype *ColorType) FromString(input string) (err error) {
 	case "yellow ":
 		*colortype = Yellow
 	case "yellowgreen":
+		*colortype = Yellowgreen
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (colortype *ColorType) FromCodeString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "Aliceblue":
+		*colortype = Aliceblue
+	case "Antiquewhite":
+		*colortype = Antiquewhite
+	case "Aqua":
+		*colortype = Aqua
+	case "Aquamarine":
+		*colortype = Aquamarine
+	case "Azure":
+		*colortype = Azure
+	case "Beige":
+		*colortype = Beige
+	case "Bisque":
+		*colortype = Bisque
+	case "Black":
+		*colortype = Black
+	case "Blanchedalmond":
+		*colortype = Blanchedalmond
+	case "Blue":
+		*colortype = Blue
+	case "Blueviolet":
+		*colortype = Blueviolet
+	case "Brown":
+		*colortype = Brown
+	case "Burlywood":
+		*colortype = Burlywood
+	case "Cadetblue":
+		*colortype = Cadetblue
+	case "Chartreuse":
+		*colortype = Chartreuse
+	case "Chocolate":
+		*colortype = Chocolate
+	case "Coral":
+		*colortype = Coral
+	case "Cornflowerblue":
+		*colortype = Cornflowerblue
+	case "Cornsilk":
+		*colortype = Cornsilk
+	case "Crimson":
+		*colortype = Crimson
+	case "Cyan":
+		*colortype = Cyan
+	case "Darkblue":
+		*colortype = Darkblue
+	case "Darkcyan":
+		*colortype = Darkcyan
+	case "Darkgoldenrod":
+		*colortype = Darkgoldenrod
+	case "Darkgray":
+		*colortype = Darkgray
+	case "Darkgreen":
+		*colortype = Darkgreen
+	case "Darkgrey":
+		*colortype = Darkgrey
+	case "Darkkhaki":
+		*colortype = Darkkhaki
+	case "Darkmagenta":
+		*colortype = Darkmagenta
+	case "Darkolivegreen":
+		*colortype = Darkolivegreen
+	case "Darkorange":
+		*colortype = Darkorange
+	case "Darkorchid":
+		*colortype = Darkorchid
+	case "Darkred":
+		*colortype = Darkred
+	case "Darksalmon":
+		*colortype = Darksalmon
+	case "Darkseagreen":
+		*colortype = Darkseagreen
+	case "Darkslateblue":
+		*colortype = Darkslateblue
+	case "Darkslategray":
+		*colortype = Darkslategray
+	case "Darkslategrey":
+		*colortype = Darkslategrey
+	case "Darkturquoise":
+		*colortype = Darkturquoise
+	case "Darkviolet":
+		*colortype = Darkviolet
+	case "Deeppink":
+		*colortype = Deeppink
+	case "Deepskyblue":
+		*colortype = Deepskyblue
+	case "Dimgray":
+		*colortype = Dimgray
+	case "Dimgrey":
+		*colortype = Dimgrey
+	case "Dodgerblue":
+		*colortype = Dodgerblue
+	case "Firebrick":
+		*colortype = Firebrick
+	case "Floralwhite":
+		*colortype = Floralwhite
+	case "Forestgreen":
+		*colortype = Forestgreen
+	case "Fuchsia":
+		*colortype = Fuchsia
+	case "Gainsboro":
+		*colortype = Gainsboro
+	case "Ghostwhite":
+		*colortype = Ghostwhite
+	case "Gold":
+		*colortype = Gold
+	case "Goldenrod":
+		*colortype = Goldenrod
+	case "Gray":
+		*colortype = Gray
+	case "Green":
+		*colortype = Green
+	case "Greenyellow":
+		*colortype = Greenyellow
+	case "Grey":
+		*colortype = Grey
+	case "Honeydew":
+		*colortype = Honeydew
+	case "Hotpink":
+		*colortype = Hotpink
+	case "Indianred":
+		*colortype = Indianred
+	case "Indigo":
+		*colortype = Indigo
+	case "Ivory":
+		*colortype = Ivory
+	case "Khaki":
+		*colortype = Khaki
+	case "Lavender":
+		*colortype = Lavender
+	case "Lavenderblush":
+		*colortype = Lavenderblush
+	case "Lawngreen":
+		*colortype = Lawngreen
+	case "Lemonchiffon":
+		*colortype = Lemonchiffon
+	case "Lightblue":
+		*colortype = Lightblue
+	case "Lightcoral":
+		*colortype = Lightcoral
+	case "Lightcyan":
+		*colortype = Lightcyan
+	case "Lightgoldenrodyellow":
+		*colortype = Lightgoldenrodyellow
+	case "Lightgray":
+		*colortype = Lightgray
+	case "Lightgreen":
+		*colortype = Lightgreen
+	case "Lightgrey":
+		*colortype = Lightgrey
+	case "Lightpink":
+		*colortype = Lightpink
+	case "Lightsalmon":
+		*colortype = Lightsalmon
+	case "Lightseagreen":
+		*colortype = Lightseagreen
+	case "Lightskyblue":
+		*colortype = Lightskyblue
+	case "Lightslategray":
+		*colortype = Lightslategray
+	case "Lightslategrey":
+		*colortype = Lightslategrey
+	case "Lightsteelblue":
+		*colortype = Lightsteelblue
+	case "Lightyellow":
+		*colortype = Lightyellow
+	case "Lime":
+		*colortype = Lime
+	case "Limegreen":
+		*colortype = Limegreen
+	case "Linen":
+		*colortype = Linen
+	case "Magenta":
+		*colortype = Magenta
+	case "Maroon":
+		*colortype = Maroon
+	case "Mediumaquamarine":
+		*colortype = Mediumaquamarine
+	case "Mediumblue":
+		*colortype = Mediumblue
+	case "Mediumorchid":
+		*colortype = Mediumorchid
+	case "Mediumpurple":
+		*colortype = Mediumpurple
+	case "Mediumseagreen":
+		*colortype = Mediumseagreen
+	case "Mediumslateblue":
+		*colortype = Mediumslateblue
+	case "Mediumspringgreen":
+		*colortype = Mediumspringgreen
+	case "Mediumturquoise":
+		*colortype = Mediumturquoise
+	case "Mediumvioletred":
+		*colortype = Mediumvioletred
+	case "Midnightblue":
+		*colortype = Midnightblue
+	case "Mintcream":
+		*colortype = Mintcream
+	case "Mistyrose":
+		*colortype = Mistyrose
+	case "Moccasin":
+		*colortype = Moccasin
+	case "Navajowhite":
+		*colortype = Navajowhite
+	case "Navy":
+		*colortype = Navy
+	case "Oldlace":
+		*colortype = Oldlace
+	case "Olive":
+		*colortype = Olive
+	case "Olivedrab":
+		*colortype = Olivedrab
+	case "Orange":
+		*colortype = Orange
+	case "Orangered":
+		*colortype = Orangered
+	case "Orchid":
+		*colortype = Orchid
+	case "Palegoldenrod":
+		*colortype = Palegoldenrod
+	case "Palegreen":
+		*colortype = Palegreen
+	case "Paleturquoise":
+		*colortype = Paleturquoise
+	case "Palevioletred":
+		*colortype = Palevioletred
+	case "Papayawhip":
+		*colortype = Papayawhip
+	case "Peachpuff":
+		*colortype = Peachpuff
+	case "Peru":
+		*colortype = Peru
+	case "Pink":
+		*colortype = Pink
+	case "Plum":
+		*colortype = Plum
+	case "Powderblue":
+		*colortype = Powderblue
+	case "Purple":
+		*colortype = Purple
+	case "Red":
+		*colortype = Red
+	case "Rosybrown":
+		*colortype = Rosybrown
+	case "Royalblue":
+		*colortype = Royalblue
+	case "Saddlebrown":
+		*colortype = Saddlebrown
+	case "Salmon":
+		*colortype = Salmon
+	case "Sandybrown":
+		*colortype = Sandybrown
+	case "Seagreen":
+		*colortype = Seagreen
+	case "Seashell":
+		*colortype = Seashell
+	case "Sienna":
+		*colortype = Sienna
+	case "Silver":
+		*colortype = Silver
+	case "Skyblue":
+		*colortype = Skyblue
+	case "Slateblue":
+		*colortype = Slateblue
+	case "Slategray":
+		*colortype = Slategray
+	case "Slategrey":
+		*colortype = Slategrey
+	case "Snow":
+		*colortype = Snow
+	case "Springgreen":
+		*colortype = Springgreen
+	case "Steelblue":
+		*colortype = Steelblue
+	case "Tan":
+		*colortype = Tan
+	case "Teal":
+		*colortype = Teal
+	case "Thistle":
+		*colortype = Thistle
+	case "Tomato":
+		*colortype = Tomato
+	case "Turquoise":
+		*colortype = Turquoise
+	case "Violet":
+		*colortype = Violet
+	case "Wheat":
+		*colortype = Wheat
+	case "White":
+		*colortype = White
+	case "Whitesmoke":
+		*colortype = Whitesmoke
+	case "Yellow":
+		*colortype = Yellow
+	case "Yellowgreen":
 		*colortype = Yellowgreen
 	default:
 		return errUnkownEnum

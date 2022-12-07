@@ -40,7 +40,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterArrowDeleteCallback OnAfterDeleteInterface[Arrow]
 	OnAfterArrowReadCallback   OnAfterReadInterface[Arrow]
 
-
 	Bars           map[*Bar]any
 	Bars_mapString map[string]*Bar
 
@@ -48,7 +47,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterBarUpdateCallback OnAfterUpdateInterface[Bar]
 	OnAfterBarDeleteCallback OnAfterDeleteInterface[Bar]
 	OnAfterBarReadCallback   OnAfterReadInterface[Bar]
-
 
 	Gantts           map[*Gantt]any
 	Gantts_mapString map[string]*Gantt
@@ -58,7 +56,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterGanttDeleteCallback OnAfterDeleteInterface[Gantt]
 	OnAfterGanttReadCallback   OnAfterReadInterface[Gantt]
 
-
 	Groups           map[*Group]any
 	Groups_mapString map[string]*Group
 
@@ -66,7 +63,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterGroupUpdateCallback OnAfterUpdateInterface[Group]
 	OnAfterGroupDeleteCallback OnAfterDeleteInterface[Group]
 	OnAfterGroupReadCallback   OnAfterReadInterface[Group]
-
 
 	Lanes           map[*Lane]any
 	Lanes_mapString map[string]*Lane
@@ -76,7 +72,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterLaneDeleteCallback OnAfterDeleteInterface[Lane]
 	OnAfterLaneReadCallback   OnAfterReadInterface[Lane]
 
-
 	LaneUses           map[*LaneUse]any
 	LaneUses_mapString map[string]*LaneUse
 
@@ -85,7 +80,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterLaneUseDeleteCallback OnAfterDeleteInterface[LaneUse]
 	OnAfterLaneUseReadCallback   OnAfterReadInterface[LaneUse]
 
-
 	Milestones           map[*Milestone]any
 	Milestones_mapString map[string]*Milestone
 
@@ -93,7 +87,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterMilestoneUpdateCallback OnAfterUpdateInterface[Milestone]
 	OnAfterMilestoneDeleteCallback OnAfterDeleteInterface[Milestone]
 	OnAfterMilestoneReadCallback   OnAfterReadInterface[Milestone]
-
 
 	AllModelsStructCreateCallback AllModelsStructCreateInterface
 
@@ -993,6 +986,10 @@ import (
 	"{{ModelsPackageName}}"
 )
 
+// generated in order to avoid error in the package import
+// if there are no elements in the stage to marshall
+var ___dummy__Stage models.StageStruct
+
 func init() {
 	var __Dummy_time_variable time.Time
 	_ = __Dummy_time_variable
@@ -1012,7 +1009,7 @@ func {{databaseName}}Injection() {
 `
 
 const IdentifiersDecls = `
-	{{Identifier}} := (&models.{{GeneratedStructName}}{Name: "{{GeneratedFieldNameValue}}"}).Stage()`
+	{{Identifier}} := (&models.{{GeneratedStructName}}{Name: ` + "`" + `{{GeneratedFieldNameValue}}` + "`" + `}).Stage()`
 
 const StringInitStatement = `
 	{{Identifier}}.{{GeneratedFieldName}} = ` + "`" + `{{GeneratedFieldNameValue}}` + "`"
@@ -1081,7 +1078,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", arrow.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Arrow %s values setup", arrow.Name)
+		initializerStatements += "\n\n	// Arrow values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1125,7 +1122,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", bar.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Bar %s values setup", bar.Name)
+		initializerStatements += "\n\n	// Bar values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1199,7 +1196,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", gantt.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Gantt %s values setup", gantt.Name)
+		initializerStatements += "\n\n	// Gantt values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1369,7 +1366,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", group.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Group %s values setup", group.Name)
+		initializerStatements += "\n\n	// Group values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1401,7 +1398,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", lane.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Lane %s values setup", lane.Name)
+		initializerStatements += "\n\n	// Lane values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1439,7 +1436,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", laneuse.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// LaneUse %s values setup", laneuse.Name)
+		initializerStatements += "\n\n	// LaneUse values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -1471,7 +1468,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", milestone.Name)
 		identifiersDecl += decl
 
-		initializerStatements += fmt.Sprintf("\n\n	// Milestone %s values setup", milestone.Name)
+		initializerStatements += "\n\n	// Milestone values setup"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
