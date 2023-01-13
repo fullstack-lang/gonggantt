@@ -136,7 +136,7 @@
 			"command": "go get -d github.com/fullstack-lang/gongdoc@HEAD"
 		},
 		{
-			"label": "00 - update dependency",
+			"label": "00 - update dependencies",
 			"type": "shell",
 			"command": "go",
 			"args": [

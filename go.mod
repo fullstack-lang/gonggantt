@@ -3,9 +3,9 @@ module github.com/fullstack-lang/gonggantt
 go 1.18
 
 require (
-	github.com/fullstack-lang/gong v0.0.0-20221207151930-baec145282df
-	github.com/fullstack-lang/gongdoc v0.0.0-20221207154556-058d5942ebd5
-	github.com/fullstack-lang/gongsvg v0.0.0-20221207175415-66eb81011ff4
+	github.com/fullstack-lang/gong v0.0.0-20230113142403-16f40ea2992b
+	github.com/fullstack-lang/gongdoc v0.0.0-20230107103437-920758a1c4a7
+	github.com/fullstack-lang/gongsvg v0.0.0-20230113144957-6773b1684f2f
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.8.1
@@ -44,7 +44,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect

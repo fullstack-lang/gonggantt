@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -15,11 +16,11 @@ var dummy_strconv_import strconv.NumError
 
 // ParseAstFile Parse pathToFile and stages all instances
 // declared in the file
-func ParseAstFile(pathToFile string) {
+func ParseAstFile(pathToFile string) error {
 
 	fileOfInterest, err := filepath.Abs(pathToFile)
 	if err != nil {
-		log.Panic("Path does not exist %s ;" + fileOfInterest)
+		return errors.New("Path does not exist %s ;" + fileOfInterest)
 	}
 
 	fset := token.NewFileSet()
@@ -28,7 +29,7 @@ func ParseAstFile(pathToFile string) {
 	log.Printf("Parser took %s", time.Since(startParser))
 
 	if errParser != nil {
-		log.Panic("Unable to parser ", errParser.Error())
+		return errors.New("Unable to parser " + errParser.Error())
 	}
 
 	// astCoordinate := "File "
@@ -105,6 +106,7 @@ func ParseAstFile(pathToFile string) {
 		}
 
 	}
+	return nil
 }
 
 var __gong__map_Indentifiers_gongstructName = make(map[string]string)
@@ -116,6 +118,7 @@ var __gong__map_DiagramPackage = make(map[string]*DiagramPackage)
 var __gong__map_Field = make(map[string]*Field)
 var __gong__map_Link = make(map[string]*Link)
 var __gong__map_Node = make(map[string]*Node)
+var __gong__map_NoteLink = make(map[string]*NoteLink)
 var __gong__map_NoteShape = make(map[string]*NoteShape)
 var __gong__map_Position = make(map[string]*Position)
 var __gong__map_Reference = make(map[string]*Reference)
@@ -251,6 +254,10 @@ func UnmarshallGongstructStaging(assignStmt *ast.AssignStmt, astCoordinate_ stri
 										instanceNode := (&Node{Name: instanceName}).Stage()
 										instance = any(instanceNode)
 										__gong__map_Node[identifier] = instanceNode
+									case "NoteLink":
+										instanceNoteLink := (&NoteLink{Name: instanceName}).Stage()
+										instance = any(instanceNoteLink)
+										__gong__map_NoteLink[identifier] = instanceNoteLink
 									case "NoteShape":
 										instanceNoteShape := (&NoteShape{Name: instanceName}).Stage()
 										instance = any(instanceNoteShape)
@@ -336,6 +343,10 @@ func UnmarshallGongstructStaging(assignStmt *ast.AssignStmt, astCoordinate_ stri
 							// insertion point for date assign code
 							}
 						case "Node":
+							switch fieldName {
+							// insertion point for date assign code
+							}
+						case "NoteLink":
 							switch fieldName {
 							// insertion point for date assign code
 							}
@@ -458,9 +469,19 @@ func UnmarshallGongstructStaging(assignStmt *ast.AssignStmt, astCoordinate_ stri
 							__gong__map_Node[identifier].Children =
 								append(__gong__map_Node[identifier].Children, target)
 						}
+					case "NoteLink":
+						switch fieldName {
+						// insertion point for slice of pointers assign code
+						}
 					case "NoteShape":
 						switch fieldName {
 						// insertion point for slice of pointers assign code
+						case "NoteLinks":
+							// remove first and last char
+							targetIdentifier := ident.Name
+							target := __gong__map_NoteLink[targetIdentifier]
+							__gong__map_NoteShape[identifier].NoteLinks =
+								append(__gong__map_NoteShape[identifier].NoteLinks, target)
 						}
 					case "Position":
 						switch fieldName {
@@ -641,6 +662,14 @@ func UnmarshallGongstructStaging(assignStmt *ast.AssignStmt, astCoordinate_ stri
 					// remove first and last char
 					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
 					__gong__map_Node[identifier].Name = fielValue
+				}
+			case "NoteLink":
+				switch fieldName {
+				// insertion point for field dependant code
+				case "Name":
+					// remove first and last char
+					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
+					__gong__map_NoteLink[identifier].Name = fielValue
 				}
 			case "NoteShape":
 				switch fieldName {
@@ -955,6 +984,19 @@ func UnmarshallGongstructStaging(assignStmt *ast.AssignStmt, astCoordinate_ stri
 					}
 					__gong__map_Node[identifier].HasDeleteButton = fielValue
 				}
+			case "NoteLink":
+				switch fieldName {
+				// insertion point for field dependant code
+				case "Classshape":
+					targetIdentifier := ident.Name
+					__gong__map_NoteLink[identifier].Classshape = __gong__map_Classshape[targetIdentifier]
+				case "Link":
+					targetIdentifier := ident.Name
+					__gong__map_NoteLink[identifier].Link = __gong__map_Link[targetIdentifier]
+				case "Middlevertice":
+					targetIdentifier := ident.Name
+					__gong__map_NoteLink[identifier].Middlevertice = __gong__map_Vertice[targetIdentifier]
+				}
 			case "NoteShape":
 				switch fieldName {
 				// insertion point for field dependant code
@@ -1069,6 +1111,17 @@ func UnmarshallGongstructStaging(assignStmt *ast.AssignStmt, astCoordinate_ stri
 							log.Fatalln(err)
 						}
 						__gong__map_Node[identifier].Type = GongdocNodeType(val)
+					}
+				case "NoteLink":
+					switch fieldName {
+					// insertion point for enum assign code
+					case "Type":
+						var val ReferenceType
+						err := (&val).FromCodeString(enumValue)
+						if err != nil {
+							log.Fatalln(err)
+						}
+						__gong__map_NoteLink[identifier].Type = ReferenceType(val)
 					}
 				case "NoteShape":
 					switch fieldName {
