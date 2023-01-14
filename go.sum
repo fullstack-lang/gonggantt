@@ -53,8 +53,8 @@ github.com/fsnotify/fsnotify v1.4.9/go.mod h1:znqG4EE+3YCdAaPaxE2ZRY/06pZUdp0tY4
 github.com/fsnotify/fsnotify v1.5.1/go.mod h1:T3375wBYaZdLLcVNkcVbzGHY7f1l/uK5T5Ai1i3InKU=
 github.com/fullstack-lang/gong v0.0.0-20230113142403-16f40ea2992b h1:Y+nPVHuS6kLHQsrGm5oamXmnmPYjU0hZMTzm4XoeEKg=
 github.com/fullstack-lang/gong v0.0.0-20230113142403-16f40ea2992b/go.mod h1:tsCfZtPwFyCm6q4IUHSPaDV0dWnJPVNcHizpP6K7YVA=
-github.com/fullstack-lang/gongdoc v0.0.0-20230107103437-920758a1c4a7 h1:rA1+vvrmHVi3m0052QByFBlC4mUNse45HzIzZG4B1To=
-github.com/fullstack-lang/gongdoc v0.0.0-20230107103437-920758a1c4a7/go.mod h1:76vWeG4KHVXl/PgQ2d7kPqgGHAPB3o45FUTt7RHGJl4=
+github.com/fullstack-lang/gongdoc v0.0.0-20230113144132-036dabf1a5bb h1:JmH9SHoY7g0i/iRHID+h1qRBMe2xPFHj+IaRgCYnoSg=
+github.com/fullstack-lang/gongdoc v0.0.0-20230113144132-036dabf1a5bb/go.mod h1:76vWeG4KHVXl/PgQ2d7kPqgGHAPB3o45FUTt7RHGJl4=
 github.com/fullstack-lang/gongsvg v0.0.0-20230113144957-6773b1684f2f h1:lJ3V8j9V2rU2KG/4uPqwWsCBx69FE9OGdj1ZKPUr+F8=
 github.com/fullstack-lang/gongsvg v0.0.0-20230113144957-6773b1684f2f/go.mod h1:25JNrb+M7o/6QcefI8vl2UHNbbtcwi5Dl+N3S2rjW6s=
 github.com/gin-contrib/cors v1.4.0 h1:oJ6gwtUl3lqV0WEIwM/LxPF1QZ5qe2lGWdY2+bz7y0g=
