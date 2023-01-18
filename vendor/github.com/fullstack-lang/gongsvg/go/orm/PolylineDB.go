@@ -316,8 +316,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CommitPhaseTwoInstance(backRepo 
 // BackRepoPolyline.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOne() (Error error) {
 
 	polylineDBArray := make([]PolylineDB, 0)
@@ -375,6 +374,9 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOneInstance(polylin
 		polyline.Stage()
 	}
 	polylineDB.CopyBasicFieldsToPolyline(polyline)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	polyline.Stage()
 
 	// preserve pointer to polylineDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_PolylineDBID_PolylineDB)[polylineDB hold variable pointers

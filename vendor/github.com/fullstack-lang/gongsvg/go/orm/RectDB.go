@@ -340,8 +340,7 @@ func (backRepoRect *BackRepoRectStruct) CommitPhaseTwoInstance(backRepo *BackRep
 // BackRepoRect.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOne() (Error error) {
 
 	rectDBArray := make([]RectDB, 0)
@@ -399,6 +398,9 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOneInstance(rectDB *RectDB)
 		rect.Stage()
 	}
 	rectDB.CopyBasicFieldsToRect(rect)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	rect.Stage()
 
 	// preserve pointer to rectDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_RectDBID_RectDB)[rectDB hold variable pointers

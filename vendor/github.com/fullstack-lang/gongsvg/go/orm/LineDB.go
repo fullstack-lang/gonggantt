@@ -334,8 +334,7 @@ func (backRepoLine *BackRepoLineStruct) CommitPhaseTwoInstance(backRepo *BackRep
 // BackRepoLine.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoLine *BackRepoLineStruct) CheckoutPhaseOne() (Error error) {
 
 	lineDBArray := make([]LineDB, 0)
@@ -393,6 +392,9 @@ func (backRepoLine *BackRepoLineStruct) CheckoutPhaseOneInstance(lineDB *LineDB)
 		line.Stage()
 	}
 	lineDB.CopyBasicFieldsToLine(line)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	line.Stage()
 
 	// preserve pointer to lineDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_LineDBID_LineDB)[lineDB hold variable pointers

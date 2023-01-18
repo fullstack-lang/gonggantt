@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/gin-contrib/cors"
@@ -19,13 +18,7 @@ import (
 	gonggantt_fullstack "github.com/fullstack-lang/gonggantt/go/fullstack"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 
-	// gong stack for model analysis
-	gong_fullstack "github.com/fullstack-lang/gong/go/fullstack"
-	gong_models "github.com/fullstack-lang/gong/go/models"
-
-	// for diagrams
-	gongdoc_fullstack "github.com/fullstack-lang/gongdoc/go/fullstack"
-	gongdoc_models "github.com/fullstack-lang/gongdoc/go/models"
+	gongdoc_load "github.com/fullstack-lang/gongdoc/go/load"
 
 	// import this package in order to have the scheduler start a thread that will
 	// generate a new svg diagram each time the repo has been modified
@@ -135,38 +128,12 @@ func main() {
 	gonggantt_models.Stage.Commit()
 	gongsvg_models.Stage.Commit()
 
-	if *diagrams {
-
-		// Analyse package
-		gong_fullstack.Init(r)
-		gongdoc_fullstack.Init(r)
-		modelPackage, _ := gong_models.LoadEmbedded(gonggantt.GoDir)
-
-		// create the diagrams
-		// prepare the model views
-		diagramPackage := new(gongdoc_models.DiagramPackage)
-
-		// first, get all gong struct in the model
-		for gongStruct := range gong_models.Stage.GongStructs {
-
-			// let create the gong struct in the gongdoc models
-			// and put the numbre of instances
-			reference := (&gongdoc_models.Reference{Name: gongStruct.Name}).Stage()
-			reference.Type = gongdoc_models.REFERENCE_GONG_STRUCT
-			nbInstances, ok := gonggantt_models.Stage.Map_GongStructName_InstancesNb[gongStruct.Name]
-			if ok {
-				reference.NbInstances = nbInstances
-			}
-		}
-
-		if *embeddedDiagrams {
-			gongdoc_models.LoadEmbedded(gonggantt.GoDir, modelPackage)
-		} else {
-			gongdoc_models.Load(filepath.Join("../../diagrams"), modelPackage, true)
-		}
-
-		diagramPackage.GongModelPath = "github.com/fullstack-lang/gonggantt/go/models"
-	}
+	gongdoc_load.Load(
+		"gonggantt",
+		gonggantt.GoDir,
+		r,
+		*embeddedDiagrams,
+		&gonggantt_models.Stage.Map_GongStructName_InstancesNb)
 
 	// provide the static route for the angular pages
 	r.Use(static.Serve("/", EmbedFolder(gonggantt.NgDistNg, "ng/dist/ng")))

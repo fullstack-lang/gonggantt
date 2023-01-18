@@ -321,8 +321,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CommitPhaseTwoInstance(backRepo *B
 // BackRepoAnimate.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOne() (Error error) {
 
 	animateDBArray := make([]AnimateDB, 0)
@@ -380,6 +379,9 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOneInstance(animateDB
 		animate.Stage()
 	}
 	animateDB.CopyBasicFieldsToAnimate(animate)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	animate.Stage()
 
 	// preserve pointer to animateDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_AnimateDBID_AnimateDB)[animateDB hold variable pointers

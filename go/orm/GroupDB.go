@@ -274,8 +274,7 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwoInstance(backRepo *BackR
 // BackRepoGroup.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOne() (Error error) {
 
 	groupDBArray := make([]GroupDB, 0)
@@ -333,6 +332,9 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOneInstance(groupDB *Grou
 		group.Stage()
 	}
 	groupDB.CopyBasicFieldsToGroup(group)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	group.Stage()
 
 	// preserve pointer to groupDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_GroupDBID_GroupDB)[groupDB hold variable pointers

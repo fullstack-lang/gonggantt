@@ -316,8 +316,7 @@ func (backRepoPath *BackRepoPathStruct) CommitPhaseTwoInstance(backRepo *BackRep
 // BackRepoPath.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOne() (Error error) {
 
 	pathDBArray := make([]PathDB, 0)
@@ -375,6 +374,9 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOneInstance(pathDB *PathDB)
 		path.Stage()
 	}
 	pathDB.CopyBasicFieldsToPath(path)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	path.Stage()
 
 	// preserve pointer to pathDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_PathDBID_PathDB)[pathDB hold variable pointers

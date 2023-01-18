@@ -465,8 +465,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 // BackRepoGantt.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 
 	ganttDBArray := make([]GanttDB, 0)
@@ -524,6 +523,9 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOneInstance(ganttDB *Gant
 		gantt.Stage()
 	}
 	ganttDB.CopyBasicFieldsToGantt(gantt)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	gantt.Stage()
 
 	// preserve pointer to ganttDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_GanttDBID_GanttDB)[ganttDB hold variable pointers

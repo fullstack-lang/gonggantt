@@ -287,8 +287,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 // BackRepoMilestone.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error error) {
 
 	milestoneDBArray := make([]MilestoneDB, 0)
@@ -346,6 +345,9 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOneInstance(miles
 		milestone.Stage()
 	}
 	milestoneDB.CopyBasicFieldsToMilestone(milestone)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	milestone.Stage()
 
 	// preserve pointer to milestoneDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_MilestoneDBID_MilestoneDB)[milestoneDB hold variable pointers

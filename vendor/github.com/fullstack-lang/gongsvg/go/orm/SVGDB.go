@@ -408,8 +408,7 @@ func (backRepoSVG *BackRepoSVGStruct) CommitPhaseTwoInstance(backRepo *BackRepoS
 // BackRepoSVG.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOne() (Error error) {
 
 	svgDBArray := make([]SVGDB, 0)
@@ -467,6 +466,9 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOneInstance(svgDB *SVGDB) (Er
 		svg.Stage()
 	}
 	svgDB.CopyBasicFieldsToSVG(svg)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	svg.Stage()
 
 	// preserve pointer to svgDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_SVGDBID_SVGDB)[svgDB hold variable pointers

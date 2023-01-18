@@ -334,8 +334,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CommitPhaseTwoInstance(backRepo *B
 // BackRepoEllipse.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOne() (Error error) {
 
 	ellipseDBArray := make([]EllipseDB, 0)
@@ -393,6 +392,9 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOneInstance(ellipseDB
 		ellipse.Stage()
 	}
 	ellipseDB.CopyBasicFieldsToEllipse(ellipse)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	ellipse.Stage()
 
 	// preserve pointer to ellipseDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_EllipseDBID_EllipseDB)[ellipseDB hold variable pointers

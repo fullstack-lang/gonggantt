@@ -980,6 +980,37 @@ func (stage *StageStruct) Nil() { // insertion point for array nil
 
 }
 
+func (stage *StageStruct) Unstage() { // insertion point for array nil
+	for arrow := range stage.Arrows {
+		arrow.Unstage()
+	}
+
+	for bar := range stage.Bars {
+		bar.Unstage()
+	}
+
+	for gantt := range stage.Gantts {
+		gantt.Unstage()
+	}
+
+	for group := range stage.Groups {
+		group.Unstage()
+	}
+
+	for lane := range stage.Lanes {
+		lane.Unstage()
+	}
+
+	for laneuse := range stage.LaneUses {
+		laneuse.Unstage()
+	}
+
+	for milestone := range stage.Milestones {
+		milestone.Unstage()
+	}
+
+}
+
 // insertion point of functions that provide maps for reverse associations
 
 // generate function for reverse association maps of Arrow

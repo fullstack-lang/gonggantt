@@ -1334,6 +1334,49 @@ func (stage *StageStruct) Nil() { // insertion point for array nil
 
 }
 
+func (stage *StageStruct) Unstage() { // insertion point for array nil
+	for animate := range stage.Animates {
+		animate.Unstage()
+	}
+
+	for circle := range stage.Circles {
+		circle.Unstage()
+	}
+
+	for ellipse := range stage.Ellipses {
+		ellipse.Unstage()
+	}
+
+	for line := range stage.Lines {
+		line.Unstage()
+	}
+
+	for path := range stage.Paths {
+		path.Unstage()
+	}
+
+	for polygone := range stage.Polygones {
+		polygone.Unstage()
+	}
+
+	for polyline := range stage.Polylines {
+		polyline.Unstage()
+	}
+
+	for rect := range stage.Rects {
+		rect.Unstage()
+	}
+
+	for svg := range stage.SVGs {
+		svg.Unstage()
+	}
+
+	for text := range stage.Texts {
+		text.Unstage()
+	}
+
+}
+
 // insertion point of functions that provide maps for reverse associations
 
 // generate function for reverse association maps of Animate

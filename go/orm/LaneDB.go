@@ -286,8 +286,7 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 // BackRepoLane.CheckoutPhaseOne Checkouts all BackRepo instances to the Stage
 //
 // Phase One will result in having instances on the stage aligned with the back repo
-// pointers are not initialized yet (this is for pahse two)
-//
+// pointers are not initialized yet (this is for phase two)
 func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOne() (Error error) {
 
 	laneDBArray := make([]LaneDB, 0)
@@ -345,6 +344,9 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOneInstance(laneDB *LaneDB)
 		lane.Stage()
 	}
 	laneDB.CopyBasicFieldsToLane(lane)
+
+	// in some cases, the instance might have been unstaged. It is necessary to stage it again
+	lane.Stage()
 
 	// preserve pointer to laneDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_LaneDBID_LaneDB)[laneDB hold variable pointers
