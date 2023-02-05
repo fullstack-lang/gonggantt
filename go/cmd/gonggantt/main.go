@@ -130,6 +130,7 @@ func main() {
 
 	gongdoc_load.Load(
 		"gonggantt",
+		"github.com/fullstack-lang/gonggantt/go/models",
 		gonggantt.GoDir,
 		r,
 		*embeddedDiagrams,

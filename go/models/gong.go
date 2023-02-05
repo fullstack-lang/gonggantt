@@ -103,9 +103,19 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	MetaPackageImportPath  string
 	MetaPackageImportAlias string
 	Map_DocLink_Renaming   map[string]GONG__Identifier
+
+	// map_Gongstruct_BackPointer is storage of back pointers
+	map_Gongstruct_BackPointer map[any]any
 }
 
-// swagger:ignore
+func SetBackPointer[T Gongstruct](stageStruct *StageStruct, instance *T, backPointer any) {
+	stageStruct.map_Gongstruct_BackPointer[instance] = backPointer
+}
+func GetBackPointer[T Gongstruct](stageStruct *StageStruct, instance *T) (backPointer any) {
+	backPointer, _ = stageStruct.map_Gongstruct_BackPointer[instance]
+	return
+}
+
 type GONG__Identifier struct {
 	Ident string
 	Type  GONG__ExpressionType
@@ -189,6 +199,7 @@ var Stage StageStruct = StageStruct{ // insertion point for array initiatialisat
 
 	// end of insertion point
 	Map_GongStructName_InstancesNb: make(map[string]int),
+	map_Gongstruct_BackPointer:     make(map[any]any),
 }
 
 func (stage *StageStruct) Commit() {
@@ -1016,166 +1027,6 @@ func (stage *StageStruct) Unstage() { // insertion point for array nil
 	}
 
 }
-
-// insertion point of functions that provide maps for reverse associations
-
-// generate function for reverse association maps of Arrow
-func (stageStruct *StageStruct) CreateReverseMap_Arrow_From() (res map[*Bar][]*Arrow) {
-	res = make(map[*Bar][]*Arrow)
-
-	for arrow := range stageStruct.Arrows {
-		if arrow.From != nil {
-			bar_ := arrow.From
-			var arrows []*Arrow
-			_, ok := res[bar_]
-			if ok {
-				arrows = res[bar_]
-			} else {
-				arrows = make([]*Arrow, 0)
-			}
-			arrows = append(arrows, arrow)
-			res[bar_] = arrows
-		}
-	}
-
-	return
-}
-func (stageStruct *StageStruct) CreateReverseMap_Arrow_To() (res map[*Bar][]*Arrow) {
-	res = make(map[*Bar][]*Arrow)
-
-	for arrow := range stageStruct.Arrows {
-		if arrow.To != nil {
-			bar_ := arrow.To
-			var arrows []*Arrow
-			_, ok := res[bar_]
-			if ok {
-				arrows = res[bar_]
-			} else {
-				arrows = make([]*Arrow, 0)
-			}
-			arrows = append(arrows, arrow)
-			res[bar_] = arrows
-		}
-	}
-
-	return
-}
-
-// generate function for reverse association maps of Bar
-
-// generate function for reverse association maps of Gantt
-func (stageStruct *StageStruct) CreateReverseMap_Gantt_Lanes() (res map[*Lane]*Gantt) {
-	res = make(map[*Lane]*Gantt)
-
-	for gantt := range stageStruct.Gantts {
-		for _, lane_ := range gantt.Lanes {
-			res[lane_] = gantt
-		}
-	}
-
-	return
-}
-
-func (stageStruct *StageStruct) CreateReverseMap_Gantt_Milestones() (res map[*Milestone]*Gantt) {
-	res = make(map[*Milestone]*Gantt)
-
-	for gantt := range stageStruct.Gantts {
-		for _, milestone_ := range gantt.Milestones {
-			res[milestone_] = gantt
-		}
-	}
-
-	return
-}
-
-func (stageStruct *StageStruct) CreateReverseMap_Gantt_Groups() (res map[*Group]*Gantt) {
-	res = make(map[*Group]*Gantt)
-
-	for gantt := range stageStruct.Gantts {
-		for _, group_ := range gantt.Groups {
-			res[group_] = gantt
-		}
-	}
-
-	return
-}
-
-func (stageStruct *StageStruct) CreateReverseMap_Gantt_Arrows() (res map[*Arrow]*Gantt) {
-	res = make(map[*Arrow]*Gantt)
-
-	for gantt := range stageStruct.Gantts {
-		for _, arrow_ := range gantt.Arrows {
-			res[arrow_] = gantt
-		}
-	}
-
-	return
-}
-
-
-// generate function for reverse association maps of Group
-func (stageStruct *StageStruct) CreateReverseMap_Group_GroupLanes() (res map[*Lane]*Group) {
-	res = make(map[*Lane]*Group)
-
-	for group := range stageStruct.Groups {
-		for _, lane_ := range group.GroupLanes {
-			res[lane_] = group
-		}
-	}
-
-	return
-}
-
-
-// generate function for reverse association maps of Lane
-func (stageStruct *StageStruct) CreateReverseMap_Lane_Bars() (res map[*Bar]*Lane) {
-	res = make(map[*Bar]*Lane)
-
-	for lane := range stageStruct.Lanes {
-		for _, bar_ := range lane.Bars {
-			res[bar_] = lane
-		}
-	}
-
-	return
-}
-
-
-// generate function for reverse association maps of LaneUse
-func (stageStruct *StageStruct) CreateReverseMap_LaneUse_Lane() (res map[*Lane][]*LaneUse) {
-	res = make(map[*Lane][]*LaneUse)
-
-	for laneuse := range stageStruct.LaneUses {
-		if laneuse.Lane != nil {
-			lane_ := laneuse.Lane
-			var laneuses []*LaneUse
-			_, ok := res[lane_]
-			if ok {
-				laneuses = res[lane_]
-			} else {
-				laneuses = make([]*LaneUse, 0)
-			}
-			laneuses = append(laneuses, laneuse)
-			res[lane_] = laneuses
-		}
-	}
-
-	return
-}
-
-// generate function for reverse association maps of Milestone
-func (stageStruct *StageStruct) CreateReverseMap_Milestone_LanesToDisplayMilestoneUse() (res map[*LaneUse]*Milestone) {
-	res = make(map[*LaneUse]*Milestone)
-
-	for milestone := range stageStruct.Milestones {
-		for _, laneuse_ := range milestone.LanesToDisplayMilestoneUse {
-			res[laneuse_] = milestone
-		}
-	}
-
-	return
-}
-
 
 // Gongstruct is the type parameter for generated generic function that allows
 // - access to staged instances

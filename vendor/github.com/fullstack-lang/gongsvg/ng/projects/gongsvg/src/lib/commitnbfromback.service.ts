@@ -39,6 +39,9 @@ export class CommitNbFromBackService {
 
     // observable of the commit nb getter
     public getCommitNbFromBack(): Observable<number> {
+
+        // add a log to the console of the url
+        console.log("getCommitNbFromBack " + this.commitNbFromBackUrl)
         return this.http.get<number>(this.commitNbFromBackUrl)
             .pipe(
                 tap(_ => this.log('fetched commit nb')),
@@ -55,6 +58,7 @@ export class CommitNbFromBackService {
     private handleError<T>(operation = 'operation', result?: T) {
         return (error: any): Observable<T> => {
 
+            console.error("error this.commitNbFromBackUrl: " + this.commitNbFromBackUrl)
             // TODO: send the error to remote logging infrastructure
             console.error(error); // log to console instead
 
