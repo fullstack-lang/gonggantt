@@ -166,7 +166,7 @@ export class ArrowsTableComponent implements OnInit {
       }
     )
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
-      this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
+      this.displayedColumns = ['ID', 'Delete', // insertion point for columns to display
         "Name",
         "From",
         "To",
@@ -265,15 +265,6 @@ export class ArrowsTableComponent implements OnInit {
     this.router.navigate([{
       outlets: {
         github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "arrow-detail", arrowID]
-      }
-    }]);
-  }
-
-  // set presentation outlet
-  setPresentationRouterOutlet(arrowID: number) {
-    this.router.navigate([{
-      outlets: {
-        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "arrow-presentation", arrowID]
       }
     }]);
   }

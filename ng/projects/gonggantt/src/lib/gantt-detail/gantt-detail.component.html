@@ -1,7 +1,7 @@
 <form *ngIf="gantt" class="details">
     <h2 class="details__title">gantt</h2>
     <!-- insertion point for fields specific code -->
-    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
@@ -110,7 +110,7 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.ArrowTipLenght" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("TimeLine_Color")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("TimeLine_Color")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TimeLine_Color</mat-label>
@@ -136,7 +136,7 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_FillOpacity" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("TimeLine_Stroke")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("TimeLine_Stroke")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>TimeLine_Stroke</mat-label>
@@ -162,7 +162,7 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.TimeLine_StrokeWidth" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("Group_Stroke")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Group_Stroke")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Group_Stroke</mat-label>
@@ -188,7 +188,7 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="gantt.Group_StrokeWidth" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("Group_StrokeDashArray")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Group_StrokeDashArray")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Group_StrokeDashArray</mat-label>

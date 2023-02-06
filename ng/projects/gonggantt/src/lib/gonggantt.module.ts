@@ -42,37 +42,30 @@ import { GongstructSelectionService } from './gongstruct-selection.service'
 import { ArrowsTableComponent } from './arrows-table/arrows-table.component'
 import { ArrowSortingComponent } from './arrow-sorting/arrow-sorting.component'
 import { ArrowDetailComponent } from './arrow-detail/arrow-detail.component'
-import { ArrowPresentationComponent } from './arrow-presentation/arrow-presentation.component'
 
 import { BarsTableComponent } from './bars-table/bars-table.component'
 import { BarSortingComponent } from './bar-sorting/bar-sorting.component'
 import { BarDetailComponent } from './bar-detail/bar-detail.component'
-import { BarPresentationComponent } from './bar-presentation/bar-presentation.component'
 
 import { GanttsTableComponent } from './gantts-table/gantts-table.component'
 import { GanttSortingComponent } from './gantt-sorting/gantt-sorting.component'
 import { GanttDetailComponent } from './gantt-detail/gantt-detail.component'
-import { GanttPresentationComponent } from './gantt-presentation/gantt-presentation.component'
 
 import { GroupsTableComponent } from './groups-table/groups-table.component'
 import { GroupSortingComponent } from './group-sorting/group-sorting.component'
 import { GroupDetailComponent } from './group-detail/group-detail.component'
-import { GroupPresentationComponent } from './group-presentation/group-presentation.component'
 
 import { LanesTableComponent } from './lanes-table/lanes-table.component'
 import { LaneSortingComponent } from './lane-sorting/lane-sorting.component'
 import { LaneDetailComponent } from './lane-detail/lane-detail.component'
-import { LanePresentationComponent } from './lane-presentation/lane-presentation.component'
 
 import { LaneUsesTableComponent } from './laneuses-table/laneuses-table.component'
 import { LaneUseSortingComponent } from './laneuse-sorting/laneuse-sorting.component'
 import { LaneUseDetailComponent } from './laneuse-detail/laneuse-detail.component'
-import { LaneUsePresentationComponent } from './laneuse-presentation/laneuse-presentation.component'
 
 import { MilestonesTableComponent } from './milestones-table/milestones-table.component'
 import { MilestoneSortingComponent } from './milestone-sorting/milestone-sorting.component'
 import { MilestoneDetailComponent } from './milestone-detail/milestone-detail.component'
-import { MilestonePresentationComponent } from './milestone-presentation/milestone-presentation.component'
 
 
 @NgModule({
@@ -81,37 +74,30 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 		ArrowsTableComponent,
 		ArrowSortingComponent,
 		ArrowDetailComponent,
-		ArrowPresentationComponent,
 
 		BarsTableComponent,
 		BarSortingComponent,
 		BarDetailComponent,
-		BarPresentationComponent,
 
 		GanttsTableComponent,
 		GanttSortingComponent,
 		GanttDetailComponent,
-		GanttPresentationComponent,
 
 		GroupsTableComponent,
 		GroupSortingComponent,
 		GroupDetailComponent,
-		GroupPresentationComponent,
 
 		LanesTableComponent,
 		LaneSortingComponent,
 		LaneDetailComponent,
-		LanePresentationComponent,
 
 		LaneUsesTableComponent,
 		LaneUseSortingComponent,
 		LaneUseDetailComponent,
-		LaneUsePresentationComponent,
 
 		MilestonesTableComponent,
 		MilestoneSortingComponent,
 		MilestoneDetailComponent,
-		MilestonePresentationComponent,
 
 
 		SplitterComponent,
@@ -155,37 +141,30 @@ import { MilestonePresentationComponent } from './milestone-presentation/milesto
 		ArrowsTableComponent,
 		ArrowSortingComponent,
 		ArrowDetailComponent,
-		ArrowPresentationComponent,
 
 		BarsTableComponent,
 		BarSortingComponent,
 		BarDetailComponent,
-		BarPresentationComponent,
 
 		GanttsTableComponent,
 		GanttSortingComponent,
 		GanttDetailComponent,
-		GanttPresentationComponent,
 
 		GroupsTableComponent,
 		GroupSortingComponent,
 		GroupDetailComponent,
-		GroupPresentationComponent,
 
 		LanesTableComponent,
 		LaneSortingComponent,
 		LaneDetailComponent,
-		LanePresentationComponent,
 
 		LaneUsesTableComponent,
 		LaneUseSortingComponent,
 		LaneUseDetailComponent,
-		LaneUsePresentationComponent,
 
 		MilestonesTableComponent,
 		MilestoneSortingComponent,
 		MilestoneDetailComponent,
-		MilestonePresentationComponent,
 
 
 		SplitterComponent,

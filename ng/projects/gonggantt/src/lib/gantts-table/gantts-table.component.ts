@@ -221,7 +221,7 @@ export class GanttsTableComponent implements OnInit {
       }
     )
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
-      this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
+      this.displayedColumns = ['ID', 'Delete', // insertion point for columns to display
         "Name",
         "ComputedStart",
         "ComputedEnd",
@@ -356,15 +356,6 @@ export class GanttsTableComponent implements OnInit {
     this.router.navigate([{
       outlets: {
         github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "gantt-detail", ganttID]
-      }
-    }]);
-  }
-
-  // set presentation outlet
-  setPresentationRouterOutlet(ganttID: number) {
-    this.router.navigate([{
-      outlets: {
-        github_com_fullstack_lang_gonggantt_go_presentation: ["github_com_fullstack_lang_gonggantt_go-" + "gantt-presentation", ganttID]
       }
     }]);
   }

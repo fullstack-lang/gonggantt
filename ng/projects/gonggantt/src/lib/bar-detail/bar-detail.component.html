@@ -1,7 +1,7 @@
 <form *ngIf="bar" class="details">
     <h2 class="details__title">bar</h2>
     <!-- insertion point for fields specific code -->
-    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
@@ -37,7 +37,7 @@
         <ngx-mat-datetime-picker [showSeconds]="true" #pickerEnd></ngx-mat-datetime-picker>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("OptionnalColor")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("OptionnalColor")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>OptionnalColor</mat-label>
@@ -57,7 +57,7 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.OptionnalColor"></textarea>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("OptionnalStroke")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("OptionnalStroke")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>OptionnalStroke</mat-label>
@@ -89,7 +89,7 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="bar.StrokeWidth" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("StrokeDashArray")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("StrokeDashArray")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>StrokeDashArray</mat-label>

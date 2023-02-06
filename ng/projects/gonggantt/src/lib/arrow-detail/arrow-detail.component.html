@@ -1,7 +1,7 @@
 <form *ngIf="arrow" class="details">
     <h2 class="details__title">arrow</h2>
     <!-- insertion point for fields specific code -->
-    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
@@ -41,7 +41,7 @@
         </mat-select>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("OptionnalColor")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("OptionnalColor")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>OptionnalColor</mat-label>
@@ -61,7 +61,7 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="arrow.OptionnalColor"></textarea>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("OptionnalStroke")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("OptionnalStroke")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>OptionnalStroke</mat-label>
