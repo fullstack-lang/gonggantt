@@ -31,10 +31,10 @@
             "program": "${workspaceFolder}/go/cmd/gonggantt",
             "args": [
                 "-diagrams",
-				"-unmarshall",
-				"gantt1",
-				"-marshallOnCommit",
-				"gantt1",
+                "-unmarshall",
+                "gantt1",
+                "-marshallOnCommit",
+                "gantt1",
             ]
         },
         {
@@ -67,7 +67,11 @@
                 {
                     "url": "webpack:///projects",
                     "path": "${workspaceFolder}/ng/projects"
-                }
+                },
+                {
+                    "url": "webpack:///vendor",
+                    "path": "${workspaceFolder}/vendor"
+                },
             ],
         },
     ]

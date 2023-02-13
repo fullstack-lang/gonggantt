@@ -42,7 +42,7 @@
 			"group": "build"
 		},
 		{
-			"label": "02 - go run -unmarshall=gantt1 -marshallOnCommit=gantt1",
+			"label": "02 - go run main.go -unmarshallFromCode gantt1.go -marshallOnCommit gantt1",
 			"type": "shell",
 			"options": {
 				"cwd": "./go/cmd/gonggantt"
@@ -50,11 +50,9 @@
 			"command": "go",
 			"args": [
 				"run",
-				".",
-				"-unmarshall",
-				"gantt1",
-				"-marshallOnCommit",
-				"gantt1",
+				"main.go",
+				"-marshallOnCommit=gantt1",
+				"-unmarshallFromCode=gantt1.go",
 			],
 			"group": "build"
 		},
@@ -151,9 +149,11 @@
 		{
 			"label": "00 - go mod vendor",
 			"type": "shell",
-			"dependsOn": [ "00 - update dependency"],
+			"dependsOn": [
+				"00 - update dependency"
+			],
 			"group": "build",
 			"command": "go mod vendor"
-		  },
+		},
 	]
 }

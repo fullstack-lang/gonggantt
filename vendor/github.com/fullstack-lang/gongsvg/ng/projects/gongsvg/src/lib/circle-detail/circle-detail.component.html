@@ -1,7 +1,7 @@
 <form *ngIf="circle" class="details">
     <h2 class="details__title">circle</h2>
     <!-- insertion point for fields specific code -->
-    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
@@ -39,7 +39,7 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="circle.Radius" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("Color")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Color")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Color</mat-label>
@@ -65,7 +65,7 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="circle.FillOpacity" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("Stroke")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Stroke")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Stroke</mat-label>
@@ -91,7 +91,7 @@
         <input type="number" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="circle.StrokeWidth" [ngModelOptions]="{standalone: true}">
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("StrokeDashArray")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("StrokeDashArray")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>StrokeDashArray</mat-label>
@@ -111,7 +111,7 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="circle.StrokeDashArray"></textarea>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("Transform")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Transform")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Transform</mat-label>

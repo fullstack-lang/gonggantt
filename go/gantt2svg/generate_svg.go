@@ -17,7 +17,7 @@ import (
 type GanttToSVGTranformer struct {
 }
 
-var ganttToSVGTranformerSingloton GanttToSVGTranformer
+var GanttToSVGTranformerSingloton GanttToSVGTranformer
 
 func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_models.StageStruct) {
 

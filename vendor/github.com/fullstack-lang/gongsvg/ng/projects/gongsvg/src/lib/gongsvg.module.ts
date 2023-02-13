@@ -42,52 +42,42 @@ import { GongstructSelectionService } from './gongstruct-selection.service'
 import { AnimatesTableComponent } from './animates-table/animates-table.component'
 import { AnimateSortingComponent } from './animate-sorting/animate-sorting.component'
 import { AnimateDetailComponent } from './animate-detail/animate-detail.component'
-import { AnimatePresentationComponent } from './animate-presentation/animate-presentation.component'
 
 import { CirclesTableComponent } from './circles-table/circles-table.component'
 import { CircleSortingComponent } from './circle-sorting/circle-sorting.component'
 import { CircleDetailComponent } from './circle-detail/circle-detail.component'
-import { CirclePresentationComponent } from './circle-presentation/circle-presentation.component'
 
 import { EllipsesTableComponent } from './ellipses-table/ellipses-table.component'
 import { EllipseSortingComponent } from './ellipse-sorting/ellipse-sorting.component'
 import { EllipseDetailComponent } from './ellipse-detail/ellipse-detail.component'
-import { EllipsePresentationComponent } from './ellipse-presentation/ellipse-presentation.component'
 
 import { LinesTableComponent } from './lines-table/lines-table.component'
 import { LineSortingComponent } from './line-sorting/line-sorting.component'
 import { LineDetailComponent } from './line-detail/line-detail.component'
-import { LinePresentationComponent } from './line-presentation/line-presentation.component'
 
 import { PathsTableComponent } from './paths-table/paths-table.component'
 import { PathSortingComponent } from './path-sorting/path-sorting.component'
 import { PathDetailComponent } from './path-detail/path-detail.component'
-import { PathPresentationComponent } from './path-presentation/path-presentation.component'
 
 import { PolygonesTableComponent } from './polygones-table/polygones-table.component'
 import { PolygoneSortingComponent } from './polygone-sorting/polygone-sorting.component'
 import { PolygoneDetailComponent } from './polygone-detail/polygone-detail.component'
-import { PolygonePresentationComponent } from './polygone-presentation/polygone-presentation.component'
 
 import { PolylinesTableComponent } from './polylines-table/polylines-table.component'
 import { PolylineSortingComponent } from './polyline-sorting/polyline-sorting.component'
 import { PolylineDetailComponent } from './polyline-detail/polyline-detail.component'
-import { PolylinePresentationComponent } from './polyline-presentation/polyline-presentation.component'
 
 import { RectsTableComponent } from './rects-table/rects-table.component'
 import { RectSortingComponent } from './rect-sorting/rect-sorting.component'
 import { RectDetailComponent } from './rect-detail/rect-detail.component'
-import { RectPresentationComponent } from './rect-presentation/rect-presentation.component'
 
 import { SVGsTableComponent } from './svgs-table/svgs-table.component'
 import { SVGSortingComponent } from './svg-sorting/svg-sorting.component'
 import { SVGDetailComponent } from './svg-detail/svg-detail.component'
-import { SVGPresentationComponent } from './svg-presentation/svg-presentation.component'
 
 import { TextsTableComponent } from './texts-table/texts-table.component'
 import { TextSortingComponent } from './text-sorting/text-sorting.component'
 import { TextDetailComponent } from './text-detail/text-detail.component'
-import { TextPresentationComponent } from './text-presentation/text-presentation.component'
 
 
 @NgModule({
@@ -96,52 +86,42 @@ import { TextPresentationComponent } from './text-presentation/text-presentation
 		AnimatesTableComponent,
 		AnimateSortingComponent,
 		AnimateDetailComponent,
-		AnimatePresentationComponent,
 
 		CirclesTableComponent,
 		CircleSortingComponent,
 		CircleDetailComponent,
-		CirclePresentationComponent,
 
 		EllipsesTableComponent,
 		EllipseSortingComponent,
 		EllipseDetailComponent,
-		EllipsePresentationComponent,
 
 		LinesTableComponent,
 		LineSortingComponent,
 		LineDetailComponent,
-		LinePresentationComponent,
 
 		PathsTableComponent,
 		PathSortingComponent,
 		PathDetailComponent,
-		PathPresentationComponent,
 
 		PolygonesTableComponent,
 		PolygoneSortingComponent,
 		PolygoneDetailComponent,
-		PolygonePresentationComponent,
 
 		PolylinesTableComponent,
 		PolylineSortingComponent,
 		PolylineDetailComponent,
-		PolylinePresentationComponent,
 
 		RectsTableComponent,
 		RectSortingComponent,
 		RectDetailComponent,
-		RectPresentationComponent,
 
 		SVGsTableComponent,
 		SVGSortingComponent,
 		SVGDetailComponent,
-		SVGPresentationComponent,
 
 		TextsTableComponent,
 		TextSortingComponent,
 		TextDetailComponent,
-		TextPresentationComponent,
 
 
 		SplitterComponent,
@@ -185,52 +165,42 @@ import { TextPresentationComponent } from './text-presentation/text-presentation
 		AnimatesTableComponent,
 		AnimateSortingComponent,
 		AnimateDetailComponent,
-		AnimatePresentationComponent,
 
 		CirclesTableComponent,
 		CircleSortingComponent,
 		CircleDetailComponent,
-		CirclePresentationComponent,
 
 		EllipsesTableComponent,
 		EllipseSortingComponent,
 		EllipseDetailComponent,
-		EllipsePresentationComponent,
 
 		LinesTableComponent,
 		LineSortingComponent,
 		LineDetailComponent,
-		LinePresentationComponent,
 
 		PathsTableComponent,
 		PathSortingComponent,
 		PathDetailComponent,
-		PathPresentationComponent,
 
 		PolygonesTableComponent,
 		PolygoneSortingComponent,
 		PolygoneDetailComponent,
-		PolygonePresentationComponent,
 
 		PolylinesTableComponent,
 		PolylineSortingComponent,
 		PolylineDetailComponent,
-		PolylinePresentationComponent,
 
 		RectsTableComponent,
 		RectSortingComponent,
 		RectDetailComponent,
-		RectPresentationComponent,
 
 		SVGsTableComponent,
 		SVGSortingComponent,
 		SVGDetailComponent,
-		SVGPresentationComponent,
 
 		TextsTableComponent,
 		TextSortingComponent,
 		TextDetailComponent,
-		TextPresentationComponent,
 
 
 		SplitterComponent,
