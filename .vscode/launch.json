@@ -5,34 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-chrome",
-            "request": "launch",
-            "name": "Launch Chrome against localhost",
-            "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}/ng"
-        },
-        {
-            "name": "Front Simple on local 4200",
-            "runtimeArgs": [
-                "--remote-debugging-port=9222"
-            ],
-            "runtimeExecutable": "${env:CHROME_EXE}",
-            "type": "chrome",
-            "request": "launch",
-            "url": "http://localhost:4200/",
-            // the workspace folder is the .vscode ?
-            "webRoot": "${workspaceFolder}/ng",
-        },
-        {
             "name": "go server unmarshallFromCode gantt1.go -marshallOnCommit gantt1",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/go/cmd/gonggantt",
             "args": [
-				"-marshallOnCommit",
+                "-marshallOnCommit",
                 "gantt1",
-				"-unmarshallFromCode",
+                "-unmarshallFromCode",
                 "gantt1.go",
             ]
         },

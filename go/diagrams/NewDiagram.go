@@ -180,7 +180,8 @@ func NewDiagramInjection() {
 	// Declarations of staged instances of Field
 	__Field__000000_End := (&models.Field{Name: `End`}).Stage()
 	__Field__000001_Name := (&models.Field{Name: `Name`}).Stage()
-	__Field__000002_Start := (&models.Field{Name: `Start`}).Stage()
+	__Field__000002_Order := (&models.Field{Name: `Order`}).Stage()
+	__Field__000003_Start := (&models.Field{Name: `Start`}).Stage()
 
 	// Declarations of staged instances of GongEnumShape
 
@@ -245,15 +246,26 @@ func NewDiagramInjection() {
 	__Field__000001_Name.Fieldtypename = `string`
 
 	// Field values setup
-	__Field__000002_Start.Name = `Start`
+	__Field__000002_Order.Name = `Order`
+	
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Lane.Order]
+	__Field__000002_Order.Identifier = `ref_models.Lane.Order`
+	__Field__000002_Order.FieldTypeAsString = ``
+	__Field__000002_Order.Structname = `Lane`
+	__Field__000002_Order.Fieldtypename = `int`
+
+	// Field values setup
+	__Field__000003_Start.Name = `Start`
 	
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Bar.Start]
-	__Field__000002_Start.Identifier = `ref_models.Bar.Start`
-	__Field__000002_Start.FieldTypeAsString = ``
-	__Field__000002_Start.Structname = `Bar`
-	__Field__000002_Start.Fieldtypename = `Time`
+	__Field__000003_Start.Identifier = `ref_models.Bar.Start`
+	__Field__000003_Start.FieldTypeAsString = ``
+	__Field__000003_Start.Structname = `Bar`
+	__Field__000003_Start.Fieldtypename = `Time`
 
 	// GongStructShape values setup
 	__GongStructShape__000000_NewDiagram_Bar.Name = `NewDiagram-Bar`
@@ -262,8 +274,8 @@ func NewDiagramInjection() {
 
 	//gong:ident [ref_models.Bar]
 	__GongStructShape__000000_NewDiagram_Bar.Identifier = `ref_models.Bar`
-	__GongStructShape__000000_NewDiagram_Bar.ShowNbInstances = false
-	__GongStructShape__000000_NewDiagram_Bar.NbInstances = 0
+	__GongStructShape__000000_NewDiagram_Bar.ShowNbInstances = true
+	__GongStructShape__000000_NewDiagram_Bar.NbInstances = 4
 	__GongStructShape__000000_NewDiagram_Bar.Width = 240.000000
 	__GongStructShape__000000_NewDiagram_Bar.Heigth = 108.000000
 	__GongStructShape__000000_NewDiagram_Bar.IsSelected = false
@@ -275,8 +287,8 @@ func NewDiagramInjection() {
 
 	//gong:ident [ref_models.Gantt]
 	__GongStructShape__000001_NewDiagram_Gantt.Identifier = `ref_models.Gantt`
-	__GongStructShape__000001_NewDiagram_Gantt.ShowNbInstances = false
-	__GongStructShape__000001_NewDiagram_Gantt.NbInstances = 0
+	__GongStructShape__000001_NewDiagram_Gantt.ShowNbInstances = true
+	__GongStructShape__000001_NewDiagram_Gantt.NbInstances = 1
 	__GongStructShape__000001_NewDiagram_Gantt.Width = 240.000000
 	__GongStructShape__000001_NewDiagram_Gantt.Heigth = 63.000000
 	__GongStructShape__000001_NewDiagram_Gantt.IsSelected = false
@@ -288,10 +300,10 @@ func NewDiagramInjection() {
 
 	//gong:ident [ref_models.Lane]
 	__GongStructShape__000002_NewDiagram_Lane.Identifier = `ref_models.Lane`
-	__GongStructShape__000002_NewDiagram_Lane.ShowNbInstances = false
-	__GongStructShape__000002_NewDiagram_Lane.NbInstances = 0
+	__GongStructShape__000002_NewDiagram_Lane.ShowNbInstances = true
+	__GongStructShape__000002_NewDiagram_Lane.NbInstances = 4
 	__GongStructShape__000002_NewDiagram_Lane.Width = 240.000000
-	__GongStructShape__000002_NewDiagram_Lane.Heigth = 63.000000
+	__GongStructShape__000002_NewDiagram_Lane.Heigth = 78.000000
 	__GongStructShape__000002_NewDiagram_Lane.IsSelected = false
 
 	// Link values setup
@@ -347,11 +359,12 @@ func NewDiagramInjection() {
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000000_NewDiagram_Bar)
 	__GongStructShape__000000_NewDiagram_Bar.Position = __Position__000000_Pos_NewDiagram_Bar
 	__GongStructShape__000000_NewDiagram_Bar.Fields = append(__GongStructShape__000000_NewDiagram_Bar.Fields, __Field__000001_Name)
-	__GongStructShape__000000_NewDiagram_Bar.Fields = append(__GongStructShape__000000_NewDiagram_Bar.Fields, __Field__000002_Start)
+	__GongStructShape__000000_NewDiagram_Bar.Fields = append(__GongStructShape__000000_NewDiagram_Bar.Fields, __Field__000003_Start)
 	__GongStructShape__000000_NewDiagram_Bar.Fields = append(__GongStructShape__000000_NewDiagram_Bar.Fields, __Field__000000_End)
 	__GongStructShape__000001_NewDiagram_Gantt.Position = __Position__000001_Pos_NewDiagram_Gantt
 	__GongStructShape__000001_NewDiagram_Gantt.Links = append(__GongStructShape__000001_NewDiagram_Gantt.Links, __Link__000001_Lanes)
 	__GongStructShape__000002_NewDiagram_Lane.Position = __Position__000002_Pos_NewDiagram_Lane
+	__GongStructShape__000002_NewDiagram_Lane.Fields = append(__GongStructShape__000002_NewDiagram_Lane.Fields, __Field__000002_Order)
 	__GongStructShape__000002_NewDiagram_Lane.Links = append(__GongStructShape__000002_NewDiagram_Lane.Links, __Link__000000_Bars)
 	__Link__000000_Bars.Middlevertice = __Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Lane_and_NewDiagram_Bar
 	__Link__000001_Lanes.Middlevertice = __Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Gantt_and_NewDiagram_Lane
