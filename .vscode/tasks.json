@@ -24,24 +24,6 @@
 			"group": "build"
 		},
 		{
-			"label": "02 - go run -diagrams -unmarshall=gantt1 -marshallOnCommit=gantt1",
-			"type": "shell",
-			"options": {
-				"cwd": "./go/cmd/gonggantt"
-			},
-			"command": "go",
-			"args": [
-				"run",
-				".",
-				"-diagrams",
-				"-unmarshall",
-				"gantt1",
-				"-marshallOnCommit",
-				"gantt1",
-			],
-			"group": "build"
-		},
-		{
 			"label": "02 - go run main.go -unmarshallFromCode gantt1.go -marshallOnCommit gantt1",
 			"type": "shell",
 			"options": {

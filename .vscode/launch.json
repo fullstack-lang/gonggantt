@@ -24,17 +24,16 @@
             "webRoot": "${workspaceFolder}/ng",
         },
         {
-            "name": "go server -diagrams -unmarshall=gantt1 -marshallOnCommit=gantt1",
+            "name": "go server unmarshallFromCode gantt1.go -marshallOnCommit gantt1",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/go/cmd/gonggantt",
             "args": [
-                "-diagrams",
-                "-unmarshall",
+				"-marshallOnCommit",
                 "gantt1",
-                "-marshallOnCommit",
-                "gantt1",
+				"-unmarshallFromCode",
+                "gantt1.go",
             ]
         },
         {

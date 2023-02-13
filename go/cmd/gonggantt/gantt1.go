@@ -99,7 +99,7 @@ func gantt1Injection() {
 
 	// Bar values setup
 	__Bar__000002_Lane_2_Bar_1.Name = `Lane 2 - Bar 1`
-	__Bar__000002_Lane_2_Bar_1.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-01-01 00:00:00 +0000 +0000")
+	__Bar__000002_Lane_2_Bar_1.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-01-01 00:00:00 +0000 +0000")
 	__Bar__000002_Lane_2_Bar_1.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2025-01-01 00:00:00 +0000 +0000")
 	__Bar__000002_Lane_2_Bar_1.OptionnalColor = ``
 	__Bar__000002_Lane_2_Bar_1.OptionnalStroke = ``
