@@ -22,7 +22,7 @@ require (
 	github.com/benoitkugler/textlayout v0.0.1 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/frankban/quicktest v1.13.1 // indirect
-	github.com/fullstack-lang/gong v0.0.0-20230213203925-8b5f903c8141 // indirect
+	github.com/fullstack-lang/gong v0.0.0-20230213205507-4db7922c47b4 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/glebarez/go-sqlite v1.18.2 // indirect
 	github.com/go-latex/latex v0.0.0-20210823091927-c0d11ff05a81 // indirect
