@@ -52,6 +52,19 @@ func GetGroups(c *gin.Context) {
 
 	// source slice
 	var groupDBs []orm.GroupDB
+
+	// type Values map[string][]string
+	values := c.Request.URL.Query()
+	if len(values) == 1 {
+		value := values["stack"]
+		if len(value) == 1 {
+			// we have a single parameter
+			// we assume it is the stack
+			stackParam := value[0]
+			log.Println("GET all params", stackParam)
+		}
+	}
+
 	query := db.Find(&groupDBs)
 	if query.Error != nil {
 		var returnError GenericError
@@ -96,7 +109,6 @@ func GetGroups(c *gin.Context) {
 //	Responses:
 //	  200: nodeDBResponse
 func PostGroup(c *gin.Context) {
-	db := orm.BackRepo.BackRepoGroup.GetDB()
 
 	// Validate input
 	var input orm.GroupAPI
@@ -116,6 +128,7 @@ func PostGroup(c *gin.Context) {
 	groupDB.GroupPointersEnconding = input.GroupPointersEnconding
 	groupDB.CopyBasicFieldsFromGroup(&input.Group)
 
+	db := orm.BackRepo.BackRepoGroup.GetDB()
 	query := db.Create(&groupDB)
 	if query.Error != nil {
 		var returnError GenericError
@@ -152,6 +165,19 @@ func PostGroup(c *gin.Context) {
 //
 //	200: groupDBResponse
 func GetGroup(c *gin.Context) {
+
+	// type Values map[string][]string
+	values := c.Request.URL.Query()
+	if len(values) == 1 {
+		value := values["stack"]
+		if len(value) == 1 {
+			// we have a single parameter
+			// we assume it is the stack
+			stackParam := value[0]
+			log.Println("GET params", stackParam)
+		}
+	}
+
 	db := orm.BackRepo.BackRepoGroup.GetDB()
 
 	// Get groupDB in DB
@@ -184,6 +210,15 @@ func GetGroup(c *gin.Context) {
 //
 //	200: groupDBResponse
 func UpdateGroup(c *gin.Context) {
+
+	// Validate input
+	var input orm.GroupAPI
+	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
 	db := orm.BackRepo.BackRepoGroup.GetDB()
 
 	// Get model if exist
@@ -198,14 +233,6 @@ func UpdateGroup(c *gin.Context) {
 		returnError.Body.Message = query.Error.Error()
 		log.Println(query.Error.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
-		return
-	}
-
-	// Validate input
-	var input orm.GroupAPI
-	if err := c.ShouldBindJSON(&input); err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
