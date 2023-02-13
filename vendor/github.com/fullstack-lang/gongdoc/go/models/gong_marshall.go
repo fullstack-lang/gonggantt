@@ -319,6 +319,47 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
+	map_GongEnumValueEntry_Identifiers := make(map[*GongEnumValueEntry]string)
+	_ = map_GongEnumValueEntry_Identifiers
+
+	gongenumvalueentryOrdered := []*GongEnumValueEntry{}
+	for gongenumvalueentry := range stage.GongEnumValueEntrys {
+		gongenumvalueentryOrdered = append(gongenumvalueentryOrdered, gongenumvalueentry)
+	}
+	sort.Slice(gongenumvalueentryOrdered[:], func(i, j int) bool {
+		return gongenumvalueentryOrdered[i].Name < gongenumvalueentryOrdered[j].Name
+	})
+	identifiersDecl += "\n\n	// Declarations of staged instances of GongEnumValueEntry"
+	for idx, gongenumvalueentry := range gongenumvalueentryOrdered {
+
+		id = generatesIdentifier("GongEnumValueEntry", idx, gongenumvalueentry.Name)
+		map_GongEnumValueEntry_Identifiers[gongenumvalueentry] = id
+
+		decl = IdentifiersDecls
+		decl = strings.ReplaceAll(decl, "{{Identifier}}", id)
+		decl = strings.ReplaceAll(decl, "{{GeneratedStructName}}", "GongEnumValueEntry")
+		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", gongenumvalueentry.Name)
+		identifiersDecl += decl
+
+		initializerStatements += "\n\n	// GongEnumValueEntry values setup"
+		// Initialisation of values
+		setValueField = StringInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Name")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(gongenumvalueentry.Name))
+		initializerStatements += setValueField
+
+		setValueField = StringInitStatement
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}",
+			fmt.Sprintf("\n\t// comment added to overcome the problem with the comment map association\n\n\t//gong:ident [%s]\n\t{{Identifier}}",
+				string(gongenumvalueentry.Identifier)))
+		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Identifier")
+		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(gongenumvalueentry.Identifier))
+		initializerStatements += setValueField
+
+	}
+
 	map_GongStructShape_Identifiers := make(map[*GongStructShape]string)
 	_ = map_GongStructShape_Identifiers
 
@@ -418,12 +459,6 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Name")
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(link.Name))
-		initializerStatements += setValueField
-
-		setValueField = StringInitStatement
-		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Structname")
-		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(link.Structname))
 		initializerStatements += setValueField
 
 		setValueField = StringInitStatement
@@ -678,6 +713,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Identifier")
 		setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", string(noteshapelink.Identifier))
 		initializerStatements += setValueField
+
+		if noteshapelink.Type != "" {
+			setValueField = StringEnumInitStatement
+			setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
+			setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldName}}", "Type")
+			setValueField = strings.ReplaceAll(setValueField, "{{GeneratedFieldNameValue}}", "models."+noteshapelink.Type.ToCodeString())
+			initializerStatements += setValueField
+		}
 
 	}
 
@@ -984,14 +1027,24 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 			pointersInitializesStatements += setPointerField
 		}
 
-		for _, _field := range gongenumshape.Fields {
+		for _, _gongenumvalueentry := range gongenumshape.GongEnumValueEntrys {
 			setPointerField = SliceOfPointersFieldInitStatement
 			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "Fields")
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_Field_Identifiers[_field])
+			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "GongEnumValueEntrys")
+			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_GongEnumValueEntry_Identifiers[_gongenumvalueentry])
 			pointersInitializesStatements += setPointerField
 		}
 
+	}
+
+	for idx, gongenumvalueentry := range gongenumvalueentryOrdered {
+		var setPointerField string
+		_ = setPointerField
+
+		id = generatesIdentifier("GongEnumValueEntry", idx, gongenumvalueentry.Name)
+		map_GongEnumValueEntry_Identifiers[gongenumvalueentry] = id
+
+		// Initialisation of values
 	}
 
 	for idx, gongstructshape := range gongstructshapeOrdered {
@@ -1090,30 +1143,6 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		map_NoteShapeLink_Identifiers[noteshapelink] = id
 
 		// Initialisation of values
-		if noteshapelink.Classshape != nil {
-			setPointerField = PointerFieldInitStatement
-			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "Classshape")
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_GongStructShape_Identifiers[noteshapelink.Classshape])
-			pointersInitializesStatements += setPointerField
-		}
-
-		if noteshapelink.Link != nil {
-			setPointerField = PointerFieldInitStatement
-			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "Link")
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_Link_Identifiers[noteshapelink.Link])
-			pointersInitializesStatements += setPointerField
-		}
-
-		if noteshapelink.Middlevertice != nil {
-			setPointerField = PointerFieldInitStatement
-			setPointerField = strings.ReplaceAll(setPointerField, "{{Identifier}}", id)
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldName}}", "Middlevertice")
-			setPointerField = strings.ReplaceAll(setPointerField, "{{GeneratedFieldNameValue}}", map_Vertice_Identifiers[noteshapelink.Middlevertice])
-			pointersInitializesStatements += setPointerField
-		}
-
 	}
 
 	for idx, position := range positionOrdered {

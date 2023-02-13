@@ -16,6 +16,7 @@ import (
 
 	"github.com/fullstack-lang/gonggantt"
 	gonggantt_fullstack "github.com/fullstack-lang/gonggantt/go/fullstack"
+	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 
 	gongdoc_load "github.com/fullstack-lang/gongdoc/go/load"
@@ -35,9 +36,10 @@ var (
 	backupFlag  = flag.Bool("backup", false, "read database file, generate backup and exits")
 	restoreFlag = flag.Bool("restore", false, "generate restore and exits")
 
-	marshallOnStartup = flag.String("marshallOnStartup", "", "at startup, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
-	unmarshall        = flag.String("unmarshall", "", "unmarshall data from marshall name and '.go' (must be lowercased without spaces), If unmarshall arg is '', no unmarshalling")
-	marshallOnCommit  = flag.String("marshallOnCommit", "", "on all commits, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
+	marshallOnStartup  = flag.String("marshallOnStartup", "", "at startup, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
+	unmarshall         = flag.String("unmarshall", "", "unmarshall data from marshall name and '.go' (must be lowercased without spaces), If unmarshall arg is '', no unmarshalling")
+	marshallOnCommit   = flag.String("marshallOnCommit", "", "on all commits, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
+	unmarshallFromCode = flag.String("unmarshallFromCode", "", "unmarshall data from go file and '.go' (must be lowercased without spaces), If unmarshallFromCode arg is '', no unmarshalling")
 
 	diagrams = flag.Bool("diagrams", true, "parse diagrams (takes a few seconds)")
 
@@ -62,6 +64,7 @@ func (impl *BeforeCommitImplementation) BeforeCommit(stage *gonggantt_models.Sta
 
 	gonggantt_models.Stage.Checkout()
 	gonggantt_models.Stage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
+	gantt2svg.GanttToSVGTranformerSingloton.GenerateSvg(stage)
 }
 
 func main() {
@@ -117,6 +120,23 @@ func main() {
 
 		gonggantt_models.Stage.Commit()
 	}
+	if *unmarshallFromCode != "" {
+		gonggantt_models.Stage.Checkout()
+		gonggantt_models.Stage.Reset()
+		gonggantt_models.Stage.Commit()
+		err := gonggantt_models.ParseAstFile(*unmarshallFromCode)
+
+		// if the application is run with -unmarshallFromCode=xxx.go -marshallOnCommit
+		// xxx.go might be absent the first time. However, this shall not be a show stopper.
+		if err != nil {
+			log.Println("no file to read " + err.Error())
+		}
+
+		gonggantt_models.Stage.Commit()
+	} else {
+		// in case the database is used, checkout the content to the stage
+		gonggantt_models.Stage.Checkout()
+	}
 
 	// hook automatic marshall to go code at every commit
 	if *marshallOnCommit != "" {
@@ -143,6 +163,8 @@ func main() {
 		c.Redirect(http.StatusMovedPermanently, "/")
 		c.Abort()
 	})
+
+	gantt2svg.GanttToSVGTranformerSingloton.GenerateSvg(stage)
 
 	log.Printf("Server ready serve on localhost:8080")
 	r.Run()

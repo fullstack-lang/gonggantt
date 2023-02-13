@@ -1,7 +1,7 @@
 <form *ngIf="animate" class="details">
     <h2 class="details__title">animate</h2>
     <!-- insertion point for fields specific code -->
-    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Name")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Name</mat-label>
@@ -21,7 +21,7 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="animate.Name"></textarea>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("AttributeName")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("AttributeName")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>AttributeName</mat-label>
@@ -41,7 +41,7 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="animate.AttributeName"></textarea>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("Values")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Values")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Values</mat-label>
@@ -61,7 +61,7 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="animate.Values"></textarea>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("Dur")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("Dur")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>Dur</mat-label>
@@ -81,7 +81,7 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="animate.Dur"></textarea>
     </mat-form-field>
 
-    <mat-grid-list *ngIf='!isATextArea("RepeatCount")' cols="5" rowHeight="2:1">
+    <mat-grid-list *ngIf='!isATextArea("RepeatCount")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
                 <mat-label>RepeatCount</mat-label>

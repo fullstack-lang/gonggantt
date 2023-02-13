@@ -71,9 +71,6 @@ export class LinksTableComponent implements OnInit {
         case 'Name':
           return linkDB.Name;
 
-        case 'Structname':
-          return linkDB.Structname;
-
         case 'Identifier':
           return linkDB.Identifier;
 
@@ -111,7 +108,6 @@ export class LinksTableComponent implements OnInit {
 
       // insertion point for merging of fields
       mergedContent += linkDB.Name.toLowerCase()
-      mergedContent += linkDB.Structname.toLowerCase()
       mergedContent += linkDB.Identifier.toLowerCase()
       mergedContent += linkDB.Fieldtypename.toLowerCase()
       mergedContent += linkDB.TargetMultiplicity.toLowerCase()
@@ -172,9 +168,8 @@ export class LinksTableComponent implements OnInit {
       }
     )
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
-      this.displayedColumns = ['ID', 'Edit', 'Delete', // insertion point for columns to display
+      this.displayedColumns = ['ID', 'Delete', // insertion point for columns to display
         "Name",
-        "Structname",
         "Identifier",
         "Fieldtypename",
         "TargetMultiplicity",
@@ -185,7 +180,6 @@ export class LinksTableComponent implements OnInit {
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
-        "Structname",
         "Identifier",
         "Fieldtypename",
         "TargetMultiplicity",
@@ -275,15 +269,6 @@ export class LinksTableComponent implements OnInit {
     this.router.navigate([{
       outlets: {
         github_com_fullstack_lang_gongdoc_go_editor: ["github_com_fullstack_lang_gongdoc_go-" + "link-detail", linkID]
-      }
-    }]);
-  }
-
-  // set presentation outlet
-  setPresentationRouterOutlet(linkID: number) {
-    this.router.navigate([{
-      outlets: {
-        github_com_fullstack_lang_gongdoc_go_presentation: ["github_com_fullstack_lang_gongdoc_go-" + "link-presentation", linkID]
       }
     }]);
   }

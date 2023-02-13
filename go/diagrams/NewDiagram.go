@@ -11,11 +11,11 @@ import (
 
 // generated in order to avoid error in the package import
 // if there are no elements in the stage to marshall
-var ___dummy__Stage_NewDiagram2 models.StageStruct
-var ___dummy__Time_NewDiagram2 time.Time
+var ___dummy__Stage_NewDiagram models.StageStruct
+var ___dummy__Time_NewDiagram time.Time
 
 // Injection point for meta package dummy declaration
-var ___dummy__ref_models_NewDiagram2 ref_models.StageStruct
+var ___dummy__ref_models_NewDiagram ref_models.StageStruct
 
 // currently, DocLink renaming is not enabled in gopls
 // the following map are devised to overcome this limitation
@@ -24,7 +24,7 @@ var ___dummy__ref_models_NewDiagram2 ref_models.StageStruct
 // [Corresponding Issue](https://github.com/golang/go/issues/57559)
 //
 // When parsed, those maps will help with the renaming process
-var map_DocLink_Identifier_NewDiagram2 map[string]any = map[string]any{
+var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 	// injection point for docLink to identifiers
 
 	"ref_models.Arrow": &(ref_models.Arrow{}),
@@ -168,7 +168,7 @@ var map_DocLink_Identifier_NewDiagram2 map[string]any = map[string]any{
 // }
 
 // NewDiagramInjection will stage objects of database "NewDiagram"
-func NewDiagram2Injection() {
+func NewDiagramInjection() {
 
 	// Declaration of instances to stage
 
@@ -179,9 +179,12 @@ func NewDiagram2Injection() {
 
 	// Declarations of staged instances of Field
 	__Field__000000_End := (&models.Field{Name: `End`}).Stage()
-	__Field__000001_Start := (&models.Field{Name: `Start`}).Stage()
+	__Field__000001_Name := (&models.Field{Name: `Name`}).Stage()
+	__Field__000002_Start := (&models.Field{Name: `Start`}).Stage()
 
 	// Declarations of staged instances of GongEnumShape
+
+	// Declarations of staged instances of GongEnumValueEntry
 
 	// Declarations of staged instances of GongStructShape
 	__GongStructShape__000000_NewDiagram_Bar := (&models.GongStructShape{Name: `NewDiagram-Bar`}).Stage()
@@ -221,7 +224,7 @@ func NewDiagram2Injection() {
 
 	// Field values setup
 	__Field__000000_End.Name = `End`
-
+	
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Bar.End]
@@ -231,19 +234,30 @@ func NewDiagram2Injection() {
 	__Field__000000_End.Fieldtypename = `Time`
 
 	// Field values setup
-	__Field__000001_Start.Name = `Start`
+	__Field__000001_Name.Name = `Name`
+	
+	// comment added to overcome the problem with the comment map association
 
+	//gong:ident [ref_models.Bar.Name]
+	__Field__000001_Name.Identifier = `ref_models.Bar.Name`
+	__Field__000001_Name.FieldTypeAsString = ``
+	__Field__000001_Name.Structname = `Bar`
+	__Field__000001_Name.Fieldtypename = `string`
+
+	// Field values setup
+	__Field__000002_Start.Name = `Start`
+	
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Bar.Start]
-	__Field__000001_Start.Identifier = `ref_models.Bar.Start`
-	__Field__000001_Start.FieldTypeAsString = ``
-	__Field__000001_Start.Structname = `Bar`
-	__Field__000001_Start.Fieldtypename = `Time`
+	__Field__000002_Start.Identifier = `ref_models.Bar.Start`
+	__Field__000002_Start.FieldTypeAsString = ``
+	__Field__000002_Start.Structname = `Bar`
+	__Field__000002_Start.Fieldtypename = `Time`
 
 	// GongStructShape values setup
 	__GongStructShape__000000_NewDiagram_Bar.Name = `NewDiagram-Bar`
-
+	
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Bar]
@@ -251,12 +265,12 @@ func NewDiagram2Injection() {
 	__GongStructShape__000000_NewDiagram_Bar.ShowNbInstances = false
 	__GongStructShape__000000_NewDiagram_Bar.NbInstances = 0
 	__GongStructShape__000000_NewDiagram_Bar.Width = 240.000000
-	__GongStructShape__000000_NewDiagram_Bar.Heigth = 93.000000
+	__GongStructShape__000000_NewDiagram_Bar.Heigth = 108.000000
 	__GongStructShape__000000_NewDiagram_Bar.IsSelected = false
 
 	// GongStructShape values setup
 	__GongStructShape__000001_NewDiagram_Gantt.Name = `NewDiagram-Gantt`
-
+	
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Gantt]
@@ -269,7 +283,7 @@ func NewDiagram2Injection() {
 
 	// GongStructShape values setup
 	__GongStructShape__000002_NewDiagram_Lane.Name = `NewDiagram-Lane`
-
+	
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Lane]
@@ -282,8 +296,7 @@ func NewDiagram2Injection() {
 
 	// Link values setup
 	__Link__000000_Bars.Name = `Bars`
-	__Link__000000_Bars.Structname = `Lane`
-
+	
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Lane.Bars]
@@ -294,8 +307,7 @@ func NewDiagram2Injection() {
 
 	// Link values setup
 	__Link__000001_Lanes.Name = `Lanes`
-	__Link__000001_Lanes.Structname = `Gantt`
-
+	
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Gantt.Lanes]
@@ -305,28 +317,28 @@ func NewDiagram2Injection() {
 	__Link__000001_Lanes.SourceMultiplicity = models.ZERO_ONE
 
 	// Position values setup
-	__Position__000000_Pos_NewDiagram_Bar.X = 650.000000
-	__Position__000000_Pos_NewDiagram_Bar.Y = 60.000000
+	__Position__000000_Pos_NewDiagram_Bar.X = 730.000000
+	__Position__000000_Pos_NewDiagram_Bar.Y = 100.000000
 	__Position__000000_Pos_NewDiagram_Bar.Name = `Pos-NewDiagram-Bar`
 
 	// Position values setup
-	__Position__000001_Pos_NewDiagram_Gantt.X = 40.000000
-	__Position__000001_Pos_NewDiagram_Gantt.Y = 60.000000
+	__Position__000001_Pos_NewDiagram_Gantt.X = 70.000000
+	__Position__000001_Pos_NewDiagram_Gantt.Y = 104.000000
 	__Position__000001_Pos_NewDiagram_Gantt.Name = `Pos-NewDiagram-Gantt`
 
 	// Position values setup
-	__Position__000002_Pos_NewDiagram_Lane.X = 350.000000
-	__Position__000002_Pos_NewDiagram_Lane.Y = 60.000000
+	__Position__000002_Pos_NewDiagram_Lane.X = 400.000000
+	__Position__000002_Pos_NewDiagram_Lane.Y = 100.000000
 	__Position__000002_Pos_NewDiagram_Lane.Name = `Pos-NewDiagram-Lane`
 
 	// Vertice values setup
-	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Gantt_and_NewDiagram_Lane.X = 284.000000
-	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Gantt_and_NewDiagram_Lane.Y = 187.000000
+	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Gantt_and_NewDiagram_Lane.X = 363.000000
+	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Gantt_and_NewDiagram_Lane.Y = 210.000000
 	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Gantt_and_NewDiagram_Lane.Name = `Verticle in class diagram NewDiagram in middle between NewDiagram-Gantt and NewDiagram-Lane`
 
 	// Vertice values setup
-	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Lane_and_NewDiagram_Bar.X = 614.000000
-	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Lane_and_NewDiagram_Bar.Y = 203.000000
+	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Lane_and_NewDiagram_Bar.X = 615.000000
+	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Lane_and_NewDiagram_Bar.Y = 211.500000
 	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Lane_and_NewDiagram_Bar.Name = `Verticle in class diagram NewDiagram in middle between NewDiagram-Lane and NewDiagram-Bar`
 
 	// Setup of pointers
@@ -334,7 +346,8 @@ func NewDiagram2Injection() {
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000002_NewDiagram_Lane)
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000000_NewDiagram_Bar)
 	__GongStructShape__000000_NewDiagram_Bar.Position = __Position__000000_Pos_NewDiagram_Bar
-	__GongStructShape__000000_NewDiagram_Bar.Fields = append(__GongStructShape__000000_NewDiagram_Bar.Fields, __Field__000001_Start)
+	__GongStructShape__000000_NewDiagram_Bar.Fields = append(__GongStructShape__000000_NewDiagram_Bar.Fields, __Field__000001_Name)
+	__GongStructShape__000000_NewDiagram_Bar.Fields = append(__GongStructShape__000000_NewDiagram_Bar.Fields, __Field__000002_Start)
 	__GongStructShape__000000_NewDiagram_Bar.Fields = append(__GongStructShape__000000_NewDiagram_Bar.Fields, __Field__000000_End)
 	__GongStructShape__000001_NewDiagram_Gantt.Position = __Position__000001_Pos_NewDiagram_Gantt
 	__GongStructShape__000001_NewDiagram_Gantt.Links = append(__GongStructShape__000001_NewDiagram_Gantt.Links, __Link__000001_Lanes)
@@ -343,3 +356,5 @@ func NewDiagram2Injection() {
 	__Link__000000_Bars.Middlevertice = __Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Lane_and_NewDiagram_Bar
 	__Link__000001_Lanes.Middlevertice = __Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Gantt_and_NewDiagram_Lane
 }
+
+
