@@ -57,20 +57,6 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 
 	"ref_models.Bar.StrokeWidth": (ref_models.Bar{}).StrokeWidth,
 
-	"ref_models.GONG__ENUM_CAST_INT": ref_models.GONG__ENUM_CAST_INT,
-
-	"ref_models.GONG__ENUM_CAST_STRING": ref_models.GONG__ENUM_CAST_STRING,
-
-	"ref_models.GONG__ExpressionType": ref_models.GONG__ExpressionType(""),
-
-	"ref_models.GONG__FIELD_OR_CONST_VALUE": ref_models.GONG__FIELD_OR_CONST_VALUE,
-
-	"ref_models.GONG__FIELD_VALUE": ref_models.GONG__FIELD_VALUE,
-
-	"ref_models.GONG__IDENTIFIER_CONST": ref_models.GONG__IDENTIFIER_CONST,
-
-	"ref_models.GONG__STRUCT_INSTANCE": ref_models.GONG__STRUCT_INSTANCE,
-
 	"ref_models.Gantt": &(ref_models.Gantt{}),
 
 	"ref_models.Gantt.AlignOnStartEndOnYearStart": (ref_models.Gantt{}).AlignOnStartEndOnYearStart,
@@ -158,6 +144,8 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 	"ref_models.Milestone.LanesToDisplayMilestoneUse": (ref_models.Milestone{}).LanesToDisplayMilestoneUse,
 
 	"ref_models.Milestone.Name": (ref_models.Milestone{}).Name,
+
+	"ref_models.NoteOnTheModel": ref_models.NoteOnTheModel,
 }
 
 // init might be handy if one want to have the data embedded in the binary
@@ -199,8 +187,12 @@ func NewDiagramInjection() {
 	// Declarations of staged instances of Node
 
 	// Declarations of staged instances of NoteShape
+	__NoteShape__000000_NoteOnTheModel := (&models.NoteShape{Name: `NoteOnTheModel`}).Stage()
 
 	// Declarations of staged instances of NoteShapeLink
+	__NoteShapeLink__000000_Bar := (&models.NoteShapeLink{Name: `Bar`}).Stage()
+	__NoteShapeLink__000001_Gantt := (&models.NoteShapeLink{Name: `Gantt`}).Stage()
+	__NoteShapeLink__000002_Lane := (&models.NoteShapeLink{Name: `Lane`}).Stage()
 
 	// Declarations of staged instances of Position
 	__Position__000000_Pos_NewDiagram_Bar := (&models.Position{Name: `Pos-NewDiagram-Bar`}).Stage()
@@ -328,6 +320,56 @@ func NewDiagramInjection() {
 	__Link__000001_Lanes.TargetMultiplicity = models.MANY
 	__Link__000001_Lanes.SourceMultiplicity = models.ZERO_ONE
 
+	// NoteShape values setup
+	__NoteShape__000000_NoteOnTheModel.Name = `NoteOnTheModel`
+	
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.NoteOnTheModel]
+	__NoteShape__000000_NoteOnTheModel.Identifier = `ref_models.NoteOnTheModel`
+	__NoteShape__000000_NoteOnTheModel.Body = `A Gantt Diagram
+is an instance of [models.Gantt] that has
+a slice of lanes ([models.Lane]).
+
+Each lane vertical position is defined by it order field [models.Lane.Order].
+Each has a slice of tasks
+
+A task is displayed as a bar ([models.Bar]) with a start and end date
+[models.Bar.StartDate] and [models.Bar.EndDate]).
+`
+	__NoteShape__000000_NoteOnTheModel.X = 250.000000
+	__NoteShape__000000_NoteOnTheModel.Y = 290.000000
+	__NoteShape__000000_NoteOnTheModel.Width = 240.000000
+	__NoteShape__000000_NoteOnTheModel.Heigth = 63.000000
+	__NoteShape__000000_NoteOnTheModel.Matched = false
+
+	// NoteShapeLink values setup
+	__NoteShapeLink__000000_Bar.Name = `Bar`
+	
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Bar]
+	__NoteShapeLink__000000_Bar.Identifier = `ref_models.Bar`
+	__NoteShapeLink__000000_Bar.Type = models.NOTE_SHAPE_LINK_TO_GONG_STRUCT_OR_ENUM_SHAPE
+
+	// NoteShapeLink values setup
+	__NoteShapeLink__000001_Gantt.Name = `Gantt`
+	
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Gantt]
+	__NoteShapeLink__000001_Gantt.Identifier = `ref_models.Gantt`
+	__NoteShapeLink__000001_Gantt.Type = models.NOTE_SHAPE_LINK_TO_GONG_STRUCT_OR_ENUM_SHAPE
+
+	// NoteShapeLink values setup
+	__NoteShapeLink__000002_Lane.Name = `Lane`
+	
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Lane]
+	__NoteShapeLink__000002_Lane.Identifier = `ref_models.Lane`
+	__NoteShapeLink__000002_Lane.Type = models.NOTE_SHAPE_LINK_TO_GONG_STRUCT_OR_ENUM_SHAPE
+
 	// Position values setup
 	__Position__000000_Pos_NewDiagram_Bar.X = 730.000000
 	__Position__000000_Pos_NewDiagram_Bar.Y = 100.000000
@@ -357,6 +399,7 @@ func NewDiagramInjection() {
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000001_NewDiagram_Gantt)
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000002_NewDiagram_Lane)
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000000_NewDiagram_Bar)
+	__Classdiagram__000000_NewDiagram.NoteShapes = append(__Classdiagram__000000_NewDiagram.NoteShapes, __NoteShape__000000_NoteOnTheModel)
 	__GongStructShape__000000_NewDiagram_Bar.Position = __Position__000000_Pos_NewDiagram_Bar
 	__GongStructShape__000000_NewDiagram_Bar.Fields = append(__GongStructShape__000000_NewDiagram_Bar.Fields, __Field__000001_Name)
 	__GongStructShape__000000_NewDiagram_Bar.Fields = append(__GongStructShape__000000_NewDiagram_Bar.Fields, __Field__000003_Start)
@@ -368,6 +411,9 @@ func NewDiagramInjection() {
 	__GongStructShape__000002_NewDiagram_Lane.Links = append(__GongStructShape__000002_NewDiagram_Lane.Links, __Link__000000_Bars)
 	__Link__000000_Bars.Middlevertice = __Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Lane_and_NewDiagram_Bar
 	__Link__000001_Lanes.Middlevertice = __Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Gantt_and_NewDiagram_Lane
+	__NoteShape__000000_NoteOnTheModel.NoteShapeLinks = append(__NoteShape__000000_NoteOnTheModel.NoteShapeLinks, __NoteShapeLink__000000_Bar)
+	__NoteShape__000000_NoteOnTheModel.NoteShapeLinks = append(__NoteShape__000000_NoteOnTheModel.NoteShapeLinks, __NoteShapeLink__000001_Gantt)
+	__NoteShape__000000_NoteOnTheModel.NoteShapeLinks = append(__NoteShape__000000_NoteOnTheModel.NoteShapeLinks, __NoteShapeLink__000002_Lane)
 }
 
 
