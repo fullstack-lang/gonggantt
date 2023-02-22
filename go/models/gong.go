@@ -1075,25 +1075,32 @@ type GongstructMapString interface {
 
 // GongGetSet returns the set staged GongstructType instances
 // it is usefull because it allows refactoring of gong struct identifier
-func GongGetSet[Type GongstructSet]() *Type {
+func GongGetSet[Type GongstructSet](stages ...*StageStruct) *Type {
 	var ret Type
+
+	var stage *StageStruct
+	if len(stages) > 0 {
+		stage = stages[0]
+	} else {
+		stage = &Stage
+	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case map[*Arrow]any:
-		return any(&Stage.Arrows).(*Type)
+		return any(&stage.Arrows).(*Type)
 	case map[*Bar]any:
-		return any(&Stage.Bars).(*Type)
+		return any(&stage.Bars).(*Type)
 	case map[*Gantt]any:
-		return any(&Stage.Gantts).(*Type)
+		return any(&stage.Gantts).(*Type)
 	case map[*Group]any:
-		return any(&Stage.Groups).(*Type)
+		return any(&stage.Groups).(*Type)
 	case map[*Lane]any:
-		return any(&Stage.Lanes).(*Type)
+		return any(&stage.Lanes).(*Type)
 	case map[*LaneUse]any:
-		return any(&Stage.LaneUses).(*Type)
+		return any(&stage.LaneUses).(*Type)
 	case map[*Milestone]any:
-		return any(&Stage.Milestones).(*Type)
+		return any(&stage.Milestones).(*Type)
 	default:
 		return nil
 	}
@@ -1101,25 +1108,32 @@ func GongGetSet[Type GongstructSet]() *Type {
 
 // GongGetMap returns the map of staged GongstructType instances
 // it is usefull because it allows refactoring of gong struct identifier
-func GongGetMap[Type GongstructMapString]() *Type {
+func GongGetMap[Type GongstructMapString](stages ...*StageStruct) *Type {
 	var ret Type
+
+	var stage *StageStruct
+	if len(stages) > 0 {
+		stage = stages[0]
+	} else {
+		stage = &Stage
+	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case map[string]*Arrow:
-		return any(&Stage.Arrows_mapString).(*Type)
+		return any(&stage.Arrows_mapString).(*Type)
 	case map[string]*Bar:
-		return any(&Stage.Bars_mapString).(*Type)
+		return any(&stage.Bars_mapString).(*Type)
 	case map[string]*Gantt:
-		return any(&Stage.Gantts_mapString).(*Type)
+		return any(&stage.Gantts_mapString).(*Type)
 	case map[string]*Group:
-		return any(&Stage.Groups_mapString).(*Type)
+		return any(&stage.Groups_mapString).(*Type)
 	case map[string]*Lane:
-		return any(&Stage.Lanes_mapString).(*Type)
+		return any(&stage.Lanes_mapString).(*Type)
 	case map[string]*LaneUse:
-		return any(&Stage.LaneUses_mapString).(*Type)
+		return any(&stage.LaneUses_mapString).(*Type)
 	case map[string]*Milestone:
-		return any(&Stage.Milestones_mapString).(*Type)
+		return any(&stage.Milestones_mapString).(*Type)
 	default:
 		return nil
 	}
@@ -1127,25 +1141,32 @@ func GongGetMap[Type GongstructMapString]() *Type {
 
 // GetGongstructInstancesSet returns the set staged GongstructType instances
 // it is usefull because it allows refactoring of gongstruct identifier
-func GetGongstructInstancesSet[Type Gongstruct]() *map[*Type]any {
+func GetGongstructInstancesSet[Type Gongstruct](stages ...*StageStruct) *map[*Type]any {
 	var ret Type
+
+	var stage *StageStruct
+	if len(stages) > 0 {
+		stage = stages[0]
+	} else {
+		stage = &Stage
+	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case Arrow:
-		return any(&Stage.Arrows).(*map[*Type]any)
+		return any(&stage.Arrows).(*map[*Type]any)
 	case Bar:
-		return any(&Stage.Bars).(*map[*Type]any)
+		return any(&stage.Bars).(*map[*Type]any)
 	case Gantt:
-		return any(&Stage.Gantts).(*map[*Type]any)
+		return any(&stage.Gantts).(*map[*Type]any)
 	case Group:
-		return any(&Stage.Groups).(*map[*Type]any)
+		return any(&stage.Groups).(*map[*Type]any)
 	case Lane:
-		return any(&Stage.Lanes).(*map[*Type]any)
+		return any(&stage.Lanes).(*map[*Type]any)
 	case LaneUse:
-		return any(&Stage.LaneUses).(*map[*Type]any)
+		return any(&stage.LaneUses).(*map[*Type]any)
 	case Milestone:
-		return any(&Stage.Milestones).(*map[*Type]any)
+		return any(&stage.Milestones).(*map[*Type]any)
 	default:
 		return nil
 	}
@@ -1153,25 +1174,32 @@ func GetGongstructInstancesSet[Type Gongstruct]() *map[*Type]any {
 
 // GetGongstructInstancesMap returns the map of staged GongstructType instances
 // it is usefull because it allows refactoring of gong struct identifier
-func GetGongstructInstancesMap[Type Gongstruct]() *map[string]*Type {
+func GetGongstructInstancesMap[Type Gongstruct](stages ...*StageStruct) *map[string]*Type {
 	var ret Type
+
+	var stage *StageStruct
+	if len(stages) > 0 {
+		stage = stages[0]
+	} else {
+		stage = &Stage
+	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case Arrow:
-		return any(&Stage.Arrows_mapString).(*map[string]*Type)
+		return any(&stage.Arrows_mapString).(*map[string]*Type)
 	case Bar:
-		return any(&Stage.Bars_mapString).(*map[string]*Type)
+		return any(&stage.Bars_mapString).(*map[string]*Type)
 	case Gantt:
-		return any(&Stage.Gantts_mapString).(*map[string]*Type)
+		return any(&stage.Gantts_mapString).(*map[string]*Type)
 	case Group:
-		return any(&Stage.Groups_mapString).(*map[string]*Type)
+		return any(&stage.Groups_mapString).(*map[string]*Type)
 	case Lane:
-		return any(&Stage.Lanes_mapString).(*map[string]*Type)
+		return any(&stage.Lanes_mapString).(*map[string]*Type)
 	case LaneUse:
-		return any(&Stage.LaneUses_mapString).(*map[string]*Type)
+		return any(&stage.LaneUses_mapString).(*map[string]*Type)
 	case Milestone:
-		return any(&Stage.Milestones_mapString).(*map[string]*Type)
+		return any(&stage.Milestones_mapString).(*map[string]*Type)
 	default:
 		return nil
 	}

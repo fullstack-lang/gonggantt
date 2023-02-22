@@ -86,6 +86,8 @@ export class DialogData {
   IntermediateStruct: string = "" // the "AclassBclassUse" 
   IntermediateStructField: string = "" // the "Bclass" as field
   NextAssociationStruct: string = "" // the "Bclass"
+
+  GONG__StackPath: string = ""
 }
 
 export enum SelectionMode {
@@ -100,6 +102,8 @@ export enum SelectionMode {
   providedIn: 'root'
 })
 export class FrontRepoService {
+
+  GONG__StackPath: string = ""
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -151,14 +155,14 @@ export class FrontRepoService {
     Observable<LaneDB[]>,
     Observable<LaneUseDB[]>,
     Observable<MilestoneDB[]>,
-  ] = [ // insertion point sub template 
-      this.arrowService.getArrows(),
-      this.barService.getBars(),
-      this.ganttService.getGantts(),
-      this.groupService.getGroups(),
-      this.laneService.getLanes(),
-      this.laneuseService.getLaneUses(),
-      this.milestoneService.getMilestones(),
+  ] = [ // insertion point sub template
+      this.arrowService.getArrows(this.GONG__StackPath),
+      this.barService.getBars(this.GONG__StackPath),
+      this.ganttService.getGantts(this.GONG__StackPath),
+      this.groupService.getGroups(this.GONG__StackPath),
+      this.laneService.getLanes(this.GONG__StackPath),
+      this.laneuseService.getLaneUses(this.GONG__StackPath),
+      this.milestoneService.getMilestones(this.GONG__StackPath),
     ];
 
   //
@@ -167,7 +171,20 @@ export class FrontRepoService {
   // This is an observable. Therefore, the control flow forks with
   // - pull() return immediatly the observable
   // - the observable observer, if it subscribe, is called when all GET calls are performs
-  pull(): Observable<FrontRepo> {
+  pull(GONG__StackPath: string = ""): Observable<FrontRepo> {
+
+    this.GONG__StackPath = GONG__StackPath
+
+    this.observableFrontRepo = [ // insertion point sub template
+      this.arrowService.getArrows(this.GONG__StackPath),
+      this.barService.getBars(this.GONG__StackPath),
+      this.ganttService.getGantts(this.GONG__StackPath),
+      this.groupService.getGroups(this.GONG__StackPath),
+      this.laneService.getLanes(this.GONG__StackPath),
+      this.laneuseService.getLaneUses(this.GONG__StackPath),
+      this.milestoneService.getMilestones(this.GONG__StackPath),
+    ]
+
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest(
