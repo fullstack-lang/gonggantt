@@ -2,11 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
-	"github.com/fullstack-lang/gongsvg/go/orm"
 )
 
 // genQuery return the name of the column
@@ -43,91 +42,111 @@ type ValidationError struct {
 func RegisterControllers(r *gin.Engine) {
 	v1 := r.Group("/api/github.com/fullstack-lang/gongsvg/go")
 	{ // insertion point for registrations
-		v1.GET("/v1/animates", GetAnimates)
-		v1.GET("/v1/animates/:id", GetAnimate)
-		v1.POST("/v1/animates", PostAnimate)
-		v1.PATCH("/v1/animates/:id", UpdateAnimate)
-		v1.PUT("/v1/animates/:id", UpdateAnimate)
-		v1.DELETE("/v1/animates/:id", DeleteAnimate)
+		v1.GET("/v1/animates", GetController().GetAnimates)
+		v1.GET("/v1/animates/:id", GetController().GetAnimate)
+		v1.POST("/v1/animates", GetController().PostAnimate)
+		v1.PATCH("/v1/animates/:id", GetController().UpdateAnimate)
+		v1.PUT("/v1/animates/:id", GetController().UpdateAnimate)
+		v1.DELETE("/v1/animates/:id", GetController().DeleteAnimate)
 
-		v1.GET("/v1/circles", GetCircles)
-		v1.GET("/v1/circles/:id", GetCircle)
-		v1.POST("/v1/circles", PostCircle)
-		v1.PATCH("/v1/circles/:id", UpdateCircle)
-		v1.PUT("/v1/circles/:id", UpdateCircle)
-		v1.DELETE("/v1/circles/:id", DeleteCircle)
+		v1.GET("/v1/circles", GetController().GetCircles)
+		v1.GET("/v1/circles/:id", GetController().GetCircle)
+		v1.POST("/v1/circles", GetController().PostCircle)
+		v1.PATCH("/v1/circles/:id", GetController().UpdateCircle)
+		v1.PUT("/v1/circles/:id", GetController().UpdateCircle)
+		v1.DELETE("/v1/circles/:id", GetController().DeleteCircle)
 
-		v1.GET("/v1/ellipses", GetEllipses)
-		v1.GET("/v1/ellipses/:id", GetEllipse)
-		v1.POST("/v1/ellipses", PostEllipse)
-		v1.PATCH("/v1/ellipses/:id", UpdateEllipse)
-		v1.PUT("/v1/ellipses/:id", UpdateEllipse)
-		v1.DELETE("/v1/ellipses/:id", DeleteEllipse)
+		v1.GET("/v1/ellipses", GetController().GetEllipses)
+		v1.GET("/v1/ellipses/:id", GetController().GetEllipse)
+		v1.POST("/v1/ellipses", GetController().PostEllipse)
+		v1.PATCH("/v1/ellipses/:id", GetController().UpdateEllipse)
+		v1.PUT("/v1/ellipses/:id", GetController().UpdateEllipse)
+		v1.DELETE("/v1/ellipses/:id", GetController().DeleteEllipse)
 
-		v1.GET("/v1/lines", GetLines)
-		v1.GET("/v1/lines/:id", GetLine)
-		v1.POST("/v1/lines", PostLine)
-		v1.PATCH("/v1/lines/:id", UpdateLine)
-		v1.PUT("/v1/lines/:id", UpdateLine)
-		v1.DELETE("/v1/lines/:id", DeleteLine)
+		v1.GET("/v1/lines", GetController().GetLines)
+		v1.GET("/v1/lines/:id", GetController().GetLine)
+		v1.POST("/v1/lines", GetController().PostLine)
+		v1.PATCH("/v1/lines/:id", GetController().UpdateLine)
+		v1.PUT("/v1/lines/:id", GetController().UpdateLine)
+		v1.DELETE("/v1/lines/:id", GetController().DeleteLine)
 
-		v1.GET("/v1/paths", GetPaths)
-		v1.GET("/v1/paths/:id", GetPath)
-		v1.POST("/v1/paths", PostPath)
-		v1.PATCH("/v1/paths/:id", UpdatePath)
-		v1.PUT("/v1/paths/:id", UpdatePath)
-		v1.DELETE("/v1/paths/:id", DeletePath)
+		v1.GET("/v1/paths", GetController().GetPaths)
+		v1.GET("/v1/paths/:id", GetController().GetPath)
+		v1.POST("/v1/paths", GetController().PostPath)
+		v1.PATCH("/v1/paths/:id", GetController().UpdatePath)
+		v1.PUT("/v1/paths/:id", GetController().UpdatePath)
+		v1.DELETE("/v1/paths/:id", GetController().DeletePath)
 
-		v1.GET("/v1/polygones", GetPolygones)
-		v1.GET("/v1/polygones/:id", GetPolygone)
-		v1.POST("/v1/polygones", PostPolygone)
-		v1.PATCH("/v1/polygones/:id", UpdatePolygone)
-		v1.PUT("/v1/polygones/:id", UpdatePolygone)
-		v1.DELETE("/v1/polygones/:id", DeletePolygone)
+		v1.GET("/v1/polygones", GetController().GetPolygones)
+		v1.GET("/v1/polygones/:id", GetController().GetPolygone)
+		v1.POST("/v1/polygones", GetController().PostPolygone)
+		v1.PATCH("/v1/polygones/:id", GetController().UpdatePolygone)
+		v1.PUT("/v1/polygones/:id", GetController().UpdatePolygone)
+		v1.DELETE("/v1/polygones/:id", GetController().DeletePolygone)
 
-		v1.GET("/v1/polylines", GetPolylines)
-		v1.GET("/v1/polylines/:id", GetPolyline)
-		v1.POST("/v1/polylines", PostPolyline)
-		v1.PATCH("/v1/polylines/:id", UpdatePolyline)
-		v1.PUT("/v1/polylines/:id", UpdatePolyline)
-		v1.DELETE("/v1/polylines/:id", DeletePolyline)
+		v1.GET("/v1/polylines", GetController().GetPolylines)
+		v1.GET("/v1/polylines/:id", GetController().GetPolyline)
+		v1.POST("/v1/polylines", GetController().PostPolyline)
+		v1.PATCH("/v1/polylines/:id", GetController().UpdatePolyline)
+		v1.PUT("/v1/polylines/:id", GetController().UpdatePolyline)
+		v1.DELETE("/v1/polylines/:id", GetController().DeletePolyline)
 
-		v1.GET("/v1/rects", GetRects)
-		v1.GET("/v1/rects/:id", GetRect)
-		v1.POST("/v1/rects", PostRect)
-		v1.PATCH("/v1/rects/:id", UpdateRect)
-		v1.PUT("/v1/rects/:id", UpdateRect)
-		v1.DELETE("/v1/rects/:id", DeleteRect)
+		v1.GET("/v1/rects", GetController().GetRects)
+		v1.GET("/v1/rects/:id", GetController().GetRect)
+		v1.POST("/v1/rects", GetController().PostRect)
+		v1.PATCH("/v1/rects/:id", GetController().UpdateRect)
+		v1.PUT("/v1/rects/:id", GetController().UpdateRect)
+		v1.DELETE("/v1/rects/:id", GetController().DeleteRect)
 
-		v1.GET("/v1/svgs", GetSVGs)
-		v1.GET("/v1/svgs/:id", GetSVG)
-		v1.POST("/v1/svgs", PostSVG)
-		v1.PATCH("/v1/svgs/:id", UpdateSVG)
-		v1.PUT("/v1/svgs/:id", UpdateSVG)
-		v1.DELETE("/v1/svgs/:id", DeleteSVG)
+		v1.GET("/v1/svgs", GetController().GetSVGs)
+		v1.GET("/v1/svgs/:id", GetController().GetSVG)
+		v1.POST("/v1/svgs", GetController().PostSVG)
+		v1.PATCH("/v1/svgs/:id", GetController().UpdateSVG)
+		v1.PUT("/v1/svgs/:id", GetController().UpdateSVG)
+		v1.DELETE("/v1/svgs/:id", GetController().DeleteSVG)
 
-		v1.GET("/v1/texts", GetTexts)
-		v1.GET("/v1/texts/:id", GetText)
-		v1.POST("/v1/texts", PostText)
-		v1.PATCH("/v1/texts/:id", UpdateText)
-		v1.PUT("/v1/texts/:id", UpdateText)
-		v1.DELETE("/v1/texts/:id", DeleteText)
+		v1.GET("/v1/texts", GetController().GetTexts)
+		v1.GET("/v1/texts/:id", GetController().GetText)
+		v1.POST("/v1/texts", GetController().PostText)
+		v1.PATCH("/v1/texts/:id", GetController().UpdateText)
+		v1.PUT("/v1/texts/:id", GetController().UpdateText)
+		v1.DELETE("/v1/texts/:id", GetController().DeleteText)
 
-		v1.GET("/v1/commitfrombacknb", GetLastCommitFromBackNb)
-		v1.GET("/v1/pushfromfrontnb", GetLastPushFromFrontNb)
+		v1.GET("/v1/commitfrombacknb", GetController().GetLastCommitFromBackNb)
+		v1.GET("/v1/pushfromfrontnb", GetController().GetLastPushFromFrontNb)
 	}
 }
 
 // swagger:route GET /commitfrombacknb backrepo GetLastCommitFromBackNb
-func GetLastCommitFromBackNb(c *gin.Context) {
-	res := orm.GetLastCommitFromBackNb()
+func (controller *Controller) GetLastCommitFromBackNb(c *gin.Context) {
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetLastCommitFromBackNb", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	res := backRepo.GetLastCommitFromBackNb()
 
 	c.JSON(http.StatusOK, res)
 }
 
 // swagger:route GET /pushfromfrontnb backrepo GetLastPushFromFrontNb
-func GetLastPushFromFrontNb(c *gin.Context) {
-	res := orm.GetLastPushFromFrontNb()
+func(controller *Controller) GetLastPushFromFrontNb(c *gin.Context) {
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetLastPushFromFrontNb", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	res := backRepo.GetLastPushFromFrontNb()
 
 	c.JSON(http.StatusOK, res)
 }

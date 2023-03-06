@@ -150,6 +150,13 @@ type BackRepoPolylineStruct struct {
 	Map_PolylineDBID_PolylinePtr *map[uint]*models.Polyline
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoPolyline *BackRepoPolylineStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoPolyline.stage
+	return
 }
 
 func (backRepoPolyline *BackRepoPolylineStruct) GetDB() *gorm.DB {
@@ -164,7 +171,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) GetPolylineDBFromPolylinePtr(pol
 }
 
 // BackRepoPolyline.Init set up the BackRepo of the Polyline
-func (backRepoPolyline *BackRepoPolylineStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoPolyline *BackRepoPolylineStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoPolyline.Map_PolylineDBID_PolylinePtr != nil {
 		err := errors.New("In Init, backRepoPolyline.Map_PolylineDBID_PolylinePtr should be nil")
@@ -191,6 +198,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) Init(db *gorm.DB) (Error error) 
 	backRepoPolyline.Map_PolylinePtr_PolylineDBID = &tmpID
 
 	backRepoPolyline.db = db
+	backRepoPolyline.stage = stage
 	return
 }
 
@@ -328,7 +336,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOne() (Error error)
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	polylineInstancesToBeRemovedFromTheStage := make(map[*models.Polyline]any)
-	for key, value := range models.Stage.Polylines {
+	for key, value := range backRepoPolyline.stage.Polylines {
 		polylineInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -346,7 +354,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOne() (Error error)
 
 	// remove from stage and back repo's 3 maps all polylines that are not in the checkout
 	for polyline := range polylineInstancesToBeRemovedFromTheStage {
-		polyline.Unstage()
+		polyline.Unstage(backRepoPolyline.GetStage())
 
 		// remove instance from the back repo 3 maps
 		polylineID := (*backRepoPolyline.Map_PolylinePtr_PolylineDBID)[polyline]
@@ -371,12 +379,12 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOneInstance(polylin
 
 		// append model store with the new element
 		polyline.Name = polylineDB.Name_Data.String
-		polyline.Stage()
+		polyline.Stage(backRepoPolyline.GetStage())
 	}
 	polylineDB.CopyBasicFieldsToPolyline(polyline)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	polyline.Stage()
+	polyline.Stage(backRepoPolyline.GetStage())
 
 	// preserve pointer to polylineDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_PolylineDBID_PolylineDB)[polylineDB hold variable pointers

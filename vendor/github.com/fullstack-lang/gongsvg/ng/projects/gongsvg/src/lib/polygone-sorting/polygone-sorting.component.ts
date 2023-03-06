@@ -46,7 +46,7 @@ export class PolygoneSortingComponent implements OnInit {
   }
 
   getPolygones(): void {
-    this.frontRepoService.pull().subscribe(
+    this.frontRepoService.pull(this.dialogData.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
@@ -100,13 +100,13 @@ export class PolygoneSortingComponent implements OnInit {
 
     this.associatedPolygones.forEach(
       polygone => {
-        this.polygoneService.updatePolygone(polygone)
+        this.polygoneService.updatePolygone(polygone, this.dialogData.GONG__StackPath)
           .subscribe(polygone => {
             this.polygoneService.PolygoneServiceChanged.next("update")
           });
       }
     )
 
-    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer +' done');
+    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer + ' done');
   }
 }

@@ -104,6 +104,8 @@ export class DialogData {
   IntermediateStruct: string = "" // the "AclassBclassUse" 
   IntermediateStructField: string = "" // the "Bclass" as field
   NextAssociationStruct: string = "" // the "Bclass"
+
+  GONG__StackPath: string = ""
 }
 
 export enum SelectionMode {
@@ -118,6 +120,8 @@ export enum SelectionMode {
   providedIn: 'root'
 })
 export class FrontRepoService {
+
+  GONG__StackPath: string = ""
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -175,17 +179,17 @@ export class FrontRepoService {
     Observable<RectDB[]>,
     Observable<SVGDB[]>,
     Observable<TextDB[]>,
-  ] = [ // insertion point sub template 
-      this.animateService.getAnimates(),
-      this.circleService.getCircles(),
-      this.ellipseService.getEllipses(),
-      this.lineService.getLines(),
-      this.pathService.getPaths(),
-      this.polygoneService.getPolygones(),
-      this.polylineService.getPolylines(),
-      this.rectService.getRects(),
-      this.svgService.getSVGs(),
-      this.textService.getTexts(),
+  ] = [ // insertion point sub template
+      this.animateService.getAnimates(this.GONG__StackPath),
+      this.circleService.getCircles(this.GONG__StackPath),
+      this.ellipseService.getEllipses(this.GONG__StackPath),
+      this.lineService.getLines(this.GONG__StackPath),
+      this.pathService.getPaths(this.GONG__StackPath),
+      this.polygoneService.getPolygones(this.GONG__StackPath),
+      this.polylineService.getPolylines(this.GONG__StackPath),
+      this.rectService.getRects(this.GONG__StackPath),
+      this.svgService.getSVGs(this.GONG__StackPath),
+      this.textService.getTexts(this.GONG__StackPath),
     ];
 
   //
@@ -194,7 +198,23 @@ export class FrontRepoService {
   // This is an observable. Therefore, the control flow forks with
   // - pull() return immediatly the observable
   // - the observable observer, if it subscribe, is called when all GET calls are performs
-  pull(): Observable<FrontRepo> {
+  pull(GONG__StackPath: string = ""): Observable<FrontRepo> {
+
+    this.GONG__StackPath = GONG__StackPath
+
+    this.observableFrontRepo = [ // insertion point sub template
+      this.animateService.getAnimates(this.GONG__StackPath),
+      this.circleService.getCircles(this.GONG__StackPath),
+      this.ellipseService.getEllipses(this.GONG__StackPath),
+      this.lineService.getLines(this.GONG__StackPath),
+      this.pathService.getPaths(this.GONG__StackPath),
+      this.polygoneService.getPolygones(this.GONG__StackPath),
+      this.polylineService.getPolylines(this.GONG__StackPath),
+      this.rectService.getRects(this.GONG__StackPath),
+      this.svgService.getSVGs(this.GONG__StackPath),
+      this.textService.getTexts(this.GONG__StackPath),
+    ]
+
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest(

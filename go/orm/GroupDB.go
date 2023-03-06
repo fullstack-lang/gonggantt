@@ -108,6 +108,13 @@ type BackRepoGroupStruct struct {
 	Map_GroupDBID_GroupPtr *map[uint]*models.Group
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoGroup *BackRepoGroupStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoGroup.stage
+	return
 }
 
 func (backRepoGroup *BackRepoGroupStruct) GetDB() *gorm.DB {
@@ -122,7 +129,7 @@ func (backRepoGroup *BackRepoGroupStruct) GetGroupDBFromGroupPtr(group *models.G
 }
 
 // BackRepoGroup.Init set up the BackRepo of the Group
-func (backRepoGroup *BackRepoGroupStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoGroup *BackRepoGroupStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoGroup.Map_GroupDBID_GroupPtr != nil {
 		err := errors.New("In Init, backRepoGroup.Map_GroupDBID_GroupPtr should be nil")
@@ -149,6 +156,7 @@ func (backRepoGroup *BackRepoGroupStruct) Init(db *gorm.DB) (Error error) {
 	backRepoGroup.Map_GroupPtr_GroupDBID = &tmpID
 
 	backRepoGroup.db = db
+	backRepoGroup.stage = stage
 	return
 }
 
@@ -286,7 +294,7 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	groupInstancesToBeRemovedFromTheStage := make(map[*models.Group]any)
-	for key, value := range models.Stage.Groups {
+	for key, value := range backRepoGroup.stage.Groups {
 		groupInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -304,7 +312,7 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all groups that are not in the checkout
 	for group := range groupInstancesToBeRemovedFromTheStage {
-		group.Unstage()
+		group.Unstage(backRepoGroup.GetStage())
 
 		// remove instance from the back repo 3 maps
 		groupID := (*backRepoGroup.Map_GroupPtr_GroupDBID)[group]
@@ -329,12 +337,12 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOneInstance(groupDB *Grou
 
 		// append model store with the new element
 		group.Name = groupDB.Name_Data.String
-		group.Stage()
+		group.Stage(backRepoGroup.GetStage())
 	}
 	groupDB.CopyBasicFieldsToGroup(group)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	group.Stage()
+	group.Stage(backRepoGroup.GetStage())
 
 	// preserve pointer to groupDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_GroupDBID_GroupDB)[groupDB hold variable pointers

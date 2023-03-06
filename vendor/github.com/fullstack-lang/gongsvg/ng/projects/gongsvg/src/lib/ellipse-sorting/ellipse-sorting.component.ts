@@ -46,7 +46,7 @@ export class EllipseSortingComponent implements OnInit {
   }
 
   getEllipses(): void {
-    this.frontRepoService.pull().subscribe(
+    this.frontRepoService.pull(this.dialogData.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
@@ -100,13 +100,13 @@ export class EllipseSortingComponent implements OnInit {
 
     this.associatedEllipses.forEach(
       ellipse => {
-        this.ellipseService.updateEllipse(ellipse)
+        this.ellipseService.updateEllipse(ellipse, this.dialogData.GONG__StackPath)
           .subscribe(ellipse => {
             this.ellipseService.EllipseServiceChanged.next("update")
           });
       }
     )
 
-    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer +' done');
+    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer + ' done');
   }
 }

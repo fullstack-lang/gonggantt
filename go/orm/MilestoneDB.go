@@ -121,6 +121,13 @@ type BackRepoMilestoneStruct struct {
 	Map_MilestoneDBID_MilestonePtr *map[uint]*models.Milestone
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoMilestone *BackRepoMilestoneStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoMilestone.stage
+	return
 }
 
 func (backRepoMilestone *BackRepoMilestoneStruct) GetDB() *gorm.DB {
@@ -135,7 +142,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) GetMilestoneDBFromMilestonePtr
 }
 
 // BackRepoMilestone.Init set up the BackRepo of the Milestone
-func (backRepoMilestone *BackRepoMilestoneStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoMilestone *BackRepoMilestoneStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoMilestone.Map_MilestoneDBID_MilestonePtr != nil {
 		err := errors.New("In Init, backRepoMilestone.Map_MilestoneDBID_MilestonePtr should be nil")
@@ -162,6 +169,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) Init(db *gorm.DB) (Error error
 	backRepoMilestone.Map_MilestonePtr_MilestoneDBID = &tmpID
 
 	backRepoMilestone.db = db
+	backRepoMilestone.stage = stage
 	return
 }
 
@@ -299,7 +307,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error erro
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	milestoneInstancesToBeRemovedFromTheStage := make(map[*models.Milestone]any)
-	for key, value := range models.Stage.Milestones {
+	for key, value := range backRepoMilestone.stage.Milestones {
 		milestoneInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -317,7 +325,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error erro
 
 	// remove from stage and back repo's 3 maps all milestones that are not in the checkout
 	for milestone := range milestoneInstancesToBeRemovedFromTheStage {
-		milestone.Unstage()
+		milestone.Unstage(backRepoMilestone.GetStage())
 
 		// remove instance from the back repo 3 maps
 		milestoneID := (*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]
@@ -342,12 +350,12 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOneInstance(miles
 
 		// append model store with the new element
 		milestone.Name = milestoneDB.Name_Data.String
-		milestone.Stage()
+		milestone.Stage(backRepoMilestone.GetStage())
 	}
 	milestoneDB.CopyBasicFieldsToMilestone(milestone)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	milestone.Stage()
+	milestone.Stage(backRepoMilestone.GetStage())
 
 	// preserve pointer to milestoneDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_MilestoneDBID_MilestoneDB)[milestoneDB hold variable pointers

@@ -162,6 +162,13 @@ type BackRepoTextStruct struct {
 	Map_TextDBID_TextPtr *map[uint]*models.Text
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoText *BackRepoTextStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoText.stage
+	return
 }
 
 func (backRepoText *BackRepoTextStruct) GetDB() *gorm.DB {
@@ -176,7 +183,7 @@ func (backRepoText *BackRepoTextStruct) GetTextDBFromTextPtr(text *models.Text) 
 }
 
 // BackRepoText.Init set up the BackRepo of the Text
-func (backRepoText *BackRepoTextStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoText *BackRepoTextStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoText.Map_TextDBID_TextPtr != nil {
 		err := errors.New("In Init, backRepoText.Map_TextDBID_TextPtr should be nil")
@@ -203,6 +210,7 @@ func (backRepoText *BackRepoTextStruct) Init(db *gorm.DB) (Error error) {
 	backRepoText.Map_TextPtr_TextDBID = &tmpID
 
 	backRepoText.db = db
+	backRepoText.stage = stage
 	return
 }
 
@@ -340,7 +348,7 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	textInstancesToBeRemovedFromTheStage := make(map[*models.Text]any)
-	for key, value := range models.Stage.Texts {
+	for key, value := range backRepoText.stage.Texts {
 		textInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -358,7 +366,7 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all texts that are not in the checkout
 	for text := range textInstancesToBeRemovedFromTheStage {
-		text.Unstage()
+		text.Unstage(backRepoText.GetStage())
 
 		// remove instance from the back repo 3 maps
 		textID := (*backRepoText.Map_TextPtr_TextDBID)[text]
@@ -383,12 +391,12 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseOneInstance(textDB *TextDB)
 
 		// append model store with the new element
 		text.Name = textDB.Name_Data.String
-		text.Stage()
+		text.Stage(backRepoText.GetStage())
 	}
 	textDB.CopyBasicFieldsToText(text)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	text.Stage()
+	text.Stage(backRepoText.GetStage())
 
 	// preserve pointer to textDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_TextDBID_TextDB)[textDB hold variable pointers

@@ -46,7 +46,7 @@ export class LineSortingComponent implements OnInit {
   }
 
   getLines(): void {
-    this.frontRepoService.pull().subscribe(
+    this.frontRepoService.pull(this.dialogData.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
@@ -100,13 +100,13 @@ export class LineSortingComponent implements OnInit {
 
     this.associatedLines.forEach(
       line => {
-        this.lineService.updateLine(line)
+        this.lineService.updateLine(line, this.dialogData.GONG__StackPath)
           .subscribe(line => {
             this.lineService.LineServiceChanged.next("update")
           });
       }
     )
 
-    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer +' done');
+    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer + ' done');
   }
 }

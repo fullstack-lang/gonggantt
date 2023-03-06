@@ -47,23 +47,22 @@ type GanttInput struct {
 // default: genericError
 //
 //	200: ganttDBResponse
-func GetGantts(c *gin.Context) {
-	db := orm.BackRepo.BackRepoGantt.GetDB()
+func (controller *Controller) GetGantts(c *gin.Context) {
 
 	// source slice
 	var ganttDBs []orm.GanttDB
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GONG__StackPath", stackParam)
+			stackPath = value[0]
+			log.Println("GetGantts", "GONG__StackPath", stackPath)
 		}
 	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoGantt.GetDB()
 
 	query := db.Find(&ganttDBs)
 	if query.Error != nil {
@@ -108,7 +107,19 @@ func GetGantts(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostGantt(c *gin.Context) {
+func (controller *Controller) PostGantt(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostGantts", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoGantt.GetDB()
 
 	// Validate input
 	var input orm.GanttAPI
@@ -128,7 +139,6 @@ func PostGantt(c *gin.Context) {
 	ganttDB.GanttPointersEnconding = input.GanttPointersEnconding
 	ganttDB.CopyBasicFieldsFromGantt(&input.Gantt)
 
-	db := orm.BackRepo.BackRepoGantt.GetDB()
 	query := db.Create(&ganttDB)
 	if query.Error != nil {
 		var returnError GenericError
@@ -140,16 +150,16 @@ func PostGantt(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoGantt.CheckoutPhaseOneInstance(&ganttDB)
-	gantt := (*orm.BackRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	backRepo.BackRepoGantt.CheckoutPhaseOneInstance(&ganttDB)
+	gantt := (*backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
 
 	if gantt != nil {
-		models.AfterCreateFromFront(&models.Stage, gantt)
+		models.AfterCreateFromFront(backRepo.GetStage(), gantt)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, ganttDB)
 }
@@ -164,21 +174,19 @@ func PostGantt(c *gin.Context) {
 // default: genericError
 //
 //	200: ganttDBResponse
-func GetGantt(c *gin.Context) {
+func (controller *Controller) GetGantt(c *gin.Context) {
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
-		value := values["stack"]
+		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GET params", stackParam)
+			stackPath = value[0]
+			log.Println("GetGantt", "GONG__StackPath", stackPath)
 		}
 	}
-
-	db := orm.BackRepo.BackRepoGantt.GetDB()
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoGantt.GetDB()
 
 	// Get ganttDB in DB
 	var ganttDB orm.GanttDB
@@ -209,7 +217,19 @@ func GetGantt(c *gin.Context) {
 // default: genericError
 //
 //	200: ganttDBResponse
-func UpdateGantt(c *gin.Context) {
+func (controller *Controller) UpdateGantt(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdateGantt", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoGantt.GetDB()
 
 	// Validate input
 	var input orm.GanttAPI
@@ -218,8 +238,6 @@ func UpdateGantt(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	db := orm.BackRepo.BackRepoGantt.GetDB()
 
 	// Get model if exist
 	var ganttDB orm.GanttDB
@@ -255,16 +273,16 @@ func UpdateGantt(c *gin.Context) {
 	ganttDB.CopyBasicFieldsToGantt(ganttNew)
 
 	// get stage instance from DB instance, and call callback function
-	ganttOld := (*orm.BackRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	ganttOld := (*backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
 	if ganttOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, ganttOld, ganttNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), ganttOld, ganttNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the ganttDB
 	c.JSON(http.StatusOK, ganttDB)
@@ -279,8 +297,19 @@ func UpdateGantt(c *gin.Context) {
 // default: genericError
 //
 //	200: ganttDBResponse
-func DeleteGantt(c *gin.Context) {
-	db := orm.BackRepo.BackRepoGantt.GetDB()
+func (controller *Controller) DeleteGantt(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeleteGantt", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoGantt.GetDB()
 
 	// Get model if exist
 	var ganttDB orm.GanttDB
@@ -301,14 +330,14 @@ func DeleteGantt(c *gin.Context) {
 	ganttDB.CopyBasicFieldsToGantt(ganttDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	ganttStaged := (*orm.BackRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	ganttStaged := (*backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
 	if ganttStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, ganttStaged, ganttDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), ganttStaged, ganttDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

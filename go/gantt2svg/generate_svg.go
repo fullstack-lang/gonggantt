@@ -19,12 +19,14 @@ type GanttToSVGTranformer struct {
 
 var GanttToSVGTranformerSingloton GanttToSVGTranformer
 
-func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_models.StageStruct) {
+func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(
+	gongganttStage *gonggantt_models.StageStruct,
+	gongsvgStage *gongsvg_models.StageStruct) {
 
 	// remove all gongsvg stage/repo
-	gongsvg_models.Stage.Checkout()
-	gongsvg_models.Stage.Reset()
-	gongsvg_models.Stage.Commit()
+	gongsvgStage.Checkout()
+	gongsvgStage.Reset()
+	gongsvgStage.Commit()
 
 	if len(*gonggantt_models.GetGongstructInstancesSet[gonggantt_models.Gantt]()) != 1 {
 		log.Printf("It is supposed to have only one gantt chart")
@@ -40,7 +42,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 	//
 	// SVG
 	//
-	svg := new(gongsvg_models.SVG).Stage()
+	svg := new(gongsvg_models.SVG).Stage(gongsvgStage)
 	svg.Name = "New Gantt Chart"
 	svg.Display = true
 
@@ -60,7 +62,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 	XLeftLanes := ganttToRender.XLeftLanes
 	XRightMargin := ganttToRender.XRightMargin
 
-	timeLine := new(gongsvg_models.Line).Stage()
+	timeLine := new(gongsvg_models.Line).Stage(gongsvgStage)
 	timeLine.Name = "Time Line"
 	timeLine.X1 = XLeftLanes
 	timeLine.Y1 = yTimeLine
@@ -93,7 +95,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		durationBetweenYearStartAndGanttStartRelativeToGanttDuration :=
 			float64(durationBetweenYearAndGanttStart) / float64(ganttToRender.ComputedEnd.Sub(ganttToRender.ComputedStart))
 
-		yearText := new(gongsvg_models.Text).Stage()
+		yearText := new(gongsvg_models.Text).Stage(gongsvgStage)
 		yearText.Name = fmt.Sprintf("%d", year)
 		yearText.Content = yearText.Name
 		yearText.X = XLeftLanes + (XRightMargin-XLeftLanes)*durationBetweenYearStartAndGanttStartRelativeToGanttDuration
@@ -106,7 +108,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		//
 		// draw the line
 		//
-		lineForYear := new(gongsvg_models.Line).Stage()
+		lineForYear := new(gongsvg_models.Line).Stage(gongsvgStage)
 		lineForYear.Name = yearText.Name
 		svg.Lines = append(svg.Lines, lineForYear)
 		lineForYear.X1 = yearText.X
@@ -139,7 +141,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 	mapBar_BarSVG := make(map[*gonggantt_models.Bar]*gongsvg_models.Rect)
 	for _, lane := range ganttToRender.Lanes {
 
-		laneSVG := new(gongsvg_models.Rect).Stage()
+		laneSVG := new(gongsvg_models.Rect).Stage(gongsvgStage)
 		svg.Rects = append(svg.Rects, laneSVG)
 		laneSVG.Name = lane.Name
 		laneSVG.X = XLeftLanes
@@ -158,7 +160,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		laneIndex = laneIndex + 1
 		laneSVG.StrokeWidth = 1.5
 
-		laneText := new(gongsvg_models.Text).Stage()
+		laneText := new(gongsvg_models.Text).Stage(gongsvgStage)
 		laneText.Name = lane.Name
 		laneText.Content = laneText.Name
 		laneText.X = XLeftText
@@ -172,7 +174,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		// Bar
 		//
 		for _, bar := range lane.Bars {
-			barSVG := new(gongsvg_models.Rect).Stage()
+			barSVG := new(gongsvg_models.Rect).Stage(gongsvgStage)
 			mapBar_BarSVG[bar] = barSVG
 			svg.Rects = append(svg.Rects, barSVG)
 			barSVG.Name = bar.Name
@@ -227,7 +229,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 			}
 
 			// bar text
-			barText := new(gongsvg_models.Text).Stage()
+			barText := new(gongsvg_models.Text).Stage(gongsvgStage)
 			barText.Name = bar.Name
 			barText.Content = barText.Name
 			barText.X = barSVG.X + XLeftText
@@ -264,7 +266,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		//
 		lineX := XLeftLanes + (XRightMargin-XLeftLanes)*durationBetweenMilestoneAndGanttStartRelativeToGanttDuration
 		if milestone.DisplayVerticalBar {
-			line := new(gongsvg_models.Line).Stage()
+			line := new(gongsvg_models.Line).Stage(gongsvgStage)
 			line.Name = milestone.Name
 			svg.Lines = append(svg.Lines, line)
 			line.X1 = lineX
@@ -282,7 +284,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		diamondWidth := 18.0
 		for _, lanesToDisplayMilestone := range milestone.LanesToDisplayMilestoneUse {
 
-			diamond := new(gongsvg_models.Rect).Stage()
+			diamond := new(gongsvg_models.Rect).Stage(gongsvgStage)
 			svg.Rects = append(svg.Rects, diamond)
 			diamond.Name = milestone.Name
 			diamond.X = lineX - diamondWidth/2.0
@@ -294,7 +296,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 			diamond.Transform = fmt.Sprintf("rotate(%d %d %d)", 45, int64(diamond.X+diamondWidth/2.0), int64(diamond.Y+diamondWidth/2.0))
 
 			// bar text
-			milestoneText := new(gongsvg_models.Text).Stage()
+			milestoneText := new(gongsvg_models.Text).Stage(gongsvgStage)
 			milestoneText.Name = milestone.Name
 			milestoneText.Content = milestoneText.Name
 			milestoneText.X = diamond.X + XLeftText + diamondWidth
@@ -316,6 +318,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		endBar := mapBar_BarSVG[arrow.To]
 
 		generate_arrow(
+			gongsvgStage,
 			svg,
 			startBar.X+startBar.Width,
 			endBar.X,
@@ -337,7 +340,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 			continue
 		}
 
-		groupSVG := new(gongsvg_models.Rect).Stage()
+		groupSVG := new(gongsvg_models.Rect).Stage(gongsvgStage)
 		svg.Rects = append(svg.Rects, groupSVG)
 		groupSVG.Name = group.Name
 
@@ -363,7 +366,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		groupSVG.StrokeDashArray = ganttToRender.Group_StrokeDashArray
 
 		// text
-		groupText := new(gongsvg_models.Text).Stage()
+		groupText := new(gongsvg_models.Text).Stage(gongsvgStage)
 		groupText.Name = group.Name
 		groupText.Content = groupText.Name
 		groupText.X = XLeftText
@@ -373,7 +376,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(stage *gonggantt_m
 		svg.Texts = append(svg.Texts, groupText)
 	}
 
-	gongsvg_models.Stage.Commit()
+	gongsvgStage.Commit()
 
 	// log.Printf("Before Commit")
 }

@@ -21,10 +21,6 @@ import { GanttDB } from './gantt-db'
 })
 export class GroupService {
 
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
-
   // Kamar Raïmo: Adding a way to communicate between components that share information
   // so that they are notified of a change.
   GroupServiceChanged: BehaviorSubject<string> = new BehaviorSubject("");
@@ -33,7 +29,6 @@ export class GroupService {
 
   constructor(
     private http: HttpClient,
-    private location: Location,
     @Inject(DOCUMENT) private document: Document
   ) {
     // path to the service share the same origin with the path to the document
@@ -68,17 +63,21 @@ export class GroupService {
     );
   }
 
-  //////// Save methods //////////
-
   /** POST: add a new group to the server */
-  postGroup(groupdb: GroupDB): Observable<GroupDB> {
+  postGroup(groupdb: GroupDB, GONG__StackPath: string): Observable<GroupDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     groupdb.GroupLanes = []
     let _Gantt_Groups_reverse = groupdb.Gantt_Groups_reverse
     groupdb.Gantt_Groups_reverse = new GanttDB
 
-    return this.http.post<GroupDB>(this.groupsUrl, groupdb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    }
+
+	return this.http.post<GroupDB>(this.groupsUrl, groupdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         groupdb.Gantt_Groups_reverse = _Gantt_Groups_reverse
@@ -89,18 +88,24 @@ export class GroupService {
   }
 
   /** DELETE: delete the groupdb from the server */
-  deleteGroup(groupdb: GroupDB | number): Observable<GroupDB> {
+  deleteGroup(groupdb: GroupDB | number, GONG__StackPath: string): Observable<GroupDB> {
     const id = typeof groupdb === 'number' ? groupdb : groupdb.ID;
     const url = `${this.groupsUrl}/${id}`;
 
-    return this.http.delete<GroupDB>(url, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.delete<GroupDB>(url, httpOptions).pipe(
       tap(_ => this.log(`deleted groupdb id=${id}`)),
       catchError(this.handleError<GroupDB>('deleteGroup'))
     );
   }
 
   /** PUT: update the groupdb on the server */
-  updateGroup(groupdb: GroupDB): Observable<GroupDB> {
+  updateGroup(groupdb: GroupDB, GONG__StackPath: string): Observable<GroupDB> {
     const id = typeof groupdb === 'number' ? groupdb : groupdb.ID;
     const url = `${this.groupsUrl}/${id}`;
 
@@ -109,7 +114,13 @@ export class GroupService {
     let _Gantt_Groups_reverse = groupdb.Gantt_Groups_reverse
     groupdb.Gantt_Groups_reverse = new GanttDB
 
-    return this.http.put<GroupDB>(url, groupdb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.put<GroupDB>(url, groupdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         groupdb.Gantt_Groups_reverse = _Gantt_Groups_reverse

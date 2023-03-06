@@ -120,6 +120,13 @@ type BackRepoLaneStruct struct {
 	Map_LaneDBID_LanePtr *map[uint]*models.Lane
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoLane *BackRepoLaneStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoLane.stage
+	return
 }
 
 func (backRepoLane *BackRepoLaneStruct) GetDB() *gorm.DB {
@@ -134,7 +141,7 @@ func (backRepoLane *BackRepoLaneStruct) GetLaneDBFromLanePtr(lane *models.Lane) 
 }
 
 // BackRepoLane.Init set up the BackRepo of the Lane
-func (backRepoLane *BackRepoLaneStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoLane *BackRepoLaneStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoLane.Map_LaneDBID_LanePtr != nil {
 		err := errors.New("In Init, backRepoLane.Map_LaneDBID_LanePtr should be nil")
@@ -161,6 +168,7 @@ func (backRepoLane *BackRepoLaneStruct) Init(db *gorm.DB) (Error error) {
 	backRepoLane.Map_LanePtr_LaneDBID = &tmpID
 
 	backRepoLane.db = db
+	backRepoLane.stage = stage
 	return
 }
 
@@ -298,7 +306,7 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	laneInstancesToBeRemovedFromTheStage := make(map[*models.Lane]any)
-	for key, value := range models.Stage.Lanes {
+	for key, value := range backRepoLane.stage.Lanes {
 		laneInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -316,7 +324,7 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all lanes that are not in the checkout
 	for lane := range laneInstancesToBeRemovedFromTheStage {
-		lane.Unstage()
+		lane.Unstage(backRepoLane.GetStage())
 
 		// remove instance from the back repo 3 maps
 		laneID := (*backRepoLane.Map_LanePtr_LaneDBID)[lane]
@@ -341,12 +349,12 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOneInstance(laneDB *LaneDB)
 
 		// append model store with the new element
 		lane.Name = laneDB.Name_Data.String
-		lane.Stage()
+		lane.Stage(backRepoLane.GetStage())
 	}
 	laneDB.CopyBasicFieldsToLane(lane)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	lane.Stage()
+	lane.Stage(backRepoLane.GetStage())
 
 	// preserve pointer to laneDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_LaneDBID_LaneDB)[laneDB hold variable pointers

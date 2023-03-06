@@ -100,7 +100,7 @@ export class LaneUseSortingComponent implements OnInit {
 
     this.associatedLaneUses.forEach(
       laneuse => {
-        this.laneuseService.updateLaneUse(laneuse)
+        this.laneuseService.updateLaneUse(laneuse, this.dialogData.GONG__StackPath)
           .subscribe(laneuse => {
             this.laneuseService.LaneUseServiceChanged.next("update")
           });

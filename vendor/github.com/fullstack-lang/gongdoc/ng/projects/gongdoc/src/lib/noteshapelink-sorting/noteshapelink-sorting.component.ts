@@ -46,7 +46,7 @@ export class NoteShapeLinkSortingComponent implements OnInit {
   }
 
   getNoteShapeLinks(): void {
-    this.frontRepoService.pull().subscribe(
+    this.frontRepoService.pull(this.dialogData.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
@@ -100,13 +100,13 @@ export class NoteShapeLinkSortingComponent implements OnInit {
 
     this.associatedNoteShapeLinks.forEach(
       noteshapelink => {
-        this.noteshapelinkService.updateNoteShapeLink(noteshapelink)
+        this.noteshapelinkService.updateNoteShapeLink(noteshapelink, this.dialogData.GONG__StackPath)
           .subscribe(noteshapelink => {
             this.noteshapelinkService.NoteShapeLinkServiceChanged.next("update")
           });
       }
     )
 
-    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer +' done');
+    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer + ' done');
   }
 }

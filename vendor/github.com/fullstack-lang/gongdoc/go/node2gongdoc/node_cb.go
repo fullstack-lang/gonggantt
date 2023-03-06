@@ -60,7 +60,7 @@ func (nodeCb *NodeCB) OnAfterUpdate(
 
 // OnAfterCreate is another callback
 func (nodeCb *NodeCB) OnAfterCreate(
-	stage *gongdoc_models.StageStruct,
+	gongdocStage *gongdoc_models.StageStruct,
 	node *gongdoc_models.Node) {
 
 	log.Println("Node " + node.Name + " is created")
@@ -86,7 +86,7 @@ func (nodeCb *NodeCB) OnAfterCreate(
 		}
 	}
 
-	classdiagram := (&gongdoc_models.Classdiagram{Name: node.Name}).Stage()
+	classdiagram := (&gongdoc_models.Classdiagram{Name: node.Name}).Stage(nodeCb.diagramPackage.Stage_)
 	nodeCb.diagramPackage.Classdiagrams = append(nodeCb.diagramPackage.Classdiagrams, classdiagram)
 	node.IsInEditMode = false
 	node.IsInDrawMode = false
@@ -112,9 +112,23 @@ func (nodeCb *NodeCB) OnAfterCreate(
 	defer file.Close()
 
 	// save the diagram
-	gongdoc_models.Stage.Marshall(file, "github.com/fullstack-lang/gongdoc/go/models", "diagrams")
+	// checkout in order to get the latest version of the diagram before
+	// modifying it updated by the front
+	nodeCb.updateNodesStates(gongdocStage)
+	gongdocStage.Commit()
 
-	nodeCb.updateNodesStates(stage)
+	// now save the diagram
+	gongdocStage.Checkout()
+	gongdocStage.Unstage()
+	gongdoc_models.StageBranch(gongdocStage, classdiagramImpl.classdiagram)
+
+	gongdoc_models.SetupMapDocLinkRenamingNew(gongdocStage, nodeCb.diagramPackage)
+
+	gongdocStage.Marshall(file, "github.com/fullstack-lang/gongdoc/go/models", "diagrams")
+
+	// restore the original stage
+	gongdocStage.Unstage()
+	gongdocStage.Checkout()
 
 }
 
@@ -136,17 +150,17 @@ func (nodeCb *NodeCB) OnAfterDelete(
 func (nodeCb *NodeCB) FillUpDiagramNodeTree(diagramPackage *gongdoc_models.DiagramPackage) {
 
 	// generate tree of diagrams
-	gongdocTree := (&gongdoc_models.Tree{Name: "gongdoc"}).Stage()
+	gongdocTree := (&gongdoc_models.Tree{Name: "gongdoc"}).Stage(nodeCb.diagramPackage.Stage_)
 
 	// add the root of class diagrams
-	diagramPackageNode := (&gongdoc_models.Node{Name: "class diagrams"}).Stage()
+	diagramPackageNode := (&gongdoc_models.Node{Name: "class diagrams"}).Stage(nodeCb.diagramPackage.Stage_)
 	diagramPackageNode.IsExpanded = true
 	diagramPackageNode.HasAddChildButton = diagramPackage.IsEditable
 	gongdocTree.RootNodes = append(gongdocTree.RootNodes, diagramPackageNode)
 
 	// add one node per class diagram
 	for classdiagram := range *gongdoc_models.GetGongstructInstancesSet[gongdoc_models.Classdiagram]() {
-		node := (&gongdoc_models.Node{Name: classdiagram.Name}).Stage()
+		node := (&gongdoc_models.Node{Name: classdiagram.Name}).Stage(nodeCb.diagramPackage.Stage_)
 
 		node.HasCheckboxButton = true
 		node.HasDeleteButton = true
@@ -180,9 +194,9 @@ func GetNodeBackPointer[T1 gong_models.Gongstruct](gong_instance *T1) (backPoint
 	return
 }
 
-func (nodeCb *NodeCB) updateNodesStates(stage *gongdoc_models.StageStruct) {
+func (nodeCb *NodeCB) updateNodesStates(gongdocStage *gongdoc_models.StageStruct) {
 
-	nodeCb.updateDiagramsNodes(stage)
+	nodeCb.updateDiagramsNodes(gongdocStage)
 
 	// now manage object nodes accordign to the selected diagram
 
@@ -195,14 +209,14 @@ func (nodeCb *NodeCB) updateNodesStates(stage *gongdoc_models.StageStruct) {
 
 	// no selected diagram yet
 	if classdiagram == nil {
-		gongdoc_models.Stage.Commit()
+		gongdocStage.Commit()
 		return
 	}
 
-	nodeCb.updateGongObjectsNodes(stage, classdiagram)
+	nodeCb.updateGongObjectsNodes(gongdocStage, classdiagram)
 
 	// log.Println("UpdateNodeStates, before commit, nb ", stage.BackRepo.GetLastCommitFromBackNb())
-	stage.Commit()
+	gongdocStage.Commit()
 	// log.Println("UpdateNodeStates, after  commit, nb ", stage.BackRepo.GetLastCommitFromBackNb())
 
 }

@@ -58,6 +58,8 @@ export class PathDetailComponent implements OnInit {
 	originStruct: string = ""
 	originStructFieldName: string = ""
 
+	GONG__StackPath: string = ""
+
 	constructor(
 		private pathService: PathService,
 		private frontRepoService: FrontRepoService,
@@ -68,6 +70,8 @@ export class PathDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		this.GONG__StackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')!;
+
 		this.activatedRoute.params.subscribe(params => {
 			this.onChangedActivatedRoute()
 		});
@@ -78,6 +82,8 @@ export class PathDetailComponent implements OnInit {
 		this.id = +this.activatedRoute.snapshot.paramMap.get('id')!;
 		this.originStruct = this.activatedRoute.snapshot.paramMap.get('originStruct')!;
 		this.originStructFieldName = this.activatedRoute.snapshot.paramMap.get('originStructFieldName')!;
+
+		this.GONG__StackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')!;
 
 		const association = this.activatedRoute.snapshot.paramMap.get('association');
 		if (this.id == 0) {
@@ -114,7 +120,7 @@ export class PathDetailComponent implements OnInit {
 
 	getPath(): void {
 
-		this.frontRepoService.pull().subscribe(
+		this.frontRepoService.pull(this.GONG__StackPath).subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
@@ -168,13 +174,13 @@ export class PathDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case PathDetailComponentState.UPDATE_INSTANCE:
-				this.pathService.updatePath(this.path)
+				this.pathService.updatePath(this.path, this.GONG__StackPath)
 					.subscribe(path => {
 						this.pathService.PathServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.pathService.postPath(this.path).subscribe(path => {
+				this.pathService.postPath(this.path, this.GONG__StackPath).subscribe(path => {
 					this.pathService.PathServiceChanged.next("post")
 					this.path = new (PathDB) // reset fields
 				});
@@ -203,6 +209,7 @@ export class PathDetailComponent implements OnInit {
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
+			dialogData.GONG__StackPath = this.GONG__StackPath
 
 			dialogConfig.data = dialogData
 			const dialogRef: MatDialogRef<string, any> = this.dialog.open(
@@ -219,6 +226,7 @@ export class PathDetailComponent implements OnInit {
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
+			dialogData.GONG__StackPath = this.GONG__StackPath
 
 			// set up the source
 			dialogData.SourceStruct = "Path"
@@ -254,6 +262,7 @@ export class PathDetailComponent implements OnInit {
 			ID: this.path.ID,
 			ReversePointer: reverseField,
 			OrderingMode: true,
+			GONG__StackPath: this.GONG__StackPath,
 		};
 		const dialogRef: MatDialogRef<string, any> = this.dialog.open(
 			MapOfSortingComponents.get(AssociatedStruct).get(

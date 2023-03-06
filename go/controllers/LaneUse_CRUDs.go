@@ -47,23 +47,22 @@ type LaneUseInput struct {
 // default: genericError
 //
 //	200: laneuseDBResponse
-func GetLaneUses(c *gin.Context) {
-	db := orm.BackRepo.BackRepoLaneUse.GetDB()
+func (controller *Controller) GetLaneUses(c *gin.Context) {
 
 	// source slice
 	var laneuseDBs []orm.LaneUseDB
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GONG__StackPath", stackParam)
+			stackPath = value[0]
+			log.Println("GetLaneUses", "GONG__StackPath", stackPath)
 		}
 	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoLaneUse.GetDB()
 
 	query := db.Find(&laneuseDBs)
 	if query.Error != nil {
@@ -108,7 +107,19 @@ func GetLaneUses(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostLaneUse(c *gin.Context) {
+func (controller *Controller) PostLaneUse(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostLaneUses", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoLaneUse.GetDB()
 
 	// Validate input
 	var input orm.LaneUseAPI
@@ -128,7 +139,6 @@ func PostLaneUse(c *gin.Context) {
 	laneuseDB.LaneUsePointersEnconding = input.LaneUsePointersEnconding
 	laneuseDB.CopyBasicFieldsFromLaneUse(&input.LaneUse)
 
-	db := orm.BackRepo.BackRepoLaneUse.GetDB()
 	query := db.Create(&laneuseDB)
 	if query.Error != nil {
 		var returnError GenericError
@@ -140,16 +150,16 @@ func PostLaneUse(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoLaneUse.CheckoutPhaseOneInstance(&laneuseDB)
-	laneuse := (*orm.BackRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+	backRepo.BackRepoLaneUse.CheckoutPhaseOneInstance(&laneuseDB)
+	laneuse := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
 
 	if laneuse != nil {
-		models.AfterCreateFromFront(&models.Stage, laneuse)
+		models.AfterCreateFromFront(backRepo.GetStage(), laneuse)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, laneuseDB)
 }
@@ -164,21 +174,19 @@ func PostLaneUse(c *gin.Context) {
 // default: genericError
 //
 //	200: laneuseDBResponse
-func GetLaneUse(c *gin.Context) {
+func (controller *Controller) GetLaneUse(c *gin.Context) {
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
-		value := values["stack"]
+		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GET params", stackParam)
+			stackPath = value[0]
+			log.Println("GetLaneUse", "GONG__StackPath", stackPath)
 		}
 	}
-
-	db := orm.BackRepo.BackRepoLaneUse.GetDB()
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoLaneUse.GetDB()
 
 	// Get laneuseDB in DB
 	var laneuseDB orm.LaneUseDB
@@ -209,7 +217,19 @@ func GetLaneUse(c *gin.Context) {
 // default: genericError
 //
 //	200: laneuseDBResponse
-func UpdateLaneUse(c *gin.Context) {
+func (controller *Controller) UpdateLaneUse(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdateLaneUse", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoLaneUse.GetDB()
 
 	// Validate input
 	var input orm.LaneUseAPI
@@ -218,8 +238,6 @@ func UpdateLaneUse(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	db := orm.BackRepo.BackRepoLaneUse.GetDB()
 
 	// Get model if exist
 	var laneuseDB orm.LaneUseDB
@@ -255,16 +273,16 @@ func UpdateLaneUse(c *gin.Context) {
 	laneuseDB.CopyBasicFieldsToLaneUse(laneuseNew)
 
 	// get stage instance from DB instance, and call callback function
-	laneuseOld := (*orm.BackRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+	laneuseOld := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
 	if laneuseOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, laneuseOld, laneuseNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), laneuseOld, laneuseNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the laneuseDB
 	c.JSON(http.StatusOK, laneuseDB)
@@ -279,8 +297,19 @@ func UpdateLaneUse(c *gin.Context) {
 // default: genericError
 //
 //	200: laneuseDBResponse
-func DeleteLaneUse(c *gin.Context) {
-	db := orm.BackRepo.BackRepoLaneUse.GetDB()
+func (controller *Controller) DeleteLaneUse(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeleteLaneUse", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoLaneUse.GetDB()
 
 	// Get model if exist
 	var laneuseDB orm.LaneUseDB
@@ -301,14 +330,14 @@ func DeleteLaneUse(c *gin.Context) {
 	laneuseDB.CopyBasicFieldsToLaneUse(laneuseDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	laneuseStaged := (*orm.BackRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+	laneuseStaged := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
 	if laneuseStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, laneuseStaged, laneuseDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), laneuseStaged, laneuseDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

@@ -194,13 +194,13 @@ export class ArrowDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case ArrowDetailComponentState.UPDATE_INSTANCE:
-				this.arrowService.updateArrow(this.arrow)
+				this.arrowService.updateArrow(this.arrow, this.GONG__StackPath)
 					.subscribe(arrow => {
 						this.arrowService.ArrowServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.arrowService.postArrow(this.arrow).subscribe(arrow => {
+				this.arrowService.postArrow(this.arrow, this.GONG__StackPath).subscribe(arrow => {
 					this.arrowService.ArrowServiceChanged.next("post")
 					this.arrow = new (ArrowDB) // reset fields
 				});

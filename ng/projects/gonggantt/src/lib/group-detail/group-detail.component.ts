@@ -174,13 +174,13 @@ export class GroupDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case GroupDetailComponentState.UPDATE_INSTANCE:
-				this.groupService.updateGroup(this.group)
+				this.groupService.updateGroup(this.group, this.GONG__StackPath)
 					.subscribe(group => {
 						this.groupService.GroupServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.groupService.postGroup(this.group).subscribe(group => {
+				this.groupService.postGroup(this.group, this.GONG__StackPath).subscribe(group => {
 					this.groupService.GroupServiceChanged.next("post")
 					this.group = new (GroupDB) // reset fields
 				});

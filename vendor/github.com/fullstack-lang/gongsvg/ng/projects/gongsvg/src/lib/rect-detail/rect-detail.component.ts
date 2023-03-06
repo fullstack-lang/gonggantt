@@ -58,6 +58,8 @@ export class RectDetailComponent implements OnInit {
 	originStruct: string = ""
 	originStructFieldName: string = ""
 
+	GONG__StackPath: string = ""
+
 	constructor(
 		private rectService: RectService,
 		private frontRepoService: FrontRepoService,
@@ -68,6 +70,8 @@ export class RectDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		this.GONG__StackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')!;
+
 		this.activatedRoute.params.subscribe(params => {
 			this.onChangedActivatedRoute()
 		});
@@ -78,6 +82,8 @@ export class RectDetailComponent implements OnInit {
 		this.id = +this.activatedRoute.snapshot.paramMap.get('id')!;
 		this.originStruct = this.activatedRoute.snapshot.paramMap.get('originStruct')!;
 		this.originStructFieldName = this.activatedRoute.snapshot.paramMap.get('originStructFieldName')!;
+
+		this.GONG__StackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')!;
 
 		const association = this.activatedRoute.snapshot.paramMap.get('association');
 		if (this.id == 0) {
@@ -114,7 +120,7 @@ export class RectDetailComponent implements OnInit {
 
 	getRect(): void {
 
-		this.frontRepoService.pull().subscribe(
+		this.frontRepoService.pull(this.GONG__StackPath).subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
@@ -168,13 +174,13 @@ export class RectDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case RectDetailComponentState.UPDATE_INSTANCE:
-				this.rectService.updateRect(this.rect)
+				this.rectService.updateRect(this.rect, this.GONG__StackPath)
 					.subscribe(rect => {
 						this.rectService.RectServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.rectService.postRect(this.rect).subscribe(rect => {
+				this.rectService.postRect(this.rect, this.GONG__StackPath).subscribe(rect => {
 					this.rectService.RectServiceChanged.next("post")
 					this.rect = new (RectDB) // reset fields
 				});
@@ -203,6 +209,7 @@ export class RectDetailComponent implements OnInit {
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
+			dialogData.GONG__StackPath = this.GONG__StackPath
 
 			dialogConfig.data = dialogData
 			const dialogRef: MatDialogRef<string, any> = this.dialog.open(
@@ -219,6 +226,7 @@ export class RectDetailComponent implements OnInit {
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
+			dialogData.GONG__StackPath = this.GONG__StackPath
 
 			// set up the source
 			dialogData.SourceStruct = "Rect"
@@ -254,6 +262,7 @@ export class RectDetailComponent implements OnInit {
 			ID: this.rect.ID,
 			ReversePointer: reverseField,
 			OrderingMode: true,
+			GONG__StackPath: this.GONG__StackPath,
 		};
 		const dialogRef: MatDialogRef<string, any> = this.dialog.open(
 			MapOfSortingComponents.get(AssociatedStruct).get(

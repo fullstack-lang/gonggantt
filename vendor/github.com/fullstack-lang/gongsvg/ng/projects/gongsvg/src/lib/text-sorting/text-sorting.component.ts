@@ -46,7 +46,7 @@ export class TextSortingComponent implements OnInit {
   }
 
   getTexts(): void {
-    this.frontRepoService.pull().subscribe(
+    this.frontRepoService.pull(this.dialogData.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
@@ -100,13 +100,13 @@ export class TextSortingComponent implements OnInit {
 
     this.associatedTexts.forEach(
       text => {
-        this.textService.updateText(text)
+        this.textService.updateText(text, this.dialogData.GONG__StackPath)
           .subscribe(text => {
             this.textService.TextServiceChanged.next("update")
           });
       }
     )
 
-    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer +' done');
+    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer + ' done');
   }
 }

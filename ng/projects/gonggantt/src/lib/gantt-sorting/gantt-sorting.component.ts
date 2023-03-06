@@ -100,7 +100,7 @@ export class GanttSortingComponent implements OnInit {
 
     this.associatedGantts.forEach(
       gantt => {
-        this.ganttService.updateGantt(gantt)
+        this.ganttService.updateGantt(gantt, this.dialogData.GONG__StackPath)
           .subscribe(gantt => {
             this.ganttService.GanttServiceChanged.next("update")
           });

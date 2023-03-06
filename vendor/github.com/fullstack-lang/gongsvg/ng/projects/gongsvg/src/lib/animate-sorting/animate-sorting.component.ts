@@ -46,7 +46,7 @@ export class AnimateSortingComponent implements OnInit {
   }
 
   getAnimates(): void {
-    this.frontRepoService.pull().subscribe(
+    this.frontRepoService.pull(this.dialogData.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
@@ -100,13 +100,13 @@ export class AnimateSortingComponent implements OnInit {
 
     this.associatedAnimates.forEach(
       animate => {
-        this.animateService.updateAnimate(animate)
+        this.animateService.updateAnimate(animate, this.dialogData.GONG__StackPath)
           .subscribe(animate => {
             this.animateService.AnimateServiceChanged.next("update")
           });
       }
     )
 
-    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer +' done');
+    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer + ' done');
   }
 }

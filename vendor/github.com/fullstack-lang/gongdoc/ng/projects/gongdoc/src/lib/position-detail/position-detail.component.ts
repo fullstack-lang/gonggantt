@@ -56,6 +56,8 @@ export class PositionDetailComponent implements OnInit {
 	originStruct: string = ""
 	originStructFieldName: string = ""
 
+	GONG__StackPath: string = ""
+
 	constructor(
 		private positionService: PositionService,
 		private frontRepoService: FrontRepoService,
@@ -66,6 +68,8 @@ export class PositionDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		this.GONG__StackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')!;
+
 		this.activatedRoute.params.subscribe(params => {
 			this.onChangedActivatedRoute()
 		});
@@ -76,6 +80,8 @@ export class PositionDetailComponent implements OnInit {
 		this.id = +this.activatedRoute.snapshot.paramMap.get('id')!;
 		this.originStruct = this.activatedRoute.snapshot.paramMap.get('originStruct')!;
 		this.originStructFieldName = this.activatedRoute.snapshot.paramMap.get('originStructFieldName')!;
+
+		this.GONG__StackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')!;
 
 		const association = this.activatedRoute.snapshot.paramMap.get('association');
 		if (this.id == 0) {
@@ -108,7 +114,7 @@ export class PositionDetailComponent implements OnInit {
 
 	getPosition(): void {
 
-		this.frontRepoService.pull().subscribe(
+		this.frontRepoService.pull(this.GONG__StackPath).subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
@@ -146,13 +152,13 @@ export class PositionDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case PositionDetailComponentState.UPDATE_INSTANCE:
-				this.positionService.updatePosition(this.position)
+				this.positionService.updatePosition(this.position, this.GONG__StackPath)
 					.subscribe(position => {
 						this.positionService.PositionServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.positionService.postPosition(this.position).subscribe(position => {
+				this.positionService.postPosition(this.position, this.GONG__StackPath).subscribe(position => {
 					this.positionService.PositionServiceChanged.next("post")
 					this.position = new (PositionDB) // reset fields
 				});
@@ -181,6 +187,7 @@ export class PositionDetailComponent implements OnInit {
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
+			dialogData.GONG__StackPath = this.GONG__StackPath
 
 			dialogConfig.data = dialogData
 			const dialogRef: MatDialogRef<string, any> = this.dialog.open(
@@ -197,6 +204,7 @@ export class PositionDetailComponent implements OnInit {
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
+			dialogData.GONG__StackPath = this.GONG__StackPath
 
 			// set up the source
 			dialogData.SourceStruct = "Position"
@@ -232,6 +240,7 @@ export class PositionDetailComponent implements OnInit {
 			ID: this.position.ID,
 			ReversePointer: reverseField,
 			OrderingMode: true,
+			GONG__StackPath: this.GONG__StackPath,
 		};
 		const dialogRef: MatDialogRef<string, any> = this.dialog.open(
 			MapOfSortingComponents.get(AssociatedStruct).get(

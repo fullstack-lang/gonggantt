@@ -47,11 +47,23 @@ type RectInput struct {
 // default: genericError
 //
 //	200: rectDBResponse
-func GetRects(c *gin.Context) {
-	db := orm.BackRepo.BackRepoRect.GetDB()
+func (controller *Controller) GetRects(c *gin.Context) {
 
 	// source slice
 	var rectDBs []orm.RectDB
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetRects", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoRect.GetDB()
+
 	query := db.Find(&rectDBs)
 	if query.Error != nil {
 		var returnError GenericError
@@ -95,8 +107,19 @@ func GetRects(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostRect(c *gin.Context) {
-	db := orm.BackRepo.BackRepoRect.GetDB()
+func (controller *Controller) PostRect(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostRects", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoRect.GetDB()
 
 	// Validate input
 	var input orm.RectAPI
@@ -127,16 +150,16 @@ func PostRect(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoRect.CheckoutPhaseOneInstance(&rectDB)
-	rect := (*orm.BackRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+	backRepo.BackRepoRect.CheckoutPhaseOneInstance(&rectDB)
+	rect := (*backRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
 
 	if rect != nil {
-		models.AfterCreateFromFront(&models.Stage, rect)
+		models.AfterCreateFromFront(backRepo.GetStage(), rect)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, rectDB)
 }
@@ -151,8 +174,19 @@ func PostRect(c *gin.Context) {
 // default: genericError
 //
 //	200: rectDBResponse
-func GetRect(c *gin.Context) {
-	db := orm.BackRepo.BackRepoRect.GetDB()
+func (controller *Controller) GetRect(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetRect", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoRect.GetDB()
 
 	// Get rectDB in DB
 	var rectDB orm.RectDB
@@ -183,8 +217,27 @@ func GetRect(c *gin.Context) {
 // default: genericError
 //
 //	200: rectDBResponse
-func UpdateRect(c *gin.Context) {
-	db := orm.BackRepo.BackRepoRect.GetDB()
+func (controller *Controller) UpdateRect(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdateRect", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoRect.GetDB()
+
+	// Validate input
+	var input orm.RectAPI
+	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Get model if exist
 	var rectDB orm.RectDB
@@ -198,14 +251,6 @@ func UpdateRect(c *gin.Context) {
 		returnError.Body.Message = query.Error.Error()
 		log.Println(query.Error.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
-		return
-	}
-
-	// Validate input
-	var input orm.RectAPI
-	if err := c.ShouldBindJSON(&input); err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -228,16 +273,16 @@ func UpdateRect(c *gin.Context) {
 	rectDB.CopyBasicFieldsToRect(rectNew)
 
 	// get stage instance from DB instance, and call callback function
-	rectOld := (*orm.BackRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+	rectOld := (*backRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
 	if rectOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, rectOld, rectNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), rectOld, rectNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the rectDB
 	c.JSON(http.StatusOK, rectDB)
@@ -252,8 +297,19 @@ func UpdateRect(c *gin.Context) {
 // default: genericError
 //
 //	200: rectDBResponse
-func DeleteRect(c *gin.Context) {
-	db := orm.BackRepo.BackRepoRect.GetDB()
+func (controller *Controller) DeleteRect(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeleteRect", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoRect.GetDB()
 
 	// Get model if exist
 	var rectDB orm.RectDB
@@ -274,14 +330,14 @@ func DeleteRect(c *gin.Context) {
 	rectDB.CopyBasicFieldsToRect(rectDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	rectStaged := (*orm.BackRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+	rectStaged := (*backRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
 	if rectStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, rectStaged, rectDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), rectStaged, rectDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

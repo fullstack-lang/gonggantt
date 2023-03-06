@@ -242,6 +242,13 @@ type BackRepoGanttStruct struct {
 	Map_GanttDBID_GanttPtr *map[uint]*models.Gantt
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoGantt *BackRepoGanttStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoGantt.stage
+	return
 }
 
 func (backRepoGantt *BackRepoGanttStruct) GetDB() *gorm.DB {
@@ -256,7 +263,7 @@ func (backRepoGantt *BackRepoGanttStruct) GetGanttDBFromGanttPtr(gantt *models.G
 }
 
 // BackRepoGantt.Init set up the BackRepo of the Gantt
-func (backRepoGantt *BackRepoGanttStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoGantt *BackRepoGanttStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoGantt.Map_GanttDBID_GanttPtr != nil {
 		err := errors.New("In Init, backRepoGantt.Map_GanttDBID_GanttPtr should be nil")
@@ -283,6 +290,7 @@ func (backRepoGantt *BackRepoGanttStruct) Init(db *gorm.DB) (Error error) {
 	backRepoGantt.Map_GanttPtr_GanttDBID = &tmpID
 
 	backRepoGantt.db = db
+	backRepoGantt.stage = stage
 	return
 }
 
@@ -477,7 +485,7 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	ganttInstancesToBeRemovedFromTheStage := make(map[*models.Gantt]any)
-	for key, value := range models.Stage.Gantts {
+	for key, value := range backRepoGantt.stage.Gantts {
 		ganttInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -495,7 +503,7 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all gantts that are not in the checkout
 	for gantt := range ganttInstancesToBeRemovedFromTheStage {
-		gantt.Unstage()
+		gantt.Unstage(backRepoGantt.GetStage())
 
 		// remove instance from the back repo 3 maps
 		ganttID := (*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt]
@@ -520,12 +528,12 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOneInstance(ganttDB *Gant
 
 		// append model store with the new element
 		gantt.Name = ganttDB.Name_Data.String
-		gantt.Stage()
+		gantt.Stage(backRepoGantt.GetStage())
 	}
 	ganttDB.CopyBasicFieldsToGantt(gantt)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	gantt.Stage()
+	gantt.Stage(backRepoGantt.GetStage())
 
 	// preserve pointer to ganttDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_GanttDBID_GanttDB)[ganttDB hold variable pointers

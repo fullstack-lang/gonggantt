@@ -174,6 +174,13 @@ type BackRepoRectStruct struct {
 	Map_RectDBID_RectPtr *map[uint]*models.Rect
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoRect *BackRepoRectStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoRect.stage
+	return
 }
 
 func (backRepoRect *BackRepoRectStruct) GetDB() *gorm.DB {
@@ -188,7 +195,7 @@ func (backRepoRect *BackRepoRectStruct) GetRectDBFromRectPtr(rect *models.Rect) 
 }
 
 // BackRepoRect.Init set up the BackRepo of the Rect
-func (backRepoRect *BackRepoRectStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoRect *BackRepoRectStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoRect.Map_RectDBID_RectPtr != nil {
 		err := errors.New("In Init, backRepoRect.Map_RectDBID_RectPtr should be nil")
@@ -215,6 +222,7 @@ func (backRepoRect *BackRepoRectStruct) Init(db *gorm.DB) (Error error) {
 	backRepoRect.Map_RectPtr_RectDBID = &tmpID
 
 	backRepoRect.db = db
+	backRepoRect.stage = stage
 	return
 }
 
@@ -352,7 +360,7 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	rectInstancesToBeRemovedFromTheStage := make(map[*models.Rect]any)
-	for key, value := range models.Stage.Rects {
+	for key, value := range backRepoRect.stage.Rects {
 		rectInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -370,7 +378,7 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all rects that are not in the checkout
 	for rect := range rectInstancesToBeRemovedFromTheStage {
-		rect.Unstage()
+		rect.Unstage(backRepoRect.GetStage())
 
 		// remove instance from the back repo 3 maps
 		rectID := (*backRepoRect.Map_RectPtr_RectDBID)[rect]
@@ -395,12 +403,12 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOneInstance(rectDB *RectDB)
 
 		// append model store with the new element
 		rect.Name = rectDB.Name_Data.String
-		rect.Stage()
+		rect.Stage(backRepoRect.GetStage())
 	}
 	rectDB.CopyBasicFieldsToRect(rect)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	rect.Stage()
+	rect.Stage(backRepoRect.GetStage())
 
 	// preserve pointer to rectDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_RectDBID_RectDB)[rectDB hold variable pointers

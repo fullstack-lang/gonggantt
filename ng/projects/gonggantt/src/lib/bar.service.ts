@@ -21,10 +21,6 @@ import { LaneDB } from './lane-db'
 })
 export class BarService {
 
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
-
   // Kamar Raïmo: Adding a way to communicate between components that share information
   // so that they are notified of a change.
   BarServiceChanged: BehaviorSubject<string> = new BehaviorSubject("");
@@ -33,7 +29,6 @@ export class BarService {
 
   constructor(
     private http: HttpClient,
-    private location: Location,
     @Inject(DOCUMENT) private document: Document
   ) {
     // path to the service share the same origin with the path to the document
@@ -68,16 +63,20 @@ export class BarService {
     );
   }
 
-  //////// Save methods //////////
-
   /** POST: add a new bar to the server */
-  postBar(bardb: BarDB): Observable<BarDB> {
+  postBar(bardb: BarDB, GONG__StackPath: string): Observable<BarDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     let _Lane_Bars_reverse = bardb.Lane_Bars_reverse
     bardb.Lane_Bars_reverse = new LaneDB
 
-    return this.http.post<BarDB>(this.barsUrl, bardb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    }
+
+	return this.http.post<BarDB>(this.barsUrl, bardb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         bardb.Lane_Bars_reverse = _Lane_Bars_reverse
@@ -88,18 +87,24 @@ export class BarService {
   }
 
   /** DELETE: delete the bardb from the server */
-  deleteBar(bardb: BarDB | number): Observable<BarDB> {
+  deleteBar(bardb: BarDB | number, GONG__StackPath: string): Observable<BarDB> {
     const id = typeof bardb === 'number' ? bardb : bardb.ID;
     const url = `${this.barsUrl}/${id}`;
 
-    return this.http.delete<BarDB>(url, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.delete<BarDB>(url, httpOptions).pipe(
       tap(_ => this.log(`deleted bardb id=${id}`)),
       catchError(this.handleError<BarDB>('deleteBar'))
     );
   }
 
   /** PUT: update the bardb on the server */
-  updateBar(bardb: BarDB): Observable<BarDB> {
+  updateBar(bardb: BarDB, GONG__StackPath: string): Observable<BarDB> {
     const id = typeof bardb === 'number' ? bardb : bardb.ID;
     const url = `${this.barsUrl}/${id}`;
 
@@ -107,7 +112,13 @@ export class BarService {
     let _Lane_Bars_reverse = bardb.Lane_Bars_reverse
     bardb.Lane_Bars_reverse = new LaneDB
 
-    return this.http.put<BarDB>(url, bardb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.put<BarDB>(url, bardb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         bardb.Lane_Bars_reverse = _Lane_Bars_reverse

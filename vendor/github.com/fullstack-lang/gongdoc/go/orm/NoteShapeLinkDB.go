@@ -120,6 +120,13 @@ type BackRepoNoteShapeLinkStruct struct {
 	Map_NoteShapeLinkDBID_NoteShapeLinkPtr *map[uint]*models.NoteShapeLink
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoNoteShapeLink *BackRepoNoteShapeLinkStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoNoteShapeLink.stage
+	return
 }
 
 func (backRepoNoteShapeLink *BackRepoNoteShapeLinkStruct) GetDB() *gorm.DB {
@@ -134,7 +141,7 @@ func (backRepoNoteShapeLink *BackRepoNoteShapeLinkStruct) GetNoteShapeLinkDBFrom
 }
 
 // BackRepoNoteShapeLink.Init set up the BackRepo of the NoteShapeLink
-func (backRepoNoteShapeLink *BackRepoNoteShapeLinkStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoNoteShapeLink *BackRepoNoteShapeLinkStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoNoteShapeLink.Map_NoteShapeLinkDBID_NoteShapeLinkPtr != nil {
 		err := errors.New("In Init, backRepoNoteShapeLink.Map_NoteShapeLinkDBID_NoteShapeLinkPtr should be nil")
@@ -161,6 +168,7 @@ func (backRepoNoteShapeLink *BackRepoNoteShapeLinkStruct) Init(db *gorm.DB) (Err
 	backRepoNoteShapeLink.Map_NoteShapeLinkPtr_NoteShapeLinkDBID = &tmpID
 
 	backRepoNoteShapeLink.db = db
+	backRepoNoteShapeLink.stage = stage
 	return
 }
 
@@ -279,7 +287,7 @@ func (backRepoNoteShapeLink *BackRepoNoteShapeLinkStruct) CheckoutPhaseOne() (Er
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	noteshapelinkInstancesToBeRemovedFromTheStage := make(map[*models.NoteShapeLink]any)
-	for key, value := range models.Stage.NoteShapeLinks {
+	for key, value := range backRepoNoteShapeLink.stage.NoteShapeLinks {
 		noteshapelinkInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -297,7 +305,7 @@ func (backRepoNoteShapeLink *BackRepoNoteShapeLinkStruct) CheckoutPhaseOne() (Er
 
 	// remove from stage and back repo's 3 maps all noteshapelinks that are not in the checkout
 	for noteshapelink := range noteshapelinkInstancesToBeRemovedFromTheStage {
-		noteshapelink.Unstage()
+		noteshapelink.Unstage(backRepoNoteShapeLink.GetStage())
 
 		// remove instance from the back repo 3 maps
 		noteshapelinkID := (*backRepoNoteShapeLink.Map_NoteShapeLinkPtr_NoteShapeLinkDBID)[noteshapelink]
@@ -322,12 +330,12 @@ func (backRepoNoteShapeLink *BackRepoNoteShapeLinkStruct) CheckoutPhaseOneInstan
 
 		// append model store with the new element
 		noteshapelink.Name = noteshapelinkDB.Name_Data.String
-		noteshapelink.Stage()
+		noteshapelink.Stage(backRepoNoteShapeLink.GetStage())
 	}
 	noteshapelinkDB.CopyBasicFieldsToNoteShapeLink(noteshapelink)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	noteshapelink.Stage()
+	noteshapelink.Stage(backRepoNoteShapeLink.GetStage())
 
 	// preserve pointer to noteshapelinkDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_NoteShapeLinkDBID_NoteShapeLinkDB)[noteshapelinkDB hold variable pointers

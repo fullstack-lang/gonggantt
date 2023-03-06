@@ -174,6 +174,13 @@ type BackRepoAnimateStruct struct {
 	Map_AnimateDBID_AnimatePtr *map[uint]*models.Animate
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoAnimate *BackRepoAnimateStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoAnimate.stage
+	return
 }
 
 func (backRepoAnimate *BackRepoAnimateStruct) GetDB() *gorm.DB {
@@ -188,7 +195,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) GetAnimateDBFromAnimatePtr(animate
 }
 
 // BackRepoAnimate.Init set up the BackRepo of the Animate
-func (backRepoAnimate *BackRepoAnimateStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoAnimate *BackRepoAnimateStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoAnimate.Map_AnimateDBID_AnimatePtr != nil {
 		err := errors.New("In Init, backRepoAnimate.Map_AnimateDBID_AnimatePtr should be nil")
@@ -215,6 +222,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) Init(db *gorm.DB) (Error error) {
 	backRepoAnimate.Map_AnimatePtr_AnimateDBID = &tmpID
 
 	backRepoAnimate.db = db
+	backRepoAnimate.stage = stage
 	return
 }
 
@@ -333,7 +341,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	animateInstancesToBeRemovedFromTheStage := make(map[*models.Animate]any)
-	for key, value := range models.Stage.Animates {
+	for key, value := range backRepoAnimate.stage.Animates {
 		animateInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -351,7 +359,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all animates that are not in the checkout
 	for animate := range animateInstancesToBeRemovedFromTheStage {
-		animate.Unstage()
+		animate.Unstage(backRepoAnimate.GetStage())
 
 		// remove instance from the back repo 3 maps
 		animateID := (*backRepoAnimate.Map_AnimatePtr_AnimateDBID)[animate]
@@ -376,12 +384,12 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOneInstance(animateDB
 
 		// append model store with the new element
 		animate.Name = animateDB.Name_Data.String
-		animate.Stage()
+		animate.Stage(backRepoAnimate.GetStage())
 	}
 	animateDB.CopyBasicFieldsToAnimate(animate)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	animate.Stage()
+	animate.Stage(backRepoAnimate.GetStage())
 
 	// preserve pointer to animateDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_AnimateDBID_AnimateDB)[animateDB hold variable pointers

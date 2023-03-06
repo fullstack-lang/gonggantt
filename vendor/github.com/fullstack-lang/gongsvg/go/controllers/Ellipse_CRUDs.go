@@ -47,11 +47,23 @@ type EllipseInput struct {
 // default: genericError
 //
 //	200: ellipseDBResponse
-func GetEllipses(c *gin.Context) {
-	db := orm.BackRepo.BackRepoEllipse.GetDB()
+func (controller *Controller) GetEllipses(c *gin.Context) {
 
 	// source slice
 	var ellipseDBs []orm.EllipseDB
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetEllipses", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoEllipse.GetDB()
+
 	query := db.Find(&ellipseDBs)
 	if query.Error != nil {
 		var returnError GenericError
@@ -95,8 +107,19 @@ func GetEllipses(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostEllipse(c *gin.Context) {
-	db := orm.BackRepo.BackRepoEllipse.GetDB()
+func (controller *Controller) PostEllipse(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostEllipses", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoEllipse.GetDB()
 
 	// Validate input
 	var input orm.EllipseAPI
@@ -127,16 +150,16 @@ func PostEllipse(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoEllipse.CheckoutPhaseOneInstance(&ellipseDB)
-	ellipse := (*orm.BackRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+	backRepo.BackRepoEllipse.CheckoutPhaseOneInstance(&ellipseDB)
+	ellipse := (*backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
 
 	if ellipse != nil {
-		models.AfterCreateFromFront(&models.Stage, ellipse)
+		models.AfterCreateFromFront(backRepo.GetStage(), ellipse)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, ellipseDB)
 }
@@ -151,8 +174,19 @@ func PostEllipse(c *gin.Context) {
 // default: genericError
 //
 //	200: ellipseDBResponse
-func GetEllipse(c *gin.Context) {
-	db := orm.BackRepo.BackRepoEllipse.GetDB()
+func (controller *Controller) GetEllipse(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetEllipse", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoEllipse.GetDB()
 
 	// Get ellipseDB in DB
 	var ellipseDB orm.EllipseDB
@@ -183,8 +217,27 @@ func GetEllipse(c *gin.Context) {
 // default: genericError
 //
 //	200: ellipseDBResponse
-func UpdateEllipse(c *gin.Context) {
-	db := orm.BackRepo.BackRepoEllipse.GetDB()
+func (controller *Controller) UpdateEllipse(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdateEllipse", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoEllipse.GetDB()
+
+	// Validate input
+	var input orm.EllipseAPI
+	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Get model if exist
 	var ellipseDB orm.EllipseDB
@@ -198,14 +251,6 @@ func UpdateEllipse(c *gin.Context) {
 		returnError.Body.Message = query.Error.Error()
 		log.Println(query.Error.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
-		return
-	}
-
-	// Validate input
-	var input orm.EllipseAPI
-	if err := c.ShouldBindJSON(&input); err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -228,16 +273,16 @@ func UpdateEllipse(c *gin.Context) {
 	ellipseDB.CopyBasicFieldsToEllipse(ellipseNew)
 
 	// get stage instance from DB instance, and call callback function
-	ellipseOld := (*orm.BackRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+	ellipseOld := (*backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
 	if ellipseOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, ellipseOld, ellipseNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), ellipseOld, ellipseNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the ellipseDB
 	c.JSON(http.StatusOK, ellipseDB)
@@ -252,8 +297,19 @@ func UpdateEllipse(c *gin.Context) {
 // default: genericError
 //
 //	200: ellipseDBResponse
-func DeleteEllipse(c *gin.Context) {
-	db := orm.BackRepo.BackRepoEllipse.GetDB()
+func (controller *Controller) DeleteEllipse(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeleteEllipse", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoEllipse.GetDB()
 
 	// Get model if exist
 	var ellipseDB orm.EllipseDB
@@ -274,14 +330,14 @@ func DeleteEllipse(c *gin.Context) {
 	ellipseDB.CopyBasicFieldsToEllipse(ellipseDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	ellipseStaged := (*orm.BackRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+	ellipseStaged := (*backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
 	if ellipseStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, ellipseStaged, ellipseDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), ellipseStaged, ellipseDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

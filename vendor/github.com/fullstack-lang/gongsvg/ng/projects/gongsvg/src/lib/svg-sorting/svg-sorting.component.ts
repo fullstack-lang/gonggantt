@@ -46,7 +46,7 @@ export class SVGSortingComponent implements OnInit {
   }
 
   getSVGs(): void {
-    this.frontRepoService.pull().subscribe(
+    this.frontRepoService.pull(this.dialogData.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
@@ -100,13 +100,13 @@ export class SVGSortingComponent implements OnInit {
 
     this.associatedSVGs.forEach(
       svg => {
-        this.svgService.updateSVG(svg)
+        this.svgService.updateSVG(svg, this.dialogData.GONG__StackPath)
           .subscribe(svg => {
             this.svgService.SVGServiceChanged.next("update")
           });
       }
     )
 
-    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer +' done');
+    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer + ' done');
   }
 }

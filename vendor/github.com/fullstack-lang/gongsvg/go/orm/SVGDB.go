@@ -109,6 +109,13 @@ type BackRepoSVGStruct struct {
 	Map_SVGDBID_SVGPtr *map[uint]*models.SVG
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoSVG *BackRepoSVGStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoSVG.stage
+	return
 }
 
 func (backRepoSVG *BackRepoSVGStruct) GetDB() *gorm.DB {
@@ -123,7 +130,7 @@ func (backRepoSVG *BackRepoSVGStruct) GetSVGDBFromSVGPtr(svg *models.SVG) (svgDB
 }
 
 // BackRepoSVG.Init set up the BackRepo of the SVG
-func (backRepoSVG *BackRepoSVGStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoSVG *BackRepoSVGStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoSVG.Map_SVGDBID_SVGPtr != nil {
 		err := errors.New("In Init, backRepoSVG.Map_SVGDBID_SVGPtr should be nil")
@@ -150,6 +157,7 @@ func (backRepoSVG *BackRepoSVGStruct) Init(db *gorm.DB) (Error error) {
 	backRepoSVG.Map_SVGPtr_SVGDBID = &tmpID
 
 	backRepoSVG.db = db
+	backRepoSVG.stage = stage
 	return
 }
 
@@ -420,7 +428,7 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	svgInstancesToBeRemovedFromTheStage := make(map[*models.SVG]any)
-	for key, value := range models.Stage.SVGs {
+	for key, value := range backRepoSVG.stage.SVGs {
 		svgInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -438,7 +446,7 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all svgs that are not in the checkout
 	for svg := range svgInstancesToBeRemovedFromTheStage {
-		svg.Unstage()
+		svg.Unstage(backRepoSVG.GetStage())
 
 		// remove instance from the back repo 3 maps
 		svgID := (*backRepoSVG.Map_SVGPtr_SVGDBID)[svg]
@@ -463,12 +471,12 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOneInstance(svgDB *SVGDB) (Er
 
 		// append model store with the new element
 		svg.Name = svgDB.Name_Data.String
-		svg.Stage()
+		svg.Stage(backRepoSVG.GetStage())
 	}
 	svgDB.CopyBasicFieldsToSVG(svg)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	svg.Stage()
+	svg.Stage(backRepoSVG.GetStage())
 
 	// preserve pointer to svgDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_SVGDBID_SVGDB)[svgDB hold variable pointers

@@ -112,6 +112,13 @@ type BackRepoLaneUseStruct struct {
 	Map_LaneUseDBID_LaneUsePtr *map[uint]*models.LaneUse
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoLaneUse *BackRepoLaneUseStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoLaneUse.stage
+	return
 }
 
 func (backRepoLaneUse *BackRepoLaneUseStruct) GetDB() *gorm.DB {
@@ -126,7 +133,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) GetLaneUseDBFromLaneUsePtr(laneuse
 }
 
 // BackRepoLaneUse.Init set up the BackRepo of the LaneUse
-func (backRepoLaneUse *BackRepoLaneUseStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoLaneUse *BackRepoLaneUseStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr != nil {
 		err := errors.New("In Init, backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr should be nil")
@@ -153,6 +160,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) Init(db *gorm.DB) (Error error) {
 	backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID = &tmpID
 
 	backRepoLaneUse.db = db
+	backRepoLaneUse.stage = stage
 	return
 }
 
@@ -280,7 +288,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	laneuseInstancesToBeRemovedFromTheStage := make(map[*models.LaneUse]any)
-	for key, value := range models.Stage.LaneUses {
+	for key, value := range backRepoLaneUse.stage.LaneUses {
 		laneuseInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -298,7 +306,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all laneuses that are not in the checkout
 	for laneuse := range laneuseInstancesToBeRemovedFromTheStage {
-		laneuse.Unstage()
+		laneuse.Unstage(backRepoLaneUse.GetStage())
 
 		// remove instance from the back repo 3 maps
 		laneuseID := (*backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[laneuse]
@@ -323,12 +331,12 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOneInstance(laneuseDB
 
 		// append model store with the new element
 		laneuse.Name = laneuseDB.Name_Data.String
-		laneuse.Stage()
+		laneuse.Stage(backRepoLaneUse.GetStage())
 	}
 	laneuseDB.CopyBasicFieldsToLaneUse(laneuse)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	laneuse.Stage()
+	laneuse.Stage(backRepoLaneUse.GetStage())
 
 	// preserve pointer to laneuseDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_LaneUseDBID_LaneUseDB)[laneuseDB hold variable pointers

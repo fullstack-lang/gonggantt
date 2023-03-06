@@ -46,7 +46,7 @@ export class GongEnumShapeSortingComponent implements OnInit {
   }
 
   getGongEnumShapes(): void {
-    this.frontRepoService.pull().subscribe(
+    this.frontRepoService.pull(this.dialogData.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
@@ -100,13 +100,13 @@ export class GongEnumShapeSortingComponent implements OnInit {
 
     this.associatedGongEnumShapes.forEach(
       gongenumshape => {
-        this.gongenumshapeService.updateGongEnumShape(gongenumshape)
+        this.gongenumshapeService.updateGongEnumShape(gongenumshape, this.dialogData.GONG__StackPath)
           .subscribe(gongenumshape => {
             this.gongenumshapeService.GongEnumShapeServiceChanged.next("update")
           });
       }
     )
 
-    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer +' done');
+    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer + ' done');
   }
 }

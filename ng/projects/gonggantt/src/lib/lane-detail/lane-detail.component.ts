@@ -196,13 +196,13 @@ export class LaneDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case LaneDetailComponentState.UPDATE_INSTANCE:
-				this.laneService.updateLane(this.lane)
+				this.laneService.updateLane(this.lane, this.GONG__StackPath)
 					.subscribe(lane => {
 						this.laneService.LaneServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.laneService.postLane(this.lane).subscribe(lane => {
+				this.laneService.postLane(this.lane, this.GONG__StackPath).subscribe(lane => {
 					this.laneService.LaneServiceChanged.next("post")
 					this.lane = new (LaneDB) // reset fields
 				});

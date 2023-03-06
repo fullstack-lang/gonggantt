@@ -100,7 +100,7 @@ export class GroupSortingComponent implements OnInit {
 
     this.associatedGroups.forEach(
       group => {
-        this.groupService.updateGroup(group)
+        this.groupService.updateGroup(group, this.dialogData.GONG__StackPath)
           .subscribe(group => {
             this.groupService.GroupServiceChanged.next("update")
           });

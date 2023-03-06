@@ -22,10 +22,6 @@ import { MilestoneDB } from './milestone-db'
 })
 export class LaneUseService {
 
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
-
   // Kamar Raïmo: Adding a way to communicate between components that share information
   // so that they are notified of a change.
   LaneUseServiceChanged: BehaviorSubject<string> = new BehaviorSubject("");
@@ -34,7 +30,6 @@ export class LaneUseService {
 
   constructor(
     private http: HttpClient,
-    private location: Location,
     @Inject(DOCUMENT) private document: Document
   ) {
     // path to the service share the same origin with the path to the document
@@ -69,17 +64,21 @@ export class LaneUseService {
     );
   }
 
-  //////// Save methods //////////
-
   /** POST: add a new laneuse to the server */
-  postLaneUse(laneusedb: LaneUseDB): Observable<LaneUseDB> {
+  postLaneUse(laneusedb: LaneUseDB, GONG__StackPath: string): Observable<LaneUseDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     laneusedb.Lane = new LaneDB
     let _Milestone_LanesToDisplayMilestoneUse_reverse = laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse
     laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = new MilestoneDB
 
-    return this.http.post<LaneUseDB>(this.laneusesUrl, laneusedb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    }
+
+	return this.http.post<LaneUseDB>(this.laneusesUrl, laneusedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = _Milestone_LanesToDisplayMilestoneUse_reverse
@@ -90,18 +89,24 @@ export class LaneUseService {
   }
 
   /** DELETE: delete the laneusedb from the server */
-  deleteLaneUse(laneusedb: LaneUseDB | number): Observable<LaneUseDB> {
+  deleteLaneUse(laneusedb: LaneUseDB | number, GONG__StackPath: string): Observable<LaneUseDB> {
     const id = typeof laneusedb === 'number' ? laneusedb : laneusedb.ID;
     const url = `${this.laneusesUrl}/${id}`;
 
-    return this.http.delete<LaneUseDB>(url, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.delete<LaneUseDB>(url, httpOptions).pipe(
       tap(_ => this.log(`deleted laneusedb id=${id}`)),
       catchError(this.handleError<LaneUseDB>('deleteLaneUse'))
     );
   }
 
   /** PUT: update the laneusedb on the server */
-  updateLaneUse(laneusedb: LaneUseDB): Observable<LaneUseDB> {
+  updateLaneUse(laneusedb: LaneUseDB, GONG__StackPath: string): Observable<LaneUseDB> {
     const id = typeof laneusedb === 'number' ? laneusedb : laneusedb.ID;
     const url = `${this.laneusesUrl}/${id}`;
 
@@ -110,7 +115,13 @@ export class LaneUseService {
     let _Milestone_LanesToDisplayMilestoneUse_reverse = laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse
     laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = new MilestoneDB
 
-    return this.http.put<LaneUseDB>(url, laneusedb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.put<LaneUseDB>(url, laneusedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = _Milestone_LanesToDisplayMilestoneUse_reverse

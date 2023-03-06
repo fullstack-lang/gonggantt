@@ -26,6 +26,8 @@ func IsStaged[Type Gongstruct](stage *StageStruct, instance *Type) (ok bool) {
 	case *Milestone:
 		ok = stage.IsStagedMilestone(target)
 
+	default:
+		_ = target
 	}
 	return
 }
@@ -110,6 +112,8 @@ func StageBranch[Type Gongstruct](stage *StageStruct, instance *Type) {
 	case *Milestone:
 		stage.StageBranchMilestone(target)
 
+	default:
+		_ = target
 	}
 }
 
@@ -121,7 +125,7 @@ func (stage *StageStruct) StageBranchArrow(arrow *Arrow) {
 		return
 	}
 
-	arrow.Stage()
+	arrow.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 	if arrow.From != nil {
@@ -142,7 +146,7 @@ func (stage *StageStruct) StageBranchBar(bar *Bar) {
 		return
 	}
 
-	bar.Stage()
+	bar.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -157,7 +161,7 @@ func (stage *StageStruct) StageBranchGantt(gantt *Gantt) {
 		return
 	}
 
-	gantt.Stage()
+	gantt.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -184,7 +188,7 @@ func (stage *StageStruct) StageBranchGroup(group *Group) {
 		return
 	}
 
-	group.Stage()
+	group.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -202,7 +206,7 @@ func (stage *StageStruct) StageBranchLane(lane *Lane) {
 		return
 	}
 
-	lane.Stage()
+	lane.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -220,7 +224,7 @@ func (stage *StageStruct) StageBranchLaneUse(laneuse *LaneUse) {
 		return
 	}
 
-	laneuse.Stage()
+	laneuse.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 	if laneuse.Lane != nil {
@@ -238,7 +242,7 @@ func (stage *StageStruct) StageBranchMilestone(milestone *Milestone) {
 		return
 	}
 
-	milestone.Stage()
+	milestone.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -279,6 +283,8 @@ func UnstageBranch[Type Gongstruct](stage *StageStruct, instance *Type) {
 	case *Milestone:
 		stage.UnstageBranchMilestone(target)
 
+	default:
+		_ = target
 	}
 }
 
@@ -290,7 +296,7 @@ func (stage *StageStruct) UnstageBranchArrow(arrow *Arrow) {
 		return
 	}
 
-	arrow.Unstage()
+	arrow.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 	if arrow.From != nil {
@@ -311,7 +317,7 @@ func (stage *StageStruct) UnstageBranchBar(bar *Bar) {
 		return
 	}
 
-	bar.Unstage()
+	bar.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -326,7 +332,7 @@ func (stage *StageStruct) UnstageBranchGantt(gantt *Gantt) {
 		return
 	}
 
-	gantt.Unstage()
+	gantt.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -353,7 +359,7 @@ func (stage *StageStruct) UnstageBranchGroup(group *Group) {
 		return
 	}
 
-	group.Unstage()
+	group.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -371,7 +377,7 @@ func (stage *StageStruct) UnstageBranchLane(lane *Lane) {
 		return
 	}
 
-	lane.Unstage()
+	lane.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -389,7 +395,7 @@ func (stage *StageStruct) UnstageBranchLaneUse(laneuse *LaneUse) {
 		return
 	}
 
-	laneuse.Unstage()
+	laneuse.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 	if laneuse.Lane != nil {
@@ -407,7 +413,7 @@ func (stage *StageStruct) UnstageBranchMilestone(milestone *Milestone) {
 		return
 	}
 
-	milestone.Unstage()
+	milestone.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 

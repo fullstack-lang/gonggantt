@@ -194,7 +194,7 @@ export class ArrowsTableComponent implements OnInit {
 
   ngOnInit(): void {
     let stackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')
-    if ( stackPath != undefined) {
+    if (stackPath != undefined) {
       this.GONG__StackPath = stackPath
     }
 
@@ -230,10 +230,14 @@ export class ArrowsTableComponent implements OnInit {
           let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, ArrowDB>
           let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
-          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as ArrowDB[]
-          for (let associationInstance of sourceField) {
-            let arrow = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as ArrowDB
-            this.initialSelection.push(arrow)
+          // we associates on sourceInstance of type SourceStruct with a MANY MANY associations to ArrowDB
+          // the field name is sourceField
+          let sourceFieldArray = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as ArrowDB[]
+          if (sourceFieldArray != null) {
+            for (let associationInstance of sourceFieldArray) {
+              let arrow = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as ArrowDB
+              this.initialSelection.push(arrow)
+            }
           }
 
           this.selection = new SelectionModel<ArrowDB>(allowMultiSelect, this.initialSelection);
@@ -254,7 +258,7 @@ export class ArrowsTableComponent implements OnInit {
     // list of arrows is truncated of arrow before the delete
     this.arrows = this.arrows.filter(h => h !== arrow);
 
-    this.arrowService.deleteArrow(arrowID).subscribe(
+    this.arrowService.deleteArrow(arrowID, this.GONG__StackPath).subscribe(
       arrow => {
         this.arrowService.ArrowServiceChanged.next("delete")
       }
@@ -320,7 +324,7 @@ export class ArrowsTableComponent implements OnInit {
 
       // update all arrow (only update selection & initial selection)
       for (let arrow of toUpdate) {
-        this.arrowService.updateArrow(arrow)
+        this.arrowService.updateArrow(arrow, this.GONG__StackPath)
           .subscribe(arrow => {
             this.arrowService.ArrowServiceChanged.next("update")
           });

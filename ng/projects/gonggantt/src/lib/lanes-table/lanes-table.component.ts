@@ -185,7 +185,7 @@ export class LanesTableComponent implements OnInit {
 
   ngOnInit(): void {
     let stackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')
-    if ( stackPath != undefined) {
+    if (stackPath != undefined) {
       this.GONG__StackPath = stackPath
     }
 
@@ -221,10 +221,14 @@ export class LanesTableComponent implements OnInit {
           let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, LaneDB>
           let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
-          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as LaneDB[]
-          for (let associationInstance of sourceField) {
-            let lane = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LaneDB
-            this.initialSelection.push(lane)
+          // we associates on sourceInstance of type SourceStruct with a MANY MANY associations to LaneDB
+          // the field name is sourceField
+          let sourceFieldArray = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as LaneDB[]
+          if (sourceFieldArray != null) {
+            for (let associationInstance of sourceFieldArray) {
+              let lane = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LaneDB
+              this.initialSelection.push(lane)
+            }
           }
 
           this.selection = new SelectionModel<LaneDB>(allowMultiSelect, this.initialSelection);
@@ -245,7 +249,7 @@ export class LanesTableComponent implements OnInit {
     // list of lanes is truncated of lane before the delete
     this.lanes = this.lanes.filter(h => h !== lane);
 
-    this.laneService.deleteLane(laneID).subscribe(
+    this.laneService.deleteLane(laneID, this.GONG__StackPath).subscribe(
       lane => {
         this.laneService.LaneServiceChanged.next("delete")
       }
@@ -311,7 +315,7 @@ export class LanesTableComponent implements OnInit {
 
       // update all lane (only update selection & initial selection)
       for (let lane of toUpdate) {
-        this.laneService.updateLane(lane)
+        this.laneService.updateLane(lane, this.GONG__StackPath)
           .subscribe(lane => {
             this.laneService.LaneServiceChanged.next("update")
           });

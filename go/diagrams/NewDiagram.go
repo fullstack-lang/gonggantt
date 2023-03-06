@@ -156,48 +156,48 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 // }
 
 // NewDiagramInjection will stage objects of database "NewDiagram"
-func NewDiagramInjection() {
+func NewDiagramInjection(stage *models.StageStruct) {
 
 	// Declaration of instances to stage
 
 	// Declarations of staged instances of Classdiagram
-	__Classdiagram__000000_NewDiagram := (&models.Classdiagram{Name: `NewDiagram`}).Stage()
+	__Classdiagram__000000_NewDiagram := (&models.Classdiagram{Name: `NewDiagram`}).Stage(stage)
 
 	// Declarations of staged instances of DiagramPackage
 
 	// Declarations of staged instances of Field
-	__Field__000000_End := (&models.Field{Name: `End`}).Stage()
-	__Field__000001_Name := (&models.Field{Name: `Name`}).Stage()
-	__Field__000002_Order := (&models.Field{Name: `Order`}).Stage()
-	__Field__000003_Start := (&models.Field{Name: `Start`}).Stage()
+	__Field__000000_End := (&models.Field{Name: `End`}).Stage(stage)
+	__Field__000001_Name := (&models.Field{Name: `Name`}).Stage(stage)
+	__Field__000002_Order := (&models.Field{Name: `Order`}).Stage(stage)
+	__Field__000003_Start := (&models.Field{Name: `Start`}).Stage(stage)
 
 	// Declarations of staged instances of GongEnumShape
 
 	// Declarations of staged instances of GongEnumValueEntry
 
 	// Declarations of staged instances of GongStructShape
-	__GongStructShape__000000_NewDiagram_Bar := (&models.GongStructShape{Name: `NewDiagram-Bar`}).Stage()
-	__GongStructShape__000001_NewDiagram_Gantt := (&models.GongStructShape{Name: `NewDiagram-Gantt`}).Stage()
-	__GongStructShape__000002_NewDiagram_Lane := (&models.GongStructShape{Name: `NewDiagram-Lane`}).Stage()
+	__GongStructShape__000000_NewDiagram_Bar := (&models.GongStructShape{Name: `NewDiagram-Bar`}).Stage(stage)
+	__GongStructShape__000001_NewDiagram_Gantt := (&models.GongStructShape{Name: `NewDiagram-Gantt`}).Stage(stage)
+	__GongStructShape__000002_NewDiagram_Lane := (&models.GongStructShape{Name: `NewDiagram-Lane`}).Stage(stage)
 
 	// Declarations of staged instances of Link
-	__Link__000000_Bars := (&models.Link{Name: `Bars`}).Stage()
-	__Link__000001_Lanes := (&models.Link{Name: `Lanes`}).Stage()
+	__Link__000000_Bars := (&models.Link{Name: `Bars`}).Stage(stage)
+	__Link__000001_Lanes := (&models.Link{Name: `Lanes`}).Stage(stage)
 
 	// Declarations of staged instances of Node
 
 	// Declarations of staged instances of NoteShape
-	__NoteShape__000000_NoteOnTheModel := (&models.NoteShape{Name: `NoteOnTheModel`}).Stage()
+	__NoteShape__000000_NoteOnTheModel := (&models.NoteShape{Name: `NoteOnTheModel`}).Stage(stage)
 
 	// Declarations of staged instances of NoteShapeLink
-	__NoteShapeLink__000000_Bar := (&models.NoteShapeLink{Name: `Bar`}).Stage()
-	__NoteShapeLink__000001_Gantt := (&models.NoteShapeLink{Name: `Gantt`}).Stage()
-	__NoteShapeLink__000002_Lane := (&models.NoteShapeLink{Name: `Lane`}).Stage()
+	__NoteShapeLink__000000_Bar := (&models.NoteShapeLink{Name: `Bar`}).Stage(stage)
+	__NoteShapeLink__000001_Gantt := (&models.NoteShapeLink{Name: `Gantt`}).Stage(stage)
+	__NoteShapeLink__000002_Lane := (&models.NoteShapeLink{Name: `Lane`}).Stage(stage)
 
 	// Declarations of staged instances of Position
-	__Position__000000_Pos_NewDiagram_Bar := (&models.Position{Name: `Pos-NewDiagram-Bar`}).Stage()
-	__Position__000001_Pos_NewDiagram_Gantt := (&models.Position{Name: `Pos-NewDiagram-Gantt`}).Stage()
-	__Position__000002_Pos_NewDiagram_Lane := (&models.Position{Name: `Pos-NewDiagram-Lane`}).Stage()
+	__Position__000000_Pos_NewDiagram_Bar := (&models.Position{Name: `Pos-NewDiagram-Bar`}).Stage(stage)
+	__Position__000001_Pos_NewDiagram_Gantt := (&models.Position{Name: `Pos-NewDiagram-Gantt`}).Stage(stage)
+	__Position__000002_Pos_NewDiagram_Lane := (&models.Position{Name: `Pos-NewDiagram-Lane`}).Stage(stage)
 
 	// Declarations of staged instances of Tree
 
@@ -206,8 +206,8 @@ func NewDiagramInjection() {
 	// Declarations of staged instances of Umlsc
 
 	// Declarations of staged instances of Vertice
-	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Gantt_and_NewDiagram_Lane := (&models.Vertice{Name: `Verticle in class diagram NewDiagram in middle between NewDiagram-Gantt and NewDiagram-Lane`}).Stage()
-	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Lane_and_NewDiagram_Bar := (&models.Vertice{Name: `Verticle in class diagram NewDiagram in middle between NewDiagram-Lane and NewDiagram-Bar`}).Stage()
+	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Gantt_and_NewDiagram_Lane := (&models.Vertice{Name: `Verticle in class diagram NewDiagram in middle between NewDiagram-Gantt and NewDiagram-Lane`}).Stage(stage)
+	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Lane_and_NewDiagram_Bar := (&models.Vertice{Name: `Verticle in class diagram NewDiagram in middle between NewDiagram-Lane and NewDiagram-Bar`}).Stage(stage)
 
 	// Setup of values
 
@@ -217,7 +217,7 @@ func NewDiagramInjection() {
 
 	// Field values setup
 	__Field__000000_End.Name = `End`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Bar.End]
@@ -228,7 +228,7 @@ func NewDiagramInjection() {
 
 	// Field values setup
 	__Field__000001_Name.Name = `Name`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Bar.Name]
@@ -239,7 +239,7 @@ func NewDiagramInjection() {
 
 	// Field values setup
 	__Field__000002_Order.Name = `Order`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Lane.Order]
@@ -250,7 +250,7 @@ func NewDiagramInjection() {
 
 	// Field values setup
 	__Field__000003_Start.Name = `Start`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Bar.Start]
@@ -261,7 +261,7 @@ func NewDiagramInjection() {
 
 	// GongStructShape values setup
 	__GongStructShape__000000_NewDiagram_Bar.Name = `NewDiagram-Bar`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Bar]
@@ -274,7 +274,7 @@ func NewDiagramInjection() {
 
 	// GongStructShape values setup
 	__GongStructShape__000001_NewDiagram_Gantt.Name = `NewDiagram-Gantt`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Gantt]
@@ -287,7 +287,7 @@ func NewDiagramInjection() {
 
 	// GongStructShape values setup
 	__GongStructShape__000002_NewDiagram_Lane.Name = `NewDiagram-Lane`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Lane]
@@ -300,7 +300,7 @@ func NewDiagramInjection() {
 
 	// Link values setup
 	__Link__000000_Bars.Name = `Bars`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Lane.Bars]
@@ -311,7 +311,7 @@ func NewDiagramInjection() {
 
 	// Link values setup
 	__Link__000001_Lanes.Name = `Lanes`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Gantt.Lanes]
@@ -322,7 +322,7 @@ func NewDiagramInjection() {
 
 	// NoteShape values setup
 	__NoteShape__000000_NoteOnTheModel.Name = `NoteOnTheModel`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.NoteOnTheModel]
@@ -345,7 +345,7 @@ A task is displayed as a bar ([models.Bar]) with a start and end date
 
 	// NoteShapeLink values setup
 	__NoteShapeLink__000000_Bar.Name = `Bar`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Bar]
@@ -354,7 +354,7 @@ A task is displayed as a bar ([models.Bar]) with a start and end date
 
 	// NoteShapeLink values setup
 	__NoteShapeLink__000001_Gantt.Name = `Gantt`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Gantt]
@@ -363,7 +363,7 @@ A task is displayed as a bar ([models.Bar]) with a start and end date
 
 	// NoteShapeLink values setup
 	__NoteShapeLink__000002_Lane.Name = `Lane`
-	
+
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Lane]
@@ -415,5 +415,3 @@ A task is displayed as a bar ([models.Bar]) with a start and end date
 	__NoteShape__000000_NoteOnTheModel.NoteShapeLinks = append(__NoteShape__000000_NoteOnTheModel.NoteShapeLinks, __NoteShapeLink__000001_Gantt)
 	__NoteShape__000000_NoteOnTheModel.NoteShapeLinks = append(__NoteShape__000000_NoteOnTheModel.NoteShapeLinks, __NoteShapeLink__000002_Lane)
 }
-
-

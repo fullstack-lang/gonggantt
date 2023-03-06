@@ -158,13 +158,13 @@ export class GanttDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case GanttDetailComponentState.UPDATE_INSTANCE:
-				this.ganttService.updateGantt(this.gantt)
+				this.ganttService.updateGantt(this.gantt, this.GONG__StackPath)
 					.subscribe(gantt => {
 						this.ganttService.GanttServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.ganttService.postGantt(this.gantt).subscribe(gantt => {
+				this.ganttService.postGantt(this.gantt, this.GONG__StackPath).subscribe(gantt => {
 					this.ganttService.GanttServiceChanged.next("post")
 					this.gantt = new (GanttDB) // reset fields
 				});

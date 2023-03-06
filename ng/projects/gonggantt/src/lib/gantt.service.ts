@@ -20,10 +20,6 @@ import { GanttDB } from './gantt-db';
 })
 export class GanttService {
 
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
-
   // Kamar Raïmo: Adding a way to communicate between components that share information
   // so that they are notified of a change.
   GanttServiceChanged: BehaviorSubject<string> = new BehaviorSubject("");
@@ -32,7 +28,6 @@ export class GanttService {
 
   constructor(
     private http: HttpClient,
-    private location: Location,
     @Inject(DOCUMENT) private document: Document
   ) {
     // path to the service share the same origin with the path to the document
@@ -67,10 +62,8 @@ export class GanttService {
     );
   }
 
-  //////// Save methods //////////
-
   /** POST: add a new gantt to the server */
-  postGantt(ganttdb: GanttDB): Observable<GanttDB> {
+  postGantt(ganttdb: GanttDB, GONG__StackPath: string): Observable<GanttDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     ganttdb.Lanes = []
@@ -78,7 +71,13 @@ export class GanttService {
     ganttdb.Groups = []
     ganttdb.Arrows = []
 
-    return this.http.post<GanttDB>(this.ganttsUrl, ganttdb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    }
+
+	return this.http.post<GanttDB>(this.ganttsUrl, ganttdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         this.log(`posted ganttdb id=${ganttdb.ID}`)
@@ -88,18 +87,24 @@ export class GanttService {
   }
 
   /** DELETE: delete the ganttdb from the server */
-  deleteGantt(ganttdb: GanttDB | number): Observable<GanttDB> {
+  deleteGantt(ganttdb: GanttDB | number, GONG__StackPath: string): Observable<GanttDB> {
     const id = typeof ganttdb === 'number' ? ganttdb : ganttdb.ID;
     const url = `${this.ganttsUrl}/${id}`;
 
-    return this.http.delete<GanttDB>(url, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.delete<GanttDB>(url, httpOptions).pipe(
       tap(_ => this.log(`deleted ganttdb id=${id}`)),
       catchError(this.handleError<GanttDB>('deleteGantt'))
     );
   }
 
   /** PUT: update the ganttdb on the server */
-  updateGantt(ganttdb: GanttDB): Observable<GanttDB> {
+  updateGantt(ganttdb: GanttDB, GONG__StackPath: string): Observable<GanttDB> {
     const id = typeof ganttdb === 'number' ? ganttdb : ganttdb.ID;
     const url = `${this.ganttsUrl}/${id}`;
 
@@ -109,7 +114,13 @@ export class GanttService {
     ganttdb.Groups = []
     ganttdb.Arrows = []
 
-    return this.http.put<GanttDB>(url, ganttdb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.put<GanttDB>(url, ganttdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         this.log(`updated ganttdb id=${ganttdb.ID}`)

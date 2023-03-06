@@ -46,7 +46,7 @@ export class PolylineSortingComponent implements OnInit {
   }
 
   getPolylines(): void {
-    this.frontRepoService.pull().subscribe(
+    this.frontRepoService.pull(this.dialogData.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
@@ -100,13 +100,13 @@ export class PolylineSortingComponent implements OnInit {
 
     this.associatedPolylines.forEach(
       polyline => {
-        this.polylineService.updatePolyline(polyline)
+        this.polylineService.updatePolyline(polyline, this.dialogData.GONG__StackPath)
           .subscribe(polyline => {
             this.polylineService.PolylineServiceChanged.next("update")
           });
       }
     )
 
-    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer +' done');
+    this.dialogRef.close('Sorting of ' + this.dialogData.ReversePointer + ' done');
   }
 }

@@ -47,11 +47,23 @@ type PolylineInput struct {
 // default: genericError
 //
 //	200: polylineDBResponse
-func GetPolylines(c *gin.Context) {
-	db := orm.BackRepo.BackRepoPolyline.GetDB()
+func (controller *Controller) GetPolylines(c *gin.Context) {
 
 	// source slice
 	var polylineDBs []orm.PolylineDB
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetPolylines", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoPolyline.GetDB()
+
 	query := db.Find(&polylineDBs)
 	if query.Error != nil {
 		var returnError GenericError
@@ -95,8 +107,19 @@ func GetPolylines(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostPolyline(c *gin.Context) {
-	db := orm.BackRepo.BackRepoPolyline.GetDB()
+func (controller *Controller) PostPolyline(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostPolylines", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoPolyline.GetDB()
 
 	// Validate input
 	var input orm.PolylineAPI
@@ -127,16 +150,16 @@ func PostPolyline(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoPolyline.CheckoutPhaseOneInstance(&polylineDB)
-	polyline := (*orm.BackRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+	backRepo.BackRepoPolyline.CheckoutPhaseOneInstance(&polylineDB)
+	polyline := (*backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
 
 	if polyline != nil {
-		models.AfterCreateFromFront(&models.Stage, polyline)
+		models.AfterCreateFromFront(backRepo.GetStage(), polyline)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, polylineDB)
 }
@@ -151,8 +174,19 @@ func PostPolyline(c *gin.Context) {
 // default: genericError
 //
 //	200: polylineDBResponse
-func GetPolyline(c *gin.Context) {
-	db := orm.BackRepo.BackRepoPolyline.GetDB()
+func (controller *Controller) GetPolyline(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetPolyline", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoPolyline.GetDB()
 
 	// Get polylineDB in DB
 	var polylineDB orm.PolylineDB
@@ -183,8 +217,27 @@ func GetPolyline(c *gin.Context) {
 // default: genericError
 //
 //	200: polylineDBResponse
-func UpdatePolyline(c *gin.Context) {
-	db := orm.BackRepo.BackRepoPolyline.GetDB()
+func (controller *Controller) UpdatePolyline(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdatePolyline", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoPolyline.GetDB()
+
+	// Validate input
+	var input orm.PolylineAPI
+	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Get model if exist
 	var polylineDB orm.PolylineDB
@@ -198,14 +251,6 @@ func UpdatePolyline(c *gin.Context) {
 		returnError.Body.Message = query.Error.Error()
 		log.Println(query.Error.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
-		return
-	}
-
-	// Validate input
-	var input orm.PolylineAPI
-	if err := c.ShouldBindJSON(&input); err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -228,16 +273,16 @@ func UpdatePolyline(c *gin.Context) {
 	polylineDB.CopyBasicFieldsToPolyline(polylineNew)
 
 	// get stage instance from DB instance, and call callback function
-	polylineOld := (*orm.BackRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+	polylineOld := (*backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
 	if polylineOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, polylineOld, polylineNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), polylineOld, polylineNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the polylineDB
 	c.JSON(http.StatusOK, polylineDB)
@@ -252,8 +297,19 @@ func UpdatePolyline(c *gin.Context) {
 // default: genericError
 //
 //	200: polylineDBResponse
-func DeletePolyline(c *gin.Context) {
-	db := orm.BackRepo.BackRepoPolyline.GetDB()
+func (controller *Controller) DeletePolyline(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeletePolyline", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoPolyline.GetDB()
 
 	// Get model if exist
 	var polylineDB orm.PolylineDB
@@ -274,14 +330,14 @@ func DeletePolyline(c *gin.Context) {
 	polylineDB.CopyBasicFieldsToPolyline(polylineDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	polylineStaged := (*orm.BackRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+	polylineStaged := (*backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
 	if polylineStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, polylineStaged, polylineDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), polylineStaged, polylineDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

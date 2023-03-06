@@ -53,18 +53,20 @@ var InjectionGateway = make(map[string](func()))
 
 // hook marhalling to stage
 type BeforeCommitImplementation struct {
+	gongsvgStage *gongsvg_models.StageStruct
 }
 
-func (impl *BeforeCommitImplementation) BeforeCommit(stage *gonggantt_models.StageStruct) {
+func (impl *BeforeCommitImplementation) BeforeCommit(
+	gongganttStage *gonggantt_models.StageStruct) {
 	file, err := os.Create(fmt.Sprintf("./%s.go", *marshallOnCommit))
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	defer file.Close()
 
-	gonggantt_models.Stage.Checkout()
-	gonggantt_models.Stage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
-	gantt2svg.GanttToSVGTranformerSingloton.GenerateSvg(stage)
+	gongganttStage.Checkout()
+	gongganttStage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
+	gantt2svg.GanttToSVGTranformerSingloton.GenerateSvg(gongganttStage, impl.gongsvgStage)
 }
 
 func main() {
@@ -83,8 +85,8 @@ func main() {
 	r := gin.Default()
 	r.Use(cors.Default())
 
-	gonggantt_fullstack.Init(r)
-	gongsvg_fullstack.Init(r)
+	gonganttStage, _ := gonggantt_fullstack.NewStackInstance(r, "")
+	gongsvgStage, _ := gongsvg_fullstack.NewStackInstance(r, "")
 
 	// generate injection code from the stage
 	if *marshallOnStartup != "" {
@@ -102,29 +104,26 @@ func main() {
 		}
 		defer file.Close()
 
-		gonggantt_models.Stage.Checkout()
-		gonggantt_models.Stage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
+		gonganttStage.Checkout()
+		gonganttStage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
 		os.Exit(0)
 	}
 
-	// setup the stage by injecting the code from code database
-	stage := &gonggantt_models.Stage
-	_ = stage
 	if *unmarshall != "" {
-		gonggantt_models.Stage.Checkout()
-		gonggantt_models.Stage.Reset()
-		gonggantt_models.Stage.Commit()
+		gonganttStage.Checkout()
+		gonganttStage.Reset()
+		gonganttStage.Commit()
 		if InjectionGateway[*unmarshall] != nil {
 			InjectionGateway[*unmarshall]()
 		}
 
-		gonggantt_models.Stage.Commit()
+		gonganttStage.Commit()
 	}
 	if *unmarshallFromCode != "" {
-		gonggantt_models.Stage.Checkout()
-		gonggantt_models.Stage.Reset()
-		gonggantt_models.Stage.Commit()
-		err := gonggantt_models.ParseAstFile(*unmarshallFromCode)
+		gonganttStage.Checkout()
+		gonganttStage.Reset()
+		gonganttStage.Commit()
+		err := gonggantt_models.ParseAstFile(gonganttStage, *unmarshallFromCode)
 
 		// if the application is run with -unmarshallFromCode=xxx.go -marshallOnCommit
 		// xxx.go might be absent the first time. However, this shall not be a show stopper.
@@ -132,20 +131,21 @@ func main() {
 			log.Println("no file to read " + err.Error())
 		}
 
-		gonggantt_models.Stage.Commit()
+		gonganttStage.Commit()
 	} else {
 		// in case the database is used, checkout the content to the stage
-		gonggantt_models.Stage.Checkout()
+		gonganttStage.Checkout()
 	}
 
 	// hook automatic marshall to go code at every commit
 	if *marshallOnCommit != "" {
 		hook := new(BeforeCommitImplementation)
-		gonggantt_models.Stage.OnInitCommitFromFrontCallback = hook
+		hook.gongsvgStage = gongsvgStage
+		gonganttStage.OnInitCommitFromFrontCallback = hook
 	}
 
 	// put all to database
-	gonggantt_models.Stage.Commit()
+	gonganttStage.Commit()
 	gongsvg_models.Stage.Commit()
 
 	gongdoc_load.Load(
@@ -154,7 +154,7 @@ func main() {
 		gonggantt.GoDir,
 		r,
 		*embeddedDiagrams,
-		&gonggantt_models.Stage.Map_GongStructName_InstancesNb)
+		&gonganttStage.Map_GongStructName_InstancesNb)
 
 	// provide the static route for the angular pages
 	r.Use(static.Serve("/", EmbedFolder(gonggantt.NgDistNg, "ng/dist/ng")))
@@ -164,7 +164,7 @@ func main() {
 		c.Abort()
 	})
 
-	gantt2svg.GanttToSVGTranformerSingloton.GenerateSvg(stage)
+	gantt2svg.GanttToSVGTranformerSingloton.GenerateSvg(gonganttStage, gongsvgStage)
 
 	log.Printf("Server ready serve on localhost:8080")
 	r.Run()

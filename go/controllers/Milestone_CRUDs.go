@@ -47,23 +47,22 @@ type MilestoneInput struct {
 // default: genericError
 //
 //	200: milestoneDBResponse
-func GetMilestones(c *gin.Context) {
-	db := orm.BackRepo.BackRepoMilestone.GetDB()
+func (controller *Controller) GetMilestones(c *gin.Context) {
 
 	// source slice
 	var milestoneDBs []orm.MilestoneDB
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GONG__StackPath", stackParam)
+			stackPath = value[0]
+			log.Println("GetMilestones", "GONG__StackPath", stackPath)
 		}
 	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoMilestone.GetDB()
 
 	query := db.Find(&milestoneDBs)
 	if query.Error != nil {
@@ -108,7 +107,19 @@ func GetMilestones(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostMilestone(c *gin.Context) {
+func (controller *Controller) PostMilestone(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostMilestones", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoMilestone.GetDB()
 
 	// Validate input
 	var input orm.MilestoneAPI
@@ -128,7 +139,6 @@ func PostMilestone(c *gin.Context) {
 	milestoneDB.MilestonePointersEnconding = input.MilestonePointersEnconding
 	milestoneDB.CopyBasicFieldsFromMilestone(&input.Milestone)
 
-	db := orm.BackRepo.BackRepoMilestone.GetDB()
 	query := db.Create(&milestoneDB)
 	if query.Error != nil {
 		var returnError GenericError
@@ -140,16 +150,16 @@ func PostMilestone(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoMilestone.CheckoutPhaseOneInstance(&milestoneDB)
-	milestone := (*orm.BackRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	backRepo.BackRepoMilestone.CheckoutPhaseOneInstance(&milestoneDB)
+	milestone := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
 
 	if milestone != nil {
-		models.AfterCreateFromFront(&models.Stage, milestone)
+		models.AfterCreateFromFront(backRepo.GetStage(), milestone)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, milestoneDB)
 }
@@ -164,21 +174,19 @@ func PostMilestone(c *gin.Context) {
 // default: genericError
 //
 //	200: milestoneDBResponse
-func GetMilestone(c *gin.Context) {
+func (controller *Controller) GetMilestone(c *gin.Context) {
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
-		value := values["stack"]
+		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GET params", stackParam)
+			stackPath = value[0]
+			log.Println("GetMilestone", "GONG__StackPath", stackPath)
 		}
 	}
-
-	db := orm.BackRepo.BackRepoMilestone.GetDB()
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoMilestone.GetDB()
 
 	// Get milestoneDB in DB
 	var milestoneDB orm.MilestoneDB
@@ -209,7 +217,19 @@ func GetMilestone(c *gin.Context) {
 // default: genericError
 //
 //	200: milestoneDBResponse
-func UpdateMilestone(c *gin.Context) {
+func (controller *Controller) UpdateMilestone(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdateMilestone", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoMilestone.GetDB()
 
 	// Validate input
 	var input orm.MilestoneAPI
@@ -218,8 +238,6 @@ func UpdateMilestone(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	db := orm.BackRepo.BackRepoMilestone.GetDB()
 
 	// Get model if exist
 	var milestoneDB orm.MilestoneDB
@@ -255,16 +273,16 @@ func UpdateMilestone(c *gin.Context) {
 	milestoneDB.CopyBasicFieldsToMilestone(milestoneNew)
 
 	// get stage instance from DB instance, and call callback function
-	milestoneOld := (*orm.BackRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	milestoneOld := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
 	if milestoneOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, milestoneOld, milestoneNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), milestoneOld, milestoneNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the milestoneDB
 	c.JSON(http.StatusOK, milestoneDB)
@@ -279,8 +297,19 @@ func UpdateMilestone(c *gin.Context) {
 // default: genericError
 //
 //	200: milestoneDBResponse
-func DeleteMilestone(c *gin.Context) {
-	db := orm.BackRepo.BackRepoMilestone.GetDB()
+func (controller *Controller) DeleteMilestone(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeleteMilestone", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoMilestone.GetDB()
 
 	// Get model if exist
 	var milestoneDB orm.MilestoneDB
@@ -301,14 +330,14 @@ func DeleteMilestone(c *gin.Context) {
 	milestoneDB.CopyBasicFieldsToMilestone(milestoneDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	milestoneStaged := (*orm.BackRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	milestoneStaged := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
 	if milestoneStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, milestoneStaged, milestoneDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), milestoneStaged, milestoneDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

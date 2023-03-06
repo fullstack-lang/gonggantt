@@ -174,7 +174,7 @@ export class LaneUsesTableComponent implements OnInit {
 
   ngOnInit(): void {
     let stackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')
-    if ( stackPath != undefined) {
+    if (stackPath != undefined) {
       this.GONG__StackPath = stackPath
     }
 
@@ -210,10 +210,14 @@ export class LaneUsesTableComponent implements OnInit {
           let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, LaneUseDB>
           let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
-          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as LaneUseDB[]
-          for (let associationInstance of sourceField) {
-            let laneuse = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LaneUseDB
-            this.initialSelection.push(laneuse)
+          // we associates on sourceInstance of type SourceStruct with a MANY MANY associations to LaneUseDB
+          // the field name is sourceField
+          let sourceFieldArray = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as LaneUseDB[]
+          if (sourceFieldArray != null) {
+            for (let associationInstance of sourceFieldArray) {
+              let laneuse = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LaneUseDB
+              this.initialSelection.push(laneuse)
+            }
           }
 
           this.selection = new SelectionModel<LaneUseDB>(allowMultiSelect, this.initialSelection);
@@ -234,7 +238,7 @@ export class LaneUsesTableComponent implements OnInit {
     // list of laneuses is truncated of laneuse before the delete
     this.laneuses = this.laneuses.filter(h => h !== laneuse);
 
-    this.laneuseService.deleteLaneUse(laneuseID).subscribe(
+    this.laneuseService.deleteLaneUse(laneuseID, this.GONG__StackPath).subscribe(
       laneuse => {
         this.laneuseService.LaneUseServiceChanged.next("delete")
       }
@@ -300,7 +304,7 @@ export class LaneUsesTableComponent implements OnInit {
 
       // update all laneuse (only update selection & initial selection)
       for (let laneuse of toUpdate) {
-        this.laneuseService.updateLaneUse(laneuse)
+        this.laneuseService.updateLaneUse(laneuse, this.GONG__StackPath)
           .subscribe(laneuse => {
             this.laneuseService.LaneUseServiceChanged.next("update")
           });

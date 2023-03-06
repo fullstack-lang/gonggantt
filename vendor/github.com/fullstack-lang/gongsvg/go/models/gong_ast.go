@@ -15,6 +15,7 @@ import (
 
 var dummy_strconv_import strconv.NumError
 
+// swagger:ignore
 type GONG__ExpressionType string
 
 const (
@@ -28,10 +29,10 @@ const (
 
 // ParseAstFile Parse pathToFile and stages all instances
 // declared in the file
-func ParseAstFile(pathToFile string) error {
+func ParseAstFile(stage *StageStruct, pathToFile string) error {
 	// map to store renaming docLink
 	// to be removed after fix of [issue](https://github.com/golang/go/issues/57559)
-	Stage.Map_DocLink_Renaming = make(map[string]GONG__Identifier, 0)
+	stage.Map_DocLink_Renaming = make(map[string]GONG__Identifier, 0)
 
 	fileOfInterest, err := filepath.Abs(pathToFile)
 	if err != nil {
@@ -47,21 +48,19 @@ func ParseAstFile(pathToFile string) error {
 		return errors.New("Unable to parser " + errParser.Error())
 	}
 
-	return ParseAstFileFromAst(inFile, fset)
+	return ParseAstFileFromAst(stage, inFile, fset)
 }
 
 // ParseAstFile Parse pathToFile and stages all instances
 // declared in the file
-func ParseAstFileFromAst(inFile *ast.File, fset *token.FileSet) error {
+func ParseAstFileFromAst(stage *StageStruct, inFile *ast.File, fset *token.FileSet) error {
 	// if there is a meta package import, it is the third import
 	if len(inFile.Imports) > 3 {
 		log.Fatalln("Too many imports in file", inFile.Name)
 	}
-	stage := &Stage
-	_ = stage
 	if len(inFile.Imports) == 3 {
-		Stage.MetaPackageImportAlias = inFile.Imports[2].Name.Name
-		Stage.MetaPackageImportPath = inFile.Imports[2].Path.Value
+		stage.MetaPackageImportAlias = inFile.Imports[2].Name.Name
+		stage.MetaPackageImportPath = inFile.Imports[2].Path.Value
 	}
 
 	// astCoordinate := "File "
@@ -115,7 +114,7 @@ func ParseAstFileFromAst(inFile *ast.File, fset *token.FileSet) error {
 						assignStmt := stmt
 						instance, id, gongstruct, fieldName :=
 							UnmarshallGongstructStaging(
-								&cmap, assignStmt, astCoordinate)
+								stage, &cmap, assignStmt, astCoordinate)
 						_ = instance
 						_ = id
 						_ = gongstruct
@@ -293,7 +292,7 @@ func ParseAstFileFromAst(inFile *ast.File, fset *token.FileSet) error {
 							// otherwise, one stores the new ident (after renaming) in the
 							// renaming map
 							docLink.Type = expressionType
-							Stage.Map_DocLink_Renaming[key] = docLink
+							stage.Map_DocLink_Renaming[key] = docLink
 						}
 					}
 				}
@@ -323,10 +322,7 @@ var __gong__map_Text = make(map[string]*Text)
 // While this was introduced in go 1.19, it is not yet implemented in
 // gopls (see [issue](https://github.com/golang/go/issues/57559)
 func lookupPackage(name string) (importPath string, ok bool) {
-	if name == Stage.MetaPackageImportAlias {
-		return Stage.MetaPackageImportAlias, true
-	}
-	return comment.DefaultLookupPackage(name)
+	return name, true
 }
 func lookupSym(recv, name string) (ok bool) {
 	if recv == "" {
@@ -336,7 +332,7 @@ func lookupSym(recv, name string) (ok bool) {
 }
 
 // UnmarshallGoStaging unmarshall a go assign statement
-func UnmarshallGongstructStaging(cmap *ast.CommentMap, assignStmt *ast.AssignStmt, astCoordinate_ string) (
+func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assignStmt *ast.AssignStmt, astCoordinate_ string) (
 	instance any,
 	identifier string,
 	gongstructName string,
@@ -387,7 +383,7 @@ func UnmarshallGongstructStaging(cmap *ast.CommentMap, assignStmt *ast.AssignStm
 
 						// we check wether the doc link has been renamed
 						// to be removed after fix of [issue](https://github.com/golang/go/issues/57559)
-						if renamed, ok := (Stage.Map_DocLink_Renaming)[docLinkText]; ok {
+						if renamed, ok := (stage.Map_DocLink_Renaming)[docLinkText]; ok {
 							docLinkText = renamed.Ident
 						}
 					}
@@ -493,43 +489,43 @@ func UnmarshallGongstructStaging(cmap *ast.CommentMap, assignStmt *ast.AssignStm
 									switch gongstructName {
 									// insertion point for identifiers
 									case "Animate":
-										instanceAnimate := (&Animate{Name: instanceName}).Stage()
+										instanceAnimate := (&Animate{Name: instanceName}).Stage(stage)
 										instance = any(instanceAnimate)
 										__gong__map_Animate[identifier] = instanceAnimate
 									case "Circle":
-										instanceCircle := (&Circle{Name: instanceName}).Stage()
+										instanceCircle := (&Circle{Name: instanceName}).Stage(stage)
 										instance = any(instanceCircle)
 										__gong__map_Circle[identifier] = instanceCircle
 									case "Ellipse":
-										instanceEllipse := (&Ellipse{Name: instanceName}).Stage()
+										instanceEllipse := (&Ellipse{Name: instanceName}).Stage(stage)
 										instance = any(instanceEllipse)
 										__gong__map_Ellipse[identifier] = instanceEllipse
 									case "Line":
-										instanceLine := (&Line{Name: instanceName}).Stage()
+										instanceLine := (&Line{Name: instanceName}).Stage(stage)
 										instance = any(instanceLine)
 										__gong__map_Line[identifier] = instanceLine
 									case "Path":
-										instancePath := (&Path{Name: instanceName}).Stage()
+										instancePath := (&Path{Name: instanceName}).Stage(stage)
 										instance = any(instancePath)
 										__gong__map_Path[identifier] = instancePath
 									case "Polygone":
-										instancePolygone := (&Polygone{Name: instanceName}).Stage()
+										instancePolygone := (&Polygone{Name: instanceName}).Stage(stage)
 										instance = any(instancePolygone)
 										__gong__map_Polygone[identifier] = instancePolygone
 									case "Polyline":
-										instancePolyline := (&Polyline{Name: instanceName}).Stage()
+										instancePolyline := (&Polyline{Name: instanceName}).Stage(stage)
 										instance = any(instancePolyline)
 										__gong__map_Polyline[identifier] = instancePolyline
 									case "Rect":
-										instanceRect := (&Rect{Name: instanceName}).Stage()
+										instanceRect := (&Rect{Name: instanceName}).Stage(stage)
 										instance = any(instanceRect)
 										__gong__map_Rect[identifier] = instanceRect
 									case "SVG":
-										instanceSVG := (&SVG{Name: instanceName}).Stage()
+										instanceSVG := (&SVG{Name: instanceName}).Stage(stage)
 										instance = any(instanceSVG)
 										__gong__map_SVG[identifier] = instanceSVG
 									case "Text":
-										instanceText := (&Text{Name: instanceName}).Stage()
+										instanceText := (&Text{Name: instanceName}).Stage(stage)
 										instance = any(instanceText)
 										__gong__map_Text[identifier] = instanceText
 									}

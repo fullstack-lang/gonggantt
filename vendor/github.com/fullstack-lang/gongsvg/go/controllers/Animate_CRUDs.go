@@ -47,11 +47,23 @@ type AnimateInput struct {
 // default: genericError
 //
 //	200: animateDBResponse
-func GetAnimates(c *gin.Context) {
-	db := orm.BackRepo.BackRepoAnimate.GetDB()
+func (controller *Controller) GetAnimates(c *gin.Context) {
 
 	// source slice
 	var animateDBs []orm.AnimateDB
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetAnimates", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoAnimate.GetDB()
+
 	query := db.Find(&animateDBs)
 	if query.Error != nil {
 		var returnError GenericError
@@ -95,8 +107,19 @@ func GetAnimates(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostAnimate(c *gin.Context) {
-	db := orm.BackRepo.BackRepoAnimate.GetDB()
+func (controller *Controller) PostAnimate(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostAnimates", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoAnimate.GetDB()
 
 	// Validate input
 	var input orm.AnimateAPI
@@ -127,16 +150,16 @@ func PostAnimate(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoAnimate.CheckoutPhaseOneInstance(&animateDB)
-	animate := (*orm.BackRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+	backRepo.BackRepoAnimate.CheckoutPhaseOneInstance(&animateDB)
+	animate := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
 
 	if animate != nil {
-		models.AfterCreateFromFront(&models.Stage, animate)
+		models.AfterCreateFromFront(backRepo.GetStage(), animate)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, animateDB)
 }
@@ -151,8 +174,19 @@ func PostAnimate(c *gin.Context) {
 // default: genericError
 //
 //	200: animateDBResponse
-func GetAnimate(c *gin.Context) {
-	db := orm.BackRepo.BackRepoAnimate.GetDB()
+func (controller *Controller) GetAnimate(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetAnimate", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoAnimate.GetDB()
 
 	// Get animateDB in DB
 	var animateDB orm.AnimateDB
@@ -183,8 +217,27 @@ func GetAnimate(c *gin.Context) {
 // default: genericError
 //
 //	200: animateDBResponse
-func UpdateAnimate(c *gin.Context) {
-	db := orm.BackRepo.BackRepoAnimate.GetDB()
+func (controller *Controller) UpdateAnimate(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdateAnimate", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoAnimate.GetDB()
+
+	// Validate input
+	var input orm.AnimateAPI
+	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Get model if exist
 	var animateDB orm.AnimateDB
@@ -198,14 +251,6 @@ func UpdateAnimate(c *gin.Context) {
 		returnError.Body.Message = query.Error.Error()
 		log.Println(query.Error.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
-		return
-	}
-
-	// Validate input
-	var input orm.AnimateAPI
-	if err := c.ShouldBindJSON(&input); err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -228,16 +273,16 @@ func UpdateAnimate(c *gin.Context) {
 	animateDB.CopyBasicFieldsToAnimate(animateNew)
 
 	// get stage instance from DB instance, and call callback function
-	animateOld := (*orm.BackRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+	animateOld := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
 	if animateOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, animateOld, animateNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), animateOld, animateNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the animateDB
 	c.JSON(http.StatusOK, animateDB)
@@ -252,8 +297,19 @@ func UpdateAnimate(c *gin.Context) {
 // default: genericError
 //
 //	200: animateDBResponse
-func DeleteAnimate(c *gin.Context) {
-	db := orm.BackRepo.BackRepoAnimate.GetDB()
+func (controller *Controller) DeleteAnimate(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeleteAnimate", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoAnimate.GetDB()
 
 	// Get model if exist
 	var animateDB orm.AnimateDB
@@ -274,14 +330,14 @@ func DeleteAnimate(c *gin.Context) {
 	animateDB.CopyBasicFieldsToAnimate(animateDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	animateStaged := (*orm.BackRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+	animateStaged := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
 	if animateStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, animateStaged, animateDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), animateStaged, animateDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

@@ -168,6 +168,13 @@ type BackRepoLineStruct struct {
 	Map_LineDBID_LinePtr *map[uint]*models.Line
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoLine *BackRepoLineStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoLine.stage
+	return
 }
 
 func (backRepoLine *BackRepoLineStruct) GetDB() *gorm.DB {
@@ -182,7 +189,7 @@ func (backRepoLine *BackRepoLineStruct) GetLineDBFromLinePtr(line *models.Line) 
 }
 
 // BackRepoLine.Init set up the BackRepo of the Line
-func (backRepoLine *BackRepoLineStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoLine *BackRepoLineStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoLine.Map_LineDBID_LinePtr != nil {
 		err := errors.New("In Init, backRepoLine.Map_LineDBID_LinePtr should be nil")
@@ -209,6 +216,7 @@ func (backRepoLine *BackRepoLineStruct) Init(db *gorm.DB) (Error error) {
 	backRepoLine.Map_LinePtr_LineDBID = &tmpID
 
 	backRepoLine.db = db
+	backRepoLine.stage = stage
 	return
 }
 
@@ -346,7 +354,7 @@ func (backRepoLine *BackRepoLineStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	lineInstancesToBeRemovedFromTheStage := make(map[*models.Line]any)
-	for key, value := range models.Stage.Lines {
+	for key, value := range backRepoLine.stage.Lines {
 		lineInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -364,7 +372,7 @@ func (backRepoLine *BackRepoLineStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all lines that are not in the checkout
 	for line := range lineInstancesToBeRemovedFromTheStage {
-		line.Unstage()
+		line.Unstage(backRepoLine.GetStage())
 
 		// remove instance from the back repo 3 maps
 		lineID := (*backRepoLine.Map_LinePtr_LineDBID)[line]
@@ -389,12 +397,12 @@ func (backRepoLine *BackRepoLineStruct) CheckoutPhaseOneInstance(lineDB *LineDB)
 
 		// append model store with the new element
 		line.Name = lineDB.Name_Data.String
-		line.Stage()
+		line.Stage(backRepoLine.GetStage())
 	}
 	lineDB.CopyBasicFieldsToLine(line)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	line.Stage()
+	line.Stage(backRepoLine.GetStage())
 
 	// preserve pointer to lineDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_LineDBID_LineDB)[lineDB hold variable pointers

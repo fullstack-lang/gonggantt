@@ -118,7 +118,7 @@
         <ng-container matColumnDef="Delete" sticky>
             <th mat-header-cell *matHeaderCellDef> Delete </th>
             <td mat-cell *matCellDef="let rect;  let j = index;">
-                <i class="material-icons" [ngStyle]="{'color':'rgba(0,0,0,.50)'}" (click)="deleteRect(rect.ID, rect)">delete</i>
+                <i class="material-icons my-delete-button" [ngStyle]="{'color':'rgba(0,0,0,.50)'}" (click)="deleteRect(rect.ID, rect); $event.stopPropagation()">delete</i>
             </td>
         </ng-container>
 
@@ -136,4 +136,7 @@
         </tr>
     </table>
     <mat-paginator [pageSizeOptions]="[50, 100, 500, 1000]" showFirstLastButtons></mat-paginator>
+    <button class="table__save" color="primary" *ngIf="dialogData" mat-raised-button (click)="save()">
+        Save
+    </button>
 </section>

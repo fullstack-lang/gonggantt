@@ -150,6 +150,13 @@ type BackRepoPolygoneStruct struct {
 	Map_PolygoneDBID_PolygonePtr *map[uint]*models.Polygone
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoPolygone *BackRepoPolygoneStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoPolygone.stage
+	return
 }
 
 func (backRepoPolygone *BackRepoPolygoneStruct) GetDB() *gorm.DB {
@@ -164,7 +171,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) GetPolygoneDBFromPolygonePtr(pol
 }
 
 // BackRepoPolygone.Init set up the BackRepo of the Polygone
-func (backRepoPolygone *BackRepoPolygoneStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoPolygone *BackRepoPolygoneStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoPolygone.Map_PolygoneDBID_PolygonePtr != nil {
 		err := errors.New("In Init, backRepoPolygone.Map_PolygoneDBID_PolygonePtr should be nil")
@@ -191,6 +198,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) Init(db *gorm.DB) (Error error) 
 	backRepoPolygone.Map_PolygonePtr_PolygoneDBID = &tmpID
 
 	backRepoPolygone.db = db
+	backRepoPolygone.stage = stage
 	return
 }
 
@@ -328,7 +336,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseOne() (Error error)
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	polygoneInstancesToBeRemovedFromTheStage := make(map[*models.Polygone]any)
-	for key, value := range models.Stage.Polygones {
+	for key, value := range backRepoPolygone.stage.Polygones {
 		polygoneInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -346,7 +354,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseOne() (Error error)
 
 	// remove from stage and back repo's 3 maps all polygones that are not in the checkout
 	for polygone := range polygoneInstancesToBeRemovedFromTheStage {
-		polygone.Unstage()
+		polygone.Unstage(backRepoPolygone.GetStage())
 
 		// remove instance from the back repo 3 maps
 		polygoneID := (*backRepoPolygone.Map_PolygonePtr_PolygoneDBID)[polygone]
@@ -371,12 +379,12 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseOneInstance(polygon
 
 		// append model store with the new element
 		polygone.Name = polygoneDB.Name_Data.String
-		polygone.Stage()
+		polygone.Stage(backRepoPolygone.GetStage())
 	}
 	polygoneDB.CopyBasicFieldsToPolygone(polygone)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	polygone.Stage()
+	polygone.Stage(backRepoPolygone.GetStage())
 
 	// preserve pointer to polygoneDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_PolygoneDBID_PolygoneDB)[polygoneDB hold variable pointers

@@ -4,6 +4,7 @@ import (
 	// gonggantt stack for model analysis
 
 	gonggantt_controllers "github.com/fullstack-lang/gonggantt/go/controllers"
+	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
 	"github.com/gin-gonic/gin"
 
@@ -19,7 +20,7 @@ func Init(r *gin.Engine, filenames ...string) {
 		filenames = append(filenames, ":memory:")
 	}
 
-	db_inMemory := gonggantt_orm.SetupModels(false, filenames[0])
+	db_inMemory := gonggantt_orm.SetupModels(&gonggantt_models.Stage, false, filenames[0])
 
 	// since gongganttsim is a multi threaded application. It is important to set up
 	// only one open connexion at a time

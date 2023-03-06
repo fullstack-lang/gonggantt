@@ -176,7 +176,7 @@ export class MilestonesTableComponent implements OnInit {
 
   ngOnInit(): void {
     let stackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')
-    if ( stackPath != undefined) {
+    if (stackPath != undefined) {
       this.GONG__StackPath = stackPath
     }
 
@@ -212,10 +212,14 @@ export class MilestonesTableComponent implements OnInit {
           let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, MilestoneDB>
           let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
-          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as MilestoneDB[]
-          for (let associationInstance of sourceField) {
-            let milestone = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as MilestoneDB
-            this.initialSelection.push(milestone)
+          // we associates on sourceInstance of type SourceStruct with a MANY MANY associations to MilestoneDB
+          // the field name is sourceField
+          let sourceFieldArray = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as MilestoneDB[]
+          if (sourceFieldArray != null) {
+            for (let associationInstance of sourceFieldArray) {
+              let milestone = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as MilestoneDB
+              this.initialSelection.push(milestone)
+            }
           }
 
           this.selection = new SelectionModel<MilestoneDB>(allowMultiSelect, this.initialSelection);
@@ -236,7 +240,7 @@ export class MilestonesTableComponent implements OnInit {
     // list of milestones is truncated of milestone before the delete
     this.milestones = this.milestones.filter(h => h !== milestone);
 
-    this.milestoneService.deleteMilestone(milestoneID).subscribe(
+    this.milestoneService.deleteMilestone(milestoneID, this.GONG__StackPath).subscribe(
       milestone => {
         this.milestoneService.MilestoneServiceChanged.next("delete")
       }
@@ -302,7 +306,7 @@ export class MilestonesTableComponent implements OnInit {
 
       // update all milestone (only update selection & initial selection)
       for (let milestone of toUpdate) {
-        this.milestoneService.updateMilestone(milestone)
+        this.milestoneService.updateMilestone(milestone, this.GONG__StackPath)
           .subscribe(milestone => {
             this.milestoneService.MilestoneServiceChanged.next("update")
           });

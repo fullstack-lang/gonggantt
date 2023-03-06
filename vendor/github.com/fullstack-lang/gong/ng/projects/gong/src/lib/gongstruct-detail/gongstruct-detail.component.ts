@@ -56,6 +56,8 @@ export class GongStructDetailComponent implements OnInit {
 	originStruct: string = ""
 	originStructFieldName: string = ""
 
+	GONG__StackPath: string = ""
+
 	constructor(
 		private gongstructService: GongStructService,
 		private frontRepoService: FrontRepoService,
@@ -66,6 +68,8 @@ export class GongStructDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		this.GONG__StackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')!;
+
 		this.activatedRoute.params.subscribe(params => {
 			this.onChangedActivatedRoute()
 		});
@@ -76,6 +80,8 @@ export class GongStructDetailComponent implements OnInit {
 		this.id = +this.activatedRoute.snapshot.paramMap.get('id')!;
 		this.originStruct = this.activatedRoute.snapshot.paramMap.get('originStruct')!;
 		this.originStructFieldName = this.activatedRoute.snapshot.paramMap.get('originStructFieldName')!;
+
+		this.GONG__StackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')!;
 
 		const association = this.activatedRoute.snapshot.paramMap.get('association');
 		if (this.id == 0) {
@@ -108,7 +114,7 @@ export class GongStructDetailComponent implements OnInit {
 
 	getGongStruct(): void {
 
-		this.frontRepoService.pull().subscribe(
+		this.frontRepoService.pull(this.GONG__StackPath).subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
@@ -146,13 +152,13 @@ export class GongStructDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case GongStructDetailComponentState.UPDATE_INSTANCE:
-				this.gongstructService.updateGongStruct(this.gongstruct)
+				this.gongstructService.updateGongStruct(this.gongstruct, this.GONG__StackPath)
 					.subscribe(gongstruct => {
 						this.gongstructService.GongStructServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.gongstructService.postGongStruct(this.gongstruct).subscribe(gongstruct => {
+				this.gongstructService.postGongStruct(this.gongstruct, this.GONG__StackPath).subscribe(gongstruct => {
 					this.gongstructService.GongStructServiceChanged.next("post")
 					this.gongstruct = new (GongStructDB) // reset fields
 				});
@@ -181,6 +187,7 @@ export class GongStructDetailComponent implements OnInit {
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
+			dialogData.GONG__StackPath = this.GONG__StackPath
 
 			dialogConfig.data = dialogData
 			const dialogRef: MatDialogRef<string, any> = this.dialog.open(
@@ -197,6 +204,7 @@ export class GongStructDetailComponent implements OnInit {
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
+			dialogData.GONG__StackPath = this.GONG__StackPath
 
 			// set up the source
 			dialogData.SourceStruct = "GongStruct"
@@ -232,6 +240,7 @@ export class GongStructDetailComponent implements OnInit {
 			ID: this.gongstruct.ID,
 			ReversePointer: reverseField,
 			OrderingMode: true,
+			GONG__StackPath: this.GONG__StackPath,
 		};
 		const dialogRef: MatDialogRef<string, any> = this.dialog.open(
 			MapOfSortingComponents.get(AssociatedStruct).get(

@@ -77,4 +77,3 @@ export * from './lib/text.service'
 
 
 export * from './lib/ColorType'
-export * from './lib/GONG__ExpressionType'

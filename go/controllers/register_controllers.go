@@ -2,11 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
-	"github.com/fullstack-lang/gonggantt/go/orm"
 )
 
 // genQuery return the name of the column
@@ -43,70 +42,90 @@ type ValidationError struct {
 func RegisterControllers(r *gin.Engine) {
 	v1 := r.Group("/api/github.com/fullstack-lang/gonggantt/go")
 	{ // insertion point for registrations
-		v1.GET("/v1/arrows", GetArrows)
-		v1.GET("/v1/arrows/:id", GetArrow)
-		v1.POST("/v1/arrows", PostArrow)
-		v1.PATCH("/v1/arrows/:id", UpdateArrow)
-		v1.PUT("/v1/arrows/:id", UpdateArrow)
-		v1.DELETE("/v1/arrows/:id", DeleteArrow)
+		v1.GET("/v1/arrows", GetController().GetArrows)
+		v1.GET("/v1/arrows/:id", GetController().GetArrow)
+		v1.POST("/v1/arrows", GetController().PostArrow)
+		v1.PATCH("/v1/arrows/:id", GetController().UpdateArrow)
+		v1.PUT("/v1/arrows/:id", GetController().UpdateArrow)
+		v1.DELETE("/v1/arrows/:id", GetController().DeleteArrow)
 
-		v1.GET("/v1/bars", GetBars)
-		v1.GET("/v1/bars/:id", GetBar)
-		v1.POST("/v1/bars", PostBar)
-		v1.PATCH("/v1/bars/:id", UpdateBar)
-		v1.PUT("/v1/bars/:id", UpdateBar)
-		v1.DELETE("/v1/bars/:id", DeleteBar)
+		v1.GET("/v1/bars", GetController().GetBars)
+		v1.GET("/v1/bars/:id", GetController().GetBar)
+		v1.POST("/v1/bars", GetController().PostBar)
+		v1.PATCH("/v1/bars/:id", GetController().UpdateBar)
+		v1.PUT("/v1/bars/:id", GetController().UpdateBar)
+		v1.DELETE("/v1/bars/:id", GetController().DeleteBar)
 
-		v1.GET("/v1/gantts", GetGantts)
-		v1.GET("/v1/gantts/:id", GetGantt)
-		v1.POST("/v1/gantts", PostGantt)
-		v1.PATCH("/v1/gantts/:id", UpdateGantt)
-		v1.PUT("/v1/gantts/:id", UpdateGantt)
-		v1.DELETE("/v1/gantts/:id", DeleteGantt)
+		v1.GET("/v1/gantts", GetController().GetGantts)
+		v1.GET("/v1/gantts/:id", GetController().GetGantt)
+		v1.POST("/v1/gantts", GetController().PostGantt)
+		v1.PATCH("/v1/gantts/:id", GetController().UpdateGantt)
+		v1.PUT("/v1/gantts/:id", GetController().UpdateGantt)
+		v1.DELETE("/v1/gantts/:id", GetController().DeleteGantt)
 
-		v1.GET("/v1/groups", GetGroups)
-		v1.GET("/v1/groups/:id", GetGroup)
-		v1.POST("/v1/groups", PostGroup)
-		v1.PATCH("/v1/groups/:id", UpdateGroup)
-		v1.PUT("/v1/groups/:id", UpdateGroup)
-		v1.DELETE("/v1/groups/:id", DeleteGroup)
+		v1.GET("/v1/groups", GetController().GetGroups)
+		v1.GET("/v1/groups/:id", GetController().GetGroup)
+		v1.POST("/v1/groups", GetController().PostGroup)
+		v1.PATCH("/v1/groups/:id", GetController().UpdateGroup)
+		v1.PUT("/v1/groups/:id", GetController().UpdateGroup)
+		v1.DELETE("/v1/groups/:id", GetController().DeleteGroup)
 
-		v1.GET("/v1/lanes", GetLanes)
-		v1.GET("/v1/lanes/:id", GetLane)
-		v1.POST("/v1/lanes", PostLane)
-		v1.PATCH("/v1/lanes/:id", UpdateLane)
-		v1.PUT("/v1/lanes/:id", UpdateLane)
-		v1.DELETE("/v1/lanes/:id", DeleteLane)
+		v1.GET("/v1/lanes", GetController().GetLanes)
+		v1.GET("/v1/lanes/:id", GetController().GetLane)
+		v1.POST("/v1/lanes", GetController().PostLane)
+		v1.PATCH("/v1/lanes/:id", GetController().UpdateLane)
+		v1.PUT("/v1/lanes/:id", GetController().UpdateLane)
+		v1.DELETE("/v1/lanes/:id", GetController().DeleteLane)
 
-		v1.GET("/v1/laneuses", GetLaneUses)
-		v1.GET("/v1/laneuses/:id", GetLaneUse)
-		v1.POST("/v1/laneuses", PostLaneUse)
-		v1.PATCH("/v1/laneuses/:id", UpdateLaneUse)
-		v1.PUT("/v1/laneuses/:id", UpdateLaneUse)
-		v1.DELETE("/v1/laneuses/:id", DeleteLaneUse)
+		v1.GET("/v1/laneuses", GetController().GetLaneUses)
+		v1.GET("/v1/laneuses/:id", GetController().GetLaneUse)
+		v1.POST("/v1/laneuses", GetController().PostLaneUse)
+		v1.PATCH("/v1/laneuses/:id", GetController().UpdateLaneUse)
+		v1.PUT("/v1/laneuses/:id", GetController().UpdateLaneUse)
+		v1.DELETE("/v1/laneuses/:id", GetController().DeleteLaneUse)
 
-		v1.GET("/v1/milestones", GetMilestones)
-		v1.GET("/v1/milestones/:id", GetMilestone)
-		v1.POST("/v1/milestones", PostMilestone)
-		v1.PATCH("/v1/milestones/:id", UpdateMilestone)
-		v1.PUT("/v1/milestones/:id", UpdateMilestone)
-		v1.DELETE("/v1/milestones/:id", DeleteMilestone)
+		v1.GET("/v1/milestones", GetController().GetMilestones)
+		v1.GET("/v1/milestones/:id", GetController().GetMilestone)
+		v1.POST("/v1/milestones", GetController().PostMilestone)
+		v1.PATCH("/v1/milestones/:id", GetController().UpdateMilestone)
+		v1.PUT("/v1/milestones/:id", GetController().UpdateMilestone)
+		v1.DELETE("/v1/milestones/:id", GetController().DeleteMilestone)
 
-		v1.GET("/v1/commitfrombacknb", GetLastCommitFromBackNb)
-		v1.GET("/v1/pushfromfrontnb", GetLastPushFromFrontNb)
+		v1.GET("/v1/commitfrombacknb", GetController().GetLastCommitFromBackNb)
+		v1.GET("/v1/pushfromfrontnb", GetController().GetLastPushFromFrontNb)
 	}
 }
 
 // swagger:route GET /commitfrombacknb backrepo GetLastCommitFromBackNb
-func GetLastCommitFromBackNb(c *gin.Context) {
-	res := orm.GetLastCommitFromBackNb()
+func (controller *Controller) GetLastCommitFromBackNb(c *gin.Context) {
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetLastCommitFromBackNb", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	res := backRepo.GetLastCommitFromBackNb()
 
 	c.JSON(http.StatusOK, res)
 }
 
 // swagger:route GET /pushfromfrontnb backrepo GetLastPushFromFrontNb
-func GetLastPushFromFrontNb(c *gin.Context) {
-	res := orm.GetLastPushFromFrontNb()
+func(controller *Controller) GetLastPushFromFrontNb(c *gin.Context) {
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetLastPushFromFrontNb", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	res := backRepo.GetLastPushFromFrontNb()
 
 	c.JSON(http.StatusOK, res)
 }

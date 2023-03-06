@@ -184,13 +184,13 @@ export class LaneUseDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case LaneUseDetailComponentState.UPDATE_INSTANCE:
-				this.laneuseService.updateLaneUse(this.laneuse)
+				this.laneuseService.updateLaneUse(this.laneuse, this.GONG__StackPath)
 					.subscribe(laneuse => {
 						this.laneuseService.LaneUseServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.laneuseService.postLaneUse(this.laneuse).subscribe(laneuse => {
+				this.laneuseService.postLaneUse(this.laneuse, this.GONG__StackPath).subscribe(laneuse => {
 					this.laneuseService.LaneUseServiceChanged.next("post")
 					this.laneuse = new (LaneUseDB) // reset fields
 				});

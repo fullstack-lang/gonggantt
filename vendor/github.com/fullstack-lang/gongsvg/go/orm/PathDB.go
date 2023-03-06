@@ -150,6 +150,13 @@ type BackRepoPathStruct struct {
 	Map_PathDBID_PathPtr *map[uint]*models.Path
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoPath *BackRepoPathStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoPath.stage
+	return
 }
 
 func (backRepoPath *BackRepoPathStruct) GetDB() *gorm.DB {
@@ -164,7 +171,7 @@ func (backRepoPath *BackRepoPathStruct) GetPathDBFromPathPtr(path *models.Path) 
 }
 
 // BackRepoPath.Init set up the BackRepo of the Path
-func (backRepoPath *BackRepoPathStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoPath *BackRepoPathStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoPath.Map_PathDBID_PathPtr != nil {
 		err := errors.New("In Init, backRepoPath.Map_PathDBID_PathPtr should be nil")
@@ -191,6 +198,7 @@ func (backRepoPath *BackRepoPathStruct) Init(db *gorm.DB) (Error error) {
 	backRepoPath.Map_PathPtr_PathDBID = &tmpID
 
 	backRepoPath.db = db
+	backRepoPath.stage = stage
 	return
 }
 
@@ -328,7 +336,7 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	pathInstancesToBeRemovedFromTheStage := make(map[*models.Path]any)
-	for key, value := range models.Stage.Paths {
+	for key, value := range backRepoPath.stage.Paths {
 		pathInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -346,7 +354,7 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all paths that are not in the checkout
 	for path := range pathInstancesToBeRemovedFromTheStage {
-		path.Unstage()
+		path.Unstage(backRepoPath.GetStage())
 
 		// remove instance from the back repo 3 maps
 		pathID := (*backRepoPath.Map_PathPtr_PathDBID)[path]
@@ -371,12 +379,12 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOneInstance(pathDB *PathDB)
 
 		// append model store with the new element
 		path.Name = pathDB.Name_Data.String
-		path.Stage()
+		path.Stage(backRepoPath.GetStage())
 	}
 	pathDB.CopyBasicFieldsToPath(path)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	path.Stage()
+	path.Stage(backRepoPath.GetStage())
 
 	// preserve pointer to pathDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_PathDBID_PathDB)[pathDB hold variable pointers

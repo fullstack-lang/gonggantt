@@ -157,6 +157,13 @@ type BackRepoNoteShapeStruct struct {
 	Map_NoteShapeDBID_NoteShapePtr *map[uint]*models.NoteShape
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoNoteShape *BackRepoNoteShapeStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoNoteShape.stage
+	return
 }
 
 func (backRepoNoteShape *BackRepoNoteShapeStruct) GetDB() *gorm.DB {
@@ -171,7 +178,7 @@ func (backRepoNoteShape *BackRepoNoteShapeStruct) GetNoteShapeDBFromNoteShapePtr
 }
 
 // BackRepoNoteShape.Init set up the BackRepo of the NoteShape
-func (backRepoNoteShape *BackRepoNoteShapeStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoNoteShape *BackRepoNoteShapeStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoNoteShape.Map_NoteShapeDBID_NoteShapePtr != nil {
 		err := errors.New("In Init, backRepoNoteShape.Map_NoteShapeDBID_NoteShapePtr should be nil")
@@ -198,6 +205,7 @@ func (backRepoNoteShape *BackRepoNoteShapeStruct) Init(db *gorm.DB) (Error error
 	backRepoNoteShape.Map_NoteShapePtr_NoteShapeDBID = &tmpID
 
 	backRepoNoteShape.db = db
+	backRepoNoteShape.stage = stage
 	return
 }
 
@@ -335,7 +343,7 @@ func (backRepoNoteShape *BackRepoNoteShapeStruct) CheckoutPhaseOne() (Error erro
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	noteshapeInstancesToBeRemovedFromTheStage := make(map[*models.NoteShape]any)
-	for key, value := range models.Stage.NoteShapes {
+	for key, value := range backRepoNoteShape.stage.NoteShapes {
 		noteshapeInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -353,7 +361,7 @@ func (backRepoNoteShape *BackRepoNoteShapeStruct) CheckoutPhaseOne() (Error erro
 
 	// remove from stage and back repo's 3 maps all noteshapes that are not in the checkout
 	for noteshape := range noteshapeInstancesToBeRemovedFromTheStage {
-		noteshape.Unstage()
+		noteshape.Unstage(backRepoNoteShape.GetStage())
 
 		// remove instance from the back repo 3 maps
 		noteshapeID := (*backRepoNoteShape.Map_NoteShapePtr_NoteShapeDBID)[noteshape]
@@ -378,12 +386,12 @@ func (backRepoNoteShape *BackRepoNoteShapeStruct) CheckoutPhaseOneInstance(notes
 
 		// append model store with the new element
 		noteshape.Name = noteshapeDB.Name_Data.String
-		noteshape.Stage()
+		noteshape.Stage(backRepoNoteShape.GetStage())
 	}
 	noteshapeDB.CopyBasicFieldsToNoteShape(noteshape)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	noteshape.Stage()
+	noteshape.Stage(backRepoNoteShape.GetStage())
 
 	// preserve pointer to noteshapeDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_NoteShapeDBID_NoteShapeDB)[noteshapeDB hold variable pointers

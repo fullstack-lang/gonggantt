@@ -21,10 +21,6 @@ import { GanttDB } from './gantt-db'
 })
 export class MilestoneService {
 
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
-
   // Kamar Raïmo: Adding a way to communicate between components that share information
   // so that they are notified of a change.
   MilestoneServiceChanged: BehaviorSubject<string> = new BehaviorSubject("");
@@ -33,7 +29,6 @@ export class MilestoneService {
 
   constructor(
     private http: HttpClient,
-    private location: Location,
     @Inject(DOCUMENT) private document: Document
   ) {
     // path to the service share the same origin with the path to the document
@@ -68,17 +63,21 @@ export class MilestoneService {
     );
   }
 
-  //////// Save methods //////////
-
   /** POST: add a new milestone to the server */
-  postMilestone(milestonedb: MilestoneDB): Observable<MilestoneDB> {
+  postMilestone(milestonedb: MilestoneDB, GONG__StackPath: string): Observable<MilestoneDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     milestonedb.LanesToDisplayMilestoneUse = []
     let _Gantt_Milestones_reverse = milestonedb.Gantt_Milestones_reverse
     milestonedb.Gantt_Milestones_reverse = new GanttDB
 
-    return this.http.post<MilestoneDB>(this.milestonesUrl, milestonedb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    }
+
+	return this.http.post<MilestoneDB>(this.milestonesUrl, milestonedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         milestonedb.Gantt_Milestones_reverse = _Gantt_Milestones_reverse
@@ -89,18 +88,24 @@ export class MilestoneService {
   }
 
   /** DELETE: delete the milestonedb from the server */
-  deleteMilestone(milestonedb: MilestoneDB | number): Observable<MilestoneDB> {
+  deleteMilestone(milestonedb: MilestoneDB | number, GONG__StackPath: string): Observable<MilestoneDB> {
     const id = typeof milestonedb === 'number' ? milestonedb : milestonedb.ID;
     const url = `${this.milestonesUrl}/${id}`;
 
-    return this.http.delete<MilestoneDB>(url, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.delete<MilestoneDB>(url, httpOptions).pipe(
       tap(_ => this.log(`deleted milestonedb id=${id}`)),
       catchError(this.handleError<MilestoneDB>('deleteMilestone'))
     );
   }
 
   /** PUT: update the milestonedb on the server */
-  updateMilestone(milestonedb: MilestoneDB): Observable<MilestoneDB> {
+  updateMilestone(milestonedb: MilestoneDB, GONG__StackPath: string): Observable<MilestoneDB> {
     const id = typeof milestonedb === 'number' ? milestonedb : milestonedb.ID;
     const url = `${this.milestonesUrl}/${id}`;
 
@@ -109,7 +114,13 @@ export class MilestoneService {
     let _Gantt_Milestones_reverse = milestonedb.Gantt_Milestones_reverse
     milestonedb.Gantt_Milestones_reverse = new GanttDB
 
-    return this.http.put<MilestoneDB>(url, milestonedb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.put<MilestoneDB>(url, milestonedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         milestonedb.Gantt_Milestones_reverse = _Gantt_Milestones_reverse

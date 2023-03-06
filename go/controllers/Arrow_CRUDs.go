@@ -47,23 +47,22 @@ type ArrowInput struct {
 // default: genericError
 //
 //	200: arrowDBResponse
-func GetArrows(c *gin.Context) {
-	db := orm.BackRepo.BackRepoArrow.GetDB()
+func (controller *Controller) GetArrows(c *gin.Context) {
 
 	// source slice
 	var arrowDBs []orm.ArrowDB
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GONG__StackPath", stackParam)
+			stackPath = value[0]
+			log.Println("GetArrows", "GONG__StackPath", stackPath)
 		}
 	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoArrow.GetDB()
 
 	query := db.Find(&arrowDBs)
 	if query.Error != nil {
@@ -108,7 +107,19 @@ func GetArrows(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostArrow(c *gin.Context) {
+func (controller *Controller) PostArrow(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostArrows", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoArrow.GetDB()
 
 	// Validate input
 	var input orm.ArrowAPI
@@ -128,7 +139,6 @@ func PostArrow(c *gin.Context) {
 	arrowDB.ArrowPointersEnconding = input.ArrowPointersEnconding
 	arrowDB.CopyBasicFieldsFromArrow(&input.Arrow)
 
-	db := orm.BackRepo.BackRepoArrow.GetDB()
 	query := db.Create(&arrowDB)
 	if query.Error != nil {
 		var returnError GenericError
@@ -140,16 +150,16 @@ func PostArrow(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoArrow.CheckoutPhaseOneInstance(&arrowDB)
-	arrow := (*orm.BackRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+	backRepo.BackRepoArrow.CheckoutPhaseOneInstance(&arrowDB)
+	arrow := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
 
 	if arrow != nil {
-		models.AfterCreateFromFront(&models.Stage, arrow)
+		models.AfterCreateFromFront(backRepo.GetStage(), arrow)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, arrowDB)
 }
@@ -164,21 +174,19 @@ func PostArrow(c *gin.Context) {
 // default: genericError
 //
 //	200: arrowDBResponse
-func GetArrow(c *gin.Context) {
+func (controller *Controller) GetArrow(c *gin.Context) {
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
-		value := values["stack"]
+		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GET params", stackParam)
+			stackPath = value[0]
+			log.Println("GetArrow", "GONG__StackPath", stackPath)
 		}
 	}
-
-	db := orm.BackRepo.BackRepoArrow.GetDB()
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoArrow.GetDB()
 
 	// Get arrowDB in DB
 	var arrowDB orm.ArrowDB
@@ -209,7 +217,19 @@ func GetArrow(c *gin.Context) {
 // default: genericError
 //
 //	200: arrowDBResponse
-func UpdateArrow(c *gin.Context) {
+func (controller *Controller) UpdateArrow(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdateArrow", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoArrow.GetDB()
 
 	// Validate input
 	var input orm.ArrowAPI
@@ -218,8 +238,6 @@ func UpdateArrow(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	db := orm.BackRepo.BackRepoArrow.GetDB()
 
 	// Get model if exist
 	var arrowDB orm.ArrowDB
@@ -255,16 +273,16 @@ func UpdateArrow(c *gin.Context) {
 	arrowDB.CopyBasicFieldsToArrow(arrowNew)
 
 	// get stage instance from DB instance, and call callback function
-	arrowOld := (*orm.BackRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+	arrowOld := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
 	if arrowOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, arrowOld, arrowNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), arrowOld, arrowNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the arrowDB
 	c.JSON(http.StatusOK, arrowDB)
@@ -279,8 +297,19 @@ func UpdateArrow(c *gin.Context) {
 // default: genericError
 //
 //	200: arrowDBResponse
-func DeleteArrow(c *gin.Context) {
-	db := orm.BackRepo.BackRepoArrow.GetDB()
+func (controller *Controller) DeleteArrow(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeleteArrow", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoArrow.GetDB()
 
 	// Get model if exist
 	var arrowDB orm.ArrowDB
@@ -301,14 +330,14 @@ func DeleteArrow(c *gin.Context) {
 	arrowDB.CopyBasicFieldsToArrow(arrowDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	arrowStaged := (*orm.BackRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+	arrowStaged := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
 	if arrowStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, arrowStaged, arrowDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), arrowStaged, arrowDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

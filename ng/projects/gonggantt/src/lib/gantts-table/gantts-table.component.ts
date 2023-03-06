@@ -285,7 +285,7 @@ export class GanttsTableComponent implements OnInit {
 
   ngOnInit(): void {
     let stackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')
-    if ( stackPath != undefined) {
+    if (stackPath != undefined) {
       this.GONG__StackPath = stackPath
     }
 
@@ -321,10 +321,14 @@ export class GanttsTableComponent implements OnInit {
           let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, GanttDB>
           let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
-          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as GanttDB[]
-          for (let associationInstance of sourceField) {
-            let gantt = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as GanttDB
-            this.initialSelection.push(gantt)
+          // we associates on sourceInstance of type SourceStruct with a MANY MANY associations to GanttDB
+          // the field name is sourceField
+          let sourceFieldArray = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as GanttDB[]
+          if (sourceFieldArray != null) {
+            for (let associationInstance of sourceFieldArray) {
+              let gantt = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as GanttDB
+              this.initialSelection.push(gantt)
+            }
           }
 
           this.selection = new SelectionModel<GanttDB>(allowMultiSelect, this.initialSelection);
@@ -345,7 +349,7 @@ export class GanttsTableComponent implements OnInit {
     // list of gantts is truncated of gantt before the delete
     this.gantts = this.gantts.filter(h => h !== gantt);
 
-    this.ganttService.deleteGantt(ganttID).subscribe(
+    this.ganttService.deleteGantt(ganttID, this.GONG__StackPath).subscribe(
       gantt => {
         this.ganttService.GanttServiceChanged.next("delete")
       }
@@ -411,7 +415,7 @@ export class GanttsTableComponent implements OnInit {
 
       // update all gantt (only update selection & initial selection)
       for (let gantt of toUpdate) {
-        this.ganttService.updateGantt(gantt)
+        this.ganttService.updateGantt(gantt, this.GONG__StackPath)
           .subscribe(gantt => {
             this.ganttService.GanttServiceChanged.next("update")
           });

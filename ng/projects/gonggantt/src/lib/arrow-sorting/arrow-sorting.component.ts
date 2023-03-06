@@ -100,7 +100,7 @@ export class ArrowSortingComponent implements OnInit {
 
     this.associatedArrows.forEach(
       arrow => {
-        this.arrowService.updateArrow(arrow)
+        this.arrowService.updateArrow(arrow, this.dialogData.GONG__StackPath)
           .subscribe(arrow => {
             this.arrowService.ArrowServiceChanged.next("update")
           });

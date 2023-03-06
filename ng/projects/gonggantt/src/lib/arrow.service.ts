@@ -22,10 +22,6 @@ import { GanttDB } from './gantt-db'
 })
 export class ArrowService {
 
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
-
   // Kamar Raïmo: Adding a way to communicate between components that share information
   // so that they are notified of a change.
   ArrowServiceChanged: BehaviorSubject<string> = new BehaviorSubject("");
@@ -34,7 +30,6 @@ export class ArrowService {
 
   constructor(
     private http: HttpClient,
-    private location: Location,
     @Inject(DOCUMENT) private document: Document
   ) {
     // path to the service share the same origin with the path to the document
@@ -69,10 +64,8 @@ export class ArrowService {
     );
   }
 
-  //////// Save methods //////////
-
   /** POST: add a new arrow to the server */
-  postArrow(arrowdb: ArrowDB): Observable<ArrowDB> {
+  postArrow(arrowdb: ArrowDB, GONG__StackPath: string): Observable<ArrowDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     arrowdb.From = new BarDB
@@ -80,7 +73,13 @@ export class ArrowService {
     let _Gantt_Arrows_reverse = arrowdb.Gantt_Arrows_reverse
     arrowdb.Gantt_Arrows_reverse = new GanttDB
 
-    return this.http.post<ArrowDB>(this.arrowsUrl, arrowdb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    }
+
+	return this.http.post<ArrowDB>(this.arrowsUrl, arrowdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         arrowdb.Gantt_Arrows_reverse = _Gantt_Arrows_reverse
@@ -91,18 +90,24 @@ export class ArrowService {
   }
 
   /** DELETE: delete the arrowdb from the server */
-  deleteArrow(arrowdb: ArrowDB | number): Observable<ArrowDB> {
+  deleteArrow(arrowdb: ArrowDB | number, GONG__StackPath: string): Observable<ArrowDB> {
     const id = typeof arrowdb === 'number' ? arrowdb : arrowdb.ID;
     const url = `${this.arrowsUrl}/${id}`;
 
-    return this.http.delete<ArrowDB>(url, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.delete<ArrowDB>(url, httpOptions).pipe(
       tap(_ => this.log(`deleted arrowdb id=${id}`)),
       catchError(this.handleError<ArrowDB>('deleteArrow'))
     );
   }
 
   /** PUT: update the arrowdb on the server */
-  updateArrow(arrowdb: ArrowDB): Observable<ArrowDB> {
+  updateArrow(arrowdb: ArrowDB, GONG__StackPath: string): Observable<ArrowDB> {
     const id = typeof arrowdb === 'number' ? arrowdb : arrowdb.ID;
     const url = `${this.arrowsUrl}/${id}`;
 
@@ -112,7 +117,13 @@ export class ArrowService {
     let _Gantt_Arrows_reverse = arrowdb.Gantt_Arrows_reverse
     arrowdb.Gantt_Arrows_reverse = new GanttDB
 
-    return this.http.put<ArrowDB>(url, arrowdb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.put<ArrowDB>(url, arrowdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         arrowdb.Gantt_Arrows_reverse = _Gantt_Arrows_reverse

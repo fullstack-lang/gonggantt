@@ -47,23 +47,22 @@ type GroupInput struct {
 // default: genericError
 //
 //	200: groupDBResponse
-func GetGroups(c *gin.Context) {
-	db := orm.BackRepo.BackRepoGroup.GetDB()
+func (controller *Controller) GetGroups(c *gin.Context) {
 
 	// source slice
 	var groupDBs []orm.GroupDB
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GONG__StackPath", stackParam)
+			stackPath = value[0]
+			log.Println("GetGroups", "GONG__StackPath", stackPath)
 		}
 	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoGroup.GetDB()
 
 	query := db.Find(&groupDBs)
 	if query.Error != nil {
@@ -108,7 +107,19 @@ func GetGroups(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostGroup(c *gin.Context) {
+func (controller *Controller) PostGroup(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostGroups", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoGroup.GetDB()
 
 	// Validate input
 	var input orm.GroupAPI
@@ -128,7 +139,6 @@ func PostGroup(c *gin.Context) {
 	groupDB.GroupPointersEnconding = input.GroupPointersEnconding
 	groupDB.CopyBasicFieldsFromGroup(&input.Group)
 
-	db := orm.BackRepo.BackRepoGroup.GetDB()
 	query := db.Create(&groupDB)
 	if query.Error != nil {
 		var returnError GenericError
@@ -140,16 +150,16 @@ func PostGroup(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoGroup.CheckoutPhaseOneInstance(&groupDB)
-	group := (*orm.BackRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	backRepo.BackRepoGroup.CheckoutPhaseOneInstance(&groupDB)
+	group := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
 
 	if group != nil {
-		models.AfterCreateFromFront(&models.Stage, group)
+		models.AfterCreateFromFront(backRepo.GetStage(), group)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, groupDB)
 }
@@ -164,21 +174,19 @@ func PostGroup(c *gin.Context) {
 // default: genericError
 //
 //	200: groupDBResponse
-func GetGroup(c *gin.Context) {
+func (controller *Controller) GetGroup(c *gin.Context) {
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
-		value := values["stack"]
+		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GET params", stackParam)
+			stackPath = value[0]
+			log.Println("GetGroup", "GONG__StackPath", stackPath)
 		}
 	}
-
-	db := orm.BackRepo.BackRepoGroup.GetDB()
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoGroup.GetDB()
 
 	// Get groupDB in DB
 	var groupDB orm.GroupDB
@@ -209,7 +217,19 @@ func GetGroup(c *gin.Context) {
 // default: genericError
 //
 //	200: groupDBResponse
-func UpdateGroup(c *gin.Context) {
+func (controller *Controller) UpdateGroup(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdateGroup", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoGroup.GetDB()
 
 	// Validate input
 	var input orm.GroupAPI
@@ -218,8 +238,6 @@ func UpdateGroup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	db := orm.BackRepo.BackRepoGroup.GetDB()
 
 	// Get model if exist
 	var groupDB orm.GroupDB
@@ -255,16 +273,16 @@ func UpdateGroup(c *gin.Context) {
 	groupDB.CopyBasicFieldsToGroup(groupNew)
 
 	// get stage instance from DB instance, and call callback function
-	groupOld := (*orm.BackRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	groupOld := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
 	if groupOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, groupOld, groupNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), groupOld, groupNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the groupDB
 	c.JSON(http.StatusOK, groupDB)
@@ -279,8 +297,19 @@ func UpdateGroup(c *gin.Context) {
 // default: genericError
 //
 //	200: groupDBResponse
-func DeleteGroup(c *gin.Context) {
-	db := orm.BackRepo.BackRepoGroup.GetDB()
+func (controller *Controller) DeleteGroup(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeleteGroup", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoGroup.GetDB()
 
 	// Get model if exist
 	var groupDB orm.GroupDB
@@ -301,14 +330,14 @@ func DeleteGroup(c *gin.Context) {
 	groupDB.CopyBasicFieldsToGroup(groupDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	groupStaged := (*orm.BackRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	groupStaged := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
 	if groupStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, groupStaged, groupDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), groupStaged, groupDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

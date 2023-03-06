@@ -22,10 +22,6 @@ import { GroupDB } from './group-db'
 })
 export class LaneService {
 
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
-
   // Kamar Raïmo: Adding a way to communicate between components that share information
   // so that they are notified of a change.
   LaneServiceChanged: BehaviorSubject<string> = new BehaviorSubject("");
@@ -34,7 +30,6 @@ export class LaneService {
 
   constructor(
     private http: HttpClient,
-    private location: Location,
     @Inject(DOCUMENT) private document: Document
   ) {
     // path to the service share the same origin with the path to the document
@@ -69,10 +64,8 @@ export class LaneService {
     );
   }
 
-  //////// Save methods //////////
-
   /** POST: add a new lane to the server */
-  postLane(lanedb: LaneDB): Observable<LaneDB> {
+  postLane(lanedb: LaneDB, GONG__StackPath: string): Observable<LaneDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     lanedb.Bars = []
@@ -81,7 +74,13 @@ export class LaneService {
     let _Group_GroupLanes_reverse = lanedb.Group_GroupLanes_reverse
     lanedb.Group_GroupLanes_reverse = new GroupDB
 
-    return this.http.post<LaneDB>(this.lanesUrl, lanedb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    }
+
+	return this.http.post<LaneDB>(this.lanesUrl, lanedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
@@ -93,18 +92,24 @@ export class LaneService {
   }
 
   /** DELETE: delete the lanedb from the server */
-  deleteLane(lanedb: LaneDB | number): Observable<LaneDB> {
+  deleteLane(lanedb: LaneDB | number, GONG__StackPath: string): Observable<LaneDB> {
     const id = typeof lanedb === 'number' ? lanedb : lanedb.ID;
     const url = `${this.lanesUrl}/${id}`;
 
-    return this.http.delete<LaneDB>(url, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.delete<LaneDB>(url, httpOptions).pipe(
       tap(_ => this.log(`deleted lanedb id=${id}`)),
       catchError(this.handleError<LaneDB>('deleteLane'))
     );
   }
 
   /** PUT: update the lanedb on the server */
-  updateLane(lanedb: LaneDB): Observable<LaneDB> {
+  updateLane(lanedb: LaneDB, GONG__StackPath: string): Observable<LaneDB> {
     const id = typeof lanedb === 'number' ? lanedb : lanedb.ID;
     const url = `${this.lanesUrl}/${id}`;
 
@@ -115,7 +120,13 @@ export class LaneService {
     let _Group_GroupLanes_reverse = lanedb.Group_GroupLanes_reverse
     lanedb.Group_GroupLanes_reverse = new GroupDB
 
-    return this.http.put<LaneDB>(url, lanedb, this.httpOptions).pipe(
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let httpOptions = {
+      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+      params: params
+    };
+
+    return this.http.put<LaneDB>(url, lanedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse

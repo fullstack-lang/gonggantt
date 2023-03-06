@@ -128,6 +128,13 @@ type BackRepoArrowStruct struct {
 	Map_ArrowDBID_ArrowPtr *map[uint]*models.Arrow
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoArrow *BackRepoArrowStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoArrow.stage
+	return
 }
 
 func (backRepoArrow *BackRepoArrowStruct) GetDB() *gorm.DB {
@@ -142,7 +149,7 @@ func (backRepoArrow *BackRepoArrowStruct) GetArrowDBFromArrowPtr(arrow *models.A
 }
 
 // BackRepoArrow.Init set up the BackRepo of the Arrow
-func (backRepoArrow *BackRepoArrowStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoArrow *BackRepoArrowStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoArrow.Map_ArrowDBID_ArrowPtr != nil {
 		err := errors.New("In Init, backRepoArrow.Map_ArrowDBID_ArrowPtr should be nil")
@@ -169,6 +176,7 @@ func (backRepoArrow *BackRepoArrowStruct) Init(db *gorm.DB) (Error error) {
 	backRepoArrow.Map_ArrowPtr_ArrowDBID = &tmpID
 
 	backRepoArrow.db = db
+	backRepoArrow.stage = stage
 	return
 }
 
@@ -305,7 +313,7 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	arrowInstancesToBeRemovedFromTheStage := make(map[*models.Arrow]any)
-	for key, value := range models.Stage.Arrows {
+	for key, value := range backRepoArrow.stage.Arrows {
 		arrowInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -323,7 +331,7 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all arrows that are not in the checkout
 	for arrow := range arrowInstancesToBeRemovedFromTheStage {
-		arrow.Unstage()
+		arrow.Unstage(backRepoArrow.GetStage())
 
 		// remove instance from the back repo 3 maps
 		arrowID := (*backRepoArrow.Map_ArrowPtr_ArrowDBID)[arrow]
@@ -348,12 +356,12 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOneInstance(arrowDB *Arro
 
 		// append model store with the new element
 		arrow.Name = arrowDB.Name_Data.String
-		arrow.Stage()
+		arrow.Stage(backRepoArrow.GetStage())
 	}
 	arrowDB.CopyBasicFieldsToArrow(arrow)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	arrow.Stage()
+	arrow.Stage(backRepoArrow.GetStage())
 
 	// preserve pointer to arrowDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_ArrowDBID_ArrowDB)[arrowDB hold variable pointers

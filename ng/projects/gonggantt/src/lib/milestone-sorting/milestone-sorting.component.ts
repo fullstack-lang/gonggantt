@@ -100,7 +100,7 @@ export class MilestoneSortingComponent implements OnInit {
 
     this.associatedMilestones.forEach(
       milestone => {
-        this.milestoneService.updateMilestone(milestone)
+        this.milestoneService.updateMilestone(milestone, this.dialogData.GONG__StackPath)
           .subscribe(milestone => {
             this.milestoneService.MilestoneServiceChanged.next("update")
           });

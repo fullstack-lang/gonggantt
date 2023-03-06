@@ -47,11 +47,23 @@ type PolygoneInput struct {
 // default: genericError
 //
 //	200: polygoneDBResponse
-func GetPolygones(c *gin.Context) {
-	db := orm.BackRepo.BackRepoPolygone.GetDB()
+func (controller *Controller) GetPolygones(c *gin.Context) {
 
 	// source slice
 	var polygoneDBs []orm.PolygoneDB
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetPolygones", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoPolygone.GetDB()
+
 	query := db.Find(&polygoneDBs)
 	if query.Error != nil {
 		var returnError GenericError
@@ -95,8 +107,19 @@ func GetPolygones(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostPolygone(c *gin.Context) {
-	db := orm.BackRepo.BackRepoPolygone.GetDB()
+func (controller *Controller) PostPolygone(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostPolygones", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoPolygone.GetDB()
 
 	// Validate input
 	var input orm.PolygoneAPI
@@ -127,16 +150,16 @@ func PostPolygone(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoPolygone.CheckoutPhaseOneInstance(&polygoneDB)
-	polygone := (*orm.BackRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+	backRepo.BackRepoPolygone.CheckoutPhaseOneInstance(&polygoneDB)
+	polygone := (*backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
 
 	if polygone != nil {
-		models.AfterCreateFromFront(&models.Stage, polygone)
+		models.AfterCreateFromFront(backRepo.GetStage(), polygone)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, polygoneDB)
 }
@@ -151,8 +174,19 @@ func PostPolygone(c *gin.Context) {
 // default: genericError
 //
 //	200: polygoneDBResponse
-func GetPolygone(c *gin.Context) {
-	db := orm.BackRepo.BackRepoPolygone.GetDB()
+func (controller *Controller) GetPolygone(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("GetPolygone", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoPolygone.GetDB()
 
 	// Get polygoneDB in DB
 	var polygoneDB orm.PolygoneDB
@@ -183,8 +217,27 @@ func GetPolygone(c *gin.Context) {
 // default: genericError
 //
 //	200: polygoneDBResponse
-func UpdatePolygone(c *gin.Context) {
-	db := orm.BackRepo.BackRepoPolygone.GetDB()
+func (controller *Controller) UpdatePolygone(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdatePolygone", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoPolygone.GetDB()
+
+	// Validate input
+	var input orm.PolygoneAPI
+	if err := c.ShouldBindJSON(&input); err != nil {
+		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Get model if exist
 	var polygoneDB orm.PolygoneDB
@@ -198,14 +251,6 @@ func UpdatePolygone(c *gin.Context) {
 		returnError.Body.Message = query.Error.Error()
 		log.Println(query.Error.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
-		return
-	}
-
-	// Validate input
-	var input orm.PolygoneAPI
-	if err := c.ShouldBindJSON(&input); err != nil {
-		log.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -228,16 +273,16 @@ func UpdatePolygone(c *gin.Context) {
 	polygoneDB.CopyBasicFieldsToPolygone(polygoneNew)
 
 	// get stage instance from DB instance, and call callback function
-	polygoneOld := (*orm.BackRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+	polygoneOld := (*backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
 	if polygoneOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, polygoneOld, polygoneNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), polygoneOld, polygoneNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the polygoneDB
 	c.JSON(http.StatusOK, polygoneDB)
@@ -252,8 +297,19 @@ func UpdatePolygone(c *gin.Context) {
 // default: genericError
 //
 //	200: polygoneDBResponse
-func DeletePolygone(c *gin.Context) {
-	db := orm.BackRepo.BackRepoPolygone.GetDB()
+func (controller *Controller) DeletePolygone(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeletePolygone", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoPolygone.GetDB()
 
 	// Get model if exist
 	var polygoneDB orm.PolygoneDB
@@ -274,14 +330,14 @@ func DeletePolygone(c *gin.Context) {
 	polygoneDB.CopyBasicFieldsToPolygone(polygoneDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	polygoneStaged := (*orm.BackRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+	polygoneStaged := (*backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
 	if polygoneStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, polygoneStaged, polygoneDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), polygoneStaged, polygoneDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

@@ -177,13 +177,13 @@ export class MilestoneDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case MilestoneDetailComponentState.UPDATE_INSTANCE:
-				this.milestoneService.updateMilestone(this.milestone)
+				this.milestoneService.updateMilestone(this.milestone, this.GONG__StackPath)
 					.subscribe(milestone => {
 						this.milestoneService.MilestoneServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.milestoneService.postMilestone(this.milestone).subscribe(milestone => {
+				this.milestoneService.postMilestone(this.milestone, this.GONG__StackPath).subscribe(milestone => {
 					this.milestoneService.MilestoneServiceChanged.next("post")
 					this.milestone = new (MilestoneDB) // reset fields
 				});

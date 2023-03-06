@@ -14,7 +14,7 @@ type ClassdiagramImpl struct {
 }
 
 func (classdiagramImpl *ClassdiagramImpl) OnAfterUpdate(
-	stage *gongdoc_models.StageStruct,
+	gongdocStage *gongdoc_models.StageStruct,
 	stagedNode, frontNode *gongdoc_models.Node) {
 
 	// node has been checked by the end user
@@ -45,7 +45,7 @@ func (classdiagramImpl *ClassdiagramImpl) OnAfterUpdate(
 	// on need to commit the staged node for the front to reconstruct
 	// the node as checked and overides the unchecking action
 	if stagedNode.IsChecked && !frontNode.IsChecked {
-		stagedNode.Commit()
+		stagedNode.Commit(gongdocStage)
 	}
 
 	// in case the front change the name of the diagram
@@ -62,7 +62,7 @@ func (classdiagramImpl *ClassdiagramImpl) OnAfterUpdate(
 				continue
 			} else {
 				log.Println("The name of the diagram is not a correct identifier in go: " + frontNode.Name)
-				stagedNode.Commit()
+				stagedNode.Commit(gongdocStage)
 				return
 			}
 		}
@@ -84,8 +84,20 @@ func (classdiagramImpl *ClassdiagramImpl) OnAfterUpdate(
 
 				classdiagramImpl.classdiagram.Name = frontNode.Name
 
+				// checkout in order to get the latest version of the diagram before
+				// modifying it updated by the front
+				gongdocStage.Checkout()
+				gongdocStage.Unstage()
+				gongdoc_models.StageBranch(gongdocStage, classdiagramImpl.classdiagram)
+
+				gongdoc_models.SetupMapDocLinkRenamingNew(gongdocStage, classdiagramImpl.nodeCb.diagramPackage)
+
 				// save the diagram
-				gongdoc_models.Stage.Marshall(file, "github.com/fullstack-lang/gongdoc/go/models", "diagrams")
+				gongdocStage.Marshall(file, "github.com/fullstack-lang/gongdoc/go/models", "diagrams")
+
+				// restore the original stage
+				gongdocStage.Unstage()
+				gongdocStage.Checkout()
 			}
 		}
 
@@ -112,10 +124,9 @@ func (classdiagramImpl *ClassdiagramImpl) OnAfterUpdate(
 
 		// checkout in order to get the latest version of the diagram before
 		// modifying it updated by the front
-		gongdoc_models.Stage.Checkout()
-
-		gongdoc_models.Stage.Unstage()
-		gongdoc_models.StageBranch(&gongdoc_models.Stage, classdiagramImpl.classdiagram)
+		gongdocStage.Checkout()
+		gongdocStage.Unstage()
+		gongdoc_models.StageBranch(gongdocStage, classdiagramImpl.classdiagram)
 
 		filepath := filepath.Join(
 			filepath.Join(classdiagramImpl.nodeCb.diagramPackage.AbsolutePathToDiagramPackage,
@@ -126,13 +137,19 @@ func (classdiagramImpl *ClassdiagramImpl) OnAfterUpdate(
 			log.Fatal("Cannot open diagram file" + err.Error())
 		}
 		defer file.Close()
-		gongdoc_models.Stage.Marshall(file, "github.com/fullstack-lang/gongdoc/go/models", "diagrams")
+
+		mapDocLinkRemaping := &gongdocStage.Map_DocLink_Renaming
+		_ = mapDocLinkRemaping
+
+		gongdoc_models.SetupMapDocLinkRenamingNew(gongdocStage, classdiagramImpl.nodeCb.diagramPackage)
+
+		gongdocStage.Marshall(file, "github.com/fullstack-lang/gongdoc/go/models", "diagrams")
 
 		// restore the original stage
-		gongdoc_models.Stage.Unstage()
-		gongdoc_models.Stage.Checkout()
+		gongdocStage.Unstage()
+		gongdocStage.Checkout()
 		stagedNode.IsSaved = false
-		stage.Commit()
+		gongdocStage.Commit()
 
 	}
 }

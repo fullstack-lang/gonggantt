@@ -4,6 +4,7 @@ import (
 	// gongsvg stack for model analysis
 
 	gongsvg_controllers "github.com/fullstack-lang/gongsvg/go/controllers"
+	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 	gongsvg_orm "github.com/fullstack-lang/gongsvg/go/orm"
 	"github.com/gin-gonic/gin"
 
@@ -19,7 +20,7 @@ func Init(r *gin.Engine, filenames ...string) {
 		filenames = append(filenames, ":memory:")
 	}
 
-	db_inMemory := gongsvg_orm.SetupModels(false, filenames[0])
+	db_inMemory := gongsvg_orm.SetupModels(&gongsvg_models.Stage, false, filenames[0])
 
 	// since gongsvgsim is a multi threaded application. It is important to set up
 	// only one open connexion at a time

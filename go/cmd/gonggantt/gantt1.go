@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
-
 	// injection point for ident package import declaration{{ImportPackageDeclaration}}
 )
 
@@ -34,29 +33,29 @@ var map_DocLink_Identifier_gantt1 map[string]any = map[string]any{
 // }
 
 // gantt1Injection will stage objects of database "gantt1"
-func gantt1Injection() {
+func gantt1Injection(stage *models.StageStruct) {
 
 	// Declaration of instances to stage
 
 	// Declarations of staged instances of Arrow
-	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1 := (&models.Arrow{Name: `Lane 1 - Bar 1 to Lan 2 - Bar 1`}).Stage()
+	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1 := (&models.Arrow{Name: `Lane 1 - Bar 1 to Lan 2 - Bar 1`}).Stage(stage)
 
 	// Declarations of staged instances of Bar
-	__Bar__000000_Bar_1 := (&models.Bar{Name: `Bar 1`}).Stage()
-	__Bar__000001_Bar_2 := (&models.Bar{Name: `Bar 2`}).Stage()
-	__Bar__000002_Bar_3 := (&models.Bar{Name: `Bar 3`}).Stage()
-	__Bar__000003_Bar_4 := (&models.Bar{Name: `Bar-4`}).Stage()
+	__Bar__000000_Bar_1 := (&models.Bar{Name: `Bar 1`}).Stage(stage)
+	__Bar__000001_Bar_2 := (&models.Bar{Name: `Bar 2`}).Stage(stage)
+	__Bar__000002_Bar_3 := (&models.Bar{Name: `Bar 3`}).Stage(stage)
+	__Bar__000003_Bar_4 := (&models.Bar{Name: `Bar-4`}).Stage(stage)
 
 	// Declarations of staged instances of Gantt
-	__Gantt__000000_Test := (&models.Gantt{Name: `Test`}).Stage()
+	__Gantt__000000_Test := (&models.Gantt{Name: `Test`}).Stage(stage)
 
 	// Declarations of staged instances of Group
 
 	// Declarations of staged instances of Lane
-	__Lane__000000_Lane_1 := (&models.Lane{Name: `Lane-1`}).Stage()
-	__Lane__000001_Lane_2 := (&models.Lane{Name: `Lane-2`}).Stage()
-	__Lane__000002_Lane_3 := (&models.Lane{Name: `Lane-3`}).Stage()
-	__Lane__000003_Lane_4 := (&models.Lane{Name: `Lane-4`}).Stage()
+	__Lane__000000_Lane_1 := (&models.Lane{Name: `Lane-1`}).Stage(stage)
+	__Lane__000001_Lane_2 := (&models.Lane{Name: `Lane-2`}).Stage(stage)
+	__Lane__000002_Lane_3 := (&models.Lane{Name: `Lane-3`}).Stage(stage)
+	__Lane__000003_Lane_4 := (&models.Lane{Name: `Lane-4`}).Stage(stage)
 
 	// Declarations of staged instances of LaneUse
 
@@ -164,5 +163,3 @@ func gantt1Injection() {
 	__Lane__000001_Lane_2.Bars = append(__Lane__000001_Lane_2.Bars, __Bar__000002_Bar_3)
 	__Lane__000002_Lane_3.Bars = append(__Lane__000002_Lane_3.Bars, __Bar__000003_Bar_4)
 }
-
-

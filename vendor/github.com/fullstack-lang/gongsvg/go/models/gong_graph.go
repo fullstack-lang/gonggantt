@@ -35,6 +35,8 @@ func IsStaged[Type Gongstruct](stage *StageStruct, instance *Type) (ok bool) {
 	case *Text:
 		ok = stage.IsStagedText(target)
 
+	default:
+		_ = target
 	}
 	return
 }
@@ -149,6 +151,8 @@ func StageBranch[Type Gongstruct](stage *StageStruct, instance *Type) {
 	case *Text:
 		stage.StageBranchText(target)
 
+	default:
+		_ = target
 	}
 }
 
@@ -160,7 +164,7 @@ func (stage *StageStruct) StageBranchAnimate(animate *Animate) {
 		return
 	}
 
-	animate.Stage()
+	animate.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -175,7 +179,7 @@ func (stage *StageStruct) StageBranchCircle(circle *Circle) {
 		return
 	}
 
-	circle.Stage()
+	circle.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -193,7 +197,7 @@ func (stage *StageStruct) StageBranchEllipse(ellipse *Ellipse) {
 		return
 	}
 
-	ellipse.Stage()
+	ellipse.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -211,7 +215,7 @@ func (stage *StageStruct) StageBranchLine(line *Line) {
 		return
 	}
 
-	line.Stage()
+	line.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -229,7 +233,7 @@ func (stage *StageStruct) StageBranchPath(path *Path) {
 		return
 	}
 
-	path.Stage()
+	path.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -247,7 +251,7 @@ func (stage *StageStruct) StageBranchPolygone(polygone *Polygone) {
 		return
 	}
 
-	polygone.Stage()
+	polygone.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -265,7 +269,7 @@ func (stage *StageStruct) StageBranchPolyline(polyline *Polyline) {
 		return
 	}
 
-	polyline.Stage()
+	polyline.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -283,7 +287,7 @@ func (stage *StageStruct) StageBranchRect(rect *Rect) {
 		return
 	}
 
-	rect.Stage()
+	rect.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -301,7 +305,7 @@ func (stage *StageStruct) StageBranchSVG(svg *SVG) {
 		return
 	}
 
-	svg.Stage()
+	svg.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -340,7 +344,7 @@ func (stage *StageStruct) StageBranchText(text *Text) {
 		return
 	}
 
-	text.Stage()
+	text.Stage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -390,6 +394,8 @@ func UnstageBranch[Type Gongstruct](stage *StageStruct, instance *Type) {
 	case *Text:
 		stage.UnstageBranchText(target)
 
+	default:
+		_ = target
 	}
 }
 
@@ -401,7 +407,7 @@ func (stage *StageStruct) UnstageBranchAnimate(animate *Animate) {
 		return
 	}
 
-	animate.Unstage()
+	animate.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -416,7 +422,7 @@ func (stage *StageStruct) UnstageBranchCircle(circle *Circle) {
 		return
 	}
 
-	circle.Unstage()
+	circle.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -434,7 +440,7 @@ func (stage *StageStruct) UnstageBranchEllipse(ellipse *Ellipse) {
 		return
 	}
 
-	ellipse.Unstage()
+	ellipse.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -452,7 +458,7 @@ func (stage *StageStruct) UnstageBranchLine(line *Line) {
 		return
 	}
 
-	line.Unstage()
+	line.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -470,7 +476,7 @@ func (stage *StageStruct) UnstageBranchPath(path *Path) {
 		return
 	}
 
-	path.Unstage()
+	path.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -488,7 +494,7 @@ func (stage *StageStruct) UnstageBranchPolygone(polygone *Polygone) {
 		return
 	}
 
-	polygone.Unstage()
+	polygone.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -506,7 +512,7 @@ func (stage *StageStruct) UnstageBranchPolyline(polyline *Polyline) {
 		return
 	}
 
-	polyline.Unstage()
+	polyline.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -524,7 +530,7 @@ func (stage *StageStruct) UnstageBranchRect(rect *Rect) {
 		return
 	}
 
-	rect.Unstage()
+	rect.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -542,7 +548,7 @@ func (stage *StageStruct) UnstageBranchSVG(svg *SVG) {
 		return
 	}
 
-	svg.Unstage()
+	svg.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 
@@ -581,7 +587,7 @@ func (stage *StageStruct) UnstageBranchText(text *Text) {
 		return
 	}
 
-	text.Unstage()
+	text.Unstage(stage)
 
 	//insertion point for the staging of instances referenced by pointers
 

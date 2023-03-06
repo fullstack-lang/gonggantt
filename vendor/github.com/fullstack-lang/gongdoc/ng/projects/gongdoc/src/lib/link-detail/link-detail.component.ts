@@ -60,6 +60,8 @@ export class LinkDetailComponent implements OnInit {
 	originStruct: string = ""
 	originStructFieldName: string = ""
 
+	GONG__StackPath: string = ""
+
 	constructor(
 		private linkService: LinkService,
 		private frontRepoService: FrontRepoService,
@@ -70,6 +72,8 @@ export class LinkDetailComponent implements OnInit {
 	}
 
 	ngOnInit(): void {
+		this.GONG__StackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')!;
+
 		this.activatedRoute.params.subscribe(params => {
 			this.onChangedActivatedRoute()
 		});
@@ -80,6 +84,8 @@ export class LinkDetailComponent implements OnInit {
 		this.id = +this.activatedRoute.snapshot.paramMap.get('id')!;
 		this.originStruct = this.activatedRoute.snapshot.paramMap.get('originStruct')!;
 		this.originStructFieldName = this.activatedRoute.snapshot.paramMap.get('originStructFieldName')!;
+
+		this.GONG__StackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')!;
 
 		const association = this.activatedRoute.snapshot.paramMap.get('association');
 		if (this.id == 0) {
@@ -117,7 +123,7 @@ export class LinkDetailComponent implements OnInit {
 
 	getLink(): void {
 
-		this.frontRepoService.pull().subscribe(
+		this.frontRepoService.pull(this.GONG__StackPath).subscribe(
 			frontRepo => {
 				this.frontRepo = frontRepo
 
@@ -181,13 +187,13 @@ export class LinkDetailComponent implements OnInit {
 
 		switch (this.state) {
 			case LinkDetailComponentState.UPDATE_INSTANCE:
-				this.linkService.updateLink(this.link)
+				this.linkService.updateLink(this.link, this.GONG__StackPath)
 					.subscribe(link => {
 						this.linkService.LinkServiceChanged.next("update")
 					});
 				break;
 			default:
-				this.linkService.postLink(this.link).subscribe(link => {
+				this.linkService.postLink(this.link, this.GONG__StackPath).subscribe(link => {
 					this.linkService.LinkServiceChanged.next("post")
 					this.link = new (LinkDB) // reset fields
 				});
@@ -216,6 +222,7 @@ export class LinkDetailComponent implements OnInit {
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
+			dialogData.GONG__StackPath = this.GONG__StackPath
 
 			dialogConfig.data = dialogData
 			const dialogRef: MatDialogRef<string, any> = this.dialog.open(
@@ -232,6 +239,7 @@ export class LinkDetailComponent implements OnInit {
 			dialogData.ReversePointer = reverseField
 			dialogData.OrderingMode = false
 			dialogData.SelectionMode = selectionMode
+			dialogData.GONG__StackPath = this.GONG__StackPath
 
 			// set up the source
 			dialogData.SourceStruct = "Link"
@@ -267,6 +275,7 @@ export class LinkDetailComponent implements OnInit {
 			ID: this.link.ID,
 			ReversePointer: reverseField,
 			OrderingMode: true,
+			GONG__StackPath: this.GONG__StackPath,
 		};
 		const dialogRef: MatDialogRef<string, any> = this.dialog.open(
 			MapOfSortingComponents.get(AssociatedStruct).get(

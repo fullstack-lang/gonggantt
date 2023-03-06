@@ -166,7 +166,7 @@ export class GroupsTableComponent implements OnInit {
 
   ngOnInit(): void {
     let stackPath = this.activatedRoute.snapshot.paramMap.get('GONG__StackPath')
-    if ( stackPath != undefined) {
+    if (stackPath != undefined) {
       this.GONG__StackPath = stackPath
     }
 
@@ -202,10 +202,14 @@ export class GroupsTableComponent implements OnInit {
           let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, GroupDB>
           let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
-          let sourceField = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as GroupDB[]
-          for (let associationInstance of sourceField) {
-            let group = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as GroupDB
-            this.initialSelection.push(group)
+          // we associates on sourceInstance of type SourceStruct with a MANY MANY associations to GroupDB
+          // the field name is sourceField
+          let sourceFieldArray = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as GroupDB[]
+          if (sourceFieldArray != null) {
+            for (let associationInstance of sourceFieldArray) {
+              let group = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as GroupDB
+              this.initialSelection.push(group)
+            }
           }
 
           this.selection = new SelectionModel<GroupDB>(allowMultiSelect, this.initialSelection);
@@ -226,7 +230,7 @@ export class GroupsTableComponent implements OnInit {
     // list of groups is truncated of group before the delete
     this.groups = this.groups.filter(h => h !== group);
 
-    this.groupService.deleteGroup(groupID).subscribe(
+    this.groupService.deleteGroup(groupID, this.GONG__StackPath).subscribe(
       group => {
         this.groupService.GroupServiceChanged.next("delete")
       }
@@ -292,7 +296,7 @@ export class GroupsTableComponent implements OnInit {
 
       // update all group (only update selection & initial selection)
       for (let group of toUpdate) {
-        this.groupService.updateGroup(group)
+        this.groupService.updateGroup(group, this.GONG__StackPath)
           .subscribe(group => {
             this.groupService.GroupServiceChanged.next("update")
           });

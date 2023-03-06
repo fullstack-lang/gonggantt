@@ -168,6 +168,13 @@ type BackRepoEllipseStruct struct {
 	Map_EllipseDBID_EllipsePtr *map[uint]*models.Ellipse
 
 	db *gorm.DB
+
+	stage *models.StageStruct
+}
+
+func (backRepoEllipse *BackRepoEllipseStruct) GetStage() (stage *models.StageStruct) {
+	stage = backRepoEllipse.stage
+	return
 }
 
 func (backRepoEllipse *BackRepoEllipseStruct) GetDB() *gorm.DB {
@@ -182,7 +189,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) GetEllipseDBFromEllipsePtr(ellipse
 }
 
 // BackRepoEllipse.Init set up the BackRepo of the Ellipse
-func (backRepoEllipse *BackRepoEllipseStruct) Init(db *gorm.DB) (Error error) {
+func (backRepoEllipse *BackRepoEllipseStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
 
 	if backRepoEllipse.Map_EllipseDBID_EllipsePtr != nil {
 		err := errors.New("In Init, backRepoEllipse.Map_EllipseDBID_EllipsePtr should be nil")
@@ -209,6 +216,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) Init(db *gorm.DB) (Error error) {
 	backRepoEllipse.Map_EllipsePtr_EllipseDBID = &tmpID
 
 	backRepoEllipse.db = db
+	backRepoEllipse.stage = stage
 	return
 }
 
@@ -346,7 +354,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOne() (Error error) {
 	// list of instances to be removed
 	// start from the initial map on the stage and remove instances that have been checked out
 	ellipseInstancesToBeRemovedFromTheStage := make(map[*models.Ellipse]any)
-	for key, value := range models.Stage.Ellipses {
+	for key, value := range backRepoEllipse.stage.Ellipses {
 		ellipseInstancesToBeRemovedFromTheStage[key] = value
 	}
 
@@ -364,7 +372,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOne() (Error error) {
 
 	// remove from stage and back repo's 3 maps all ellipses that are not in the checkout
 	for ellipse := range ellipseInstancesToBeRemovedFromTheStage {
-		ellipse.Unstage()
+		ellipse.Unstage(backRepoEllipse.GetStage())
 
 		// remove instance from the back repo 3 maps
 		ellipseID := (*backRepoEllipse.Map_EllipsePtr_EllipseDBID)[ellipse]
@@ -389,12 +397,12 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOneInstance(ellipseDB
 
 		// append model store with the new element
 		ellipse.Name = ellipseDB.Name_Data.String
-		ellipse.Stage()
+		ellipse.Stage(backRepoEllipse.GetStage())
 	}
 	ellipseDB.CopyBasicFieldsToEllipse(ellipse)
 
 	// in some cases, the instance might have been unstaged. It is necessary to stage it again
-	ellipse.Stage()
+	ellipse.Stage(backRepoEllipse.GetStage())
 
 	// preserve pointer to ellipseDB. Otherwise, pointer will is recycled and the map of pointers
 	// Map_EllipseDBID_EllipseDB)[ellipseDB hold variable pointers

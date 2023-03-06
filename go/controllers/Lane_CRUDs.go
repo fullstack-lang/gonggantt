@@ -47,23 +47,22 @@ type LaneInput struct {
 // default: genericError
 //
 //	200: laneDBResponse
-func GetLanes(c *gin.Context) {
-	db := orm.BackRepo.BackRepoLane.GetDB()
+func (controller *Controller) GetLanes(c *gin.Context) {
 
 	// source slice
 	var laneDBs []orm.LaneDB
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GONG__StackPath", stackParam)
+			stackPath = value[0]
+			log.Println("GetLanes", "GONG__StackPath", stackPath)
 		}
 	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoLane.GetDB()
 
 	query := db.Find(&laneDBs)
 	if query.Error != nil {
@@ -108,7 +107,19 @@ func GetLanes(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func PostLane(c *gin.Context) {
+func (controller *Controller) PostLane(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("PostLanes", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoLane.GetDB()
 
 	// Validate input
 	var input orm.LaneAPI
@@ -128,7 +139,6 @@ func PostLane(c *gin.Context) {
 	laneDB.LanePointersEnconding = input.LanePointersEnconding
 	laneDB.CopyBasicFieldsFromLane(&input.Lane)
 
-	db := orm.BackRepo.BackRepoLane.GetDB()
 	query := db.Create(&laneDB)
 	if query.Error != nil {
 		var returnError GenericError
@@ -140,16 +150,16 @@ func PostLane(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	orm.BackRepo.BackRepoLane.CheckoutPhaseOneInstance(&laneDB)
-	lane := (*orm.BackRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+	backRepo.BackRepoLane.CheckoutPhaseOneInstance(&laneDB)
+	lane := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
 
 	if lane != nil {
-		models.AfterCreateFromFront(&models.Stage, lane)
+		models.AfterCreateFromFront(backRepo.GetStage(), lane)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, laneDB)
 }
@@ -164,21 +174,19 @@ func PostLane(c *gin.Context) {
 // default: genericError
 //
 //	200: laneDBResponse
-func GetLane(c *gin.Context) {
+func (controller *Controller) GetLane(c *gin.Context) {
 
-	// type Values map[string][]string
 	values := c.Request.URL.Query()
+	stackPath := ""
 	if len(values) == 1 {
-		value := values["stack"]
+		value := values["GONG__StackPath"]
 		if len(value) == 1 {
-			// we have a single parameter
-			// we assume it is the stack
-			stackParam := value[0]
-			log.Println("GET params", stackParam)
+			stackPath = value[0]
+			log.Println("GetLane", "GONG__StackPath", stackPath)
 		}
 	}
-
-	db := orm.BackRepo.BackRepoLane.GetDB()
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoLane.GetDB()
 
 	// Get laneDB in DB
 	var laneDB orm.LaneDB
@@ -209,7 +217,19 @@ func GetLane(c *gin.Context) {
 // default: genericError
 //
 //	200: laneDBResponse
-func UpdateLane(c *gin.Context) {
+func (controller *Controller) UpdateLane(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("UpdateLane", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoLane.GetDB()
 
 	// Validate input
 	var input orm.LaneAPI
@@ -218,8 +238,6 @@ func UpdateLane(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	db := orm.BackRepo.BackRepoLane.GetDB()
 
 	// Get model if exist
 	var laneDB orm.LaneDB
@@ -255,16 +273,16 @@ func UpdateLane(c *gin.Context) {
 	laneDB.CopyBasicFieldsToLane(laneNew)
 
 	// get stage instance from DB instance, and call callback function
-	laneOld := (*orm.BackRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+	laneOld := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
 	if laneOld != nil {
-		models.AfterUpdateFromFront(&models.Stage, laneOld, laneNew)
+		models.AfterUpdateFromFront(backRepo.GetStage(), laneOld, laneNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	// in some cases, with the marshalling of the stage, this operation might
 	// generates a checkout
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	// return status OK with the marshalling of the the laneDB
 	c.JSON(http.StatusOK, laneDB)
@@ -279,8 +297,19 @@ func UpdateLane(c *gin.Context) {
 // default: genericError
 //
 //	200: laneDBResponse
-func DeleteLane(c *gin.Context) {
-	db := orm.BackRepo.BackRepoLane.GetDB()
+func (controller *Controller) DeleteLane(c *gin.Context) {
+
+	values := c.Request.URL.Query()
+	stackPath := ""
+	if len(values) == 1 {
+		value := values["GONG__StackPath"]
+		if len(value) == 1 {
+			stackPath = value[0]
+			log.Println("DeleteLane", "GONG__StackPath", stackPath)
+		}
+	}
+	backRepo := controller.Map_BackRepos[stackPath]
+	db := backRepo.BackRepoLane.GetDB()
 
 	// Get model if exist
 	var laneDB orm.LaneDB
@@ -301,14 +330,14 @@ func DeleteLane(c *gin.Context) {
 	laneDB.CopyBasicFieldsToLane(laneDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	laneStaged := (*orm.BackRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+	laneStaged := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
 	if laneStaged != nil {
-		models.AfterDeleteFromFront(&models.Stage, laneStaged, laneDeleted)
+		models.AfterDeleteFromFront(backRepo.GetStage(), laneStaged, laneDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
-	orm.BackRepo.IncrementPushFromFrontNb()
+	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
 }

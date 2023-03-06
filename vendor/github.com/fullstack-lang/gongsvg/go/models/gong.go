@@ -309,93 +309,38 @@ func (stage *StageStruct) RestoreXL(dirPath string) {
 
 // insertion point for cumulative sub template with model space calls
 // Stage puts animate to the model stage
-func (animate *Animate) Stage() *Animate {
-	Stage.Animates[animate] = __member
-	Stage.Animates_mapString[animate.Name] = animate
+func (animate *Animate) Stage(stage *StageStruct) *Animate {
+	stage.Animates[animate] = __member
+	stage.Animates_mapString[animate.Name] = animate
 
 	return animate
 }
 
 // Unstage removes animate off the model stage
-func (animate *Animate) Unstage() *Animate {
-	delete(Stage.Animates, animate)
-	delete(Stage.Animates_mapString, animate.Name)
+func (animate *Animate) Unstage(stage *StageStruct) *Animate {
+	delete(stage.Animates, animate)
+	delete(stage.Animates_mapString, animate.Name)
 	return animate
 }
 
 // commit animate to the back repo (if it is already staged)
-func (animate *Animate) Commit() *Animate {
-	if _, ok := Stage.Animates[animate]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CommitAnimate(animate)
+func (animate *Animate) Commit(stage *StageStruct) *Animate {
+	if _, ok := stage.Animates[animate]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitAnimate(animate)
 		}
 	}
 	return animate
 }
 
 // Checkout animate to the back repo (if it is already staged)
-func (animate *Animate) Checkout() *Animate {
-	if _, ok := Stage.Animates[animate]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CheckoutAnimate(animate)
+func (animate *Animate) Checkout(stage *StageStruct) *Animate {
+	if _, ok := stage.Animates[animate]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutAnimate(animate)
 		}
 	}
 	return animate
-}
-
-//
-// Legacy, to be deleted
-//
-
-// StageCopy appends a copy of animate to the model stage
-func (animate *Animate) StageCopy() *Animate {
-	_animate := new(Animate)
-	*_animate = *animate
-	_animate.Stage()
-	return _animate
-}
-
-// StageAndCommit appends animate to the model stage and commit to the orm repo
-func (animate *Animate) StageAndCommit() *Animate {
-	animate.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMAnimate(animate)
-	}
-	return animate
-}
-
-// DeleteStageAndCommit appends animate to the model stage and commit to the orm repo
-func (animate *Animate) DeleteStageAndCommit() *Animate {
-	animate.Unstage()
-	DeleteORMAnimate(animate)
-	return animate
-}
-
-// StageCopyAndCommit appends a copy of animate to the model stage and commit to the orm repo
-func (animate *Animate) StageCopyAndCommit() *Animate {
-	_animate := new(Animate)
-	*_animate = *animate
-	_animate.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMAnimate(animate)
-	}
-	return _animate
-}
-
-// CreateORMAnimate enables dynamic staging of a Animate instance
-func CreateORMAnimate(animate *Animate) {
-	animate.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMAnimate(animate)
-	}
-}
-
-// DeleteORMAnimate enables dynamic staging of a Animate instance
-func DeleteORMAnimate(animate *Animate) {
-	animate.Unstage()
-	if Stage.AllModelsStructDeleteCallback != nil {
-		Stage.AllModelsStructDeleteCallback.DeleteORMAnimate(animate)
-	}
 }
 
 // for satisfaction of GongStruct interface
@@ -404,93 +349,38 @@ func (animate *Animate) GetName() (res string) {
 }
 
 // Stage puts circle to the model stage
-func (circle *Circle) Stage() *Circle {
-	Stage.Circles[circle] = __member
-	Stage.Circles_mapString[circle.Name] = circle
+func (circle *Circle) Stage(stage *StageStruct) *Circle {
+	stage.Circles[circle] = __member
+	stage.Circles_mapString[circle.Name] = circle
 
 	return circle
 }
 
 // Unstage removes circle off the model stage
-func (circle *Circle) Unstage() *Circle {
-	delete(Stage.Circles, circle)
-	delete(Stage.Circles_mapString, circle.Name)
+func (circle *Circle) Unstage(stage *StageStruct) *Circle {
+	delete(stage.Circles, circle)
+	delete(stage.Circles_mapString, circle.Name)
 	return circle
 }
 
 // commit circle to the back repo (if it is already staged)
-func (circle *Circle) Commit() *Circle {
-	if _, ok := Stage.Circles[circle]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CommitCircle(circle)
+func (circle *Circle) Commit(stage *StageStruct) *Circle {
+	if _, ok := stage.Circles[circle]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitCircle(circle)
 		}
 	}
 	return circle
 }
 
 // Checkout circle to the back repo (if it is already staged)
-func (circle *Circle) Checkout() *Circle {
-	if _, ok := Stage.Circles[circle]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CheckoutCircle(circle)
+func (circle *Circle) Checkout(stage *StageStruct) *Circle {
+	if _, ok := stage.Circles[circle]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutCircle(circle)
 		}
 	}
 	return circle
-}
-
-//
-// Legacy, to be deleted
-//
-
-// StageCopy appends a copy of circle to the model stage
-func (circle *Circle) StageCopy() *Circle {
-	_circle := new(Circle)
-	*_circle = *circle
-	_circle.Stage()
-	return _circle
-}
-
-// StageAndCommit appends circle to the model stage and commit to the orm repo
-func (circle *Circle) StageAndCommit() *Circle {
-	circle.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMCircle(circle)
-	}
-	return circle
-}
-
-// DeleteStageAndCommit appends circle to the model stage and commit to the orm repo
-func (circle *Circle) DeleteStageAndCommit() *Circle {
-	circle.Unstage()
-	DeleteORMCircle(circle)
-	return circle
-}
-
-// StageCopyAndCommit appends a copy of circle to the model stage and commit to the orm repo
-func (circle *Circle) StageCopyAndCommit() *Circle {
-	_circle := new(Circle)
-	*_circle = *circle
-	_circle.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMCircle(circle)
-	}
-	return _circle
-}
-
-// CreateORMCircle enables dynamic staging of a Circle instance
-func CreateORMCircle(circle *Circle) {
-	circle.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMCircle(circle)
-	}
-}
-
-// DeleteORMCircle enables dynamic staging of a Circle instance
-func DeleteORMCircle(circle *Circle) {
-	circle.Unstage()
-	if Stage.AllModelsStructDeleteCallback != nil {
-		Stage.AllModelsStructDeleteCallback.DeleteORMCircle(circle)
-	}
 }
 
 // for satisfaction of GongStruct interface
@@ -499,93 +389,38 @@ func (circle *Circle) GetName() (res string) {
 }
 
 // Stage puts ellipse to the model stage
-func (ellipse *Ellipse) Stage() *Ellipse {
-	Stage.Ellipses[ellipse] = __member
-	Stage.Ellipses_mapString[ellipse.Name] = ellipse
+func (ellipse *Ellipse) Stage(stage *StageStruct) *Ellipse {
+	stage.Ellipses[ellipse] = __member
+	stage.Ellipses_mapString[ellipse.Name] = ellipse
 
 	return ellipse
 }
 
 // Unstage removes ellipse off the model stage
-func (ellipse *Ellipse) Unstage() *Ellipse {
-	delete(Stage.Ellipses, ellipse)
-	delete(Stage.Ellipses_mapString, ellipse.Name)
+func (ellipse *Ellipse) Unstage(stage *StageStruct) *Ellipse {
+	delete(stage.Ellipses, ellipse)
+	delete(stage.Ellipses_mapString, ellipse.Name)
 	return ellipse
 }
 
 // commit ellipse to the back repo (if it is already staged)
-func (ellipse *Ellipse) Commit() *Ellipse {
-	if _, ok := Stage.Ellipses[ellipse]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CommitEllipse(ellipse)
+func (ellipse *Ellipse) Commit(stage *StageStruct) *Ellipse {
+	if _, ok := stage.Ellipses[ellipse]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitEllipse(ellipse)
 		}
 	}
 	return ellipse
 }
 
 // Checkout ellipse to the back repo (if it is already staged)
-func (ellipse *Ellipse) Checkout() *Ellipse {
-	if _, ok := Stage.Ellipses[ellipse]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CheckoutEllipse(ellipse)
+func (ellipse *Ellipse) Checkout(stage *StageStruct) *Ellipse {
+	if _, ok := stage.Ellipses[ellipse]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutEllipse(ellipse)
 		}
 	}
 	return ellipse
-}
-
-//
-// Legacy, to be deleted
-//
-
-// StageCopy appends a copy of ellipse to the model stage
-func (ellipse *Ellipse) StageCopy() *Ellipse {
-	_ellipse := new(Ellipse)
-	*_ellipse = *ellipse
-	_ellipse.Stage()
-	return _ellipse
-}
-
-// StageAndCommit appends ellipse to the model stage and commit to the orm repo
-func (ellipse *Ellipse) StageAndCommit() *Ellipse {
-	ellipse.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMEllipse(ellipse)
-	}
-	return ellipse
-}
-
-// DeleteStageAndCommit appends ellipse to the model stage and commit to the orm repo
-func (ellipse *Ellipse) DeleteStageAndCommit() *Ellipse {
-	ellipse.Unstage()
-	DeleteORMEllipse(ellipse)
-	return ellipse
-}
-
-// StageCopyAndCommit appends a copy of ellipse to the model stage and commit to the orm repo
-func (ellipse *Ellipse) StageCopyAndCommit() *Ellipse {
-	_ellipse := new(Ellipse)
-	*_ellipse = *ellipse
-	_ellipse.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMEllipse(ellipse)
-	}
-	return _ellipse
-}
-
-// CreateORMEllipse enables dynamic staging of a Ellipse instance
-func CreateORMEllipse(ellipse *Ellipse) {
-	ellipse.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMEllipse(ellipse)
-	}
-}
-
-// DeleteORMEllipse enables dynamic staging of a Ellipse instance
-func DeleteORMEllipse(ellipse *Ellipse) {
-	ellipse.Unstage()
-	if Stage.AllModelsStructDeleteCallback != nil {
-		Stage.AllModelsStructDeleteCallback.DeleteORMEllipse(ellipse)
-	}
 }
 
 // for satisfaction of GongStruct interface
@@ -594,93 +429,38 @@ func (ellipse *Ellipse) GetName() (res string) {
 }
 
 // Stage puts line to the model stage
-func (line *Line) Stage() *Line {
-	Stage.Lines[line] = __member
-	Stage.Lines_mapString[line.Name] = line
+func (line *Line) Stage(stage *StageStruct) *Line {
+	stage.Lines[line] = __member
+	stage.Lines_mapString[line.Name] = line
 
 	return line
 }
 
 // Unstage removes line off the model stage
-func (line *Line) Unstage() *Line {
-	delete(Stage.Lines, line)
-	delete(Stage.Lines_mapString, line.Name)
+func (line *Line) Unstage(stage *StageStruct) *Line {
+	delete(stage.Lines, line)
+	delete(stage.Lines_mapString, line.Name)
 	return line
 }
 
 // commit line to the back repo (if it is already staged)
-func (line *Line) Commit() *Line {
-	if _, ok := Stage.Lines[line]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CommitLine(line)
+func (line *Line) Commit(stage *StageStruct) *Line {
+	if _, ok := stage.Lines[line]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitLine(line)
 		}
 	}
 	return line
 }
 
 // Checkout line to the back repo (if it is already staged)
-func (line *Line) Checkout() *Line {
-	if _, ok := Stage.Lines[line]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CheckoutLine(line)
+func (line *Line) Checkout(stage *StageStruct) *Line {
+	if _, ok := stage.Lines[line]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutLine(line)
 		}
 	}
 	return line
-}
-
-//
-// Legacy, to be deleted
-//
-
-// StageCopy appends a copy of line to the model stage
-func (line *Line) StageCopy() *Line {
-	_line := new(Line)
-	*_line = *line
-	_line.Stage()
-	return _line
-}
-
-// StageAndCommit appends line to the model stage and commit to the orm repo
-func (line *Line) StageAndCommit() *Line {
-	line.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMLine(line)
-	}
-	return line
-}
-
-// DeleteStageAndCommit appends line to the model stage and commit to the orm repo
-func (line *Line) DeleteStageAndCommit() *Line {
-	line.Unstage()
-	DeleteORMLine(line)
-	return line
-}
-
-// StageCopyAndCommit appends a copy of line to the model stage and commit to the orm repo
-func (line *Line) StageCopyAndCommit() *Line {
-	_line := new(Line)
-	*_line = *line
-	_line.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMLine(line)
-	}
-	return _line
-}
-
-// CreateORMLine enables dynamic staging of a Line instance
-func CreateORMLine(line *Line) {
-	line.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMLine(line)
-	}
-}
-
-// DeleteORMLine enables dynamic staging of a Line instance
-func DeleteORMLine(line *Line) {
-	line.Unstage()
-	if Stage.AllModelsStructDeleteCallback != nil {
-		Stage.AllModelsStructDeleteCallback.DeleteORMLine(line)
-	}
 }
 
 // for satisfaction of GongStruct interface
@@ -689,93 +469,38 @@ func (line *Line) GetName() (res string) {
 }
 
 // Stage puts path to the model stage
-func (path *Path) Stage() *Path {
-	Stage.Paths[path] = __member
-	Stage.Paths_mapString[path.Name] = path
+func (path *Path) Stage(stage *StageStruct) *Path {
+	stage.Paths[path] = __member
+	stage.Paths_mapString[path.Name] = path
 
 	return path
 }
 
 // Unstage removes path off the model stage
-func (path *Path) Unstage() *Path {
-	delete(Stage.Paths, path)
-	delete(Stage.Paths_mapString, path.Name)
+func (path *Path) Unstage(stage *StageStruct) *Path {
+	delete(stage.Paths, path)
+	delete(stage.Paths_mapString, path.Name)
 	return path
 }
 
 // commit path to the back repo (if it is already staged)
-func (path *Path) Commit() *Path {
-	if _, ok := Stage.Paths[path]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CommitPath(path)
+func (path *Path) Commit(stage *StageStruct) *Path {
+	if _, ok := stage.Paths[path]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitPath(path)
 		}
 	}
 	return path
 }
 
 // Checkout path to the back repo (if it is already staged)
-func (path *Path) Checkout() *Path {
-	if _, ok := Stage.Paths[path]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CheckoutPath(path)
+func (path *Path) Checkout(stage *StageStruct) *Path {
+	if _, ok := stage.Paths[path]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutPath(path)
 		}
 	}
 	return path
-}
-
-//
-// Legacy, to be deleted
-//
-
-// StageCopy appends a copy of path to the model stage
-func (path *Path) StageCopy() *Path {
-	_path := new(Path)
-	*_path = *path
-	_path.Stage()
-	return _path
-}
-
-// StageAndCommit appends path to the model stage and commit to the orm repo
-func (path *Path) StageAndCommit() *Path {
-	path.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMPath(path)
-	}
-	return path
-}
-
-// DeleteStageAndCommit appends path to the model stage and commit to the orm repo
-func (path *Path) DeleteStageAndCommit() *Path {
-	path.Unstage()
-	DeleteORMPath(path)
-	return path
-}
-
-// StageCopyAndCommit appends a copy of path to the model stage and commit to the orm repo
-func (path *Path) StageCopyAndCommit() *Path {
-	_path := new(Path)
-	*_path = *path
-	_path.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMPath(path)
-	}
-	return _path
-}
-
-// CreateORMPath enables dynamic staging of a Path instance
-func CreateORMPath(path *Path) {
-	path.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMPath(path)
-	}
-}
-
-// DeleteORMPath enables dynamic staging of a Path instance
-func DeleteORMPath(path *Path) {
-	path.Unstage()
-	if Stage.AllModelsStructDeleteCallback != nil {
-		Stage.AllModelsStructDeleteCallback.DeleteORMPath(path)
-	}
 }
 
 // for satisfaction of GongStruct interface
@@ -784,93 +509,38 @@ func (path *Path) GetName() (res string) {
 }
 
 // Stage puts polygone to the model stage
-func (polygone *Polygone) Stage() *Polygone {
-	Stage.Polygones[polygone] = __member
-	Stage.Polygones_mapString[polygone.Name] = polygone
+func (polygone *Polygone) Stage(stage *StageStruct) *Polygone {
+	stage.Polygones[polygone] = __member
+	stage.Polygones_mapString[polygone.Name] = polygone
 
 	return polygone
 }
 
 // Unstage removes polygone off the model stage
-func (polygone *Polygone) Unstage() *Polygone {
-	delete(Stage.Polygones, polygone)
-	delete(Stage.Polygones_mapString, polygone.Name)
+func (polygone *Polygone) Unstage(stage *StageStruct) *Polygone {
+	delete(stage.Polygones, polygone)
+	delete(stage.Polygones_mapString, polygone.Name)
 	return polygone
 }
 
 // commit polygone to the back repo (if it is already staged)
-func (polygone *Polygone) Commit() *Polygone {
-	if _, ok := Stage.Polygones[polygone]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CommitPolygone(polygone)
+func (polygone *Polygone) Commit(stage *StageStruct) *Polygone {
+	if _, ok := stage.Polygones[polygone]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitPolygone(polygone)
 		}
 	}
 	return polygone
 }
 
 // Checkout polygone to the back repo (if it is already staged)
-func (polygone *Polygone) Checkout() *Polygone {
-	if _, ok := Stage.Polygones[polygone]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CheckoutPolygone(polygone)
+func (polygone *Polygone) Checkout(stage *StageStruct) *Polygone {
+	if _, ok := stage.Polygones[polygone]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutPolygone(polygone)
 		}
 	}
 	return polygone
-}
-
-//
-// Legacy, to be deleted
-//
-
-// StageCopy appends a copy of polygone to the model stage
-func (polygone *Polygone) StageCopy() *Polygone {
-	_polygone := new(Polygone)
-	*_polygone = *polygone
-	_polygone.Stage()
-	return _polygone
-}
-
-// StageAndCommit appends polygone to the model stage and commit to the orm repo
-func (polygone *Polygone) StageAndCommit() *Polygone {
-	polygone.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMPolygone(polygone)
-	}
-	return polygone
-}
-
-// DeleteStageAndCommit appends polygone to the model stage and commit to the orm repo
-func (polygone *Polygone) DeleteStageAndCommit() *Polygone {
-	polygone.Unstage()
-	DeleteORMPolygone(polygone)
-	return polygone
-}
-
-// StageCopyAndCommit appends a copy of polygone to the model stage and commit to the orm repo
-func (polygone *Polygone) StageCopyAndCommit() *Polygone {
-	_polygone := new(Polygone)
-	*_polygone = *polygone
-	_polygone.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMPolygone(polygone)
-	}
-	return _polygone
-}
-
-// CreateORMPolygone enables dynamic staging of a Polygone instance
-func CreateORMPolygone(polygone *Polygone) {
-	polygone.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMPolygone(polygone)
-	}
-}
-
-// DeleteORMPolygone enables dynamic staging of a Polygone instance
-func DeleteORMPolygone(polygone *Polygone) {
-	polygone.Unstage()
-	if Stage.AllModelsStructDeleteCallback != nil {
-		Stage.AllModelsStructDeleteCallback.DeleteORMPolygone(polygone)
-	}
 }
 
 // for satisfaction of GongStruct interface
@@ -879,93 +549,38 @@ func (polygone *Polygone) GetName() (res string) {
 }
 
 // Stage puts polyline to the model stage
-func (polyline *Polyline) Stage() *Polyline {
-	Stage.Polylines[polyline] = __member
-	Stage.Polylines_mapString[polyline.Name] = polyline
+func (polyline *Polyline) Stage(stage *StageStruct) *Polyline {
+	stage.Polylines[polyline] = __member
+	stage.Polylines_mapString[polyline.Name] = polyline
 
 	return polyline
 }
 
 // Unstage removes polyline off the model stage
-func (polyline *Polyline) Unstage() *Polyline {
-	delete(Stage.Polylines, polyline)
-	delete(Stage.Polylines_mapString, polyline.Name)
+func (polyline *Polyline) Unstage(stage *StageStruct) *Polyline {
+	delete(stage.Polylines, polyline)
+	delete(stage.Polylines_mapString, polyline.Name)
 	return polyline
 }
 
 // commit polyline to the back repo (if it is already staged)
-func (polyline *Polyline) Commit() *Polyline {
-	if _, ok := Stage.Polylines[polyline]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CommitPolyline(polyline)
+func (polyline *Polyline) Commit(stage *StageStruct) *Polyline {
+	if _, ok := stage.Polylines[polyline]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitPolyline(polyline)
 		}
 	}
 	return polyline
 }
 
 // Checkout polyline to the back repo (if it is already staged)
-func (polyline *Polyline) Checkout() *Polyline {
-	if _, ok := Stage.Polylines[polyline]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CheckoutPolyline(polyline)
+func (polyline *Polyline) Checkout(stage *StageStruct) *Polyline {
+	if _, ok := stage.Polylines[polyline]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutPolyline(polyline)
 		}
 	}
 	return polyline
-}
-
-//
-// Legacy, to be deleted
-//
-
-// StageCopy appends a copy of polyline to the model stage
-func (polyline *Polyline) StageCopy() *Polyline {
-	_polyline := new(Polyline)
-	*_polyline = *polyline
-	_polyline.Stage()
-	return _polyline
-}
-
-// StageAndCommit appends polyline to the model stage and commit to the orm repo
-func (polyline *Polyline) StageAndCommit() *Polyline {
-	polyline.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMPolyline(polyline)
-	}
-	return polyline
-}
-
-// DeleteStageAndCommit appends polyline to the model stage and commit to the orm repo
-func (polyline *Polyline) DeleteStageAndCommit() *Polyline {
-	polyline.Unstage()
-	DeleteORMPolyline(polyline)
-	return polyline
-}
-
-// StageCopyAndCommit appends a copy of polyline to the model stage and commit to the orm repo
-func (polyline *Polyline) StageCopyAndCommit() *Polyline {
-	_polyline := new(Polyline)
-	*_polyline = *polyline
-	_polyline.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMPolyline(polyline)
-	}
-	return _polyline
-}
-
-// CreateORMPolyline enables dynamic staging of a Polyline instance
-func CreateORMPolyline(polyline *Polyline) {
-	polyline.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMPolyline(polyline)
-	}
-}
-
-// DeleteORMPolyline enables dynamic staging of a Polyline instance
-func DeleteORMPolyline(polyline *Polyline) {
-	polyline.Unstage()
-	if Stage.AllModelsStructDeleteCallback != nil {
-		Stage.AllModelsStructDeleteCallback.DeleteORMPolyline(polyline)
-	}
 }
 
 // for satisfaction of GongStruct interface
@@ -974,93 +589,38 @@ func (polyline *Polyline) GetName() (res string) {
 }
 
 // Stage puts rect to the model stage
-func (rect *Rect) Stage() *Rect {
-	Stage.Rects[rect] = __member
-	Stage.Rects_mapString[rect.Name] = rect
+func (rect *Rect) Stage(stage *StageStruct) *Rect {
+	stage.Rects[rect] = __member
+	stage.Rects_mapString[rect.Name] = rect
 
 	return rect
 }
 
 // Unstage removes rect off the model stage
-func (rect *Rect) Unstage() *Rect {
-	delete(Stage.Rects, rect)
-	delete(Stage.Rects_mapString, rect.Name)
+func (rect *Rect) Unstage(stage *StageStruct) *Rect {
+	delete(stage.Rects, rect)
+	delete(stage.Rects_mapString, rect.Name)
 	return rect
 }
 
 // commit rect to the back repo (if it is already staged)
-func (rect *Rect) Commit() *Rect {
-	if _, ok := Stage.Rects[rect]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CommitRect(rect)
+func (rect *Rect) Commit(stage *StageStruct) *Rect {
+	if _, ok := stage.Rects[rect]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitRect(rect)
 		}
 	}
 	return rect
 }
 
 // Checkout rect to the back repo (if it is already staged)
-func (rect *Rect) Checkout() *Rect {
-	if _, ok := Stage.Rects[rect]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CheckoutRect(rect)
+func (rect *Rect) Checkout(stage *StageStruct) *Rect {
+	if _, ok := stage.Rects[rect]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutRect(rect)
 		}
 	}
 	return rect
-}
-
-//
-// Legacy, to be deleted
-//
-
-// StageCopy appends a copy of rect to the model stage
-func (rect *Rect) StageCopy() *Rect {
-	_rect := new(Rect)
-	*_rect = *rect
-	_rect.Stage()
-	return _rect
-}
-
-// StageAndCommit appends rect to the model stage and commit to the orm repo
-func (rect *Rect) StageAndCommit() *Rect {
-	rect.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMRect(rect)
-	}
-	return rect
-}
-
-// DeleteStageAndCommit appends rect to the model stage and commit to the orm repo
-func (rect *Rect) DeleteStageAndCommit() *Rect {
-	rect.Unstage()
-	DeleteORMRect(rect)
-	return rect
-}
-
-// StageCopyAndCommit appends a copy of rect to the model stage and commit to the orm repo
-func (rect *Rect) StageCopyAndCommit() *Rect {
-	_rect := new(Rect)
-	*_rect = *rect
-	_rect.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMRect(rect)
-	}
-	return _rect
-}
-
-// CreateORMRect enables dynamic staging of a Rect instance
-func CreateORMRect(rect *Rect) {
-	rect.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMRect(rect)
-	}
-}
-
-// DeleteORMRect enables dynamic staging of a Rect instance
-func DeleteORMRect(rect *Rect) {
-	rect.Unstage()
-	if Stage.AllModelsStructDeleteCallback != nil {
-		Stage.AllModelsStructDeleteCallback.DeleteORMRect(rect)
-	}
 }
 
 // for satisfaction of GongStruct interface
@@ -1069,93 +629,38 @@ func (rect *Rect) GetName() (res string) {
 }
 
 // Stage puts svg to the model stage
-func (svg *SVG) Stage() *SVG {
-	Stage.SVGs[svg] = __member
-	Stage.SVGs_mapString[svg.Name] = svg
+func (svg *SVG) Stage(stage *StageStruct) *SVG {
+	stage.SVGs[svg] = __member
+	stage.SVGs_mapString[svg.Name] = svg
 
 	return svg
 }
 
 // Unstage removes svg off the model stage
-func (svg *SVG) Unstage() *SVG {
-	delete(Stage.SVGs, svg)
-	delete(Stage.SVGs_mapString, svg.Name)
+func (svg *SVG) Unstage(stage *StageStruct) *SVG {
+	delete(stage.SVGs, svg)
+	delete(stage.SVGs_mapString, svg.Name)
 	return svg
 }
 
 // commit svg to the back repo (if it is already staged)
-func (svg *SVG) Commit() *SVG {
-	if _, ok := Stage.SVGs[svg]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CommitSVG(svg)
+func (svg *SVG) Commit(stage *StageStruct) *SVG {
+	if _, ok := stage.SVGs[svg]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitSVG(svg)
 		}
 	}
 	return svg
 }
 
 // Checkout svg to the back repo (if it is already staged)
-func (svg *SVG) Checkout() *SVG {
-	if _, ok := Stage.SVGs[svg]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CheckoutSVG(svg)
+func (svg *SVG) Checkout(stage *StageStruct) *SVG {
+	if _, ok := stage.SVGs[svg]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutSVG(svg)
 		}
 	}
 	return svg
-}
-
-//
-// Legacy, to be deleted
-//
-
-// StageCopy appends a copy of svg to the model stage
-func (svg *SVG) StageCopy() *SVG {
-	_svg := new(SVG)
-	*_svg = *svg
-	_svg.Stage()
-	return _svg
-}
-
-// StageAndCommit appends svg to the model stage and commit to the orm repo
-func (svg *SVG) StageAndCommit() *SVG {
-	svg.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMSVG(svg)
-	}
-	return svg
-}
-
-// DeleteStageAndCommit appends svg to the model stage and commit to the orm repo
-func (svg *SVG) DeleteStageAndCommit() *SVG {
-	svg.Unstage()
-	DeleteORMSVG(svg)
-	return svg
-}
-
-// StageCopyAndCommit appends a copy of svg to the model stage and commit to the orm repo
-func (svg *SVG) StageCopyAndCommit() *SVG {
-	_svg := new(SVG)
-	*_svg = *svg
-	_svg.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMSVG(svg)
-	}
-	return _svg
-}
-
-// CreateORMSVG enables dynamic staging of a SVG instance
-func CreateORMSVG(svg *SVG) {
-	svg.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMSVG(svg)
-	}
-}
-
-// DeleteORMSVG enables dynamic staging of a SVG instance
-func DeleteORMSVG(svg *SVG) {
-	svg.Unstage()
-	if Stage.AllModelsStructDeleteCallback != nil {
-		Stage.AllModelsStructDeleteCallback.DeleteORMSVG(svg)
-	}
 }
 
 // for satisfaction of GongStruct interface
@@ -1164,93 +669,38 @@ func (svg *SVG) GetName() (res string) {
 }
 
 // Stage puts text to the model stage
-func (text *Text) Stage() *Text {
-	Stage.Texts[text] = __member
-	Stage.Texts_mapString[text.Name] = text
+func (text *Text) Stage(stage *StageStruct) *Text {
+	stage.Texts[text] = __member
+	stage.Texts_mapString[text.Name] = text
 
 	return text
 }
 
 // Unstage removes text off the model stage
-func (text *Text) Unstage() *Text {
-	delete(Stage.Texts, text)
-	delete(Stage.Texts_mapString, text.Name)
+func (text *Text) Unstage(stage *StageStruct) *Text {
+	delete(stage.Texts, text)
+	delete(stage.Texts_mapString, text.Name)
 	return text
 }
 
 // commit text to the back repo (if it is already staged)
-func (text *Text) Commit() *Text {
-	if _, ok := Stage.Texts[text]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CommitText(text)
+func (text *Text) Commit(stage *StageStruct) *Text {
+	if _, ok := stage.Texts[text]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitText(text)
 		}
 	}
 	return text
 }
 
 // Checkout text to the back repo (if it is already staged)
-func (text *Text) Checkout() *Text {
-	if _, ok := Stage.Texts[text]; ok {
-		if Stage.BackRepo != nil {
-			Stage.BackRepo.CheckoutText(text)
+func (text *Text) Checkout(stage *StageStruct) *Text {
+	if _, ok := stage.Texts[text]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutText(text)
 		}
 	}
 	return text
-}
-
-//
-// Legacy, to be deleted
-//
-
-// StageCopy appends a copy of text to the model stage
-func (text *Text) StageCopy() *Text {
-	_text := new(Text)
-	*_text = *text
-	_text.Stage()
-	return _text
-}
-
-// StageAndCommit appends text to the model stage and commit to the orm repo
-func (text *Text) StageAndCommit() *Text {
-	text.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMText(text)
-	}
-	return text
-}
-
-// DeleteStageAndCommit appends text to the model stage and commit to the orm repo
-func (text *Text) DeleteStageAndCommit() *Text {
-	text.Unstage()
-	DeleteORMText(text)
-	return text
-}
-
-// StageCopyAndCommit appends a copy of text to the model stage and commit to the orm repo
-func (text *Text) StageCopyAndCommit() *Text {
-	_text := new(Text)
-	*_text = *text
-	_text.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMText(text)
-	}
-	return _text
-}
-
-// CreateORMText enables dynamic staging of a Text instance
-func CreateORMText(text *Text) {
-	text.Stage()
-	if Stage.AllModelsStructCreateCallback != nil {
-		Stage.AllModelsStructCreateCallback.CreateORMText(text)
-	}
-}
-
-// DeleteORMText enables dynamic staging of a Text instance
-func DeleteORMText(text *Text) {
-	text.Unstage()
-	if Stage.AllModelsStructDeleteCallback != nil {
-		Stage.AllModelsStructDeleteCallback.DeleteORMText(text)
-	}
 }
 
 // for satisfaction of GongStruct interface
@@ -1353,43 +803,43 @@ func (stage *StageStruct) Nil() { // insertion point for array nil
 
 func (stage *StageStruct) Unstage() { // insertion point for array nil
 	for animate := range stage.Animates {
-		animate.Unstage()
+		animate.Unstage(stage)
 	}
 
 	for circle := range stage.Circles {
-		circle.Unstage()
+		circle.Unstage(stage)
 	}
 
 	for ellipse := range stage.Ellipses {
-		ellipse.Unstage()
+		ellipse.Unstage(stage)
 	}
 
 	for line := range stage.Lines {
-		line.Unstage()
+		line.Unstage(stage)
 	}
 
 	for path := range stage.Paths {
-		path.Unstage()
+		path.Unstage(stage)
 	}
 
 	for polygone := range stage.Polygones {
-		polygone.Unstage()
+		polygone.Unstage(stage)
 	}
 
 	for polyline := range stage.Polylines {
-		polyline.Unstage()
+		polyline.Unstage(stage)
 	}
 
 	for rect := range stage.Rects {
-		rect.Unstage()
+		rect.Unstage(stage)
 	}
 
 	for svg := range stage.SVGs {
-		svg.Unstage()
+		svg.Unstage(stage)
 	}
 
 	for text := range stage.Texts {
-		text.Unstage()
+		text.Unstage(stage)
 	}
 
 }
@@ -1447,31 +897,39 @@ type GongstructMapString interface {
 
 // GongGetSet returns the set staged GongstructType instances
 // it is usefull because it allows refactoring of gong struct identifier
-func GongGetSet[Type GongstructSet]() *Type {
+func GongGetSet[Type GongstructSet](stages ...*StageStruct) *Type {
 	var ret Type
+
+	var stage *StageStruct
+	_ = stage
+	if len(stages) > 0 {
+		stage = stages[0]
+	} else {
+		stage = &Stage
+	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case map[*Animate]any:
-		return any(&Stage.Animates).(*Type)
+		return any(&stage.Animates).(*Type)
 	case map[*Circle]any:
-		return any(&Stage.Circles).(*Type)
+		return any(&stage.Circles).(*Type)
 	case map[*Ellipse]any:
-		return any(&Stage.Ellipses).(*Type)
+		return any(&stage.Ellipses).(*Type)
 	case map[*Line]any:
-		return any(&Stage.Lines).(*Type)
+		return any(&stage.Lines).(*Type)
 	case map[*Path]any:
-		return any(&Stage.Paths).(*Type)
+		return any(&stage.Paths).(*Type)
 	case map[*Polygone]any:
-		return any(&Stage.Polygones).(*Type)
+		return any(&stage.Polygones).(*Type)
 	case map[*Polyline]any:
-		return any(&Stage.Polylines).(*Type)
+		return any(&stage.Polylines).(*Type)
 	case map[*Rect]any:
-		return any(&Stage.Rects).(*Type)
+		return any(&stage.Rects).(*Type)
 	case map[*SVG]any:
-		return any(&Stage.SVGs).(*Type)
+		return any(&stage.SVGs).(*Type)
 	case map[*Text]any:
-		return any(&Stage.Texts).(*Type)
+		return any(&stage.Texts).(*Type)
 	default:
 		return nil
 	}
@@ -1479,31 +937,39 @@ func GongGetSet[Type GongstructSet]() *Type {
 
 // GongGetMap returns the map of staged GongstructType instances
 // it is usefull because it allows refactoring of gong struct identifier
-func GongGetMap[Type GongstructMapString]() *Type {
+func GongGetMap[Type GongstructMapString](stages ...*StageStruct) *Type {
 	var ret Type
+
+	var stage *StageStruct
+	_ = stage
+	if len(stages) > 0 {
+		stage = stages[0]
+	} else {
+		stage = &Stage
+	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case map[string]*Animate:
-		return any(&Stage.Animates_mapString).(*Type)
+		return any(&stage.Animates_mapString).(*Type)
 	case map[string]*Circle:
-		return any(&Stage.Circles_mapString).(*Type)
+		return any(&stage.Circles_mapString).(*Type)
 	case map[string]*Ellipse:
-		return any(&Stage.Ellipses_mapString).(*Type)
+		return any(&stage.Ellipses_mapString).(*Type)
 	case map[string]*Line:
-		return any(&Stage.Lines_mapString).(*Type)
+		return any(&stage.Lines_mapString).(*Type)
 	case map[string]*Path:
-		return any(&Stage.Paths_mapString).(*Type)
+		return any(&stage.Paths_mapString).(*Type)
 	case map[string]*Polygone:
-		return any(&Stage.Polygones_mapString).(*Type)
+		return any(&stage.Polygones_mapString).(*Type)
 	case map[string]*Polyline:
-		return any(&Stage.Polylines_mapString).(*Type)
+		return any(&stage.Polylines_mapString).(*Type)
 	case map[string]*Rect:
-		return any(&Stage.Rects_mapString).(*Type)
+		return any(&stage.Rects_mapString).(*Type)
 	case map[string]*SVG:
-		return any(&Stage.SVGs_mapString).(*Type)
+		return any(&stage.SVGs_mapString).(*Type)
 	case map[string]*Text:
-		return any(&Stage.Texts_mapString).(*Type)
+		return any(&stage.Texts_mapString).(*Type)
 	default:
 		return nil
 	}
@@ -1511,31 +977,39 @@ func GongGetMap[Type GongstructMapString]() *Type {
 
 // GetGongstructInstancesSet returns the set staged GongstructType instances
 // it is usefull because it allows refactoring of gongstruct identifier
-func GetGongstructInstancesSet[Type Gongstruct]() *map[*Type]any {
+func GetGongstructInstancesSet[Type Gongstruct](stages ...*StageStruct) *map[*Type]any {
 	var ret Type
+
+	var stage *StageStruct
+	_ = stage
+	if len(stages) > 0 {
+		stage = stages[0]
+	} else {
+		stage = &Stage
+	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case Animate:
-		return any(&Stage.Animates).(*map[*Type]any)
+		return any(&stage.Animates).(*map[*Type]any)
 	case Circle:
-		return any(&Stage.Circles).(*map[*Type]any)
+		return any(&stage.Circles).(*map[*Type]any)
 	case Ellipse:
-		return any(&Stage.Ellipses).(*map[*Type]any)
+		return any(&stage.Ellipses).(*map[*Type]any)
 	case Line:
-		return any(&Stage.Lines).(*map[*Type]any)
+		return any(&stage.Lines).(*map[*Type]any)
 	case Path:
-		return any(&Stage.Paths).(*map[*Type]any)
+		return any(&stage.Paths).(*map[*Type]any)
 	case Polygone:
-		return any(&Stage.Polygones).(*map[*Type]any)
+		return any(&stage.Polygones).(*map[*Type]any)
 	case Polyline:
-		return any(&Stage.Polylines).(*map[*Type]any)
+		return any(&stage.Polylines).(*map[*Type]any)
 	case Rect:
-		return any(&Stage.Rects).(*map[*Type]any)
+		return any(&stage.Rects).(*map[*Type]any)
 	case SVG:
-		return any(&Stage.SVGs).(*map[*Type]any)
+		return any(&stage.SVGs).(*map[*Type]any)
 	case Text:
-		return any(&Stage.Texts).(*map[*Type]any)
+		return any(&stage.Texts).(*map[*Type]any)
 	default:
 		return nil
 	}
@@ -1543,31 +1017,39 @@ func GetGongstructInstancesSet[Type Gongstruct]() *map[*Type]any {
 
 // GetGongstructInstancesMap returns the map of staged GongstructType instances
 // it is usefull because it allows refactoring of gong struct identifier
-func GetGongstructInstancesMap[Type Gongstruct]() *map[string]*Type {
+func GetGongstructInstancesMap[Type Gongstruct](stages ...*StageStruct) *map[string]*Type {
 	var ret Type
+
+	var stage *StageStruct
+	_ = stage
+	if len(stages) > 0 {
+		stage = stages[0]
+	} else {
+		stage = &Stage
+	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case Animate:
-		return any(&Stage.Animates_mapString).(*map[string]*Type)
+		return any(&stage.Animates_mapString).(*map[string]*Type)
 	case Circle:
-		return any(&Stage.Circles_mapString).(*map[string]*Type)
+		return any(&stage.Circles_mapString).(*map[string]*Type)
 	case Ellipse:
-		return any(&Stage.Ellipses_mapString).(*map[string]*Type)
+		return any(&stage.Ellipses_mapString).(*map[string]*Type)
 	case Line:
-		return any(&Stage.Lines_mapString).(*map[string]*Type)
+		return any(&stage.Lines_mapString).(*map[string]*Type)
 	case Path:
-		return any(&Stage.Paths_mapString).(*map[string]*Type)
+		return any(&stage.Paths_mapString).(*map[string]*Type)
 	case Polygone:
-		return any(&Stage.Polygones_mapString).(*map[string]*Type)
+		return any(&stage.Polygones_mapString).(*map[string]*Type)
 	case Polyline:
-		return any(&Stage.Polylines_mapString).(*map[string]*Type)
+		return any(&stage.Polylines_mapString).(*map[string]*Type)
 	case Rect:
-		return any(&Stage.Rects_mapString).(*map[string]*Type)
+		return any(&stage.Rects_mapString).(*map[string]*Type)
 	case SVG:
-		return any(&Stage.SVGs_mapString).(*map[string]*Type)
+		return any(&stage.SVGs_mapString).(*map[string]*Type)
 	case Text:
-		return any(&Stage.Texts_mapString).(*map[string]*Type)
+		return any(&stage.Texts_mapString).(*map[string]*Type)
 	default:
 		return nil
 	}
@@ -1666,7 +1148,16 @@ func GetAssociationName[Type Gongstruct]() *Type {
 // The function provides a map with keys as instances of End and values to arrays of *Start
 // the map is construed by iterating over all Start instances and populationg keys with End instances
 // and values with slice of Start instances
-func GetPointerReverseMap[Start, End Gongstruct](fieldname string) map[*End][]*Start {
+func GetPointerReverseMap[Start, End Gongstruct](fieldname string, stages ...*StageStruct) map[*End][]*Start {
+
+	var stage *StageStruct
+	_ = stage
+	if len(stages) > 0 {
+		stage = stages[0]
+	} else {
+		stage = &Stage
+	}
+
 	var ret Start
 
 	switch any(ret).(type) {
@@ -1731,7 +1222,16 @@ func GetPointerReverseMap[Start, End Gongstruct](fieldname string) map[*End][]*S
 // The function provides a map with keys as instances of End and values to *Start instances
 // the map is construed by iterating over all Start instances and populating keys with End instances
 // and values with the Start instances
-func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*End]*Start {
+func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string, stages ...*StageStruct) map[*End]*Start {
+
+	var stage *StageStruct
+	_ = stage
+	if len(stages) > 0 {
+		stage = stages[0]
+	} else {
+		stage = &Stage
+	}
+
 	var ret Start
 
 	switch any(ret).(type) {
@@ -1747,7 +1247,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 		// insertion point for per direct association field
 		case "Animations":
 			res := make(map[*Animate]*Circle)
-			for circle := range Stage.Circles {
+			for circle := range stage.Circles {
 				for _, animate_ := range circle.Animations {
 					res[animate_] = circle
 				}
@@ -1760,7 +1260,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 		// insertion point for per direct association field
 		case "Animates":
 			res := make(map[*Animate]*Ellipse)
-			for ellipse := range Stage.Ellipses {
+			for ellipse := range stage.Ellipses {
 				for _, animate_ := range ellipse.Animates {
 					res[animate_] = ellipse
 				}
@@ -1773,7 +1273,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 		// insertion point for per direct association field
 		case "Animates":
 			res := make(map[*Animate]*Line)
-			for line := range Stage.Lines {
+			for line := range stage.Lines {
 				for _, animate_ := range line.Animates {
 					res[animate_] = line
 				}
@@ -1786,7 +1286,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 		// insertion point for per direct association field
 		case "Animates":
 			res := make(map[*Animate]*Path)
-			for path := range Stage.Paths {
+			for path := range stage.Paths {
 				for _, animate_ := range path.Animates {
 					res[animate_] = path
 				}
@@ -1799,7 +1299,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 		// insertion point for per direct association field
 		case "Animates":
 			res := make(map[*Animate]*Polygone)
-			for polygone := range Stage.Polygones {
+			for polygone := range stage.Polygones {
 				for _, animate_ := range polygone.Animates {
 					res[animate_] = polygone
 				}
@@ -1812,7 +1312,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 		// insertion point for per direct association field
 		case "Animates":
 			res := make(map[*Animate]*Polyline)
-			for polyline := range Stage.Polylines {
+			for polyline := range stage.Polylines {
 				for _, animate_ := range polyline.Animates {
 					res[animate_] = polyline
 				}
@@ -1825,7 +1325,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 		// insertion point for per direct association field
 		case "Animations":
 			res := make(map[*Animate]*Rect)
-			for rect := range Stage.Rects {
+			for rect := range stage.Rects {
 				for _, animate_ := range rect.Animations {
 					res[animate_] = rect
 				}
@@ -1838,7 +1338,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 		// insertion point for per direct association field
 		case "Rects":
 			res := make(map[*Rect]*SVG)
-			for svg := range Stage.SVGs {
+			for svg := range stage.SVGs {
 				for _, rect_ := range svg.Rects {
 					res[rect_] = svg
 				}
@@ -1846,7 +1346,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 			return any(res).(map[*End]*Start)
 		case "Texts":
 			res := make(map[*Text]*SVG)
-			for svg := range Stage.SVGs {
+			for svg := range stage.SVGs {
 				for _, text_ := range svg.Texts {
 					res[text_] = svg
 				}
@@ -1854,7 +1354,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 			return any(res).(map[*End]*Start)
 		case "Circles":
 			res := make(map[*Circle]*SVG)
-			for svg := range Stage.SVGs {
+			for svg := range stage.SVGs {
 				for _, circle_ := range svg.Circles {
 					res[circle_] = svg
 				}
@@ -1862,7 +1362,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 			return any(res).(map[*End]*Start)
 		case "Lines":
 			res := make(map[*Line]*SVG)
-			for svg := range Stage.SVGs {
+			for svg := range stage.SVGs {
 				for _, line_ := range svg.Lines {
 					res[line_] = svg
 				}
@@ -1870,7 +1370,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 			return any(res).(map[*End]*Start)
 		case "Ellipses":
 			res := make(map[*Ellipse]*SVG)
-			for svg := range Stage.SVGs {
+			for svg := range stage.SVGs {
 				for _, ellipse_ := range svg.Ellipses {
 					res[ellipse_] = svg
 				}
@@ -1878,7 +1378,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 			return any(res).(map[*End]*Start)
 		case "Polylines":
 			res := make(map[*Polyline]*SVG)
-			for svg := range Stage.SVGs {
+			for svg := range stage.SVGs {
 				for _, polyline_ := range svg.Polylines {
 					res[polyline_] = svg
 				}
@@ -1886,7 +1386,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 			return any(res).(map[*End]*Start)
 		case "Polygones":
 			res := make(map[*Polygone]*SVG)
-			for svg := range Stage.SVGs {
+			for svg := range stage.SVGs {
 				for _, polygone_ := range svg.Polygones {
 					res[polygone_] = svg
 				}
@@ -1894,7 +1394,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 			return any(res).(map[*End]*Start)
 		case "Paths":
 			res := make(map[*Path]*SVG)
-			for svg := range Stage.SVGs {
+			for svg := range stage.SVGs {
 				for _, path_ := range svg.Paths {
 					res[path_] = svg
 				}
@@ -1907,7 +1407,7 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string) map[*
 		// insertion point for per direct association field
 		case "Animates":
 			res := make(map[*Animate]*Text)
-			for text := range Stage.Texts {
+			for text := range stage.Texts {
 				for _, animate_ := range text.Animates {
 					res[animate_] = text
 				}
