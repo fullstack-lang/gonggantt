@@ -19,7 +19,11 @@ github.com/fullstack-lang/gongdoc/go/orm
 github.com/fullstack-lang/gongdoc/ng/projects
 # github.com/fullstack-lang/gongsvg v0.0.0-20230328134332-5cd2b3a2d42a
 ## explicit; go 1.19
+github.com/fullstack-lang/gongsvg/go/controllers
+github.com/fullstack-lang/gongsvg/go/fullstack
 github.com/fullstack-lang/gongsvg/go/models
+github.com/fullstack-lang/gongsvg/go/orm
+github.com/fullstack-lang/gongsvg/ng/projects
 # github.com/gin-contrib/cors v1.4.0
 ## explicit; go 1.13
 github.com/gin-contrib/cors
