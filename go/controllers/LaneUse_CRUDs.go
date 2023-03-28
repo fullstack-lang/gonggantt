@@ -151,7 +151,7 @@ func (controller *Controller) PostLaneUse(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoLaneUse.CheckoutPhaseOneInstance(&laneuseDB)
-	laneuse := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+	laneuse := backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB.ID]
 
 	if laneuse != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), laneuse)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateLaneUse(c *gin.Context) {
 	laneuseDB.CopyBasicFieldsToLaneUse(laneuseNew)
 
 	// get stage instance from DB instance, and call callback function
-	laneuseOld := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+	laneuseOld := backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB.ID]
 	if laneuseOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), laneuseOld, laneuseNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteLaneUse(c *gin.Context) {
 	laneuseDB.CopyBasicFieldsToLaneUse(laneuseDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	laneuseStaged := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+	laneuseStaged := backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB.ID]
 	if laneuseStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), laneuseStaged, laneuseDeleted)
 	}

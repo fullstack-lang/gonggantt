@@ -51,11 +51,6 @@ export class FrontRepo { // insertion point sub template
   Milestones_batch = new Map<number, MilestoneDB>(); // same but only in last GET (for finding repo instances to delete)
 }
 
-//
-// Store of all instances of the stack
-//
-export const FrontRepoSingloton = new (FrontRepo)
-
 // the table component is called in different ways
 //
 // DISPLAY or ASSOCIATION MODE
@@ -108,6 +103,11 @@ export class FrontRepoService {
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };
+
+  //
+  // Store of all instances of the stack
+  //
+  frontRepo = new (FrontRepo)
 
   constructor(
     private http: HttpClient, // insertion point sub template 
@@ -220,29 +220,29 @@ export class FrontRepoService {
             // First Step: init map of instances
             // insertion point sub template for init 
             // init the array
-            FrontRepoSingloton.Arrows_array = arrows
+            this.frontRepo.Arrows_array = arrows
 
             // clear the map that counts Arrow in the GET
-            FrontRepoSingloton.Arrows_batch.clear()
+            this.frontRepo.Arrows_batch.clear()
 
             arrows.forEach(
               arrow => {
-                FrontRepoSingloton.Arrows.set(arrow.ID, arrow)
-                FrontRepoSingloton.Arrows_batch.set(arrow.ID, arrow)
+                this.frontRepo.Arrows.set(arrow.ID, arrow)
+                this.frontRepo.Arrows_batch.set(arrow.ID, arrow)
               }
             )
 
             // clear arrows that are absent from the batch
-            FrontRepoSingloton.Arrows.forEach(
+            this.frontRepo.Arrows.forEach(
               arrow => {
-                if (FrontRepoSingloton.Arrows_batch.get(arrow.ID) == undefined) {
-                  FrontRepoSingloton.Arrows.delete(arrow.ID)
+                if (this.frontRepo.Arrows_batch.get(arrow.ID) == undefined) {
+                  this.frontRepo.Arrows.delete(arrow.ID)
                 }
               }
             )
 
             // sort Arrows_array array
-            FrontRepoSingloton.Arrows_array.sort((t1, t2) => {
+            this.frontRepo.Arrows_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
                 return 1;
               }
@@ -253,29 +253,29 @@ export class FrontRepoService {
             });
 
             // init the array
-            FrontRepoSingloton.Bars_array = bars
+            this.frontRepo.Bars_array = bars
 
             // clear the map that counts Bar in the GET
-            FrontRepoSingloton.Bars_batch.clear()
+            this.frontRepo.Bars_batch.clear()
 
             bars.forEach(
               bar => {
-                FrontRepoSingloton.Bars.set(bar.ID, bar)
-                FrontRepoSingloton.Bars_batch.set(bar.ID, bar)
+                this.frontRepo.Bars.set(bar.ID, bar)
+                this.frontRepo.Bars_batch.set(bar.ID, bar)
               }
             )
 
             // clear bars that are absent from the batch
-            FrontRepoSingloton.Bars.forEach(
+            this.frontRepo.Bars.forEach(
               bar => {
-                if (FrontRepoSingloton.Bars_batch.get(bar.ID) == undefined) {
-                  FrontRepoSingloton.Bars.delete(bar.ID)
+                if (this.frontRepo.Bars_batch.get(bar.ID) == undefined) {
+                  this.frontRepo.Bars.delete(bar.ID)
                 }
               }
             )
 
             // sort Bars_array array
-            FrontRepoSingloton.Bars_array.sort((t1, t2) => {
+            this.frontRepo.Bars_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
                 return 1;
               }
@@ -286,29 +286,29 @@ export class FrontRepoService {
             });
 
             // init the array
-            FrontRepoSingloton.Gantts_array = gantts
+            this.frontRepo.Gantts_array = gantts
 
             // clear the map that counts Gantt in the GET
-            FrontRepoSingloton.Gantts_batch.clear()
+            this.frontRepo.Gantts_batch.clear()
 
             gantts.forEach(
               gantt => {
-                FrontRepoSingloton.Gantts.set(gantt.ID, gantt)
-                FrontRepoSingloton.Gantts_batch.set(gantt.ID, gantt)
+                this.frontRepo.Gantts.set(gantt.ID, gantt)
+                this.frontRepo.Gantts_batch.set(gantt.ID, gantt)
               }
             )
 
             // clear gantts that are absent from the batch
-            FrontRepoSingloton.Gantts.forEach(
+            this.frontRepo.Gantts.forEach(
               gantt => {
-                if (FrontRepoSingloton.Gantts_batch.get(gantt.ID) == undefined) {
-                  FrontRepoSingloton.Gantts.delete(gantt.ID)
+                if (this.frontRepo.Gantts_batch.get(gantt.ID) == undefined) {
+                  this.frontRepo.Gantts.delete(gantt.ID)
                 }
               }
             )
 
             // sort Gantts_array array
-            FrontRepoSingloton.Gantts_array.sort((t1, t2) => {
+            this.frontRepo.Gantts_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
                 return 1;
               }
@@ -319,29 +319,29 @@ export class FrontRepoService {
             });
 
             // init the array
-            FrontRepoSingloton.Groups_array = groups
+            this.frontRepo.Groups_array = groups
 
             // clear the map that counts Group in the GET
-            FrontRepoSingloton.Groups_batch.clear()
+            this.frontRepo.Groups_batch.clear()
 
             groups.forEach(
               group => {
-                FrontRepoSingloton.Groups.set(group.ID, group)
-                FrontRepoSingloton.Groups_batch.set(group.ID, group)
+                this.frontRepo.Groups.set(group.ID, group)
+                this.frontRepo.Groups_batch.set(group.ID, group)
               }
             )
 
             // clear groups that are absent from the batch
-            FrontRepoSingloton.Groups.forEach(
+            this.frontRepo.Groups.forEach(
               group => {
-                if (FrontRepoSingloton.Groups_batch.get(group.ID) == undefined) {
-                  FrontRepoSingloton.Groups.delete(group.ID)
+                if (this.frontRepo.Groups_batch.get(group.ID) == undefined) {
+                  this.frontRepo.Groups.delete(group.ID)
                 }
               }
             )
 
             // sort Groups_array array
-            FrontRepoSingloton.Groups_array.sort((t1, t2) => {
+            this.frontRepo.Groups_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
                 return 1;
               }
@@ -352,29 +352,29 @@ export class FrontRepoService {
             });
 
             // init the array
-            FrontRepoSingloton.Lanes_array = lanes
+            this.frontRepo.Lanes_array = lanes
 
             // clear the map that counts Lane in the GET
-            FrontRepoSingloton.Lanes_batch.clear()
+            this.frontRepo.Lanes_batch.clear()
 
             lanes.forEach(
               lane => {
-                FrontRepoSingloton.Lanes.set(lane.ID, lane)
-                FrontRepoSingloton.Lanes_batch.set(lane.ID, lane)
+                this.frontRepo.Lanes.set(lane.ID, lane)
+                this.frontRepo.Lanes_batch.set(lane.ID, lane)
               }
             )
 
             // clear lanes that are absent from the batch
-            FrontRepoSingloton.Lanes.forEach(
+            this.frontRepo.Lanes.forEach(
               lane => {
-                if (FrontRepoSingloton.Lanes_batch.get(lane.ID) == undefined) {
-                  FrontRepoSingloton.Lanes.delete(lane.ID)
+                if (this.frontRepo.Lanes_batch.get(lane.ID) == undefined) {
+                  this.frontRepo.Lanes.delete(lane.ID)
                 }
               }
             )
 
             // sort Lanes_array array
-            FrontRepoSingloton.Lanes_array.sort((t1, t2) => {
+            this.frontRepo.Lanes_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
                 return 1;
               }
@@ -385,29 +385,29 @@ export class FrontRepoService {
             });
 
             // init the array
-            FrontRepoSingloton.LaneUses_array = laneuses
+            this.frontRepo.LaneUses_array = laneuses
 
             // clear the map that counts LaneUse in the GET
-            FrontRepoSingloton.LaneUses_batch.clear()
+            this.frontRepo.LaneUses_batch.clear()
 
             laneuses.forEach(
               laneuse => {
-                FrontRepoSingloton.LaneUses.set(laneuse.ID, laneuse)
-                FrontRepoSingloton.LaneUses_batch.set(laneuse.ID, laneuse)
+                this.frontRepo.LaneUses.set(laneuse.ID, laneuse)
+                this.frontRepo.LaneUses_batch.set(laneuse.ID, laneuse)
               }
             )
 
             // clear laneuses that are absent from the batch
-            FrontRepoSingloton.LaneUses.forEach(
+            this.frontRepo.LaneUses.forEach(
               laneuse => {
-                if (FrontRepoSingloton.LaneUses_batch.get(laneuse.ID) == undefined) {
-                  FrontRepoSingloton.LaneUses.delete(laneuse.ID)
+                if (this.frontRepo.LaneUses_batch.get(laneuse.ID) == undefined) {
+                  this.frontRepo.LaneUses.delete(laneuse.ID)
                 }
               }
             )
 
             // sort LaneUses_array array
-            FrontRepoSingloton.LaneUses_array.sort((t1, t2) => {
+            this.frontRepo.LaneUses_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
                 return 1;
               }
@@ -418,29 +418,29 @@ export class FrontRepoService {
             });
 
             // init the array
-            FrontRepoSingloton.Milestones_array = milestones
+            this.frontRepo.Milestones_array = milestones
 
             // clear the map that counts Milestone in the GET
-            FrontRepoSingloton.Milestones_batch.clear()
+            this.frontRepo.Milestones_batch.clear()
 
             milestones.forEach(
               milestone => {
-                FrontRepoSingloton.Milestones.set(milestone.ID, milestone)
-                FrontRepoSingloton.Milestones_batch.set(milestone.ID, milestone)
+                this.frontRepo.Milestones.set(milestone.ID, milestone)
+                this.frontRepo.Milestones_batch.set(milestone.ID, milestone)
               }
             )
 
             // clear milestones that are absent from the batch
-            FrontRepoSingloton.Milestones.forEach(
+            this.frontRepo.Milestones.forEach(
               milestone => {
-                if (FrontRepoSingloton.Milestones_batch.get(milestone.ID) == undefined) {
-                  FrontRepoSingloton.Milestones.delete(milestone.ID)
+                if (this.frontRepo.Milestones_batch.get(milestone.ID) == undefined) {
+                  this.frontRepo.Milestones.delete(milestone.ID)
                 }
               }
             )
 
             // sort Milestones_array array
-            FrontRepoSingloton.Milestones_array.sort((t1, t2) => {
+            this.frontRepo.Milestones_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
                 return 1;
               }
@@ -459,14 +459,14 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
                 // insertion point for pointer field From redeeming
                 {
-                  let _bar = FrontRepoSingloton.Bars.get(arrow.FromID.Int64)
+                  let _bar = this.frontRepo.Bars.get(arrow.FromID.Int64)
                   if (_bar) {
                     arrow.From = _bar
                   }
                 }
                 // insertion point for pointer field To redeeming
                 {
-                  let _bar = FrontRepoSingloton.Bars.get(arrow.ToID.Int64)
+                  let _bar = this.frontRepo.Bars.get(arrow.ToID.Int64)
                   if (_bar) {
                     arrow.To = _bar
                   }
@@ -475,7 +475,7 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Arrows redeeming
                 {
-                  let _gantt = FrontRepoSingloton.Gantts.get(arrow.Gantt_ArrowsDBID.Int64)
+                  let _gantt = this.frontRepo.Gantts.get(arrow.Gantt_ArrowsDBID.Int64)
                   if (_gantt) {
                     if (_gantt.Arrows == undefined) {
                       _gantt.Arrows = new Array<ArrowDB>()
@@ -495,7 +495,7 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Lane.Bars redeeming
                 {
-                  let _lane = FrontRepoSingloton.Lanes.get(bar.Lane_BarsDBID.Int64)
+                  let _lane = this.frontRepo.Lanes.get(bar.Lane_BarsDBID.Int64)
                   if (_lane) {
                     if (_lane.Bars == undefined) {
                       _lane.Bars = new Array<BarDB>()
@@ -522,7 +522,7 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Groups redeeming
                 {
-                  let _gantt = FrontRepoSingloton.Gantts.get(group.Gantt_GroupsDBID.Int64)
+                  let _gantt = this.frontRepo.Gantts.get(group.Gantt_GroupsDBID.Int64)
                   if (_gantt) {
                     if (_gantt.Groups == undefined) {
                       _gantt.Groups = new Array<GroupDB>()
@@ -542,7 +542,7 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Lanes redeeming
                 {
-                  let _gantt = FrontRepoSingloton.Gantts.get(lane.Gantt_LanesDBID.Int64)
+                  let _gantt = this.frontRepo.Gantts.get(lane.Gantt_LanesDBID.Int64)
                   if (_gantt) {
                     if (_gantt.Lanes == undefined) {
                       _gantt.Lanes = new Array<LaneDB>()
@@ -555,7 +555,7 @@ export class FrontRepoService {
                 }
                 // insertion point for slice of pointer field Group.GroupLanes redeeming
                 {
-                  let _group = FrontRepoSingloton.Groups.get(lane.Group_GroupLanesDBID.Int64)
+                  let _group = this.frontRepo.Groups.get(lane.Group_GroupLanesDBID.Int64)
                   if (_group) {
                     if (_group.GroupLanes == undefined) {
                       _group.GroupLanes = new Array<LaneDB>()
@@ -573,7 +573,7 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
                 // insertion point for pointer field Lane redeeming
                 {
-                  let _lane = FrontRepoSingloton.Lanes.get(laneuse.LaneID.Int64)
+                  let _lane = this.frontRepo.Lanes.get(laneuse.LaneID.Int64)
                   if (_lane) {
                     laneuse.Lane = _lane
                   }
@@ -582,7 +582,7 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Milestone.LanesToDisplayMilestoneUse redeeming
                 {
-                  let _milestone = FrontRepoSingloton.Milestones.get(laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Int64)
+                  let _milestone = this.frontRepo.Milestones.get(laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Int64)
                   if (_milestone) {
                     if (_milestone.LanesToDisplayMilestoneUse == undefined) {
                       _milestone.LanesToDisplayMilestoneUse = new Array<LaneUseDB>()
@@ -602,7 +602,7 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Milestones redeeming
                 {
-                  let _gantt = FrontRepoSingloton.Gantts.get(milestone.Gantt_MilestonesDBID.Int64)
+                  let _gantt = this.frontRepo.Gantts.get(milestone.Gantt_MilestonesDBID.Int64)
                   if (_gantt) {
                     if (_gantt.Milestones == undefined) {
                       _gantt.Milestones = new Array<MilestoneDB>()
@@ -617,7 +617,7 @@ export class FrontRepoService {
             )
 
             // hand over control flow to observer
-            observer.next(FrontRepoSingloton)
+            observer.next(this.frontRepo)
           }
         )
       }
@@ -637,30 +637,30 @@ export class FrontRepoService {
             arrows,
           ]) => {
             // init the array
-            FrontRepoSingloton.Arrows_array = arrows
+            this.frontRepo.Arrows_array = arrows
 
             // clear the map that counts Arrow in the GET
-            FrontRepoSingloton.Arrows_batch.clear()
+            this.frontRepo.Arrows_batch.clear()
 
             // 
             // First Step: init map of instances
             // insertion point sub template 
             arrows.forEach(
               arrow => {
-                FrontRepoSingloton.Arrows.set(arrow.ID, arrow)
-                FrontRepoSingloton.Arrows_batch.set(arrow.ID, arrow)
+                this.frontRepo.Arrows.set(arrow.ID, arrow)
+                this.frontRepo.Arrows_batch.set(arrow.ID, arrow)
 
                 // insertion point for redeeming ONE/ZERO-ONE associations
                 // insertion point for pointer field From redeeming
                 {
-                  let _bar = FrontRepoSingloton.Bars.get(arrow.FromID.Int64)
+                  let _bar = this.frontRepo.Bars.get(arrow.FromID.Int64)
                   if (_bar) {
                     arrow.From = _bar
                   }
                 }
                 // insertion point for pointer field To redeeming
                 {
-                  let _bar = FrontRepoSingloton.Bars.get(arrow.ToID.Int64)
+                  let _bar = this.frontRepo.Bars.get(arrow.ToID.Int64)
                   if (_bar) {
                     arrow.To = _bar
                   }
@@ -669,7 +669,7 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Arrows redeeming
                 {
-                  let _gantt = FrontRepoSingloton.Gantts.get(arrow.Gantt_ArrowsDBID.Int64)
+                  let _gantt = this.frontRepo.Gantts.get(arrow.Gantt_ArrowsDBID.Int64)
                   if (_gantt) {
                     if (_gantt.Arrows == undefined) {
                       _gantt.Arrows = new Array<ArrowDB>()
@@ -684,10 +684,10 @@ export class FrontRepoService {
             )
 
             // clear arrows that are absent from the GET
-            FrontRepoSingloton.Arrows.forEach(
+            this.frontRepo.Arrows.forEach(
               arrow => {
-                if (FrontRepoSingloton.Arrows_batch.get(arrow.ID) == undefined) {
-                  FrontRepoSingloton.Arrows.delete(arrow.ID)
+                if (this.frontRepo.Arrows_batch.get(arrow.ID) == undefined) {
+                  this.frontRepo.Arrows.delete(arrow.ID)
                 }
               }
             )
@@ -697,7 +697,7 @@ export class FrontRepoService {
             // insertion point sub template 
 
             // hand over control flow to observer
-            observer.next(FrontRepoSingloton)
+            observer.next(this.frontRepo)
           }
         )
       }
@@ -715,25 +715,25 @@ export class FrontRepoService {
             bars,
           ]) => {
             // init the array
-            FrontRepoSingloton.Bars_array = bars
+            this.frontRepo.Bars_array = bars
 
             // clear the map that counts Bar in the GET
-            FrontRepoSingloton.Bars_batch.clear()
+            this.frontRepo.Bars_batch.clear()
 
             // 
             // First Step: init map of instances
             // insertion point sub template 
             bars.forEach(
               bar => {
-                FrontRepoSingloton.Bars.set(bar.ID, bar)
-                FrontRepoSingloton.Bars_batch.set(bar.ID, bar)
+                this.frontRepo.Bars.set(bar.ID, bar)
+                this.frontRepo.Bars_batch.set(bar.ID, bar)
 
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Lane.Bars redeeming
                 {
-                  let _lane = FrontRepoSingloton.Lanes.get(bar.Lane_BarsDBID.Int64)
+                  let _lane = this.frontRepo.Lanes.get(bar.Lane_BarsDBID.Int64)
                   if (_lane) {
                     if (_lane.Bars == undefined) {
                       _lane.Bars = new Array<BarDB>()
@@ -748,10 +748,10 @@ export class FrontRepoService {
             )
 
             // clear bars that are absent from the GET
-            FrontRepoSingloton.Bars.forEach(
+            this.frontRepo.Bars.forEach(
               bar => {
-                if (FrontRepoSingloton.Bars_batch.get(bar.ID) == undefined) {
-                  FrontRepoSingloton.Bars.delete(bar.ID)
+                if (this.frontRepo.Bars_batch.get(bar.ID) == undefined) {
+                  this.frontRepo.Bars.delete(bar.ID)
                 }
               }
             )
@@ -761,7 +761,7 @@ export class FrontRepoService {
             // insertion point sub template 
 
             // hand over control flow to observer
-            observer.next(FrontRepoSingloton)
+            observer.next(this.frontRepo)
           }
         )
       }
@@ -779,18 +779,18 @@ export class FrontRepoService {
             gantts,
           ]) => {
             // init the array
-            FrontRepoSingloton.Gantts_array = gantts
+            this.frontRepo.Gantts_array = gantts
 
             // clear the map that counts Gantt in the GET
-            FrontRepoSingloton.Gantts_batch.clear()
+            this.frontRepo.Gantts_batch.clear()
 
             // 
             // First Step: init map of instances
             // insertion point sub template 
             gantts.forEach(
               gantt => {
-                FrontRepoSingloton.Gantts.set(gantt.ID, gantt)
-                FrontRepoSingloton.Gantts_batch.set(gantt.ID, gantt)
+                this.frontRepo.Gantts.set(gantt.ID, gantt)
+                this.frontRepo.Gantts_batch.set(gantt.ID, gantt)
 
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
@@ -799,10 +799,10 @@ export class FrontRepoService {
             )
 
             // clear gantts that are absent from the GET
-            FrontRepoSingloton.Gantts.forEach(
+            this.frontRepo.Gantts.forEach(
               gantt => {
-                if (FrontRepoSingloton.Gantts_batch.get(gantt.ID) == undefined) {
-                  FrontRepoSingloton.Gantts.delete(gantt.ID)
+                if (this.frontRepo.Gantts_batch.get(gantt.ID) == undefined) {
+                  this.frontRepo.Gantts.delete(gantt.ID)
                 }
               }
             )
@@ -812,7 +812,7 @@ export class FrontRepoService {
             // insertion point sub template 
 
             // hand over control flow to observer
-            observer.next(FrontRepoSingloton)
+            observer.next(this.frontRepo)
           }
         )
       }
@@ -830,25 +830,25 @@ export class FrontRepoService {
             groups,
           ]) => {
             // init the array
-            FrontRepoSingloton.Groups_array = groups
+            this.frontRepo.Groups_array = groups
 
             // clear the map that counts Group in the GET
-            FrontRepoSingloton.Groups_batch.clear()
+            this.frontRepo.Groups_batch.clear()
 
             // 
             // First Step: init map of instances
             // insertion point sub template 
             groups.forEach(
               group => {
-                FrontRepoSingloton.Groups.set(group.ID, group)
-                FrontRepoSingloton.Groups_batch.set(group.ID, group)
+                this.frontRepo.Groups.set(group.ID, group)
+                this.frontRepo.Groups_batch.set(group.ID, group)
 
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Groups redeeming
                 {
-                  let _gantt = FrontRepoSingloton.Gantts.get(group.Gantt_GroupsDBID.Int64)
+                  let _gantt = this.frontRepo.Gantts.get(group.Gantt_GroupsDBID.Int64)
                   if (_gantt) {
                     if (_gantt.Groups == undefined) {
                       _gantt.Groups = new Array<GroupDB>()
@@ -863,10 +863,10 @@ export class FrontRepoService {
             )
 
             // clear groups that are absent from the GET
-            FrontRepoSingloton.Groups.forEach(
+            this.frontRepo.Groups.forEach(
               group => {
-                if (FrontRepoSingloton.Groups_batch.get(group.ID) == undefined) {
-                  FrontRepoSingloton.Groups.delete(group.ID)
+                if (this.frontRepo.Groups_batch.get(group.ID) == undefined) {
+                  this.frontRepo.Groups.delete(group.ID)
                 }
               }
             )
@@ -876,7 +876,7 @@ export class FrontRepoService {
             // insertion point sub template 
 
             // hand over control flow to observer
-            observer.next(FrontRepoSingloton)
+            observer.next(this.frontRepo)
           }
         )
       }
@@ -894,25 +894,25 @@ export class FrontRepoService {
             lanes,
           ]) => {
             // init the array
-            FrontRepoSingloton.Lanes_array = lanes
+            this.frontRepo.Lanes_array = lanes
 
             // clear the map that counts Lane in the GET
-            FrontRepoSingloton.Lanes_batch.clear()
+            this.frontRepo.Lanes_batch.clear()
 
             // 
             // First Step: init map of instances
             // insertion point sub template 
             lanes.forEach(
               lane => {
-                FrontRepoSingloton.Lanes.set(lane.ID, lane)
-                FrontRepoSingloton.Lanes_batch.set(lane.ID, lane)
+                this.frontRepo.Lanes.set(lane.ID, lane)
+                this.frontRepo.Lanes_batch.set(lane.ID, lane)
 
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Lanes redeeming
                 {
-                  let _gantt = FrontRepoSingloton.Gantts.get(lane.Gantt_LanesDBID.Int64)
+                  let _gantt = this.frontRepo.Gantts.get(lane.Gantt_LanesDBID.Int64)
                   if (_gantt) {
                     if (_gantt.Lanes == undefined) {
                       _gantt.Lanes = new Array<LaneDB>()
@@ -925,7 +925,7 @@ export class FrontRepoService {
                 }
                 // insertion point for slice of pointer field Group.GroupLanes redeeming
                 {
-                  let _group = FrontRepoSingloton.Groups.get(lane.Group_GroupLanesDBID.Int64)
+                  let _group = this.frontRepo.Groups.get(lane.Group_GroupLanesDBID.Int64)
                   if (_group) {
                     if (_group.GroupLanes == undefined) {
                       _group.GroupLanes = new Array<LaneDB>()
@@ -940,10 +940,10 @@ export class FrontRepoService {
             )
 
             // clear lanes that are absent from the GET
-            FrontRepoSingloton.Lanes.forEach(
+            this.frontRepo.Lanes.forEach(
               lane => {
-                if (FrontRepoSingloton.Lanes_batch.get(lane.ID) == undefined) {
-                  FrontRepoSingloton.Lanes.delete(lane.ID)
+                if (this.frontRepo.Lanes_batch.get(lane.ID) == undefined) {
+                  this.frontRepo.Lanes.delete(lane.ID)
                 }
               }
             )
@@ -953,7 +953,7 @@ export class FrontRepoService {
             // insertion point sub template 
 
             // hand over control flow to observer
-            observer.next(FrontRepoSingloton)
+            observer.next(this.frontRepo)
           }
         )
       }
@@ -971,23 +971,23 @@ export class FrontRepoService {
             laneuses,
           ]) => {
             // init the array
-            FrontRepoSingloton.LaneUses_array = laneuses
+            this.frontRepo.LaneUses_array = laneuses
 
             // clear the map that counts LaneUse in the GET
-            FrontRepoSingloton.LaneUses_batch.clear()
+            this.frontRepo.LaneUses_batch.clear()
 
             // 
             // First Step: init map of instances
             // insertion point sub template 
             laneuses.forEach(
               laneuse => {
-                FrontRepoSingloton.LaneUses.set(laneuse.ID, laneuse)
-                FrontRepoSingloton.LaneUses_batch.set(laneuse.ID, laneuse)
+                this.frontRepo.LaneUses.set(laneuse.ID, laneuse)
+                this.frontRepo.LaneUses_batch.set(laneuse.ID, laneuse)
 
                 // insertion point for redeeming ONE/ZERO-ONE associations
                 // insertion point for pointer field Lane redeeming
                 {
-                  let _lane = FrontRepoSingloton.Lanes.get(laneuse.LaneID.Int64)
+                  let _lane = this.frontRepo.Lanes.get(laneuse.LaneID.Int64)
                   if (_lane) {
                     laneuse.Lane = _lane
                   }
@@ -996,7 +996,7 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Milestone.LanesToDisplayMilestoneUse redeeming
                 {
-                  let _milestone = FrontRepoSingloton.Milestones.get(laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Int64)
+                  let _milestone = this.frontRepo.Milestones.get(laneuse.Milestone_LanesToDisplayMilestoneUseDBID.Int64)
                   if (_milestone) {
                     if (_milestone.LanesToDisplayMilestoneUse == undefined) {
                       _milestone.LanesToDisplayMilestoneUse = new Array<LaneUseDB>()
@@ -1011,10 +1011,10 @@ export class FrontRepoService {
             )
 
             // clear laneuses that are absent from the GET
-            FrontRepoSingloton.LaneUses.forEach(
+            this.frontRepo.LaneUses.forEach(
               laneuse => {
-                if (FrontRepoSingloton.LaneUses_batch.get(laneuse.ID) == undefined) {
-                  FrontRepoSingloton.LaneUses.delete(laneuse.ID)
+                if (this.frontRepo.LaneUses_batch.get(laneuse.ID) == undefined) {
+                  this.frontRepo.LaneUses.delete(laneuse.ID)
                 }
               }
             )
@@ -1024,7 +1024,7 @@ export class FrontRepoService {
             // insertion point sub template 
 
             // hand over control flow to observer
-            observer.next(FrontRepoSingloton)
+            observer.next(this.frontRepo)
           }
         )
       }
@@ -1042,25 +1042,25 @@ export class FrontRepoService {
             milestones,
           ]) => {
             // init the array
-            FrontRepoSingloton.Milestones_array = milestones
+            this.frontRepo.Milestones_array = milestones
 
             // clear the map that counts Milestone in the GET
-            FrontRepoSingloton.Milestones_batch.clear()
+            this.frontRepo.Milestones_batch.clear()
 
             // 
             // First Step: init map of instances
             // insertion point sub template 
             milestones.forEach(
               milestone => {
-                FrontRepoSingloton.Milestones.set(milestone.ID, milestone)
-                FrontRepoSingloton.Milestones_batch.set(milestone.ID, milestone)
+                this.frontRepo.Milestones.set(milestone.ID, milestone)
+                this.frontRepo.Milestones_batch.set(milestone.ID, milestone)
 
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
                 // insertion point for slice of pointer field Gantt.Milestones redeeming
                 {
-                  let _gantt = FrontRepoSingloton.Gantts.get(milestone.Gantt_MilestonesDBID.Int64)
+                  let _gantt = this.frontRepo.Gantts.get(milestone.Gantt_MilestonesDBID.Int64)
                   if (_gantt) {
                     if (_gantt.Milestones == undefined) {
                       _gantt.Milestones = new Array<MilestoneDB>()
@@ -1075,10 +1075,10 @@ export class FrontRepoService {
             )
 
             // clear milestones that are absent from the GET
-            FrontRepoSingloton.Milestones.forEach(
+            this.frontRepo.Milestones.forEach(
               milestone => {
-                if (FrontRepoSingloton.Milestones_batch.get(milestone.ID) == undefined) {
-                  FrontRepoSingloton.Milestones.delete(milestone.ID)
+                if (this.frontRepo.Milestones_batch.get(milestone.ID) == undefined) {
+                  this.frontRepo.Milestones.delete(milestone.ID)
                 }
               }
             )
@@ -1088,7 +1088,7 @@ export class FrontRepoService {
             // insertion point sub template 
 
             // hand over control flow to observer
-            observer.next(FrontRepoSingloton)
+            observer.next(this.frontRepo)
           }
         )
       }

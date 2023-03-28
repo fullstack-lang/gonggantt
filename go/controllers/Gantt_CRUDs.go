@@ -151,7 +151,7 @@ func (controller *Controller) PostGantt(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoGantt.CheckoutPhaseOneInstance(&ganttDB)
-	gantt := (*backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	gantt := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[ganttDB.ID]
 
 	if gantt != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), gantt)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateGantt(c *gin.Context) {
 	ganttDB.CopyBasicFieldsToGantt(ganttNew)
 
 	// get stage instance from DB instance, and call callback function
-	ganttOld := (*backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	ganttOld := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[ganttDB.ID]
 	if ganttOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), ganttOld, ganttNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteGantt(c *gin.Context) {
 	ganttDB.CopyBasicFieldsToGantt(ganttDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	ganttStaged := (*backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	ganttStaged := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[ganttDB.ID]
 	if ganttStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), ganttStaged, ganttDeleted)
 	}

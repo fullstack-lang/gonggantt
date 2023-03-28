@@ -19,6 +19,8 @@ import { LaneService } from '../lane.service'
 
 // insertion point for additional imports
 
+import { RouteService } from '../route-service';
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -138,6 +140,8 @@ export class LanesTableComponent implements OnInit {
 
     private router: Router,
     private activatedRoute: ActivatedRoute,
+
+    private routeService: RouteService,
   ) {
 
     // compute mode
@@ -260,18 +264,15 @@ export class LanesTableComponent implements OnInit {
 
   }
 
-  // display lane in router
-  displayLaneInRouter(laneID: number) {
-    this.router.navigate(["github_com_fullstack_lang_gonggantt_go-" + "lane-display", laneID])
-  }
-
   // set editor outlet
   setEditorRouterOutlet(laneID: number) {
-    this.router.navigate([{
-      outlets: {
-        github_com_fullstack_lang_gonggantt_go_editor: ["github_com_fullstack_lang_gonggantt_go-" + "lane-detail", laneID, this.GONG__StackPath]
-      }
-    }]);
+    let outletName = this.routeService.getEditorOutlet(this.GONG__StackPath)
+    let fullPath = this.routeService.getPathRoot() + "-" + "lane" + "-detail"
+
+    let outletConf: any = {}
+    outletConf[outletName] = [fullPath, laneID, this.GONG__StackPath]
+
+    this.router.navigate([{ outlets: outletConf }])
   }
 
   /** Whether the number of selected elements matches the total number of rows. */

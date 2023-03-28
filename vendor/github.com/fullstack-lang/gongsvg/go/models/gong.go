@@ -4,6 +4,7 @@ package models
 import (
 	"errors"
 	"fmt"
+	"sync"
 )
 
 // errUnkownEnum is returns when a value cannot match enum values
@@ -127,17 +128,6 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	MetaPackageImportPath  string
 	MetaPackageImportAlias string
 	Map_DocLink_Renaming   map[string]GONG__Identifier
-
-	// map_Gongstruct_BackPointer is storage of back pointers
-	map_Gongstruct_BackPointer map[any]any
-}
-
-func SetBackPointer[T Gongstruct](stageStruct *StageStruct, instance *T, backPointer any) {
-	stageStruct.map_Gongstruct_BackPointer[instance] = backPointer
-}
-func GetBackPointer[T Gongstruct](stageStruct *StageStruct, instance *T) (backPointer any) {
-	backPointer, _ = stageStruct.map_Gongstruct_BackPointer[instance]
-	return
 }
 
 type GONG__Identifier struct {
@@ -204,41 +194,55 @@ type BackRepoInterface interface {
 	GetLastPushFromFrontNb() uint
 }
 
-// swagger:ignore instructs the gong compiler (gongc) to avoid this particular struct
-var Stage StageStruct = StageStruct{ // insertion point for array initiatialisation
-	Animates:           make(map[*Animate]any),
-	Animates_mapString: make(map[string]*Animate),
+var _stage *StageStruct
 
-	Circles:           make(map[*Circle]any),
-	Circles_mapString: make(map[string]*Circle),
+var once sync.Once
 
-	Ellipses:           make(map[*Ellipse]any),
-	Ellipses_mapString: make(map[string]*Ellipse),
+func GetDefaultStage() *StageStruct {
+	once.Do(func() {
+		_stage = NewStage()
+	})
+	return _stage
+}
 
-	Lines:           make(map[*Line]any),
-	Lines_mapString: make(map[string]*Line),
+func NewStage() (stage *StageStruct) {
 
-	Paths:           make(map[*Path]any),
-	Paths_mapString: make(map[string]*Path),
+	stage = &StageStruct{ // insertion point for array initiatialisation
+		Animates:           make(map[*Animate]any),
+		Animates_mapString: make(map[string]*Animate),
 
-	Polygones:           make(map[*Polygone]any),
-	Polygones_mapString: make(map[string]*Polygone),
+		Circles:           make(map[*Circle]any),
+		Circles_mapString: make(map[string]*Circle),
 
-	Polylines:           make(map[*Polyline]any),
-	Polylines_mapString: make(map[string]*Polyline),
+		Ellipses:           make(map[*Ellipse]any),
+		Ellipses_mapString: make(map[string]*Ellipse),
 
-	Rects:           make(map[*Rect]any),
-	Rects_mapString: make(map[string]*Rect),
+		Lines:           make(map[*Line]any),
+		Lines_mapString: make(map[string]*Line),
 
-	SVGs:           make(map[*SVG]any),
-	SVGs_mapString: make(map[string]*SVG),
+		Paths:           make(map[*Path]any),
+		Paths_mapString: make(map[string]*Path),
 
-	Texts:           make(map[*Text]any),
-	Texts_mapString: make(map[string]*Text),
+		Polygones:           make(map[*Polygone]any),
+		Polygones_mapString: make(map[string]*Polygone),
 
-	// end of insertion point
-	Map_GongStructName_InstancesNb: make(map[string]int),
-	map_Gongstruct_BackPointer:     make(map[any]any),
+		Polylines:           make(map[*Polyline]any),
+		Polylines_mapString: make(map[string]*Polyline),
+
+		Rects:           make(map[*Rect]any),
+		Rects_mapString: make(map[string]*Rect),
+
+		SVGs:           make(map[*SVG]any),
+		SVGs_mapString: make(map[string]*SVG),
+
+		Texts:           make(map[*Text]any),
+		Texts_mapString: make(map[string]*Text),
+
+		// end of insertion point
+		Map_GongStructName_InstancesNb: make(map[string]int),
+	}
+
+	return
 }
 
 func (stage *StageStruct) Commit() {
@@ -897,17 +901,9 @@ type GongstructMapString interface {
 
 // GongGetSet returns the set staged GongstructType instances
 // it is usefull because it allows refactoring of gong struct identifier
-func GongGetSet[Type GongstructSet](stages ...*StageStruct) *Type {
+func GongGetSet[Type GongstructSet](stage *StageStruct) *Type {
 	var ret Type
-
-	var stage *StageStruct
-	_ = stage
-	if len(stages) > 0 {
-		stage = stages[0]
-	} else {
-		stage = &Stage
-	}
-
+	
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case map[*Animate]any:
@@ -937,16 +933,8 @@ func GongGetSet[Type GongstructSet](stages ...*StageStruct) *Type {
 
 // GongGetMap returns the map of staged GongstructType instances
 // it is usefull because it allows refactoring of gong struct identifier
-func GongGetMap[Type GongstructMapString](stages ...*StageStruct) *Type {
+func GongGetMap[Type GongstructMapString](stage *StageStruct) *Type {
 	var ret Type
-
-	var stage *StageStruct
-	_ = stage
-	if len(stages) > 0 {
-		stage = stages[0]
-	} else {
-		stage = &Stage
-	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
@@ -977,16 +965,8 @@ func GongGetMap[Type GongstructMapString](stages ...*StageStruct) *Type {
 
 // GetGongstructInstancesSet returns the set staged GongstructType instances
 // it is usefull because it allows refactoring of gongstruct identifier
-func GetGongstructInstancesSet[Type Gongstruct](stages ...*StageStruct) *map[*Type]any {
+func GetGongstructInstancesSet[Type Gongstruct](stage *StageStruct) *map[*Type]any {
 	var ret Type
-
-	var stage *StageStruct
-	_ = stage
-	if len(stages) > 0 {
-		stage = stages[0]
-	} else {
-		stage = &Stage
-	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
@@ -1017,16 +997,8 @@ func GetGongstructInstancesSet[Type Gongstruct](stages ...*StageStruct) *map[*Ty
 
 // GetGongstructInstancesMap returns the map of staged GongstructType instances
 // it is usefull because it allows refactoring of gong struct identifier
-func GetGongstructInstancesMap[Type Gongstruct](stages ...*StageStruct) *map[string]*Type {
+func GetGongstructInstancesMap[Type Gongstruct](stage *StageStruct) *map[string]*Type {
 	var ret Type
-
-	var stage *StageStruct
-	_ = stage
-	if len(stages) > 0 {
-		stage = stages[0]
-	} else {
-		stage = &Stage
-	}
 
 	switch any(ret).(type) {
 	// insertion point for generic get functions
@@ -1148,15 +1120,7 @@ func GetAssociationName[Type Gongstruct]() *Type {
 // The function provides a map with keys as instances of End and values to arrays of *Start
 // the map is construed by iterating over all Start instances and populationg keys with End instances
 // and values with slice of Start instances
-func GetPointerReverseMap[Start, End Gongstruct](fieldname string, stages ...*StageStruct) map[*End][]*Start {
-
-	var stage *StageStruct
-	_ = stage
-	if len(stages) > 0 {
-		stage = stages[0]
-	} else {
-		stage = &Stage
-	}
+func GetPointerReverseMap[Start, End Gongstruct](fieldname string, stage *StageStruct) map[*End][]*Start {
 
 	var ret Start
 
@@ -1222,15 +1186,7 @@ func GetPointerReverseMap[Start, End Gongstruct](fieldname string, stages ...*St
 // The function provides a map with keys as instances of End and values to *Start instances
 // the map is construed by iterating over all Start instances and populating keys with End instances
 // and values with the Start instances
-func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string, stages ...*StageStruct) map[*End]*Start {
-
-	var stage *StageStruct
-	_ = stage
-	if len(stages) > 0 {
-		stage = stages[0]
-	} else {
-		stage = &Stage
-	}
+func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string, stage *StageStruct) map[*End]*Start {
 
 	var ret Start
 

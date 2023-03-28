@@ -45,11 +45,12 @@ export class GroupService {
   /** GET groups from the server */
   getGroups(GONG__StackPath: string = ""): Observable<GroupDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<GroupDB[]>(this.groupsUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched groups')),
+        tap(),
+		// tap(_ => this.log('fetched groups')),
         catchError(this.handleError<GroupDB[]>('getGroups', []))
       );
   }
@@ -77,7 +78,7 @@ export class GroupService {
       params: params
     }
 
-	return this.http.post<GroupDB>(this.groupsUrl, groupdb, httpOptions).pipe(
+    return this.http.post<GroupDB>(this.groupsUrl, groupdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         groupdb.Gantt_Groups_reverse = _Gantt_Groups_reverse
@@ -136,11 +137,11 @@ export class GroupService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in GroupService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("GroupService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -151,6 +152,6 @@ export class GroupService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

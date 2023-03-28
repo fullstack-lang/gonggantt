@@ -112,13 +112,13 @@ var Milestone_Fields = []string{
 
 type BackRepoMilestoneStruct struct {
 	// stores MilestoneDB according to their gorm ID
-	Map_MilestoneDBID_MilestoneDB *map[uint]*MilestoneDB
+	Map_MilestoneDBID_MilestoneDB map[uint]*MilestoneDB
 
 	// stores MilestoneDB ID according to Milestone address
-	Map_MilestonePtr_MilestoneDBID *map[*models.Milestone]uint
+	Map_MilestonePtr_MilestoneDBID map[*models.Milestone]uint
 
 	// stores Milestone according to their gorm ID
-	Map_MilestoneDBID_MilestonePtr *map[uint]*models.Milestone
+	Map_MilestoneDBID_MilestonePtr map[uint]*models.Milestone
 
 	db *gorm.DB
 
@@ -136,40 +136,8 @@ func (backRepoMilestone *BackRepoMilestoneStruct) GetDB() *gorm.DB {
 
 // GetMilestoneDBFromMilestonePtr is a handy function to access the back repo instance from the stage instance
 func (backRepoMilestone *BackRepoMilestoneStruct) GetMilestoneDBFromMilestonePtr(milestone *models.Milestone) (milestoneDB *MilestoneDB) {
-	id := (*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]
-	milestoneDB = (*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[id]
-	return
-}
-
-// BackRepoMilestone.Init set up the BackRepo of the Milestone
-func (backRepoMilestone *BackRepoMilestoneStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoMilestone.Map_MilestoneDBID_MilestonePtr != nil {
-		err := errors.New("In Init, backRepoMilestone.Map_MilestoneDBID_MilestonePtr should be nil")
-		return err
-	}
-
-	if backRepoMilestone.Map_MilestoneDBID_MilestoneDB != nil {
-		err := errors.New("In Init, backRepoMilestone.Map_MilestoneDBID_MilestoneDB should be nil")
-		return err
-	}
-
-	if backRepoMilestone.Map_MilestonePtr_MilestoneDBID != nil {
-		err := errors.New("In Init, backRepoMilestone.Map_MilestonePtr_MilestoneDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Milestone, 0)
-	backRepoMilestone.Map_MilestoneDBID_MilestonePtr = &tmp
-
-	tmpDB := make(map[uint]*MilestoneDB, 0)
-	backRepoMilestone.Map_MilestoneDBID_MilestoneDB = &tmpDB
-
-	tmpID := make(map[*models.Milestone]uint, 0)
-	backRepoMilestone.Map_MilestonePtr_MilestoneDBID = &tmpID
-
-	backRepoMilestone.db = db
-	backRepoMilestone.stage = stage
+	id := backRepoMilestone.Map_MilestonePtr_MilestoneDBID[milestone]
+	milestoneDB = backRepoMilestone.Map_MilestoneDBID_MilestoneDB[id]
 	return
 }
 
@@ -183,7 +151,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseOne(stage *models.S
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, milestone := range *backRepoMilestone.Map_MilestoneDBID_MilestonePtr {
+	for id, milestone := range backRepoMilestone.Map_MilestoneDBID_MilestonePtr {
 		if _, ok := stage.Milestones[milestone]; !ok {
 			backRepoMilestone.CommitDeleteInstance(id)
 		}
@@ -195,19 +163,19 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseOne(stage *models.S
 // BackRepoMilestone.CommitDeleteInstance commits deletion of Milestone to the BackRepo
 func (backRepoMilestone *BackRepoMilestoneStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	milestone := (*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[id]
+	milestone := backRepoMilestone.Map_MilestoneDBID_MilestonePtr[id]
 
 	// milestone is not staged anymore, remove milestoneDB
-	milestoneDB := (*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[id]
+	milestoneDB := backRepoMilestone.Map_MilestoneDBID_MilestoneDB[id]
 	query := backRepoMilestone.db.Unscoped().Delete(&milestoneDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoMilestone.Map_MilestonePtr_MilestoneDBID), milestone)
-	delete((*backRepoMilestone.Map_MilestoneDBID_MilestonePtr), id)
-	delete((*backRepoMilestone.Map_MilestoneDBID_MilestoneDB), id)
+	delete(backRepoMilestone.Map_MilestonePtr_MilestoneDBID, milestone)
+	delete(backRepoMilestone.Map_MilestoneDBID_MilestonePtr, id)
+	delete(backRepoMilestone.Map_MilestoneDBID_MilestoneDB, id)
 
 	return
 }
@@ -217,7 +185,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitDeleteInstance(id uint) 
 func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseOneInstance(milestone *models.Milestone) (Error error) {
 
 	// check if the milestone is not commited yet
-	if _, ok := (*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]; ok {
+	if _, ok := backRepoMilestone.Map_MilestonePtr_MilestoneDBID[milestone]; ok {
 		return
 	}
 
@@ -231,9 +199,9 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseOneInstance(milesto
 	}
 
 	// update stores
-	(*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone] = milestoneDB.ID
-	(*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID] = milestone
-	(*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB.ID] = &milestoneDB
+	backRepoMilestone.Map_MilestonePtr_MilestoneDBID[milestone] = milestoneDB.ID
+	backRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB.ID] = milestone
+	backRepoMilestone.Map_MilestoneDBID_MilestoneDB[milestoneDB.ID] = &milestoneDB
 
 	return
 }
@@ -242,7 +210,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseOneInstance(milesto
 // Phase Two is the update of instance with the field in the database
 func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, milestone := range *backRepoMilestone.Map_MilestoneDBID_MilestonePtr {
+	for idx, milestone := range backRepoMilestone.Map_MilestoneDBID_MilestonePtr {
 		backRepoMilestone.CommitPhaseTwoInstance(backRepo, idx, milestone)
 	}
 
@@ -254,7 +222,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwo(backRepo *BackR
 func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, milestone *models.Milestone) (Error error) {
 
 	// fetch matching milestoneDB
-	if milestoneDB, ok := (*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[idx]; ok {
+	if milestoneDB, ok := backRepoMilestone.Map_MilestoneDBID_MilestoneDB[idx]; ok {
 
 		milestoneDB.CopyBasicFieldsFromMilestone(milestone)
 
@@ -317,7 +285,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error erro
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		milestone, ok := (*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+		milestone, ok := backRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB.ID]
 		if ok {
 			delete(milestoneInstancesToBeRemovedFromTheStage, milestone)
 		}
@@ -328,10 +296,10 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error erro
 		milestone.Unstage(backRepoMilestone.GetStage())
 
 		// remove instance from the back repo 3 maps
-		milestoneID := (*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]
-		delete((*backRepoMilestone.Map_MilestonePtr_MilestoneDBID), milestone)
-		delete((*backRepoMilestone.Map_MilestoneDBID_MilestoneDB), milestoneID)
-		delete((*backRepoMilestone.Map_MilestoneDBID_MilestonePtr), milestoneID)
+		milestoneID := backRepoMilestone.Map_MilestonePtr_MilestoneDBID[milestone]
+		delete(backRepoMilestone.Map_MilestonePtr_MilestoneDBID, milestone)
+		delete(backRepoMilestone.Map_MilestoneDBID_MilestoneDB, milestoneID)
+		delete(backRepoMilestone.Map_MilestoneDBID_MilestonePtr, milestoneID)
 	}
 
 	return
@@ -341,12 +309,12 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error erro
 // models version of the milestoneDB
 func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOneInstance(milestoneDB *MilestoneDB) (Error error) {
 
-	milestone, ok := (*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	milestone, ok := backRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB.ID]
 	if !ok {
 		milestone = new(models.Milestone)
 
-		(*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID] = milestone
-		(*backRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone] = milestoneDB.ID
+		backRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB.ID] = milestone
+		backRepoMilestone.Map_MilestonePtr_MilestoneDBID[milestone] = milestoneDB.ID
 
 		// append model store with the new element
 		milestone.Name = milestoneDB.Name_Data.String
@@ -361,7 +329,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOneInstance(miles
 	// Map_MilestoneDBID_MilestoneDB)[milestoneDB hold variable pointers
 	milestoneDB_Data := *milestoneDB
 	preservedPtrToMilestone := &milestoneDB_Data
-	(*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB.ID] = preservedPtrToMilestone
+	backRepoMilestone.Map_MilestoneDBID_MilestoneDB[milestoneDB.ID] = preservedPtrToMilestone
 
 	return
 }
@@ -371,7 +339,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOneInstance(miles
 func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, milestoneDB := range *backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
+	for _, milestoneDB := range backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
 		backRepoMilestone.CheckoutPhaseTwoInstance(backRepo, milestoneDB)
 	}
 	return
@@ -381,7 +349,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwo(backRepo *Bac
 // Phase Two is the update of instance with the field in the database
 func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, milestoneDB *MilestoneDB) (Error error) {
 
-	milestone := (*backRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	milestone := backRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB.ID]
 	_ = milestone // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -391,11 +359,11 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwoInstance(backR
 	// 1. reset the slice
 	milestone.LanesToDisplayMilestoneUse = milestone.LanesToDisplayMilestoneUse[:0]
 	// 2. loop all instances in the type in the association end
-	for _, laneuseDB_AssocEnd := range *backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
+	for _, laneuseDB_AssocEnd := range backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if laneuseDB_AssocEnd.Milestone_LanesToDisplayMilestoneUseDBID.Int64 == int64(milestoneDB.ID) {
 			// 4. fetch the associated instance in the stage
-			laneuse_AssocEnd := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB_AssocEnd.ID]
+			laneuse_AssocEnd := backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB_AssocEnd.ID]
 			// 5. append it the association slice
 			milestone.LanesToDisplayMilestoneUse = append(milestone.LanesToDisplayMilestoneUse, laneuse_AssocEnd)
 		}
@@ -403,11 +371,11 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwoInstance(backR
 
 	// sort the array according to the order
 	sort.Slice(milestone.LanesToDisplayMilestoneUse, func(i, j int) bool {
-		laneuseDB_i_ID := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[milestone.LanesToDisplayMilestoneUse[i]]
-		laneuseDB_j_ID := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[milestone.LanesToDisplayMilestoneUse[j]]
+		laneuseDB_i_ID := backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[milestone.LanesToDisplayMilestoneUse[i]]
+		laneuseDB_j_ID := backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[milestone.LanesToDisplayMilestoneUse[j]]
 
-		laneuseDB_i := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[laneuseDB_i_ID]
-		laneuseDB_j := (*backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[laneuseDB_j_ID]
+		laneuseDB_i := backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB_i_ID]
+		laneuseDB_j := backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB_j_ID]
 
 		return laneuseDB_i.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64 < laneuseDB_j.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64
 	})
@@ -418,7 +386,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwoInstance(backR
 // CommitMilestone allows commit of a single milestone (if already staged)
 func (backRepo *BackRepoStruct) CommitMilestone(milestone *models.Milestone) {
 	backRepo.BackRepoMilestone.CommitPhaseOneInstance(milestone)
-	if id, ok := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]; ok {
+	if id, ok := backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID[milestone]; ok {
 		backRepo.BackRepoMilestone.CommitPhaseTwoInstance(backRepo, id, milestone)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -427,9 +395,9 @@ func (backRepo *BackRepoStruct) CommitMilestone(milestone *models.Milestone) {
 // CommitMilestone allows checkout of a single milestone (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutMilestone(milestone *models.Milestone) {
 	// check if the milestone is staged
-	if _, ok := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]; ok {
+	if _, ok := backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID[milestone]; ok {
 
-		if id, ok := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[milestone]; ok {
+		if id, ok := backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID[milestone]; ok {
 			var milestoneDB MilestoneDB
 			milestoneDB.ID = id
 
@@ -495,7 +463,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*MilestoneDB, 0)
-	for _, milestoneDB := range *backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
+	for _, milestoneDB := range backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
 		forBackup = append(forBackup, milestoneDB)
 	}
 
@@ -521,7 +489,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*MilestoneDB, 0)
-	for _, milestoneDB := range *backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
+	for _, milestoneDB := range backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
 		forBackup = append(forBackup, milestoneDB)
 	}
 
@@ -586,7 +554,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) rowVisitorMilestone(row *xlsx.
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB.ID] = milestoneDB
+		backRepoMilestone.Map_MilestoneDBID_MilestoneDB[milestoneDB.ID] = milestoneDB
 		BackRepoMilestoneid_atBckpTime_newID[milestoneDB_ID_atBackupTime] = milestoneDB.ID
 	}
 	return nil
@@ -623,7 +591,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseOne(dirPath string
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB.ID] = milestoneDB
+		backRepoMilestone.Map_MilestoneDBID_MilestoneDB[milestoneDB.ID] = milestoneDB
 		BackRepoMilestoneid_atBckpTime_newID[milestoneDB_ID_atBackupTime] = milestoneDB.ID
 	}
 
@@ -636,7 +604,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseOne(dirPath string
 // to compute new index
 func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseTwo() {
 
-	for _, milestoneDB := range *backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
+	for _, milestoneDB := range backRepoMilestone.Map_MilestoneDBID_MilestoneDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = milestoneDB

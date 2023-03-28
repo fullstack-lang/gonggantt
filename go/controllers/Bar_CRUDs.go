@@ -151,7 +151,7 @@ func (controller *Controller) PostBar(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoBar.CheckoutPhaseOneInstance(&barDB)
-	bar := (*backRepo.BackRepoBar.Map_BarDBID_BarPtr)[barDB.ID]
+	bar := backRepo.BackRepoBar.Map_BarDBID_BarPtr[barDB.ID]
 
 	if bar != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), bar)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateBar(c *gin.Context) {
 	barDB.CopyBasicFieldsToBar(barNew)
 
 	// get stage instance from DB instance, and call callback function
-	barOld := (*backRepo.BackRepoBar.Map_BarDBID_BarPtr)[barDB.ID]
+	barOld := backRepo.BackRepoBar.Map_BarDBID_BarPtr[barDB.ID]
 	if barOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), barOld, barNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteBar(c *gin.Context) {
 	barDB.CopyBasicFieldsToBar(barDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	barStaged := (*backRepo.BackRepoBar.Map_BarDBID_BarPtr)[barDB.ID]
+	barStaged := backRepo.BackRepoBar.Map_BarDBID_BarPtr[barDB.ID]
 	if barStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), barStaged, barDeleted)
 	}

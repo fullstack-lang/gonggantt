@@ -151,7 +151,7 @@ func (controller *Controller) PostLane(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoLane.CheckoutPhaseOneInstance(&laneDB)
-	lane := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+	lane := backRepo.BackRepoLane.Map_LaneDBID_LanePtr[laneDB.ID]
 
 	if lane != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), lane)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateLane(c *gin.Context) {
 	laneDB.CopyBasicFieldsToLane(laneNew)
 
 	// get stage instance from DB instance, and call callback function
-	laneOld := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+	laneOld := backRepo.BackRepoLane.Map_LaneDBID_LanePtr[laneDB.ID]
 	if laneOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), laneOld, laneNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteLane(c *gin.Context) {
 	laneDB.CopyBasicFieldsToLane(laneDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	laneStaged := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB.ID]
+	laneStaged := backRepo.BackRepoLane.Map_LaneDBID_LanePtr[laneDB.ID]
 	if laneStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), laneStaged, laneDeleted)
 	}

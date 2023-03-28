@@ -151,7 +151,7 @@ func (controller *Controller) PostGroup(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoGroup.CheckoutPhaseOneInstance(&groupDB)
-	group := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	group := backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr[groupDB.ID]
 
 	if group != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), group)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateGroup(c *gin.Context) {
 	groupDB.CopyBasicFieldsToGroup(groupNew)
 
 	// get stage instance from DB instance, and call callback function
-	groupOld := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	groupOld := backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr[groupDB.ID]
 	if groupOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), groupOld, groupNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteGroup(c *gin.Context) {
 	groupDB.CopyBasicFieldsToGroup(groupDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	groupStaged := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	groupStaged := backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr[groupDB.ID]
 	if groupStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), groupStaged, groupDeleted)
 	}

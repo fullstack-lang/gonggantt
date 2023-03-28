@@ -151,7 +151,7 @@ func (controller *Controller) PostMilestone(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoMilestone.CheckoutPhaseOneInstance(&milestoneDB)
-	milestone := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	milestone := backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB.ID]
 
 	if milestone != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), milestone)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateMilestone(c *gin.Context) {
 	milestoneDB.CopyBasicFieldsToMilestone(milestoneNew)
 
 	// get stage instance from DB instance, and call callback function
-	milestoneOld := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	milestoneOld := backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB.ID]
 	if milestoneOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), milestoneOld, milestoneNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteMilestone(c *gin.Context) {
 	milestoneDB.CopyBasicFieldsToMilestone(milestoneDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	milestoneStaged := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB.ID]
+	milestoneStaged := backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB.ID]
 	if milestoneStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), milestoneStaged, milestoneDeleted)
 	}

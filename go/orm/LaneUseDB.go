@@ -103,13 +103,13 @@ var LaneUse_Fields = []string{
 
 type BackRepoLaneUseStruct struct {
 	// stores LaneUseDB according to their gorm ID
-	Map_LaneUseDBID_LaneUseDB *map[uint]*LaneUseDB
+	Map_LaneUseDBID_LaneUseDB map[uint]*LaneUseDB
 
 	// stores LaneUseDB ID according to LaneUse address
-	Map_LaneUsePtr_LaneUseDBID *map[*models.LaneUse]uint
+	Map_LaneUsePtr_LaneUseDBID map[*models.LaneUse]uint
 
 	// stores LaneUse according to their gorm ID
-	Map_LaneUseDBID_LaneUsePtr *map[uint]*models.LaneUse
+	Map_LaneUseDBID_LaneUsePtr map[uint]*models.LaneUse
 
 	db *gorm.DB
 
@@ -127,40 +127,8 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) GetDB() *gorm.DB {
 
 // GetLaneUseDBFromLaneUsePtr is a handy function to access the back repo instance from the stage instance
 func (backRepoLaneUse *BackRepoLaneUseStruct) GetLaneUseDBFromLaneUsePtr(laneuse *models.LaneUse) (laneuseDB *LaneUseDB) {
-	id := (*backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[laneuse]
-	laneuseDB = (*backRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[id]
-	return
-}
-
-// BackRepoLaneUse.Init set up the BackRepo of the LaneUse
-func (backRepoLaneUse *BackRepoLaneUseStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr != nil {
-		err := errors.New("In Init, backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr should be nil")
-		return err
-	}
-
-	if backRepoLaneUse.Map_LaneUseDBID_LaneUseDB != nil {
-		err := errors.New("In Init, backRepoLaneUse.Map_LaneUseDBID_LaneUseDB should be nil")
-		return err
-	}
-
-	if backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID != nil {
-		err := errors.New("In Init, backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.LaneUse, 0)
-	backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr = &tmp
-
-	tmpDB := make(map[uint]*LaneUseDB, 0)
-	backRepoLaneUse.Map_LaneUseDBID_LaneUseDB = &tmpDB
-
-	tmpID := make(map[*models.LaneUse]uint, 0)
-	backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID = &tmpID
-
-	backRepoLaneUse.db = db
-	backRepoLaneUse.stage = stage
+	id := backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[laneuse]
+	laneuseDB = backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[id]
 	return
 }
 
@@ -174,7 +142,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseOne(stage *models.Stage
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, laneuse := range *backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr {
+	for id, laneuse := range backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr {
 		if _, ok := stage.LaneUses[laneuse]; !ok {
 			backRepoLaneUse.CommitDeleteInstance(id)
 		}
@@ -186,19 +154,19 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseOne(stage *models.Stage
 // BackRepoLaneUse.CommitDeleteInstance commits deletion of LaneUse to the BackRepo
 func (backRepoLaneUse *BackRepoLaneUseStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	laneuse := (*backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[id]
+	laneuse := backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[id]
 
 	// laneuse is not staged anymore, remove laneuseDB
-	laneuseDB := (*backRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[id]
+	laneuseDB := backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[id]
 	query := backRepoLaneUse.db.Unscoped().Delete(&laneuseDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID), laneuse)
-	delete((*backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr), id)
-	delete((*backRepoLaneUse.Map_LaneUseDBID_LaneUseDB), id)
+	delete(backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID, laneuse)
+	delete(backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr, id)
+	delete(backRepoLaneUse.Map_LaneUseDBID_LaneUseDB, id)
 
 	return
 }
@@ -208,7 +176,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitDeleteInstance(id uint) (Err
 func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseOneInstance(laneuse *models.LaneUse) (Error error) {
 
 	// check if the laneuse is not commited yet
-	if _, ok := (*backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[laneuse]; ok {
+	if _, ok := backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[laneuse]; ok {
 		return
 	}
 
@@ -222,9 +190,9 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseOneInstance(laneuse *mo
 	}
 
 	// update stores
-	(*backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[laneuse] = laneuseDB.ID
-	(*backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID] = laneuse
-	(*backRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[laneuseDB.ID] = &laneuseDB
+	backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[laneuse] = laneuseDB.ID
+	backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB.ID] = laneuse
+	backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB.ID] = &laneuseDB
 
 	return
 }
@@ -233,7 +201,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseOneInstance(laneuse *mo
 // Phase Two is the update of instance with the field in the database
 func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, laneuse := range *backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr {
+	for idx, laneuse := range backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr {
 		backRepoLaneUse.CommitPhaseTwoInstance(backRepo, idx, laneuse)
 	}
 
@@ -245,7 +213,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseTwo(backRepo *BackRepoS
 func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, laneuse *models.LaneUse) (Error error) {
 
 	// fetch matching laneuseDB
-	if laneuseDB, ok := (*backRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[idx]; ok {
+	if laneuseDB, ok := backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[idx]; ok {
 
 		laneuseDB.CopyBasicFieldsFromLaneUse(laneuse)
 
@@ -253,7 +221,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseTwoInstance(backRepo *B
 		// commit pointer value laneuse.Lane translates to updating the laneuse.LaneID
 		laneuseDB.LaneID.Valid = true // allow for a 0 value (nil association)
 		if laneuse.Lane != nil {
-			if LaneId, ok := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[laneuse.Lane]; ok {
+			if LaneId, ok := backRepo.BackRepoLane.Map_LanePtr_LaneDBID[laneuse.Lane]; ok {
 				laneuseDB.LaneID.Int64 = int64(LaneId)
 				laneuseDB.LaneID.Valid = true
 			}
@@ -298,7 +266,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		laneuse, ok := (*backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+		laneuse, ok := backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB.ID]
 		if ok {
 			delete(laneuseInstancesToBeRemovedFromTheStage, laneuse)
 		}
@@ -309,10 +277,10 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOne() (Error error) {
 		laneuse.Unstage(backRepoLaneUse.GetStage())
 
 		// remove instance from the back repo 3 maps
-		laneuseID := (*backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[laneuse]
-		delete((*backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID), laneuse)
-		delete((*backRepoLaneUse.Map_LaneUseDBID_LaneUseDB), laneuseID)
-		delete((*backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr), laneuseID)
+		laneuseID := backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[laneuse]
+		delete(backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID, laneuse)
+		delete(backRepoLaneUse.Map_LaneUseDBID_LaneUseDB, laneuseID)
+		delete(backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr, laneuseID)
 	}
 
 	return
@@ -322,12 +290,12 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOne() (Error error) {
 // models version of the laneuseDB
 func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOneInstance(laneuseDB *LaneUseDB) (Error error) {
 
-	laneuse, ok := (*backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+	laneuse, ok := backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB.ID]
 	if !ok {
 		laneuse = new(models.LaneUse)
 
-		(*backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID] = laneuse
-		(*backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[laneuse] = laneuseDB.ID
+		backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB.ID] = laneuse
+		backRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[laneuse] = laneuseDB.ID
 
 		// append model store with the new element
 		laneuse.Name = laneuseDB.Name_Data.String
@@ -342,7 +310,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOneInstance(laneuseDB
 	// Map_LaneUseDBID_LaneUseDB)[laneuseDB hold variable pointers
 	laneuseDB_Data := *laneuseDB
 	preservedPtrToLaneUse := &laneuseDB_Data
-	(*backRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[laneuseDB.ID] = preservedPtrToLaneUse
+	backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB.ID] = preservedPtrToLaneUse
 
 	return
 }
@@ -352,7 +320,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOneInstance(laneuseDB
 func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, laneuseDB := range *backRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
+	for _, laneuseDB := range backRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
 		backRepoLaneUse.CheckoutPhaseTwoInstance(backRepo, laneuseDB)
 	}
 	return
@@ -362,13 +330,13 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseTwo(backRepo *BackRep
 // Phase Two is the update of instance with the field in the database
 func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, laneuseDB *LaneUseDB) (Error error) {
 
-	laneuse := (*backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr)[laneuseDB.ID]
+	laneuse := backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB.ID]
 	_ = laneuse // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
 	// Lane field
 	if laneuseDB.LaneID.Int64 != 0 {
-		laneuse.Lane = (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[uint(laneuseDB.LaneID.Int64)]
+		laneuse.Lane = backRepo.BackRepoLane.Map_LaneDBID_LanePtr[uint(laneuseDB.LaneID.Int64)]
 	}
 	return
 }
@@ -376,7 +344,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseTwoInstance(backRepo 
 // CommitLaneUse allows commit of a single laneuse (if already staged)
 func (backRepo *BackRepoStruct) CommitLaneUse(laneuse *models.LaneUse) {
 	backRepo.BackRepoLaneUse.CommitPhaseOneInstance(laneuse)
-	if id, ok := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[laneuse]; ok {
+	if id, ok := backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[laneuse]; ok {
 		backRepo.BackRepoLaneUse.CommitPhaseTwoInstance(backRepo, id, laneuse)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -385,9 +353,9 @@ func (backRepo *BackRepoStruct) CommitLaneUse(laneuse *models.LaneUse) {
 // CommitLaneUse allows checkout of a single laneuse (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutLaneUse(laneuse *models.LaneUse) {
 	// check if the laneuse is staged
-	if _, ok := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[laneuse]; ok {
+	if _, ok := backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[laneuse]; ok {
 
-		if id, ok := (*backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID)[laneuse]; ok {
+		if id, ok := backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[laneuse]; ok {
 			var laneuseDB LaneUseDB
 			laneuseDB.ID = id
 
@@ -437,7 +405,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*LaneUseDB, 0)
-	for _, laneuseDB := range *backRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
+	for _, laneuseDB := range backRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
 		forBackup = append(forBackup, laneuseDB)
 	}
 
@@ -463,7 +431,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*LaneUseDB, 0)
-	for _, laneuseDB := range *backRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
+	for _, laneuseDB := range backRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
 		forBackup = append(forBackup, laneuseDB)
 	}
 
@@ -528,7 +496,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) rowVisitorLaneUse(row *xlsx.Row) e
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[laneuseDB.ID] = laneuseDB
+		backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB.ID] = laneuseDB
 		BackRepoLaneUseid_atBckpTime_newID[laneuseDB_ID_atBackupTime] = laneuseDB.ID
 	}
 	return nil
@@ -565,7 +533,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoLaneUse.Map_LaneUseDBID_LaneUseDB)[laneuseDB.ID] = laneuseDB
+		backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB.ID] = laneuseDB
 		BackRepoLaneUseid_atBckpTime_newID[laneuseDB_ID_atBackupTime] = laneuseDB.ID
 	}
 
@@ -578,7 +546,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseTwo() {
 
-	for _, laneuseDB := range *backRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
+	for _, laneuseDB := range backRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = laneuseDB
