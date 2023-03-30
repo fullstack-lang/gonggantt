@@ -12,10 +12,11 @@ import * as gonggantt from 'gonggantt'
 export class AppComponent implements OnInit {
 
   default = 'Gantt diagram Data/Model'
+  svg = 'SVG diagram Data/Model'
   gantt = "Gantt diagram"
   view = this.gantt
 
-  views: string[] = [this.gantt, this.default];
+  views: string[] = [this.gantt, this.default, this.svg];
 
   GONG__GANTT__StackPath = "github.com/fullstack-lang/gonggantt/go/models"
   GONG__SVG__StackPath = "github.com/fullstack-lang/gongsvg/go/models"

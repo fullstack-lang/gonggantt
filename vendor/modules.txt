@@ -19,6 +19,7 @@ github.com/fullstack-lang/gongdoc/go/orm
 github.com/fullstack-lang/gongdoc/ng/projects
 # github.com/fullstack-lang/gongsvg v0.0.0-20230330134729-8fb4172a6a16
 ## explicit; go 1.19
+github.com/fullstack-lang/gongsvg/go
 github.com/fullstack-lang/gongsvg/go/controllers
 github.com/fullstack-lang/gongsvg/go/fullstack
 github.com/fullstack-lang/gongsvg/go/models

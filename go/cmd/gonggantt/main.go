@@ -16,6 +16,7 @@ import (
 
 	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
+	gongsvg_go "github.com/fullstack-lang/gongsvg/go"
 	gongsvg_fullstack "github.com/fullstack-lang/gongsvg/go/fullstack"
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
@@ -101,6 +102,15 @@ func main() {
 		"github.com/fullstack-lang/gonggantt/go/models",
 		gonggantt_go.GoModelsDir,
 		gonggantt_go.GoDiagramsDir,
+		r,
+		*embeddedDiagrams,
+		&gonganttStage.Map_GongStructName_InstancesNb)
+
+	gongdoc_load.Load(
+		"gongsvg",
+		"github.com/fullstack-lang/gongvg/go/models",
+		gongsvg_go.GoModelsDir,
+		gongsvg_go.GoDiagramsDir,
 		r,
 		*embeddedDiagrams,
 		&gonganttStage.Map_GongStructName_InstancesNb)
