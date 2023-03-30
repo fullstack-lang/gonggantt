@@ -6,13 +6,15 @@ import (
 	"log"
 	"os"
 
-	"github.com/fullstack-lang/gonggantt"
+	gonggantt_go "github.com/fullstack-lang/gonggantt/go"
 	gonggantt_fullstack "github.com/fullstack-lang/gonggantt/go/fullstack"
-	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
+
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_static "github.com/fullstack-lang/gonggantt/go/static"
 
 	gongdoc_load "github.com/fullstack-lang/gongdoc/go/load"
+
+	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
 	gongsvg_fullstack "github.com/fullstack-lang/gongsvg/go/fullstack"
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
@@ -36,6 +38,7 @@ var (
 // InjectionGateway stores function as a map of names
 var InjectionGateway = make(map[string](func()))
 
+// hook marhalling to stage
 type BeforeCommitImplementation struct {
 	gongsvgStage *gongsvg_models.StageStruct
 }
@@ -96,7 +99,8 @@ func main() {
 	gongdoc_load.Load(
 		"gonggantt",
 		"github.com/fullstack-lang/gonggantt/go/models",
-		gonggantt.GoDir,
+		gonggantt_go.GoModelsDir,
+		gonggantt_go.GoDiagramsDir,
 		r,
 		*embeddedDiagrams,
 		&gonganttStage.Map_GongStructName_InstancesNb)
