@@ -6,12 +6,12 @@ github.com/dustin/go-humanize v1.0.0/go.mod h1:HtrtbFcZ19U5GC7JDqmcUSB87Iq5E25Kn
 github.com/frankban/quicktest v1.11.2/go.mod h1:K+q6oSqb0W0Ininfk863uOk1lMy69l/P6txr3mVT54s=
 github.com/frankban/quicktest v1.13.1 h1:xVm/f9seEhZFL9+n5kv5XLrGwy6elc4V9v/XFY2vmd8=
 github.com/frankban/quicktest v1.13.1/go.mod h1:NeW+ay9A/U67EYXNFA1nPE8e/tnQv/09mUdL/ijj8og=
-github.com/fullstack-lang/gong v0.0.0-20230327102741-8286de82e2e5 h1:FWMZHTBGyHWWR7PvI0xEy3xhstEcsCThZPZLdXfgPR8=
-github.com/fullstack-lang/gong v0.0.0-20230327102741-8286de82e2e5/go.mod h1:WLRNfhtCAT9KXaZBOrGr5ZYr5QCuAstDS+3TKQfvBzM=
+github.com/fullstack-lang/gong v0.0.0-20230329115124-af53cc0c9a78 h1:o9a0YU2tKLih7xTPl6f5Qh3rMdf67MHGoNobWP7AMMg=
+github.com/fullstack-lang/gong v0.0.0-20230329115124-af53cc0c9a78/go.mod h1:WLRNfhtCAT9KXaZBOrGr5ZYr5QCuAstDS+3TKQfvBzM=
 github.com/fullstack-lang/gongdoc v0.0.0-20230327093817-7052fda24a33 h1:JAuHjpK9TAM7eJ2Qw0i8pPD/4cwQsb4VA72eqC4gRpQ=
 github.com/fullstack-lang/gongdoc v0.0.0-20230327093817-7052fda24a33/go.mod h1:gGIVCBpBLvVAnQQV49cP9xVGvIoCm+O3sEKvgR4Ll84=
-github.com/fullstack-lang/gongsvg v0.0.0-20230328134332-5cd2b3a2d42a h1:7HtQO84jiuFWPeD3TC50ujU/g5X8FpkSBkNFv0OWwxc=
-github.com/fullstack-lang/gongsvg v0.0.0-20230328134332-5cd2b3a2d42a/go.mod h1:yXO3DVA+9zwsVEPMsCmH0lhLfUARwXsu3fhO3jJI8l8=
+github.com/fullstack-lang/gongsvg v0.0.0-20230329115319-6732156f8ac0 h1:uwVeeGucDHkfvgxhXR8GqyEf1gyIKnVeCjH0yPwAXFE=
+github.com/fullstack-lang/gongsvg v0.0.0-20230329115319-6732156f8ac0/go.mod h1:yXO3DVA+9zwsVEPMsCmH0lhLfUARwXsu3fhO3jJI8l8=
 github.com/gin-contrib/cors v1.4.0 h1:oJ6gwtUl3lqV0WEIwM/LxPF1QZ5qe2lGWdY2+bz7y0g=
 github.com/gin-contrib/cors v1.4.0/go.mod h1:bs9pNM0x/UsmHPBWT2xZz9ROh8xYjYkiURUfmBoMlcs=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=

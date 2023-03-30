@@ -65,8 +65,8 @@ func main() {
 	r := gonggantt_static.ServeStaticFiles(*logGINFlag)
 
 	// setup stack
-	gonganttStage := gonggantt_fullstack.NewStackInstance("github.com/fullstack-lang/gonggantt/go/models")
-	gongsvgStage := gongsvg_fullstack.NewStackInstance("github.com/fullstack-lang/gonggantt/go/models")
+	gonganttStage := gonggantt_fullstack.NewStackInstance(r, "github.com/fullstack-lang/gonggantt/go/models")
+	gongsvgStage := gongsvg_fullstack.NewStackInstance(r, "github.com/fullstack-lang/gonggantt/go/models")
 
 	if *unmarshallFromCode != "" {
 		gonganttStage.Checkout()

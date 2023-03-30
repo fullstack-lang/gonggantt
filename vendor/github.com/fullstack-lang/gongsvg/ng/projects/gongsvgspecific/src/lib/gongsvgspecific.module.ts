@@ -9,7 +9,18 @@ import { LineComponent } from './line/line.component';
 import { EllipseComponent } from './ellipse/ellipse.component';
 import { PolylineComponent } from './polyline/polyline.component';
 import { PathComponent } from './path/path.component';
-import { PolygoneComponent } from './polygone/polygone.component'
+import { PolygoneComponent } from './polygone/polygone.component';
+import { DataModelPanelComponent } from './data-model-panel/data-model-panel.component'
+
+import { GongdocModule } from 'gongdoc'
+import { GongdocdiagramsModule } from 'gongdocdiagrams'
+
+import { MatRadioModule } from '@angular/material/radio';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { AngularSplitModule } from 'angular-split';
+
+import { GongsvgModule } from 'gongsvg';
 
 
 
@@ -24,14 +35,26 @@ import { PolygoneComponent } from './polygone/polygone.component'
     EllipseComponent,
     PolylineComponent,
     PathComponent,
-    PolygoneComponent
+    PolygoneComponent,
+    DataModelPanelComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    GongdocModule,
+    GongdocdiagramsModule,
+
+    MatRadioModule,
+    FormsModule,
+    CommonModule,
+
+    AngularSplitModule,
+
+    GongsvgModule
   ],
   exports: [
     GongsvgspecificComponent,
-    SvgComponent
+    SvgComponent,
+    DataModelPanelComponent
   ]
 })
 export class GongsvgspecificModule { }

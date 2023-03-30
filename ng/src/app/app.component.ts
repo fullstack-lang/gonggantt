@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable, combineLatest, timer } from 'rxjs'
 
 import * as gongdoc from 'gongdoc'
-import * as gongsvg from 'gongsvg'
+import * as gonggantt from 'gonggantt'
 
 @Component({
   selector: 'app-root',
@@ -11,18 +11,12 @@ import * as gongsvg from 'gongsvg'
 })
 export class AppComponent implements OnInit {
 
+  default = 'Gonggantt Data/Model'
+  view = this.default
 
-  GONG__StackPath="github.com/fullstack-lang/gonggantt/go/models"
+  views: string[] = [this.default];
 
-  view = 'View'
-  default = 'View'
-  data = 'Data'
-  model = 'Model'
-
-  loading = true
-
-  views: string[] = [this.default, this.data, this.model];
-
+  GONG__StackPath = "github.com/fullstack-lang/gonggantt/go/models"
 
   constructor(
   ) {
@@ -30,6 +24,5 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loading = false
   }
 }

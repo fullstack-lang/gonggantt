@@ -4,10 +4,17 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
-    "sourceMap": true,
-    "declaration": false,
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "noImplicitOverride": true,
     "paths": {
+      // 
+      // https://angular.io/guide/creating-libraries#use-typescript-path-mapping-for-peer-dependencies
+      //
+      // Angular libraries should list any @angular/* 
+      // dependencies the library depends on as peer dependencies. This ensures that when modules ask for Angular, 
+      // they all get the exact same module. If a library lists @angular/core in dependencies instead of peerDependencies, 
+      // it might get a different Angular module instead, which would cause your application to break.
       "@angular/*": [
         "./node_modules/@angular/*"
       ],
@@ -32,14 +39,18 @@
       "leaflet-rotatedmarker": [
         "./node_modules/leaflet-rotatedmarker"
       ],
-      "jointjs": [
-        "./node_modules/jointjs"
-      ],
       "lodash": [
         "./node_modules/lodash"
       ],
-      "@types/jointjs": [
-        "./node_modules/@types/jointjs"
+      "@types/loash": [
+        "./node_modules/@types/loash"
+      ],
+      "jointjs": [
+        "./node_modules/jointjs"
+      ],
+      "gongganttspecific": [
+        "projects/gongganttspecific/src/public-api.ts",
+        "dist/gongganttspecific"
       ],
       "@angular-material-components/datetime-picker": [
         "./node_modules/@angular-material-components/datetime-picker"
@@ -60,7 +71,7 @@
         "../vendor/github.com/fullstack-lang/gongdoc/ng/projects/gongdocdiagrams/src/public-api.ts"
       ],
       "gonggantt": [
-        "projects/gonggantt/src/public-api.ts"
+        "projects/gonggantt/src/public-api.ts",
       ],
       "gongsvg": [
         "../vendor/github.com/fullstack-lang/gongsvg/ng/projects/gongsvg/src/public-api.ts"
@@ -69,20 +80,28 @@
         "../vendor/github.com/fullstack-lang/gongsvg/ng/projects/gongsvgspecific/src/public-api.ts"
       ]
     },
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "es2020",
+    "module": "ES2022",
+    "useDefineForClassFields": false,
     "lib": [
-      "es2018",
+      "ES2022",
       "dom"
     ],
-    "skipLibCheck": true,
-    "useDefineForClassFields": false
+    "skipLibCheck": true
   },
   "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
   }
 }
