@@ -108,7 +108,7 @@ func main() {
 
 	gongdoc_load.Load(
 		"gongsvg",
-		"github.com/fullstack-lang/gongvg/go/models",
+		"github.com/fullstack-lang/gongsvg/go/models",
 		gongsvg_go.GoModelsDir,
 		gongsvg_go.GoDiagramsDir,
 		r,
