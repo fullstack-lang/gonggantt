@@ -11,10 +11,11 @@ import * as gonggantt from 'gonggantt'
 })
 export class AppComponent implements OnInit {
 
-  default = 'Gonggantt Data/Model'
-  view = this.default
+  default = 'Gantt diagram Data/Model'
+  gantt = "Gantt diagram"
+  view = this.gantt
 
-  views: string[] = [this.default];
+  views: string[] = [this.gantt, this.default];
 
   GONG__StackPath = "github.com/fullstack-lang/gonggantt/go/models"
 
