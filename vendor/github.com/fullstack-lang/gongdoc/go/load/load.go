@@ -42,11 +42,11 @@ func Load(
 	// prepare the model views
 	var diagramPackage *gongdoc_models.DiagramPackage
 
-	gongdoc_models.GetDefaultStage().MetaPackageImportAlias = stackName
-	gongdoc_models.GetDefaultStage().MetaPackageImportPath = pkgPath
+	gongdocStage.MetaPackageImportAlias = stackName
+	gongdocStage.MetaPackageImportPath = pkgPath
 
 	if embeddedDiagrams {
-		diagramPackage, _ = LoadEmbeddedDiagramPackage(goDiagramsDir, modelPackage)
+		diagramPackage, _ = LoadEmbeddedDiagramPackage(gongdocStage, goDiagramsDir, modelPackage)
 	} else {
 		diagramPackage, _ = LoadDiagramPackage(gongdocStage, filepath.Join("../../diagrams"), modelPackage, true)
 	}

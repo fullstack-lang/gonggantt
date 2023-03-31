@@ -112,7 +112,7 @@ func main() {
 		gongsvg_go.GoModelsDir,
 		gongsvg_go.GoDiagramsDir,
 		r,
-		*embeddedDiagrams,
+		true,
 		&gonganttStage.Map_GongStructName_InstancesNb)
 
 	// initial publication
