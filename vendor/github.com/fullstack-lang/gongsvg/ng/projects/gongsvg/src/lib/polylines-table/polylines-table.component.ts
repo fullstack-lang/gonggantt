@@ -19,6 +19,8 @@ import { PolylineService } from '../polyline.service'
 
 // insertion point for additional imports
 
+import { RouteService } from '../route-service';
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -151,6 +153,8 @@ export class PolylinesTableComponent implements OnInit {
 
     private router: Router,
     private activatedRoute: ActivatedRoute,
+
+    private routeService: RouteService,
   ) {
 
     // compute mode
@@ -283,18 +287,15 @@ export class PolylinesTableComponent implements OnInit {
 
   }
 
-  // display polyline in router
-  displayPolylineInRouter(polylineID: number) {
-    this.router.navigate(["github_com_fullstack_lang_gongsvg_go-" + "polyline-display", polylineID])
-  }
-
   // set editor outlet
   setEditorRouterOutlet(polylineID: number) {
-    this.router.navigate([{
-      outlets: {
-        github_com_fullstack_lang_gongsvg_go_editor: ["github_com_fullstack_lang_gongsvg_go-" + "polyline-detail", polylineID, this.GONG__StackPath]
-      }
-    }]);
+    let outletName = this.routeService.getEditorOutlet(this.GONG__StackPath)
+    let fullPath = this.routeService.getPathRoot() + "-" + "polyline" + "-detail"
+
+    let outletConf: any = {}
+    outletConf[outletName] = [fullPath, polylineID, this.GONG__StackPath]
+
+    this.router.navigate([{ outlets: outletConf }])
   }
 
   /** Whether the number of selected elements matches the total number of rows. */

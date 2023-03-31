@@ -151,7 +151,7 @@ func (controller *Controller) PostSVG(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoSVG.CheckoutPhaseOneInstance(&svgDB)
-	svg := (*backRepo.BackRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID]
+	svg := backRepo.BackRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID]
 
 	if svg != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), svg)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateSVG(c *gin.Context) {
 	svgDB.CopyBasicFieldsToSVG(svgNew)
 
 	// get stage instance from DB instance, and call callback function
-	svgOld := (*backRepo.BackRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID]
+	svgOld := backRepo.BackRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID]
 	if svgOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), svgOld, svgNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteSVG(c *gin.Context) {
 	svgDB.CopyBasicFieldsToSVG(svgDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	svgStaged := (*backRepo.BackRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID]
+	svgStaged := backRepo.BackRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID]
 	if svgStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), svgStaged, svgDeleted)
 	}

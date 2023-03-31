@@ -1,24 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+
+import { Observable, combineLatest, timer } from 'rxjs'
+
+import * as gongdoc from 'gongdoc'
+import * as gonggantt from 'gonggantt'
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  
-  view = 'Gantt view'
-  
-  gantt = 'Gantt view'
-  data_gantt = 'Data gantt view'
+export class AppComponent implements OnInit {
 
-  meta = 'Meta view'
-  
-  data_svg = 'Data svg view'
+  default = 'Gantt diagram Data/Model'
+  svg = 'SVG diagram Data/Model'
+  gantt = "Gantt diagram"
+  view = this.gantt
 
-  uml_view = 'Uml view'
-  
-  views: string[] = [this.gantt, this.data_gantt, this.data_svg, this.uml_view, this.meta];
+  views: string[] = [this.gantt, this.default, this.svg];
 
+  GONG__GANTT__StackPath = "github.com/fullstack-lang/gonggantt/go/models"
+  GONG__SVG__StackPath = "github.com/fullstack-lang/gongsvg/go/models"
 
+  constructor(
+  ) {
+
+  }
+
+  ngOnInit(): void {
+  }
 }

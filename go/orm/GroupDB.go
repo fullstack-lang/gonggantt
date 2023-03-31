@@ -99,13 +99,13 @@ var Group_Fields = []string{
 
 type BackRepoGroupStruct struct {
 	// stores GroupDB according to their gorm ID
-	Map_GroupDBID_GroupDB *map[uint]*GroupDB
+	Map_GroupDBID_GroupDB map[uint]*GroupDB
 
 	// stores GroupDB ID according to Group address
-	Map_GroupPtr_GroupDBID *map[*models.Group]uint
+	Map_GroupPtr_GroupDBID map[*models.Group]uint
 
 	// stores Group according to their gorm ID
-	Map_GroupDBID_GroupPtr *map[uint]*models.Group
+	Map_GroupDBID_GroupPtr map[uint]*models.Group
 
 	db *gorm.DB
 
@@ -123,40 +123,8 @@ func (backRepoGroup *BackRepoGroupStruct) GetDB() *gorm.DB {
 
 // GetGroupDBFromGroupPtr is a handy function to access the back repo instance from the stage instance
 func (backRepoGroup *BackRepoGroupStruct) GetGroupDBFromGroupPtr(group *models.Group) (groupDB *GroupDB) {
-	id := (*backRepoGroup.Map_GroupPtr_GroupDBID)[group]
-	groupDB = (*backRepoGroup.Map_GroupDBID_GroupDB)[id]
-	return
-}
-
-// BackRepoGroup.Init set up the BackRepo of the Group
-func (backRepoGroup *BackRepoGroupStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoGroup.Map_GroupDBID_GroupPtr != nil {
-		err := errors.New("In Init, backRepoGroup.Map_GroupDBID_GroupPtr should be nil")
-		return err
-	}
-
-	if backRepoGroup.Map_GroupDBID_GroupDB != nil {
-		err := errors.New("In Init, backRepoGroup.Map_GroupDBID_GroupDB should be nil")
-		return err
-	}
-
-	if backRepoGroup.Map_GroupPtr_GroupDBID != nil {
-		err := errors.New("In Init, backRepoGroup.Map_GroupPtr_GroupDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Group, 0)
-	backRepoGroup.Map_GroupDBID_GroupPtr = &tmp
-
-	tmpDB := make(map[uint]*GroupDB, 0)
-	backRepoGroup.Map_GroupDBID_GroupDB = &tmpDB
-
-	tmpID := make(map[*models.Group]uint, 0)
-	backRepoGroup.Map_GroupPtr_GroupDBID = &tmpID
-
-	backRepoGroup.db = db
-	backRepoGroup.stage = stage
+	id := backRepoGroup.Map_GroupPtr_GroupDBID[group]
+	groupDB = backRepoGroup.Map_GroupDBID_GroupDB[id]
 	return
 }
 
@@ -170,7 +138,7 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseOne(stage *models.StageStru
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, group := range *backRepoGroup.Map_GroupDBID_GroupPtr {
+	for id, group := range backRepoGroup.Map_GroupDBID_GroupPtr {
 		if _, ok := stage.Groups[group]; !ok {
 			backRepoGroup.CommitDeleteInstance(id)
 		}
@@ -182,19 +150,19 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseOne(stage *models.StageStru
 // BackRepoGroup.CommitDeleteInstance commits deletion of Group to the BackRepo
 func (backRepoGroup *BackRepoGroupStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	group := (*backRepoGroup.Map_GroupDBID_GroupPtr)[id]
+	group := backRepoGroup.Map_GroupDBID_GroupPtr[id]
 
 	// group is not staged anymore, remove groupDB
-	groupDB := (*backRepoGroup.Map_GroupDBID_GroupDB)[id]
+	groupDB := backRepoGroup.Map_GroupDBID_GroupDB[id]
 	query := backRepoGroup.db.Unscoped().Delete(&groupDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoGroup.Map_GroupPtr_GroupDBID), group)
-	delete((*backRepoGroup.Map_GroupDBID_GroupPtr), id)
-	delete((*backRepoGroup.Map_GroupDBID_GroupDB), id)
+	delete(backRepoGroup.Map_GroupPtr_GroupDBID, group)
+	delete(backRepoGroup.Map_GroupDBID_GroupPtr, id)
+	delete(backRepoGroup.Map_GroupDBID_GroupDB, id)
 
 	return
 }
@@ -204,7 +172,7 @@ func (backRepoGroup *BackRepoGroupStruct) CommitDeleteInstance(id uint) (Error e
 func (backRepoGroup *BackRepoGroupStruct) CommitPhaseOneInstance(group *models.Group) (Error error) {
 
 	// check if the group is not commited yet
-	if _, ok := (*backRepoGroup.Map_GroupPtr_GroupDBID)[group]; ok {
+	if _, ok := backRepoGroup.Map_GroupPtr_GroupDBID[group]; ok {
 		return
 	}
 
@@ -218,9 +186,9 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseOneInstance(group *models.G
 	}
 
 	// update stores
-	(*backRepoGroup.Map_GroupPtr_GroupDBID)[group] = groupDB.ID
-	(*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID] = group
-	(*backRepoGroup.Map_GroupDBID_GroupDB)[groupDB.ID] = &groupDB
+	backRepoGroup.Map_GroupPtr_GroupDBID[group] = groupDB.ID
+	backRepoGroup.Map_GroupDBID_GroupPtr[groupDB.ID] = group
+	backRepoGroup.Map_GroupDBID_GroupDB[groupDB.ID] = &groupDB
 
 	return
 }
@@ -229,7 +197,7 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseOneInstance(group *models.G
 // Phase Two is the update of instance with the field in the database
 func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, group := range *backRepoGroup.Map_GroupDBID_GroupPtr {
+	for idx, group := range backRepoGroup.Map_GroupDBID_GroupPtr {
 		backRepoGroup.CommitPhaseTwoInstance(backRepo, idx, group)
 	}
 
@@ -241,7 +209,7 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwo(backRepo *BackRepoStruc
 func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, group *models.Group) (Error error) {
 
 	// fetch matching groupDB
-	if groupDB, ok := (*backRepoGroup.Map_GroupDBID_GroupDB)[idx]; ok {
+	if groupDB, ok := backRepoGroup.Map_GroupDBID_GroupDB[idx]; ok {
 
 		groupDB.CopyBasicFieldsFromGroup(group)
 
@@ -304,7 +272,7 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		group, ok := (*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+		group, ok := backRepoGroup.Map_GroupDBID_GroupPtr[groupDB.ID]
 		if ok {
 			delete(groupInstancesToBeRemovedFromTheStage, group)
 		}
@@ -315,10 +283,10 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOne() (Error error) {
 		group.Unstage(backRepoGroup.GetStage())
 
 		// remove instance from the back repo 3 maps
-		groupID := (*backRepoGroup.Map_GroupPtr_GroupDBID)[group]
-		delete((*backRepoGroup.Map_GroupPtr_GroupDBID), group)
-		delete((*backRepoGroup.Map_GroupDBID_GroupDB), groupID)
-		delete((*backRepoGroup.Map_GroupDBID_GroupPtr), groupID)
+		groupID := backRepoGroup.Map_GroupPtr_GroupDBID[group]
+		delete(backRepoGroup.Map_GroupPtr_GroupDBID, group)
+		delete(backRepoGroup.Map_GroupDBID_GroupDB, groupID)
+		delete(backRepoGroup.Map_GroupDBID_GroupPtr, groupID)
 	}
 
 	return
@@ -328,12 +296,12 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOne() (Error error) {
 // models version of the groupDB
 func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOneInstance(groupDB *GroupDB) (Error error) {
 
-	group, ok := (*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	group, ok := backRepoGroup.Map_GroupDBID_GroupPtr[groupDB.ID]
 	if !ok {
 		group = new(models.Group)
 
-		(*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID] = group
-		(*backRepoGroup.Map_GroupPtr_GroupDBID)[group] = groupDB.ID
+		backRepoGroup.Map_GroupDBID_GroupPtr[groupDB.ID] = group
+		backRepoGroup.Map_GroupPtr_GroupDBID[group] = groupDB.ID
 
 		// append model store with the new element
 		group.Name = groupDB.Name_Data.String
@@ -348,7 +316,7 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOneInstance(groupDB *Grou
 	// Map_GroupDBID_GroupDB)[groupDB hold variable pointers
 	groupDB_Data := *groupDB
 	preservedPtrToGroup := &groupDB_Data
-	(*backRepoGroup.Map_GroupDBID_GroupDB)[groupDB.ID] = preservedPtrToGroup
+	backRepoGroup.Map_GroupDBID_GroupDB[groupDB.ID] = preservedPtrToGroup
 
 	return
 }
@@ -358,7 +326,7 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseOneInstance(groupDB *Grou
 func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, groupDB := range *backRepoGroup.Map_GroupDBID_GroupDB {
+	for _, groupDB := range backRepoGroup.Map_GroupDBID_GroupDB {
 		backRepoGroup.CheckoutPhaseTwoInstance(backRepo, groupDB)
 	}
 	return
@@ -368,7 +336,7 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwo(backRepo *BackRepoStr
 // Phase Two is the update of instance with the field in the database
 func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, groupDB *GroupDB) (Error error) {
 
-	group := (*backRepoGroup.Map_GroupDBID_GroupPtr)[groupDB.ID]
+	group := backRepoGroup.Map_GroupDBID_GroupPtr[groupDB.ID]
 	_ = group // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -378,11 +346,11 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 	// 1. reset the slice
 	group.GroupLanes = group.GroupLanes[:0]
 	// 2. loop all instances in the type in the association end
-	for _, laneDB_AssocEnd := range *backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
+	for _, laneDB_AssocEnd := range backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if laneDB_AssocEnd.Group_GroupLanesDBID.Int64 == int64(groupDB.ID) {
 			// 4. fetch the associated instance in the stage
-			lane_AssocEnd := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB_AssocEnd.ID]
+			lane_AssocEnd := backRepo.BackRepoLane.Map_LaneDBID_LanePtr[laneDB_AssocEnd.ID]
 			// 5. append it the association slice
 			group.GroupLanes = append(group.GroupLanes, lane_AssocEnd)
 		}
@@ -390,11 +358,11 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 
 	// sort the array according to the order
 	sort.Slice(group.GroupLanes, func(i, j int) bool {
-		laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[group.GroupLanes[i]]
-		laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[group.GroupLanes[j]]
+		laneDB_i_ID := backRepo.BackRepoLane.Map_LanePtr_LaneDBID[group.GroupLanes[i]]
+		laneDB_j_ID := backRepo.BackRepoLane.Map_LanePtr_LaneDBID[group.GroupLanes[j]]
 
-		laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
-		laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
+		laneDB_i := backRepo.BackRepoLane.Map_LaneDBID_LaneDB[laneDB_i_ID]
+		laneDB_j := backRepo.BackRepoLane.Map_LaneDBID_LaneDB[laneDB_j_ID]
 
 		return laneDB_i.Group_GroupLanesDBID_Index.Int64 < laneDB_j.Group_GroupLanesDBID_Index.Int64
 	})
@@ -405,7 +373,7 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 // CommitGroup allows commit of a single group (if already staged)
 func (backRepo *BackRepoStruct) CommitGroup(group *models.Group) {
 	backRepo.BackRepoGroup.CommitPhaseOneInstance(group)
-	if id, ok := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[group]; ok {
+	if id, ok := backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID[group]; ok {
 		backRepo.BackRepoGroup.CommitPhaseTwoInstance(backRepo, id, group)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -414,9 +382,9 @@ func (backRepo *BackRepoStruct) CommitGroup(group *models.Group) {
 // CommitGroup allows checkout of a single group (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutGroup(group *models.Group) {
 	// check if the group is staged
-	if _, ok := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[group]; ok {
+	if _, ok := backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID[group]; ok {
 
-		if id, ok := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[group]; ok {
+		if id, ok := backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID[group]; ok {
 			var groupDB GroupDB
 			groupDB.ID = id
 
@@ -466,7 +434,7 @@ func (backRepoGroup *BackRepoGroupStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*GroupDB, 0)
-	for _, groupDB := range *backRepoGroup.Map_GroupDBID_GroupDB {
+	for _, groupDB := range backRepoGroup.Map_GroupDBID_GroupDB {
 		forBackup = append(forBackup, groupDB)
 	}
 
@@ -492,7 +460,7 @@ func (backRepoGroup *BackRepoGroupStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*GroupDB, 0)
-	for _, groupDB := range *backRepoGroup.Map_GroupDBID_GroupDB {
+	for _, groupDB := range backRepoGroup.Map_GroupDBID_GroupDB {
 		forBackup = append(forBackup, groupDB)
 	}
 
@@ -557,7 +525,7 @@ func (backRepoGroup *BackRepoGroupStruct) rowVisitorGroup(row *xlsx.Row) error {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoGroup.Map_GroupDBID_GroupDB)[groupDB.ID] = groupDB
+		backRepoGroup.Map_GroupDBID_GroupDB[groupDB.ID] = groupDB
 		BackRepoGroupid_atBckpTime_newID[groupDB_ID_atBackupTime] = groupDB.ID
 	}
 	return nil
@@ -594,7 +562,7 @@ func (backRepoGroup *BackRepoGroupStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoGroup.Map_GroupDBID_GroupDB)[groupDB.ID] = groupDB
+		backRepoGroup.Map_GroupDBID_GroupDB[groupDB.ID] = groupDB
 		BackRepoGroupid_atBckpTime_newID[groupDB_ID_atBackupTime] = groupDB.ID
 	}
 
@@ -607,7 +575,7 @@ func (backRepoGroup *BackRepoGroupStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoGroup *BackRepoGroupStruct) RestorePhaseTwo() {
 
-	for _, groupDB := range *backRepoGroup.Map_GroupDBID_GroupDB {
+	for _, groupDB := range backRepoGroup.Map_GroupDBID_GroupDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = groupDB

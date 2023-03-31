@@ -141,13 +141,13 @@ var Polygone_Fields = []string{
 
 type BackRepoPolygoneStruct struct {
 	// stores PolygoneDB according to their gorm ID
-	Map_PolygoneDBID_PolygoneDB *map[uint]*PolygoneDB
+	Map_PolygoneDBID_PolygoneDB map[uint]*PolygoneDB
 
 	// stores PolygoneDB ID according to Polygone address
-	Map_PolygonePtr_PolygoneDBID *map[*models.Polygone]uint
+	Map_PolygonePtr_PolygoneDBID map[*models.Polygone]uint
 
 	// stores Polygone according to their gorm ID
-	Map_PolygoneDBID_PolygonePtr *map[uint]*models.Polygone
+	Map_PolygoneDBID_PolygonePtr map[uint]*models.Polygone
 
 	db *gorm.DB
 
@@ -165,40 +165,8 @@ func (backRepoPolygone *BackRepoPolygoneStruct) GetDB() *gorm.DB {
 
 // GetPolygoneDBFromPolygonePtr is a handy function to access the back repo instance from the stage instance
 func (backRepoPolygone *BackRepoPolygoneStruct) GetPolygoneDBFromPolygonePtr(polygone *models.Polygone) (polygoneDB *PolygoneDB) {
-	id := (*backRepoPolygone.Map_PolygonePtr_PolygoneDBID)[polygone]
-	polygoneDB = (*backRepoPolygone.Map_PolygoneDBID_PolygoneDB)[id]
-	return
-}
-
-// BackRepoPolygone.Init set up the BackRepo of the Polygone
-func (backRepoPolygone *BackRepoPolygoneStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoPolygone.Map_PolygoneDBID_PolygonePtr != nil {
-		err := errors.New("In Init, backRepoPolygone.Map_PolygoneDBID_PolygonePtr should be nil")
-		return err
-	}
-
-	if backRepoPolygone.Map_PolygoneDBID_PolygoneDB != nil {
-		err := errors.New("In Init, backRepoPolygone.Map_PolygoneDBID_PolygoneDB should be nil")
-		return err
-	}
-
-	if backRepoPolygone.Map_PolygonePtr_PolygoneDBID != nil {
-		err := errors.New("In Init, backRepoPolygone.Map_PolygonePtr_PolygoneDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Polygone, 0)
-	backRepoPolygone.Map_PolygoneDBID_PolygonePtr = &tmp
-
-	tmpDB := make(map[uint]*PolygoneDB, 0)
-	backRepoPolygone.Map_PolygoneDBID_PolygoneDB = &tmpDB
-
-	tmpID := make(map[*models.Polygone]uint, 0)
-	backRepoPolygone.Map_PolygonePtr_PolygoneDBID = &tmpID
-
-	backRepoPolygone.db = db
-	backRepoPolygone.stage = stage
+	id := backRepoPolygone.Map_PolygonePtr_PolygoneDBID[polygone]
+	polygoneDB = backRepoPolygone.Map_PolygoneDBID_PolygoneDB[id]
 	return
 }
 
@@ -212,7 +180,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CommitPhaseOne(stage *models.Sta
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, polygone := range *backRepoPolygone.Map_PolygoneDBID_PolygonePtr {
+	for id, polygone := range backRepoPolygone.Map_PolygoneDBID_PolygonePtr {
 		if _, ok := stage.Polygones[polygone]; !ok {
 			backRepoPolygone.CommitDeleteInstance(id)
 		}
@@ -224,19 +192,19 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CommitPhaseOne(stage *models.Sta
 // BackRepoPolygone.CommitDeleteInstance commits deletion of Polygone to the BackRepo
 func (backRepoPolygone *BackRepoPolygoneStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	polygone := (*backRepoPolygone.Map_PolygoneDBID_PolygonePtr)[id]
+	polygone := backRepoPolygone.Map_PolygoneDBID_PolygonePtr[id]
 
 	// polygone is not staged anymore, remove polygoneDB
-	polygoneDB := (*backRepoPolygone.Map_PolygoneDBID_PolygoneDB)[id]
+	polygoneDB := backRepoPolygone.Map_PolygoneDBID_PolygoneDB[id]
 	query := backRepoPolygone.db.Unscoped().Delete(&polygoneDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoPolygone.Map_PolygonePtr_PolygoneDBID), polygone)
-	delete((*backRepoPolygone.Map_PolygoneDBID_PolygonePtr), id)
-	delete((*backRepoPolygone.Map_PolygoneDBID_PolygoneDB), id)
+	delete(backRepoPolygone.Map_PolygonePtr_PolygoneDBID, polygone)
+	delete(backRepoPolygone.Map_PolygoneDBID_PolygonePtr, id)
+	delete(backRepoPolygone.Map_PolygoneDBID_PolygoneDB, id)
 
 	return
 }
@@ -246,7 +214,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CommitDeleteInstance(id uint) (E
 func (backRepoPolygone *BackRepoPolygoneStruct) CommitPhaseOneInstance(polygone *models.Polygone) (Error error) {
 
 	// check if the polygone is not commited yet
-	if _, ok := (*backRepoPolygone.Map_PolygonePtr_PolygoneDBID)[polygone]; ok {
+	if _, ok := backRepoPolygone.Map_PolygonePtr_PolygoneDBID[polygone]; ok {
 		return
 	}
 
@@ -260,9 +228,9 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CommitPhaseOneInstance(polygone 
 	}
 
 	// update stores
-	(*backRepoPolygone.Map_PolygonePtr_PolygoneDBID)[polygone] = polygoneDB.ID
-	(*backRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID] = polygone
-	(*backRepoPolygone.Map_PolygoneDBID_PolygoneDB)[polygoneDB.ID] = &polygoneDB
+	backRepoPolygone.Map_PolygonePtr_PolygoneDBID[polygone] = polygoneDB.ID
+	backRepoPolygone.Map_PolygoneDBID_PolygonePtr[polygoneDB.ID] = polygone
+	backRepoPolygone.Map_PolygoneDBID_PolygoneDB[polygoneDB.ID] = &polygoneDB
 
 	return
 }
@@ -271,7 +239,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CommitPhaseOneInstance(polygone 
 // Phase Two is the update of instance with the field in the database
 func (backRepoPolygone *BackRepoPolygoneStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, polygone := range *backRepoPolygone.Map_PolygoneDBID_PolygonePtr {
+	for idx, polygone := range backRepoPolygone.Map_PolygoneDBID_PolygonePtr {
 		backRepoPolygone.CommitPhaseTwoInstance(backRepo, idx, polygone)
 	}
 
@@ -283,7 +251,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CommitPhaseTwo(backRepo *BackRep
 func (backRepoPolygone *BackRepoPolygoneStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, polygone *models.Polygone) (Error error) {
 
 	// fetch matching polygoneDB
-	if polygoneDB, ok := (*backRepoPolygone.Map_PolygoneDBID_PolygoneDB)[idx]; ok {
+	if polygoneDB, ok := backRepoPolygone.Map_PolygoneDBID_PolygoneDB[idx]; ok {
 
 		polygoneDB.CopyBasicFieldsFromPolygone(polygone)
 
@@ -346,7 +314,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseOne() (Error error)
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		polygone, ok := (*backRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+		polygone, ok := backRepoPolygone.Map_PolygoneDBID_PolygonePtr[polygoneDB.ID]
 		if ok {
 			delete(polygoneInstancesToBeRemovedFromTheStage, polygone)
 		}
@@ -357,10 +325,10 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseOne() (Error error)
 		polygone.Unstage(backRepoPolygone.GetStage())
 
 		// remove instance from the back repo 3 maps
-		polygoneID := (*backRepoPolygone.Map_PolygonePtr_PolygoneDBID)[polygone]
-		delete((*backRepoPolygone.Map_PolygonePtr_PolygoneDBID), polygone)
-		delete((*backRepoPolygone.Map_PolygoneDBID_PolygoneDB), polygoneID)
-		delete((*backRepoPolygone.Map_PolygoneDBID_PolygonePtr), polygoneID)
+		polygoneID := backRepoPolygone.Map_PolygonePtr_PolygoneDBID[polygone]
+		delete(backRepoPolygone.Map_PolygonePtr_PolygoneDBID, polygone)
+		delete(backRepoPolygone.Map_PolygoneDBID_PolygoneDB, polygoneID)
+		delete(backRepoPolygone.Map_PolygoneDBID_PolygonePtr, polygoneID)
 	}
 
 	return
@@ -370,12 +338,12 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseOne() (Error error)
 // models version of the polygoneDB
 func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseOneInstance(polygoneDB *PolygoneDB) (Error error) {
 
-	polygone, ok := (*backRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+	polygone, ok := backRepoPolygone.Map_PolygoneDBID_PolygonePtr[polygoneDB.ID]
 	if !ok {
 		polygone = new(models.Polygone)
 
-		(*backRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID] = polygone
-		(*backRepoPolygone.Map_PolygonePtr_PolygoneDBID)[polygone] = polygoneDB.ID
+		backRepoPolygone.Map_PolygoneDBID_PolygonePtr[polygoneDB.ID] = polygone
+		backRepoPolygone.Map_PolygonePtr_PolygoneDBID[polygone] = polygoneDB.ID
 
 		// append model store with the new element
 		polygone.Name = polygoneDB.Name_Data.String
@@ -390,7 +358,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseOneInstance(polygon
 	// Map_PolygoneDBID_PolygoneDB)[polygoneDB hold variable pointers
 	polygoneDB_Data := *polygoneDB
 	preservedPtrToPolygone := &polygoneDB_Data
-	(*backRepoPolygone.Map_PolygoneDBID_PolygoneDB)[polygoneDB.ID] = preservedPtrToPolygone
+	backRepoPolygone.Map_PolygoneDBID_PolygoneDB[polygoneDB.ID] = preservedPtrToPolygone
 
 	return
 }
@@ -400,7 +368,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseOneInstance(polygon
 func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, polygoneDB := range *backRepoPolygone.Map_PolygoneDBID_PolygoneDB {
+	for _, polygoneDB := range backRepoPolygone.Map_PolygoneDBID_PolygoneDB {
 		backRepoPolygone.CheckoutPhaseTwoInstance(backRepo, polygoneDB)
 	}
 	return
@@ -410,7 +378,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseTwo(backRepo *BackR
 // Phase Two is the update of instance with the field in the database
 func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, polygoneDB *PolygoneDB) (Error error) {
 
-	polygone := (*backRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+	polygone := backRepoPolygone.Map_PolygoneDBID_PolygonePtr[polygoneDB.ID]
 	_ = polygone // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -420,11 +388,11 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseTwoInstance(backRep
 	// 1. reset the slice
 	polygone.Animates = polygone.Animates[:0]
 	// 2. loop all instances in the type in the association end
-	for _, animateDB_AssocEnd := range *backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB_AssocEnd := range backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if animateDB_AssocEnd.Polygone_AnimatesDBID.Int64 == int64(polygoneDB.ID) {
 			// 4. fetch the associated instance in the stage
-			animate_AssocEnd := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB_AssocEnd.ID]
+			animate_AssocEnd := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB_AssocEnd.ID]
 			// 5. append it the association slice
 			polygone.Animates = append(polygone.Animates, animate_AssocEnd)
 		}
@@ -432,11 +400,11 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseTwoInstance(backRep
 
 	// sort the array according to the order
 	sort.Slice(polygone.Animates, func(i, j int) bool {
-		animateDB_i_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[polygone.Animates[i]]
-		animateDB_j_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[polygone.Animates[j]]
+		animateDB_i_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[polygone.Animates[i]]
+		animateDB_j_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[polygone.Animates[j]]
 
-		animateDB_i := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_i_ID]
-		animateDB_j := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_j_ID]
+		animateDB_i := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_i_ID]
+		animateDB_j := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_j_ID]
 
 		return animateDB_i.Polygone_AnimatesDBID_Index.Int64 < animateDB_j.Polygone_AnimatesDBID_Index.Int64
 	})
@@ -447,7 +415,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) CheckoutPhaseTwoInstance(backRep
 // CommitPolygone allows commit of a single polygone (if already staged)
 func (backRepo *BackRepoStruct) CommitPolygone(polygone *models.Polygone) {
 	backRepo.BackRepoPolygone.CommitPhaseOneInstance(polygone)
-	if id, ok := (*backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID)[polygone]; ok {
+	if id, ok := backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID[polygone]; ok {
 		backRepo.BackRepoPolygone.CommitPhaseTwoInstance(backRepo, id, polygone)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -456,9 +424,9 @@ func (backRepo *BackRepoStruct) CommitPolygone(polygone *models.Polygone) {
 // CommitPolygone allows checkout of a single polygone (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutPolygone(polygone *models.Polygone) {
 	// check if the polygone is staged
-	if _, ok := (*backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID)[polygone]; ok {
+	if _, ok := backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID[polygone]; ok {
 
-		if id, ok := (*backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID)[polygone]; ok {
+		if id, ok := backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID[polygone]; ok {
 			var polygoneDB PolygoneDB
 			polygoneDB.ID = id
 
@@ -564,7 +532,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*PolygoneDB, 0)
-	for _, polygoneDB := range *backRepoPolygone.Map_PolygoneDBID_PolygoneDB {
+	for _, polygoneDB := range backRepoPolygone.Map_PolygoneDBID_PolygoneDB {
 		forBackup = append(forBackup, polygoneDB)
 	}
 
@@ -590,7 +558,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*PolygoneDB, 0)
-	for _, polygoneDB := range *backRepoPolygone.Map_PolygoneDBID_PolygoneDB {
+	for _, polygoneDB := range backRepoPolygone.Map_PolygoneDBID_PolygoneDB {
 		forBackup = append(forBackup, polygoneDB)
 	}
 
@@ -655,7 +623,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) rowVisitorPolygone(row *xlsx.Row
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoPolygone.Map_PolygoneDBID_PolygoneDB)[polygoneDB.ID] = polygoneDB
+		backRepoPolygone.Map_PolygoneDBID_PolygoneDB[polygoneDB.ID] = polygoneDB
 		BackRepoPolygoneid_atBckpTime_newID[polygoneDB_ID_atBackupTime] = polygoneDB.ID
 	}
 	return nil
@@ -692,7 +660,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) RestorePhaseOne(dirPath string) 
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoPolygone.Map_PolygoneDBID_PolygoneDB)[polygoneDB.ID] = polygoneDB
+		backRepoPolygone.Map_PolygoneDBID_PolygoneDB[polygoneDB.ID] = polygoneDB
 		BackRepoPolygoneid_atBckpTime_newID[polygoneDB_ID_atBackupTime] = polygoneDB.ID
 	}
 
@@ -705,7 +673,7 @@ func (backRepoPolygone *BackRepoPolygoneStruct) RestorePhaseOne(dirPath string) 
 // to compute new index
 func (backRepoPolygone *BackRepoPolygoneStruct) RestorePhaseTwo() {
 
-	for _, polygoneDB := range *backRepoPolygone.Map_PolygoneDBID_PolygoneDB {
+	for _, polygoneDB := range backRepoPolygone.Map_PolygoneDBID_PolygoneDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = polygoneDB

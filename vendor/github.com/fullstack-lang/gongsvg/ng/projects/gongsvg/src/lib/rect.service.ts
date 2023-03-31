@@ -45,11 +45,12 @@ export class RectService {
   /** GET rects from the server */
   getRects(GONG__StackPath: string = ""): Observable<RectDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<RectDB[]>(this.rectsUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched rects')),
+        tap(),
+		// tap(_ => this.log('fetched rects')),
         catchError(this.handleError<RectDB[]>('getRects', []))
       );
   }
@@ -77,7 +78,7 @@ export class RectService {
       params: params
     }
 
-	return this.http.post<RectDB>(this.rectsUrl, rectdb, httpOptions).pipe(
+    return this.http.post<RectDB>(this.rectsUrl, rectdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         rectdb.SVG_Rects_reverse = _SVG_Rects_reverse
@@ -136,11 +137,11 @@ export class RectService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in RectService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("RectService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -151,6 +152,6 @@ export class RectService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

@@ -151,7 +151,7 @@ func (controller *Controller) PostEllipse(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoEllipse.CheckoutPhaseOneInstance(&ellipseDB)
-	ellipse := (*backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+	ellipse := backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr[ellipseDB.ID]
 
 	if ellipse != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), ellipse)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateEllipse(c *gin.Context) {
 	ellipseDB.CopyBasicFieldsToEllipse(ellipseNew)
 
 	// get stage instance from DB instance, and call callback function
-	ellipseOld := (*backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+	ellipseOld := backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr[ellipseDB.ID]
 	if ellipseOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), ellipseOld, ellipseNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteEllipse(c *gin.Context) {
 	ellipseDB.CopyBasicFieldsToEllipse(ellipseDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	ellipseStaged := (*backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+	ellipseStaged := backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr[ellipseDB.ID]
 	if ellipseStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), ellipseStaged, ellipseDeleted)
 	}

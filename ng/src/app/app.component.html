@@ -1,82 +1,38 @@
-<!-- <as-split direction="horyzontal">
-    <as-split-area size="50">
-        <app-gonggantt-splitter></app-gonggantt-splitter>
-    </as-split-area>
-    <as-split-area size="10">
-        <app-gongsvg-splitter></app-gongsvg-splitter>
-    </as-split-area>
-    <as-split-area size="40">
-        <lib-svg></lib-svg>
-    </as-split-area>
-</as-split> -->
+<!-- button bar that is present in all tabs -->
+<ng-template #radioToolbar>
+    <mat-radio-group aria-label="Select an option" [(ngModel)]="view">
+        <mat-radio-button *ngFor="let view of views" [value]="view">
+            {{view}}&nbsp;&nbsp;&nbsp;
+        </mat-radio-button>
+    </mat-radio-group>
+</ng-template>
 
-
-<as-split *ngIf="view==gantt" direction="vertical">
-    <as-split-area size="05">
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <mat-radio-group aria-label="Select an option" [(ngModel)]="view">
-            <mat-radio-button *ngFor="let view of views" [value]="view">
-                {{view}}&nbsp;&nbsp;&nbsp;
-            </mat-radio-button>
-        </mat-radio-group>
+<as-split unit="pixel" *ngIf="view==gantt" direction="vertical">
+    <as-split-area [size]=40>
+        <ng-container *ngTemplateOutlet="radioToolbar"></ng-container>
     </as-split-area>
-    <as-split-area size="95">
-        <lib-svg></lib-svg>
+    <as-split-area [size]="$any('*')">
+        <lib-svg [GONG__StackPath]="GONG__SVG__StackPath">
+        </lib-svg>
     </as-split-area>
 </as-split>
 
-<as-split *ngIf="view==data_gantt" direction="vertical">
-    <as-split-area size="05">
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <mat-radio-group aria-label="Select an option" [(ngModel)]="view">
-            <mat-radio-button *ngFor="let view of views" [value]="view">
-                {{view}}&nbsp;&nbsp;&nbsp;
-            </mat-radio-button>
-        </mat-radio-group>
+<as-split unit="pixel" *ngIf="view==default" direction="vertical">
+    <as-split-area [size]=40>
+        <ng-container *ngTemplateOutlet="radioToolbar"></ng-container>
     </as-split-area>
-    <as-split-area size="95">
-        <app-gonggantt-splitter></app-gonggantt-splitter>
+    <as-split-area [size]="$any('*')">
+        <lib-github_com_fullstack_lang_gonggantt_go-data-model-panel [GONG__StackPath]="GONG__GANTT__StackPath">
+        </lib-github_com_fullstack_lang_gonggantt_go-data-model-panel>
     </as-split-area>
 </as-split>
 
-<as-split *ngIf="view==data_svg" direction="vertical">
-    <as-split-area size="05">
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <mat-radio-group aria-label="Select an option" [(ngModel)]="view">
-            <mat-radio-button *ngFor="let view of views" [value]="view">
-                {{view}}&nbsp;&nbsp;&nbsp;
-            </mat-radio-button>
-        </mat-radio-group>
+<as-split unit="pixel" *ngIf="view==svg" direction="vertical">
+    <as-split-area [size]=40>
+        <ng-container *ngTemplateOutlet="radioToolbar"></ng-container>
     </as-split-area>
-    <as-split-area size="95">
-        <app-gongsvg-splitter></app-gongsvg-splitter>
-    </as-split-area>
-</as-split>
-
-<as-split *ngIf="view==uml_view" direction="vertical">
-    <as-split-area size="05">
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <mat-radio-group aria-label="Select an option" [(ngModel)]="view">
-            <mat-radio-button *ngFor="let view of views" [value]="view">
-                {{view}}&nbsp;&nbsp;&nbsp;
-            </mat-radio-button>
-        </mat-radio-group>
-    </as-split-area>
-    <as-split-area size="95">
-        <lib-pkgelt-docs></lib-pkgelt-docs>
-    </as-split-area>
-</as-split>
-
-<as-split *ngIf="view==meta" direction="vertical">
-    <as-split-area size="05">
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <mat-radio-group aria-label="Select an option" [(ngModel)]="view">
-            <mat-radio-button *ngFor="let view of views" [value]="view">
-                {{view}}&nbsp;&nbsp;&nbsp;
-            </mat-radio-button>
-        </mat-radio-group>
-    </as-split-area>
-    <as-split-area size="95">
-        <app-gong-splitter></app-gong-splitter>
+    <as-split-area [size]="$any('*')">
+        <lib-github_com_fullstack_lang_gongsvg_go-data-model-panel [GONG__StackPath]="GONG__SVG__StackPath">
+        </lib-github_com_fullstack_lang_gongsvg_go-data-model-panel>
     </as-split-area>
 </as-split>

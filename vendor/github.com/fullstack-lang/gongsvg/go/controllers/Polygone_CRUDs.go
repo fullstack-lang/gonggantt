@@ -151,7 +151,7 @@ func (controller *Controller) PostPolygone(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoPolygone.CheckoutPhaseOneInstance(&polygoneDB)
-	polygone := (*backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+	polygone := backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr[polygoneDB.ID]
 
 	if polygone != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), polygone)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdatePolygone(c *gin.Context) {
 	polygoneDB.CopyBasicFieldsToPolygone(polygoneNew)
 
 	// get stage instance from DB instance, and call callback function
-	polygoneOld := (*backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+	polygoneOld := backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr[polygoneDB.ID]
 	if polygoneOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), polygoneOld, polygoneNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeletePolygone(c *gin.Context) {
 	polygoneDB.CopyBasicFieldsToPolygone(polygoneDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	polygoneStaged := (*backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB.ID]
+	polygoneStaged := backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr[polygoneDB.ID]
 	if polygoneStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), polygoneStaged, polygoneDeleted)
 	}

@@ -19,6 +19,8 @@ import { RectService } from '../rect.service'
 
 // insertion point for additional imports
 
+import { RouteService } from '../route-service';
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -167,6 +169,8 @@ export class RectsTableComponent implements OnInit {
 
     private router: Router,
     private activatedRoute: ActivatedRoute,
+
+    private routeService: RouteService,
   ) {
 
     // compute mode
@@ -307,18 +311,15 @@ export class RectsTableComponent implements OnInit {
 
   }
 
-  // display rect in router
-  displayRectInRouter(rectID: number) {
-    this.router.navigate(["github_com_fullstack_lang_gongsvg_go-" + "rect-display", rectID])
-  }
-
   // set editor outlet
   setEditorRouterOutlet(rectID: number) {
-    this.router.navigate([{
-      outlets: {
-        github_com_fullstack_lang_gongsvg_go_editor: ["github_com_fullstack_lang_gongsvg_go-" + "rect-detail", rectID, this.GONG__StackPath]
-      }
-    }]);
+    let outletName = this.routeService.getEditorOutlet(this.GONG__StackPath)
+    let fullPath = this.routeService.getPathRoot() + "-" + "rect" + "-detail"
+
+    let outletConf: any = {}
+    outletConf[outletName] = [fullPath, rectID, this.GONG__StackPath]
+
+    this.router.navigate([{ outlets: outletConf }])
   }
 
   /** Whether the number of selected elements matches the total number of rows. */

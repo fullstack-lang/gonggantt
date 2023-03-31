@@ -46,11 +46,12 @@ export class ArrowService {
   /** GET arrows from the server */
   getArrows(GONG__StackPath: string = ""): Observable<ArrowDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<ArrowDB[]>(this.arrowsUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched arrows')),
+        tap(),
+		// tap(_ => this.log('fetched arrows')),
         catchError(this.handleError<ArrowDB[]>('getArrows', []))
       );
   }
@@ -79,7 +80,7 @@ export class ArrowService {
       params: params
     }
 
-	return this.http.post<ArrowDB>(this.arrowsUrl, arrowdb, httpOptions).pipe(
+    return this.http.post<ArrowDB>(this.arrowsUrl, arrowdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         arrowdb.Gantt_Arrows_reverse = _Gantt_Arrows_reverse
@@ -139,11 +140,11 @@ export class ArrowService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in ArrowService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("ArrowService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -154,6 +155,6 @@ export class ArrowService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

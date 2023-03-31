@@ -45,11 +45,12 @@ export class PathService {
   /** GET paths from the server */
   getPaths(GONG__StackPath: string = ""): Observable<PathDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<PathDB[]>(this.pathsUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched paths')),
+        tap(),
+		// tap(_ => this.log('fetched paths')),
         catchError(this.handleError<PathDB[]>('getPaths', []))
       );
   }
@@ -77,7 +78,7 @@ export class PathService {
       params: params
     }
 
-	return this.http.post<PathDB>(this.pathsUrl, pathdb, httpOptions).pipe(
+    return this.http.post<PathDB>(this.pathsUrl, pathdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         pathdb.SVG_Paths_reverse = _SVG_Paths_reverse
@@ -136,11 +137,11 @@ export class PathService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in PathService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("PathService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -151,6 +152,6 @@ export class PathService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

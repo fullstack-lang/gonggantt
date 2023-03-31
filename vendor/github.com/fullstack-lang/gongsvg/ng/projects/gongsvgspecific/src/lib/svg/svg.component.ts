@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Observable, Subscription, timer } from 'rxjs';
 
 import * as gongsvg from 'gongsvg'
@@ -11,6 +11,8 @@ import * as gongsvg from 'gongsvg'
 export class SvgComponent implements OnInit {
 
   SVG: string = ""
+
+  @Input() GONG__StackPath: string = ""
 
   rect: number = 0
 
@@ -46,40 +48,24 @@ export class SvgComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.checkCommiNbFromBagetCommitNbFromBackTimer.subscribe(
-      currTime => {
-        this.currTime = currTime
+    console.log("Svg component->ngOnInit : GONG__StackPath, " + this.GONG__StackPath )
 
-        // see above for the explanation
-        this.gongsvgNbFromBackService.getCommitNbFromBack().subscribe(
-          commiNbFromBagetCommitNbFromBack => {
-            if (this.lastCommiNbFromBagetCommitNbFromBack < commiNbFromBagetCommitNbFromBack) {
+    // see above for the explanation
+    this.gongsvgNbFromBackService.getCommitNbFromBack(500, this.GONG__StackPath).subscribe(
+      commiNbFromBagetCommitNbFromBack => {
+        if (this.lastCommiNbFromBagetCommitNbFromBack < commiNbFromBagetCommitNbFromBack) {
 
-              console.log("last commit nb " + this.lastCommiNbFromBagetCommitNbFromBack + " new: " + commiNbFromBagetCommitNbFromBack)
-              this.refresh()
-              this.lastCommiNbFromBagetCommitNbFromBack = commiNbFromBagetCommitNbFromBack
-            }
-          }
-        )
-
-        // see above for the explanation
-        this.gongsvgPushFromFrontNbService.getPushFromFrontNb().subscribe(
-          pushFromFrontNb => {
-            if (this.lastPushFromFrontNb < pushFromFrontNb) {
-
-              console.log("last commit nb " + this.lastPushFromFrontNb + " new: " + pushFromFrontNb)
-              this.refresh()
-              this.lastPushFromFrontNb = pushFromFrontNb
-            }
-          }
-        )
+          console.log("last commit nb " + this.lastCommiNbFromBagetCommitNbFromBack + " new: " + commiNbFromBagetCommitNbFromBack)
+          this.refresh()
+          this.lastCommiNbFromBagetCommitNbFromBack = commiNbFromBagetCommitNbFromBack
+        }
       }
     )
   }
 
   refresh(): void {
 
-    this.gongsvgFrontRepoService.pull().subscribe(
+    this.gongsvgFrontRepoService.pull(this.GONG__StackPath).subscribe(
       gongsvgsFrontRepo => {
         this.gongsvgFrontRepo = gongsvgsFrontRepo
 

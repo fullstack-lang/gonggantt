@@ -151,7 +151,7 @@ func (controller *Controller) PostArrow(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoArrow.CheckoutPhaseOneInstance(&arrowDB)
-	arrow := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+	arrow := backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB.ID]
 
 	if arrow != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), arrow)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateArrow(c *gin.Context) {
 	arrowDB.CopyBasicFieldsToArrow(arrowNew)
 
 	// get stage instance from DB instance, and call callback function
-	arrowOld := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+	arrowOld := backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB.ID]
 	if arrowOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), arrowOld, arrowNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteArrow(c *gin.Context) {
 	arrowDB.CopyBasicFieldsToArrow(arrowDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	arrowStaged := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+	arrowStaged := backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB.ID]
 	if arrowStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), arrowStaged, arrowDeleted)
 	}

@@ -100,13 +100,13 @@ var SVG_Fields = []string{
 
 type BackRepoSVGStruct struct {
 	// stores SVGDB according to their gorm ID
-	Map_SVGDBID_SVGDB *map[uint]*SVGDB
+	Map_SVGDBID_SVGDB map[uint]*SVGDB
 
 	// stores SVGDB ID according to SVG address
-	Map_SVGPtr_SVGDBID *map[*models.SVG]uint
+	Map_SVGPtr_SVGDBID map[*models.SVG]uint
 
 	// stores SVG according to their gorm ID
-	Map_SVGDBID_SVGPtr *map[uint]*models.SVG
+	Map_SVGDBID_SVGPtr map[uint]*models.SVG
 
 	db *gorm.DB
 
@@ -124,40 +124,8 @@ func (backRepoSVG *BackRepoSVGStruct) GetDB() *gorm.DB {
 
 // GetSVGDBFromSVGPtr is a handy function to access the back repo instance from the stage instance
 func (backRepoSVG *BackRepoSVGStruct) GetSVGDBFromSVGPtr(svg *models.SVG) (svgDB *SVGDB) {
-	id := (*backRepoSVG.Map_SVGPtr_SVGDBID)[svg]
-	svgDB = (*backRepoSVG.Map_SVGDBID_SVGDB)[id]
-	return
-}
-
-// BackRepoSVG.Init set up the BackRepo of the SVG
-func (backRepoSVG *BackRepoSVGStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoSVG.Map_SVGDBID_SVGPtr != nil {
-		err := errors.New("In Init, backRepoSVG.Map_SVGDBID_SVGPtr should be nil")
-		return err
-	}
-
-	if backRepoSVG.Map_SVGDBID_SVGDB != nil {
-		err := errors.New("In Init, backRepoSVG.Map_SVGDBID_SVGDB should be nil")
-		return err
-	}
-
-	if backRepoSVG.Map_SVGPtr_SVGDBID != nil {
-		err := errors.New("In Init, backRepoSVG.Map_SVGPtr_SVGDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.SVG, 0)
-	backRepoSVG.Map_SVGDBID_SVGPtr = &tmp
-
-	tmpDB := make(map[uint]*SVGDB, 0)
-	backRepoSVG.Map_SVGDBID_SVGDB = &tmpDB
-
-	tmpID := make(map[*models.SVG]uint, 0)
-	backRepoSVG.Map_SVGPtr_SVGDBID = &tmpID
-
-	backRepoSVG.db = db
-	backRepoSVG.stage = stage
+	id := backRepoSVG.Map_SVGPtr_SVGDBID[svg]
+	svgDB = backRepoSVG.Map_SVGDBID_SVGDB[id]
 	return
 }
 
@@ -171,7 +139,7 @@ func (backRepoSVG *BackRepoSVGStruct) CommitPhaseOne(stage *models.StageStruct) 
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, svg := range *backRepoSVG.Map_SVGDBID_SVGPtr {
+	for id, svg := range backRepoSVG.Map_SVGDBID_SVGPtr {
 		if _, ok := stage.SVGs[svg]; !ok {
 			backRepoSVG.CommitDeleteInstance(id)
 		}
@@ -183,19 +151,19 @@ func (backRepoSVG *BackRepoSVGStruct) CommitPhaseOne(stage *models.StageStruct) 
 // BackRepoSVG.CommitDeleteInstance commits deletion of SVG to the BackRepo
 func (backRepoSVG *BackRepoSVGStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	svg := (*backRepoSVG.Map_SVGDBID_SVGPtr)[id]
+	svg := backRepoSVG.Map_SVGDBID_SVGPtr[id]
 
 	// svg is not staged anymore, remove svgDB
-	svgDB := (*backRepoSVG.Map_SVGDBID_SVGDB)[id]
+	svgDB := backRepoSVG.Map_SVGDBID_SVGDB[id]
 	query := backRepoSVG.db.Unscoped().Delete(&svgDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoSVG.Map_SVGPtr_SVGDBID), svg)
-	delete((*backRepoSVG.Map_SVGDBID_SVGPtr), id)
-	delete((*backRepoSVG.Map_SVGDBID_SVGDB), id)
+	delete(backRepoSVG.Map_SVGPtr_SVGDBID, svg)
+	delete(backRepoSVG.Map_SVGDBID_SVGPtr, id)
+	delete(backRepoSVG.Map_SVGDBID_SVGDB, id)
 
 	return
 }
@@ -205,7 +173,7 @@ func (backRepoSVG *BackRepoSVGStruct) CommitDeleteInstance(id uint) (Error error
 func (backRepoSVG *BackRepoSVGStruct) CommitPhaseOneInstance(svg *models.SVG) (Error error) {
 
 	// check if the svg is not commited yet
-	if _, ok := (*backRepoSVG.Map_SVGPtr_SVGDBID)[svg]; ok {
+	if _, ok := backRepoSVG.Map_SVGPtr_SVGDBID[svg]; ok {
 		return
 	}
 
@@ -219,9 +187,9 @@ func (backRepoSVG *BackRepoSVGStruct) CommitPhaseOneInstance(svg *models.SVG) (E
 	}
 
 	// update stores
-	(*backRepoSVG.Map_SVGPtr_SVGDBID)[svg] = svgDB.ID
-	(*backRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID] = svg
-	(*backRepoSVG.Map_SVGDBID_SVGDB)[svgDB.ID] = &svgDB
+	backRepoSVG.Map_SVGPtr_SVGDBID[svg] = svgDB.ID
+	backRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID] = svg
+	backRepoSVG.Map_SVGDBID_SVGDB[svgDB.ID] = &svgDB
 
 	return
 }
@@ -230,7 +198,7 @@ func (backRepoSVG *BackRepoSVGStruct) CommitPhaseOneInstance(svg *models.SVG) (E
 // Phase Two is the update of instance with the field in the database
 func (backRepoSVG *BackRepoSVGStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, svg := range *backRepoSVG.Map_SVGDBID_SVGPtr {
+	for idx, svg := range backRepoSVG.Map_SVGDBID_SVGPtr {
 		backRepoSVG.CommitPhaseTwoInstance(backRepo, idx, svg)
 	}
 
@@ -242,7 +210,7 @@ func (backRepoSVG *BackRepoSVGStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (
 func (backRepoSVG *BackRepoSVGStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, svg *models.SVG) (Error error) {
 
 	// fetch matching svgDB
-	if svgDB, ok := (*backRepoSVG.Map_SVGDBID_SVGDB)[idx]; ok {
+	if svgDB, ok := backRepoSVG.Map_SVGDBID_SVGDB[idx]; ok {
 
 		svgDB.CopyBasicFieldsFromSVG(svg)
 
@@ -438,7 +406,7 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		svg, ok := (*backRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID]
+		svg, ok := backRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID]
 		if ok {
 			delete(svgInstancesToBeRemovedFromTheStage, svg)
 		}
@@ -449,10 +417,10 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOne() (Error error) {
 		svg.Unstage(backRepoSVG.GetStage())
 
 		// remove instance from the back repo 3 maps
-		svgID := (*backRepoSVG.Map_SVGPtr_SVGDBID)[svg]
-		delete((*backRepoSVG.Map_SVGPtr_SVGDBID), svg)
-		delete((*backRepoSVG.Map_SVGDBID_SVGDB), svgID)
-		delete((*backRepoSVG.Map_SVGDBID_SVGPtr), svgID)
+		svgID := backRepoSVG.Map_SVGPtr_SVGDBID[svg]
+		delete(backRepoSVG.Map_SVGPtr_SVGDBID, svg)
+		delete(backRepoSVG.Map_SVGDBID_SVGDB, svgID)
+		delete(backRepoSVG.Map_SVGDBID_SVGPtr, svgID)
 	}
 
 	return
@@ -462,12 +430,12 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOne() (Error error) {
 // models version of the svgDB
 func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOneInstance(svgDB *SVGDB) (Error error) {
 
-	svg, ok := (*backRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID]
+	svg, ok := backRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID]
 	if !ok {
 		svg = new(models.SVG)
 
-		(*backRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID] = svg
-		(*backRepoSVG.Map_SVGPtr_SVGDBID)[svg] = svgDB.ID
+		backRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID] = svg
+		backRepoSVG.Map_SVGPtr_SVGDBID[svg] = svgDB.ID
 
 		// append model store with the new element
 		svg.Name = svgDB.Name_Data.String
@@ -482,7 +450,7 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOneInstance(svgDB *SVGDB) (Er
 	// Map_SVGDBID_SVGDB)[svgDB hold variable pointers
 	svgDB_Data := *svgDB
 	preservedPtrToSVG := &svgDB_Data
-	(*backRepoSVG.Map_SVGDBID_SVGDB)[svgDB.ID] = preservedPtrToSVG
+	backRepoSVG.Map_SVGDBID_SVGDB[svgDB.ID] = preservedPtrToSVG
 
 	return
 }
@@ -492,7 +460,7 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseOneInstance(svgDB *SVGDB) (Er
 func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, svgDB := range *backRepoSVG.Map_SVGDBID_SVGDB {
+	for _, svgDB := range backRepoSVG.Map_SVGDBID_SVGDB {
 		backRepoSVG.CheckoutPhaseTwoInstance(backRepo, svgDB)
 	}
 	return
@@ -502,7 +470,7 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct)
 // Phase Two is the update of instance with the field in the database
 func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, svgDB *SVGDB) (Error error) {
 
-	svg := (*backRepoSVG.Map_SVGDBID_SVGPtr)[svgDB.ID]
+	svg := backRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID]
 	_ = svg // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -512,11 +480,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 	// 1. reset the slice
 	svg.Rects = svg.Rects[:0]
 	// 2. loop all instances in the type in the association end
-	for _, rectDB_AssocEnd := range *backRepo.BackRepoRect.Map_RectDBID_RectDB {
+	for _, rectDB_AssocEnd := range backRepo.BackRepoRect.Map_RectDBID_RectDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if rectDB_AssocEnd.SVG_RectsDBID.Int64 == int64(svgDB.ID) {
 			// 4. fetch the associated instance in the stage
-			rect_AssocEnd := (*backRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB_AssocEnd.ID]
+			rect_AssocEnd := backRepo.BackRepoRect.Map_RectDBID_RectPtr[rectDB_AssocEnd.ID]
 			// 5. append it the association slice
 			svg.Rects = append(svg.Rects, rect_AssocEnd)
 		}
@@ -524,11 +492,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 
 	// sort the array according to the order
 	sort.Slice(svg.Rects, func(i, j int) bool {
-		rectDB_i_ID := (*backRepo.BackRepoRect.Map_RectPtr_RectDBID)[svg.Rects[i]]
-		rectDB_j_ID := (*backRepo.BackRepoRect.Map_RectPtr_RectDBID)[svg.Rects[j]]
+		rectDB_i_ID := backRepo.BackRepoRect.Map_RectPtr_RectDBID[svg.Rects[i]]
+		rectDB_j_ID := backRepo.BackRepoRect.Map_RectPtr_RectDBID[svg.Rects[j]]
 
-		rectDB_i := (*backRepo.BackRepoRect.Map_RectDBID_RectDB)[rectDB_i_ID]
-		rectDB_j := (*backRepo.BackRepoRect.Map_RectDBID_RectDB)[rectDB_j_ID]
+		rectDB_i := backRepo.BackRepoRect.Map_RectDBID_RectDB[rectDB_i_ID]
+		rectDB_j := backRepo.BackRepoRect.Map_RectDBID_RectDB[rectDB_j_ID]
 
 		return rectDB_i.SVG_RectsDBID_Index.Int64 < rectDB_j.SVG_RectsDBID_Index.Int64
 	})
@@ -539,11 +507,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 	// 1. reset the slice
 	svg.Texts = svg.Texts[:0]
 	// 2. loop all instances in the type in the association end
-	for _, textDB_AssocEnd := range *backRepo.BackRepoText.Map_TextDBID_TextDB {
+	for _, textDB_AssocEnd := range backRepo.BackRepoText.Map_TextDBID_TextDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if textDB_AssocEnd.SVG_TextsDBID.Int64 == int64(svgDB.ID) {
 			// 4. fetch the associated instance in the stage
-			text_AssocEnd := (*backRepo.BackRepoText.Map_TextDBID_TextPtr)[textDB_AssocEnd.ID]
+			text_AssocEnd := backRepo.BackRepoText.Map_TextDBID_TextPtr[textDB_AssocEnd.ID]
 			// 5. append it the association slice
 			svg.Texts = append(svg.Texts, text_AssocEnd)
 		}
@@ -551,11 +519,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 
 	// sort the array according to the order
 	sort.Slice(svg.Texts, func(i, j int) bool {
-		textDB_i_ID := (*backRepo.BackRepoText.Map_TextPtr_TextDBID)[svg.Texts[i]]
-		textDB_j_ID := (*backRepo.BackRepoText.Map_TextPtr_TextDBID)[svg.Texts[j]]
+		textDB_i_ID := backRepo.BackRepoText.Map_TextPtr_TextDBID[svg.Texts[i]]
+		textDB_j_ID := backRepo.BackRepoText.Map_TextPtr_TextDBID[svg.Texts[j]]
 
-		textDB_i := (*backRepo.BackRepoText.Map_TextDBID_TextDB)[textDB_i_ID]
-		textDB_j := (*backRepo.BackRepoText.Map_TextDBID_TextDB)[textDB_j_ID]
+		textDB_i := backRepo.BackRepoText.Map_TextDBID_TextDB[textDB_i_ID]
+		textDB_j := backRepo.BackRepoText.Map_TextDBID_TextDB[textDB_j_ID]
 
 		return textDB_i.SVG_TextsDBID_Index.Int64 < textDB_j.SVG_TextsDBID_Index.Int64
 	})
@@ -566,11 +534,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 	// 1. reset the slice
 	svg.Circles = svg.Circles[:0]
 	// 2. loop all instances in the type in the association end
-	for _, circleDB_AssocEnd := range *backRepo.BackRepoCircle.Map_CircleDBID_CircleDB {
+	for _, circleDB_AssocEnd := range backRepo.BackRepoCircle.Map_CircleDBID_CircleDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if circleDB_AssocEnd.SVG_CirclesDBID.Int64 == int64(svgDB.ID) {
 			// 4. fetch the associated instance in the stage
-			circle_AssocEnd := (*backRepo.BackRepoCircle.Map_CircleDBID_CirclePtr)[circleDB_AssocEnd.ID]
+			circle_AssocEnd := backRepo.BackRepoCircle.Map_CircleDBID_CirclePtr[circleDB_AssocEnd.ID]
 			// 5. append it the association slice
 			svg.Circles = append(svg.Circles, circle_AssocEnd)
 		}
@@ -578,11 +546,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 
 	// sort the array according to the order
 	sort.Slice(svg.Circles, func(i, j int) bool {
-		circleDB_i_ID := (*backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID)[svg.Circles[i]]
-		circleDB_j_ID := (*backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID)[svg.Circles[j]]
+		circleDB_i_ID := backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID[svg.Circles[i]]
+		circleDB_j_ID := backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID[svg.Circles[j]]
 
-		circleDB_i := (*backRepo.BackRepoCircle.Map_CircleDBID_CircleDB)[circleDB_i_ID]
-		circleDB_j := (*backRepo.BackRepoCircle.Map_CircleDBID_CircleDB)[circleDB_j_ID]
+		circleDB_i := backRepo.BackRepoCircle.Map_CircleDBID_CircleDB[circleDB_i_ID]
+		circleDB_j := backRepo.BackRepoCircle.Map_CircleDBID_CircleDB[circleDB_j_ID]
 
 		return circleDB_i.SVG_CirclesDBID_Index.Int64 < circleDB_j.SVG_CirclesDBID_Index.Int64
 	})
@@ -593,11 +561,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 	// 1. reset the slice
 	svg.Lines = svg.Lines[:0]
 	// 2. loop all instances in the type in the association end
-	for _, lineDB_AssocEnd := range *backRepo.BackRepoLine.Map_LineDBID_LineDB {
+	for _, lineDB_AssocEnd := range backRepo.BackRepoLine.Map_LineDBID_LineDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if lineDB_AssocEnd.SVG_LinesDBID.Int64 == int64(svgDB.ID) {
 			// 4. fetch the associated instance in the stage
-			line_AssocEnd := (*backRepo.BackRepoLine.Map_LineDBID_LinePtr)[lineDB_AssocEnd.ID]
+			line_AssocEnd := backRepo.BackRepoLine.Map_LineDBID_LinePtr[lineDB_AssocEnd.ID]
 			// 5. append it the association slice
 			svg.Lines = append(svg.Lines, line_AssocEnd)
 		}
@@ -605,11 +573,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 
 	// sort the array according to the order
 	sort.Slice(svg.Lines, func(i, j int) bool {
-		lineDB_i_ID := (*backRepo.BackRepoLine.Map_LinePtr_LineDBID)[svg.Lines[i]]
-		lineDB_j_ID := (*backRepo.BackRepoLine.Map_LinePtr_LineDBID)[svg.Lines[j]]
+		lineDB_i_ID := backRepo.BackRepoLine.Map_LinePtr_LineDBID[svg.Lines[i]]
+		lineDB_j_ID := backRepo.BackRepoLine.Map_LinePtr_LineDBID[svg.Lines[j]]
 
-		lineDB_i := (*backRepo.BackRepoLine.Map_LineDBID_LineDB)[lineDB_i_ID]
-		lineDB_j := (*backRepo.BackRepoLine.Map_LineDBID_LineDB)[lineDB_j_ID]
+		lineDB_i := backRepo.BackRepoLine.Map_LineDBID_LineDB[lineDB_i_ID]
+		lineDB_j := backRepo.BackRepoLine.Map_LineDBID_LineDB[lineDB_j_ID]
 
 		return lineDB_i.SVG_LinesDBID_Index.Int64 < lineDB_j.SVG_LinesDBID_Index.Int64
 	})
@@ -620,11 +588,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 	// 1. reset the slice
 	svg.Ellipses = svg.Ellipses[:0]
 	// 2. loop all instances in the type in the association end
-	for _, ellipseDB_AssocEnd := range *backRepo.BackRepoEllipse.Map_EllipseDBID_EllipseDB {
+	for _, ellipseDB_AssocEnd := range backRepo.BackRepoEllipse.Map_EllipseDBID_EllipseDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if ellipseDB_AssocEnd.SVG_EllipsesDBID.Int64 == int64(svgDB.ID) {
 			// 4. fetch the associated instance in the stage
-			ellipse_AssocEnd := (*backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB_AssocEnd.ID]
+			ellipse_AssocEnd := backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr[ellipseDB_AssocEnd.ID]
 			// 5. append it the association slice
 			svg.Ellipses = append(svg.Ellipses, ellipse_AssocEnd)
 		}
@@ -632,11 +600,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 
 	// sort the array according to the order
 	sort.Slice(svg.Ellipses, func(i, j int) bool {
-		ellipseDB_i_ID := (*backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID)[svg.Ellipses[i]]
-		ellipseDB_j_ID := (*backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID)[svg.Ellipses[j]]
+		ellipseDB_i_ID := backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID[svg.Ellipses[i]]
+		ellipseDB_j_ID := backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID[svg.Ellipses[j]]
 
-		ellipseDB_i := (*backRepo.BackRepoEllipse.Map_EllipseDBID_EllipseDB)[ellipseDB_i_ID]
-		ellipseDB_j := (*backRepo.BackRepoEllipse.Map_EllipseDBID_EllipseDB)[ellipseDB_j_ID]
+		ellipseDB_i := backRepo.BackRepoEllipse.Map_EllipseDBID_EllipseDB[ellipseDB_i_ID]
+		ellipseDB_j := backRepo.BackRepoEllipse.Map_EllipseDBID_EllipseDB[ellipseDB_j_ID]
 
 		return ellipseDB_i.SVG_EllipsesDBID_Index.Int64 < ellipseDB_j.SVG_EllipsesDBID_Index.Int64
 	})
@@ -647,11 +615,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 	// 1. reset the slice
 	svg.Polylines = svg.Polylines[:0]
 	// 2. loop all instances in the type in the association end
-	for _, polylineDB_AssocEnd := range *backRepo.BackRepoPolyline.Map_PolylineDBID_PolylineDB {
+	for _, polylineDB_AssocEnd := range backRepo.BackRepoPolyline.Map_PolylineDBID_PolylineDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if polylineDB_AssocEnd.SVG_PolylinesDBID.Int64 == int64(svgDB.ID) {
 			// 4. fetch the associated instance in the stage
-			polyline_AssocEnd := (*backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB_AssocEnd.ID]
+			polyline_AssocEnd := backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr[polylineDB_AssocEnd.ID]
 			// 5. append it the association slice
 			svg.Polylines = append(svg.Polylines, polyline_AssocEnd)
 		}
@@ -659,11 +627,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 
 	// sort the array according to the order
 	sort.Slice(svg.Polylines, func(i, j int) bool {
-		polylineDB_i_ID := (*backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID)[svg.Polylines[i]]
-		polylineDB_j_ID := (*backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID)[svg.Polylines[j]]
+		polylineDB_i_ID := backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID[svg.Polylines[i]]
+		polylineDB_j_ID := backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID[svg.Polylines[j]]
 
-		polylineDB_i := (*backRepo.BackRepoPolyline.Map_PolylineDBID_PolylineDB)[polylineDB_i_ID]
-		polylineDB_j := (*backRepo.BackRepoPolyline.Map_PolylineDBID_PolylineDB)[polylineDB_j_ID]
+		polylineDB_i := backRepo.BackRepoPolyline.Map_PolylineDBID_PolylineDB[polylineDB_i_ID]
+		polylineDB_j := backRepo.BackRepoPolyline.Map_PolylineDBID_PolylineDB[polylineDB_j_ID]
 
 		return polylineDB_i.SVG_PolylinesDBID_Index.Int64 < polylineDB_j.SVG_PolylinesDBID_Index.Int64
 	})
@@ -674,11 +642,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 	// 1. reset the slice
 	svg.Polygones = svg.Polygones[:0]
 	// 2. loop all instances in the type in the association end
-	for _, polygoneDB_AssocEnd := range *backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygoneDB {
+	for _, polygoneDB_AssocEnd := range backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygoneDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if polygoneDB_AssocEnd.SVG_PolygonesDBID.Int64 == int64(svgDB.ID) {
 			// 4. fetch the associated instance in the stage
-			polygone_AssocEnd := (*backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr)[polygoneDB_AssocEnd.ID]
+			polygone_AssocEnd := backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr[polygoneDB_AssocEnd.ID]
 			// 5. append it the association slice
 			svg.Polygones = append(svg.Polygones, polygone_AssocEnd)
 		}
@@ -686,11 +654,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 
 	// sort the array according to the order
 	sort.Slice(svg.Polygones, func(i, j int) bool {
-		polygoneDB_i_ID := (*backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID)[svg.Polygones[i]]
-		polygoneDB_j_ID := (*backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID)[svg.Polygones[j]]
+		polygoneDB_i_ID := backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID[svg.Polygones[i]]
+		polygoneDB_j_ID := backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID[svg.Polygones[j]]
 
-		polygoneDB_i := (*backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygoneDB)[polygoneDB_i_ID]
-		polygoneDB_j := (*backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygoneDB)[polygoneDB_j_ID]
+		polygoneDB_i := backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygoneDB[polygoneDB_i_ID]
+		polygoneDB_j := backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygoneDB[polygoneDB_j_ID]
 
 		return polygoneDB_i.SVG_PolygonesDBID_Index.Int64 < polygoneDB_j.SVG_PolygonesDBID_Index.Int64
 	})
@@ -701,11 +669,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 	// 1. reset the slice
 	svg.Paths = svg.Paths[:0]
 	// 2. loop all instances in the type in the association end
-	for _, pathDB_AssocEnd := range *backRepo.BackRepoPath.Map_PathDBID_PathDB {
+	for _, pathDB_AssocEnd := range backRepo.BackRepoPath.Map_PathDBID_PathDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if pathDB_AssocEnd.SVG_PathsDBID.Int64 == int64(svgDB.ID) {
 			// 4. fetch the associated instance in the stage
-			path_AssocEnd := (*backRepo.BackRepoPath.Map_PathDBID_PathPtr)[pathDB_AssocEnd.ID]
+			path_AssocEnd := backRepo.BackRepoPath.Map_PathDBID_PathPtr[pathDB_AssocEnd.ID]
 			// 5. append it the association slice
 			svg.Paths = append(svg.Paths, path_AssocEnd)
 		}
@@ -713,11 +681,11 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 
 	// sort the array according to the order
 	sort.Slice(svg.Paths, func(i, j int) bool {
-		pathDB_i_ID := (*backRepo.BackRepoPath.Map_PathPtr_PathDBID)[svg.Paths[i]]
-		pathDB_j_ID := (*backRepo.BackRepoPath.Map_PathPtr_PathDBID)[svg.Paths[j]]
+		pathDB_i_ID := backRepo.BackRepoPath.Map_PathPtr_PathDBID[svg.Paths[i]]
+		pathDB_j_ID := backRepo.BackRepoPath.Map_PathPtr_PathDBID[svg.Paths[j]]
 
-		pathDB_i := (*backRepo.BackRepoPath.Map_PathDBID_PathDB)[pathDB_i_ID]
-		pathDB_j := (*backRepo.BackRepoPath.Map_PathDBID_PathDB)[pathDB_j_ID]
+		pathDB_i := backRepo.BackRepoPath.Map_PathDBID_PathDB[pathDB_i_ID]
+		pathDB_j := backRepo.BackRepoPath.Map_PathDBID_PathDB[pathDB_j_ID]
 
 		return pathDB_i.SVG_PathsDBID_Index.Int64 < pathDB_j.SVG_PathsDBID_Index.Int64
 	})
@@ -728,7 +696,7 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 // CommitSVG allows commit of a single svg (if already staged)
 func (backRepo *BackRepoStruct) CommitSVG(svg *models.SVG) {
 	backRepo.BackRepoSVG.CommitPhaseOneInstance(svg)
-	if id, ok := (*backRepo.BackRepoSVG.Map_SVGPtr_SVGDBID)[svg]; ok {
+	if id, ok := backRepo.BackRepoSVG.Map_SVGPtr_SVGDBID[svg]; ok {
 		backRepo.BackRepoSVG.CommitPhaseTwoInstance(backRepo, id, svg)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -737,9 +705,9 @@ func (backRepo *BackRepoStruct) CommitSVG(svg *models.SVG) {
 // CommitSVG allows checkout of a single svg (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutSVG(svg *models.SVG) {
 	// check if the svg is staged
-	if _, ok := (*backRepo.BackRepoSVG.Map_SVGPtr_SVGDBID)[svg]; ok {
+	if _, ok := backRepo.BackRepoSVG.Map_SVGPtr_SVGDBID[svg]; ok {
 
-		if id, ok := (*backRepo.BackRepoSVG.Map_SVGPtr_SVGDBID)[svg]; ok {
+		if id, ok := backRepo.BackRepoSVG.Map_SVGPtr_SVGDBID[svg]; ok {
 			var svgDB SVGDB
 			svgDB.ID = id
 
@@ -797,7 +765,7 @@ func (backRepoSVG *BackRepoSVGStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*SVGDB, 0)
-	for _, svgDB := range *backRepoSVG.Map_SVGDBID_SVGDB {
+	for _, svgDB := range backRepoSVG.Map_SVGDBID_SVGDB {
 		forBackup = append(forBackup, svgDB)
 	}
 
@@ -823,7 +791,7 @@ func (backRepoSVG *BackRepoSVGStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*SVGDB, 0)
-	for _, svgDB := range *backRepoSVG.Map_SVGDBID_SVGDB {
+	for _, svgDB := range backRepoSVG.Map_SVGDBID_SVGDB {
 		forBackup = append(forBackup, svgDB)
 	}
 
@@ -888,7 +856,7 @@ func (backRepoSVG *BackRepoSVGStruct) rowVisitorSVG(row *xlsx.Row) error {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoSVG.Map_SVGDBID_SVGDB)[svgDB.ID] = svgDB
+		backRepoSVG.Map_SVGDBID_SVGDB[svgDB.ID] = svgDB
 		BackRepoSVGid_atBckpTime_newID[svgDB_ID_atBackupTime] = svgDB.ID
 	}
 	return nil
@@ -925,7 +893,7 @@ func (backRepoSVG *BackRepoSVGStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoSVG.Map_SVGDBID_SVGDB)[svgDB.ID] = svgDB
+		backRepoSVG.Map_SVGDBID_SVGDB[svgDB.ID] = svgDB
 		BackRepoSVGid_atBckpTime_newID[svgDB_ID_atBackupTime] = svgDB.ID
 	}
 
@@ -938,7 +906,7 @@ func (backRepoSVG *BackRepoSVGStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoSVG *BackRepoSVGStruct) RestorePhaseTwo() {
 
-	for _, svgDB := range *backRepoSVG.Map_SVGDBID_SVGDB {
+	for _, svgDB := range backRepoSVG.Map_SVGDBID_SVGDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = svgDB

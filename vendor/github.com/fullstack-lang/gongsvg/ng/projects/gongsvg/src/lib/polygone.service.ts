@@ -45,11 +45,12 @@ export class PolygoneService {
   /** GET polygones from the server */
   getPolygones(GONG__StackPath: string = ""): Observable<PolygoneDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<PolygoneDB[]>(this.polygonesUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched polygones')),
+        tap(),
+		// tap(_ => this.log('fetched polygones')),
         catchError(this.handleError<PolygoneDB[]>('getPolygones', []))
       );
   }
@@ -77,7 +78,7 @@ export class PolygoneService {
       params: params
     }
 
-	return this.http.post<PolygoneDB>(this.polygonesUrl, polygonedb, httpOptions).pipe(
+    return this.http.post<PolygoneDB>(this.polygonesUrl, polygonedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         polygonedb.SVG_Polygones_reverse = _SVG_Polygones_reverse
@@ -136,11 +137,11 @@ export class PolygoneService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in PolygoneService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("PolygoneService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -151,6 +152,6 @@ export class PolygoneService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

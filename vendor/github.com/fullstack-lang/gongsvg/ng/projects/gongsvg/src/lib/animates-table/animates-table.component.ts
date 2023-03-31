@@ -19,6 +19,8 @@ import { AnimateService } from '../animate.service'
 
 // insertion point for additional imports
 
+import { RouteService } from '../route-service';
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -216,6 +218,8 @@ export class AnimatesTableComponent implements OnInit {
 
     private router: Router,
     private activatedRoute: ActivatedRoute,
+
+    private routeService: RouteService,
   ) {
 
     // compute mode
@@ -356,18 +360,15 @@ export class AnimatesTableComponent implements OnInit {
 
   }
 
-  // display animate in router
-  displayAnimateInRouter(animateID: number) {
-    this.router.navigate(["github_com_fullstack_lang_gongsvg_go-" + "animate-display", animateID])
-  }
-
   // set editor outlet
   setEditorRouterOutlet(animateID: number) {
-    this.router.navigate([{
-      outlets: {
-        github_com_fullstack_lang_gongsvg_go_editor: ["github_com_fullstack_lang_gongsvg_go-" + "animate-detail", animateID, this.GONG__StackPath]
-      }
-    }]);
+    let outletName = this.routeService.getEditorOutlet(this.GONG__StackPath)
+    let fullPath = this.routeService.getPathRoot() + "-" + "animate" + "-detail"
+
+    let outletConf: any = {}
+    outletConf[outletName] = [fullPath, animateID, this.GONG__StackPath]
+
+    this.router.navigate([{ outlets: outletConf }])
   }
 
   /** Whether the number of selected elements matches the total number of rows. */

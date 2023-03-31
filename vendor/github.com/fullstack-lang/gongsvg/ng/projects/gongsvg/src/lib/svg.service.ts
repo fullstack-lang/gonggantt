@@ -44,11 +44,12 @@ export class SVGService {
   /** GET svgs from the server */
   getSVGs(GONG__StackPath: string = ""): Observable<SVGDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<SVGDB[]>(this.svgsUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched svgs')),
+        tap(),
+		// tap(_ => this.log('fetched svgs')),
         catchError(this.handleError<SVGDB[]>('getSVGs', []))
       );
   }
@@ -81,7 +82,7 @@ export class SVGService {
       params: params
     }
 
-	return this.http.post<SVGDB>(this.svgsUrl, svgdb, httpOptions).pipe(
+    return this.http.post<SVGDB>(this.svgsUrl, svgdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         this.log(`posted svgdb id=${svgdb.ID}`)
@@ -143,11 +144,11 @@ export class SVGService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in SVGService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("SVGService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -158,6 +159,6 @@ export class SVGService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

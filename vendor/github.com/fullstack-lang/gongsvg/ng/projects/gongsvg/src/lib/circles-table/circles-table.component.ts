@@ -19,6 +19,8 @@ import { CircleService } from '../circle.service'
 
 // insertion point for additional imports
 
+import { RouteService } from '../route-service';
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -159,6 +161,8 @@ export class CirclesTableComponent implements OnInit {
 
     private router: Router,
     private activatedRoute: ActivatedRoute,
+
+    private routeService: RouteService,
   ) {
 
     // compute mode
@@ -295,18 +299,15 @@ export class CirclesTableComponent implements OnInit {
 
   }
 
-  // display circle in router
-  displayCircleInRouter(circleID: number) {
-    this.router.navigate(["github_com_fullstack_lang_gongsvg_go-" + "circle-display", circleID])
-  }
-
   // set editor outlet
   setEditorRouterOutlet(circleID: number) {
-    this.router.navigate([{
-      outlets: {
-        github_com_fullstack_lang_gongsvg_go_editor: ["github_com_fullstack_lang_gongsvg_go-" + "circle-detail", circleID, this.GONG__StackPath]
-      }
-    }]);
+    let outletName = this.routeService.getEditorOutlet(this.GONG__StackPath)
+    let fullPath = this.routeService.getPathRoot() + "-" + "circle" + "-detail"
+
+    let outletConf: any = {}
+    outletConf[outletName] = [fullPath, circleID, this.GONG__StackPath]
+
+    this.router.navigate([{ outlets: outletConf }])
   }
 
   /** Whether the number of selected elements matches the total number of rows. */

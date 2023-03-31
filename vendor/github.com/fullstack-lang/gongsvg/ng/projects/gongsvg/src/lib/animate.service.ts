@@ -52,11 +52,12 @@ export class AnimateService {
   /** GET animates from the server */
   getAnimates(GONG__StackPath: string = ""): Observable<AnimateDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<AnimateDB[]>(this.animatesUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched animates')),
+        tap(),
+		// tap(_ => this.log('fetched animates')),
         catchError(this.handleError<AnimateDB[]>('getAnimates', []))
       );
   }
@@ -97,7 +98,7 @@ export class AnimateService {
       params: params
     }
 
-	return this.http.post<AnimateDB>(this.animatesUrl, animatedb, httpOptions).pipe(
+    return this.http.post<AnimateDB>(this.animatesUrl, animatedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         animatedb.Circle_Animations_reverse = _Circle_Animations_reverse
@@ -183,11 +184,11 @@ export class AnimateService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in AnimateService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("AnimateService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -198,6 +199,6 @@ export class AnimateService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

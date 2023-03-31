@@ -165,13 +165,13 @@ var Rect_Fields = []string{
 
 type BackRepoRectStruct struct {
 	// stores RectDB according to their gorm ID
-	Map_RectDBID_RectDB *map[uint]*RectDB
+	Map_RectDBID_RectDB map[uint]*RectDB
 
 	// stores RectDB ID according to Rect address
-	Map_RectPtr_RectDBID *map[*models.Rect]uint
+	Map_RectPtr_RectDBID map[*models.Rect]uint
 
 	// stores Rect according to their gorm ID
-	Map_RectDBID_RectPtr *map[uint]*models.Rect
+	Map_RectDBID_RectPtr map[uint]*models.Rect
 
 	db *gorm.DB
 
@@ -189,40 +189,8 @@ func (backRepoRect *BackRepoRectStruct) GetDB() *gorm.DB {
 
 // GetRectDBFromRectPtr is a handy function to access the back repo instance from the stage instance
 func (backRepoRect *BackRepoRectStruct) GetRectDBFromRectPtr(rect *models.Rect) (rectDB *RectDB) {
-	id := (*backRepoRect.Map_RectPtr_RectDBID)[rect]
-	rectDB = (*backRepoRect.Map_RectDBID_RectDB)[id]
-	return
-}
-
-// BackRepoRect.Init set up the BackRepo of the Rect
-func (backRepoRect *BackRepoRectStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoRect.Map_RectDBID_RectPtr != nil {
-		err := errors.New("In Init, backRepoRect.Map_RectDBID_RectPtr should be nil")
-		return err
-	}
-
-	if backRepoRect.Map_RectDBID_RectDB != nil {
-		err := errors.New("In Init, backRepoRect.Map_RectDBID_RectDB should be nil")
-		return err
-	}
-
-	if backRepoRect.Map_RectPtr_RectDBID != nil {
-		err := errors.New("In Init, backRepoRect.Map_RectPtr_RectDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Rect, 0)
-	backRepoRect.Map_RectDBID_RectPtr = &tmp
-
-	tmpDB := make(map[uint]*RectDB, 0)
-	backRepoRect.Map_RectDBID_RectDB = &tmpDB
-
-	tmpID := make(map[*models.Rect]uint, 0)
-	backRepoRect.Map_RectPtr_RectDBID = &tmpID
-
-	backRepoRect.db = db
-	backRepoRect.stage = stage
+	id := backRepoRect.Map_RectPtr_RectDBID[rect]
+	rectDB = backRepoRect.Map_RectDBID_RectDB[id]
 	return
 }
 
@@ -236,7 +204,7 @@ func (backRepoRect *BackRepoRectStruct) CommitPhaseOne(stage *models.StageStruct
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, rect := range *backRepoRect.Map_RectDBID_RectPtr {
+	for id, rect := range backRepoRect.Map_RectDBID_RectPtr {
 		if _, ok := stage.Rects[rect]; !ok {
 			backRepoRect.CommitDeleteInstance(id)
 		}
@@ -248,19 +216,19 @@ func (backRepoRect *BackRepoRectStruct) CommitPhaseOne(stage *models.StageStruct
 // BackRepoRect.CommitDeleteInstance commits deletion of Rect to the BackRepo
 func (backRepoRect *BackRepoRectStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	rect := (*backRepoRect.Map_RectDBID_RectPtr)[id]
+	rect := backRepoRect.Map_RectDBID_RectPtr[id]
 
 	// rect is not staged anymore, remove rectDB
-	rectDB := (*backRepoRect.Map_RectDBID_RectDB)[id]
+	rectDB := backRepoRect.Map_RectDBID_RectDB[id]
 	query := backRepoRect.db.Unscoped().Delete(&rectDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoRect.Map_RectPtr_RectDBID), rect)
-	delete((*backRepoRect.Map_RectDBID_RectPtr), id)
-	delete((*backRepoRect.Map_RectDBID_RectDB), id)
+	delete(backRepoRect.Map_RectPtr_RectDBID, rect)
+	delete(backRepoRect.Map_RectDBID_RectPtr, id)
+	delete(backRepoRect.Map_RectDBID_RectDB, id)
 
 	return
 }
@@ -270,7 +238,7 @@ func (backRepoRect *BackRepoRectStruct) CommitDeleteInstance(id uint) (Error err
 func (backRepoRect *BackRepoRectStruct) CommitPhaseOneInstance(rect *models.Rect) (Error error) {
 
 	// check if the rect is not commited yet
-	if _, ok := (*backRepoRect.Map_RectPtr_RectDBID)[rect]; ok {
+	if _, ok := backRepoRect.Map_RectPtr_RectDBID[rect]; ok {
 		return
 	}
 
@@ -284,9 +252,9 @@ func (backRepoRect *BackRepoRectStruct) CommitPhaseOneInstance(rect *models.Rect
 	}
 
 	// update stores
-	(*backRepoRect.Map_RectPtr_RectDBID)[rect] = rectDB.ID
-	(*backRepoRect.Map_RectDBID_RectPtr)[rectDB.ID] = rect
-	(*backRepoRect.Map_RectDBID_RectDB)[rectDB.ID] = &rectDB
+	backRepoRect.Map_RectPtr_RectDBID[rect] = rectDB.ID
+	backRepoRect.Map_RectDBID_RectPtr[rectDB.ID] = rect
+	backRepoRect.Map_RectDBID_RectDB[rectDB.ID] = &rectDB
 
 	return
 }
@@ -295,7 +263,7 @@ func (backRepoRect *BackRepoRectStruct) CommitPhaseOneInstance(rect *models.Rect
 // Phase Two is the update of instance with the field in the database
 func (backRepoRect *BackRepoRectStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, rect := range *backRepoRect.Map_RectDBID_RectPtr {
+	for idx, rect := range backRepoRect.Map_RectDBID_RectPtr {
 		backRepoRect.CommitPhaseTwoInstance(backRepo, idx, rect)
 	}
 
@@ -307,7 +275,7 @@ func (backRepoRect *BackRepoRectStruct) CommitPhaseTwo(backRepo *BackRepoStruct)
 func (backRepoRect *BackRepoRectStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, rect *models.Rect) (Error error) {
 
 	// fetch matching rectDB
-	if rectDB, ok := (*backRepoRect.Map_RectDBID_RectDB)[idx]; ok {
+	if rectDB, ok := backRepoRect.Map_RectDBID_RectDB[idx]; ok {
 
 		rectDB.CopyBasicFieldsFromRect(rect)
 
@@ -370,7 +338,7 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		rect, ok := (*backRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+		rect, ok := backRepoRect.Map_RectDBID_RectPtr[rectDB.ID]
 		if ok {
 			delete(rectInstancesToBeRemovedFromTheStage, rect)
 		}
@@ -381,10 +349,10 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOne() (Error error) {
 		rect.Unstage(backRepoRect.GetStage())
 
 		// remove instance from the back repo 3 maps
-		rectID := (*backRepoRect.Map_RectPtr_RectDBID)[rect]
-		delete((*backRepoRect.Map_RectPtr_RectDBID), rect)
-		delete((*backRepoRect.Map_RectDBID_RectDB), rectID)
-		delete((*backRepoRect.Map_RectDBID_RectPtr), rectID)
+		rectID := backRepoRect.Map_RectPtr_RectDBID[rect]
+		delete(backRepoRect.Map_RectPtr_RectDBID, rect)
+		delete(backRepoRect.Map_RectDBID_RectDB, rectID)
+		delete(backRepoRect.Map_RectDBID_RectPtr, rectID)
 	}
 
 	return
@@ -394,12 +362,12 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOne() (Error error) {
 // models version of the rectDB
 func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOneInstance(rectDB *RectDB) (Error error) {
 
-	rect, ok := (*backRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+	rect, ok := backRepoRect.Map_RectDBID_RectPtr[rectDB.ID]
 	if !ok {
 		rect = new(models.Rect)
 
-		(*backRepoRect.Map_RectDBID_RectPtr)[rectDB.ID] = rect
-		(*backRepoRect.Map_RectPtr_RectDBID)[rect] = rectDB.ID
+		backRepoRect.Map_RectDBID_RectPtr[rectDB.ID] = rect
+		backRepoRect.Map_RectPtr_RectDBID[rect] = rectDB.ID
 
 		// append model store with the new element
 		rect.Name = rectDB.Name_Data.String
@@ -414,7 +382,7 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOneInstance(rectDB *RectDB)
 	// Map_RectDBID_RectDB)[rectDB hold variable pointers
 	rectDB_Data := *rectDB
 	preservedPtrToRect := &rectDB_Data
-	(*backRepoRect.Map_RectDBID_RectDB)[rectDB.ID] = preservedPtrToRect
+	backRepoRect.Map_RectDBID_RectDB[rectDB.ID] = preservedPtrToRect
 
 	return
 }
@@ -424,7 +392,7 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseOneInstance(rectDB *RectDB)
 func (backRepoRect *BackRepoRectStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, rectDB := range *backRepoRect.Map_RectDBID_RectDB {
+	for _, rectDB := range backRepoRect.Map_RectDBID_RectDB {
 		backRepoRect.CheckoutPhaseTwoInstance(backRepo, rectDB)
 	}
 	return
@@ -434,7 +402,7 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseTwo(backRepo *BackRepoStruc
 // Phase Two is the update of instance with the field in the database
 func (backRepoRect *BackRepoRectStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, rectDB *RectDB) (Error error) {
 
-	rect := (*backRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+	rect := backRepoRect.Map_RectDBID_RectPtr[rectDB.ID]
 	_ = rect // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -444,11 +412,11 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 	// 1. reset the slice
 	rect.Animations = rect.Animations[:0]
 	// 2. loop all instances in the type in the association end
-	for _, animateDB_AssocEnd := range *backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB_AssocEnd := range backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if animateDB_AssocEnd.Rect_AnimationsDBID.Int64 == int64(rectDB.ID) {
 			// 4. fetch the associated instance in the stage
-			animate_AssocEnd := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB_AssocEnd.ID]
+			animate_AssocEnd := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB_AssocEnd.ID]
 			// 5. append it the association slice
 			rect.Animations = append(rect.Animations, animate_AssocEnd)
 		}
@@ -456,11 +424,11 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 
 	// sort the array according to the order
 	sort.Slice(rect.Animations, func(i, j int) bool {
-		animateDB_i_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[rect.Animations[i]]
-		animateDB_j_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[rect.Animations[j]]
+		animateDB_i_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[rect.Animations[i]]
+		animateDB_j_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[rect.Animations[j]]
 
-		animateDB_i := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_i_ID]
-		animateDB_j := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_j_ID]
+		animateDB_i := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_i_ID]
+		animateDB_j := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_j_ID]
 
 		return animateDB_i.Rect_AnimationsDBID_Index.Int64 < animateDB_j.Rect_AnimationsDBID_Index.Int64
 	})
@@ -471,7 +439,7 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 // CommitRect allows commit of a single rect (if already staged)
 func (backRepo *BackRepoStruct) CommitRect(rect *models.Rect) {
 	backRepo.BackRepoRect.CommitPhaseOneInstance(rect)
-	if id, ok := (*backRepo.BackRepoRect.Map_RectPtr_RectDBID)[rect]; ok {
+	if id, ok := backRepo.BackRepoRect.Map_RectPtr_RectDBID[rect]; ok {
 		backRepo.BackRepoRect.CommitPhaseTwoInstance(backRepo, id, rect)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -480,9 +448,9 @@ func (backRepo *BackRepoStruct) CommitRect(rect *models.Rect) {
 // CommitRect allows checkout of a single rect (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutRect(rect *models.Rect) {
 	// check if the rect is staged
-	if _, ok := (*backRepo.BackRepoRect.Map_RectPtr_RectDBID)[rect]; ok {
+	if _, ok := backRepo.BackRepoRect.Map_RectPtr_RectDBID[rect]; ok {
 
-		if id, ok := (*backRepo.BackRepoRect.Map_RectPtr_RectDBID)[rect]; ok {
+		if id, ok := backRepo.BackRepoRect.Map_RectPtr_RectDBID[rect]; ok {
 			var rectDB RectDB
 			rectDB.ID = id
 
@@ -620,7 +588,7 @@ func (backRepoRect *BackRepoRectStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*RectDB, 0)
-	for _, rectDB := range *backRepoRect.Map_RectDBID_RectDB {
+	for _, rectDB := range backRepoRect.Map_RectDBID_RectDB {
 		forBackup = append(forBackup, rectDB)
 	}
 
@@ -646,7 +614,7 @@ func (backRepoRect *BackRepoRectStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*RectDB, 0)
-	for _, rectDB := range *backRepoRect.Map_RectDBID_RectDB {
+	for _, rectDB := range backRepoRect.Map_RectDBID_RectDB {
 		forBackup = append(forBackup, rectDB)
 	}
 
@@ -711,7 +679,7 @@ func (backRepoRect *BackRepoRectStruct) rowVisitorRect(row *xlsx.Row) error {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoRect.Map_RectDBID_RectDB)[rectDB.ID] = rectDB
+		backRepoRect.Map_RectDBID_RectDB[rectDB.ID] = rectDB
 		BackRepoRectid_atBckpTime_newID[rectDB_ID_atBackupTime] = rectDB.ID
 	}
 	return nil
@@ -748,7 +716,7 @@ func (backRepoRect *BackRepoRectStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoRect.Map_RectDBID_RectDB)[rectDB.ID] = rectDB
+		backRepoRect.Map_RectDBID_RectDB[rectDB.ID] = rectDB
 		BackRepoRectid_atBckpTime_newID[rectDB_ID_atBackupTime] = rectDB.ID
 	}
 
@@ -761,7 +729,7 @@ func (backRepoRect *BackRepoRectStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoRect *BackRepoRectStruct) RestorePhaseTwo() {
 
-	for _, rectDB := range *backRepoRect.Map_RectDBID_RectDB {
+	for _, rectDB := range backRepoRect.Map_RectDBID_RectDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = rectDB

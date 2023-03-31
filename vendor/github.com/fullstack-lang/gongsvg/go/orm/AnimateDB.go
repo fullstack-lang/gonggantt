@@ -165,13 +165,13 @@ var Animate_Fields = []string{
 
 type BackRepoAnimateStruct struct {
 	// stores AnimateDB according to their gorm ID
-	Map_AnimateDBID_AnimateDB *map[uint]*AnimateDB
+	Map_AnimateDBID_AnimateDB map[uint]*AnimateDB
 
 	// stores AnimateDB ID according to Animate address
-	Map_AnimatePtr_AnimateDBID *map[*models.Animate]uint
+	Map_AnimatePtr_AnimateDBID map[*models.Animate]uint
 
 	// stores Animate according to their gorm ID
-	Map_AnimateDBID_AnimatePtr *map[uint]*models.Animate
+	Map_AnimateDBID_AnimatePtr map[uint]*models.Animate
 
 	db *gorm.DB
 
@@ -189,40 +189,8 @@ func (backRepoAnimate *BackRepoAnimateStruct) GetDB() *gorm.DB {
 
 // GetAnimateDBFromAnimatePtr is a handy function to access the back repo instance from the stage instance
 func (backRepoAnimate *BackRepoAnimateStruct) GetAnimateDBFromAnimatePtr(animate *models.Animate) (animateDB *AnimateDB) {
-	id := (*backRepoAnimate.Map_AnimatePtr_AnimateDBID)[animate]
-	animateDB = (*backRepoAnimate.Map_AnimateDBID_AnimateDB)[id]
-	return
-}
-
-// BackRepoAnimate.Init set up the BackRepo of the Animate
-func (backRepoAnimate *BackRepoAnimateStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoAnimate.Map_AnimateDBID_AnimatePtr != nil {
-		err := errors.New("In Init, backRepoAnimate.Map_AnimateDBID_AnimatePtr should be nil")
-		return err
-	}
-
-	if backRepoAnimate.Map_AnimateDBID_AnimateDB != nil {
-		err := errors.New("In Init, backRepoAnimate.Map_AnimateDBID_AnimateDB should be nil")
-		return err
-	}
-
-	if backRepoAnimate.Map_AnimatePtr_AnimateDBID != nil {
-		err := errors.New("In Init, backRepoAnimate.Map_AnimatePtr_AnimateDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Animate, 0)
-	backRepoAnimate.Map_AnimateDBID_AnimatePtr = &tmp
-
-	tmpDB := make(map[uint]*AnimateDB, 0)
-	backRepoAnimate.Map_AnimateDBID_AnimateDB = &tmpDB
-
-	tmpID := make(map[*models.Animate]uint, 0)
-	backRepoAnimate.Map_AnimatePtr_AnimateDBID = &tmpID
-
-	backRepoAnimate.db = db
-	backRepoAnimate.stage = stage
+	id := backRepoAnimate.Map_AnimatePtr_AnimateDBID[animate]
+	animateDB = backRepoAnimate.Map_AnimateDBID_AnimateDB[id]
 	return
 }
 
@@ -236,7 +204,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CommitPhaseOne(stage *models.Stage
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, animate := range *backRepoAnimate.Map_AnimateDBID_AnimatePtr {
+	for id, animate := range backRepoAnimate.Map_AnimateDBID_AnimatePtr {
 		if _, ok := stage.Animates[animate]; !ok {
 			backRepoAnimate.CommitDeleteInstance(id)
 		}
@@ -248,19 +216,19 @@ func (backRepoAnimate *BackRepoAnimateStruct) CommitPhaseOne(stage *models.Stage
 // BackRepoAnimate.CommitDeleteInstance commits deletion of Animate to the BackRepo
 func (backRepoAnimate *BackRepoAnimateStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	animate := (*backRepoAnimate.Map_AnimateDBID_AnimatePtr)[id]
+	animate := backRepoAnimate.Map_AnimateDBID_AnimatePtr[id]
 
 	// animate is not staged anymore, remove animateDB
-	animateDB := (*backRepoAnimate.Map_AnimateDBID_AnimateDB)[id]
+	animateDB := backRepoAnimate.Map_AnimateDBID_AnimateDB[id]
 	query := backRepoAnimate.db.Unscoped().Delete(&animateDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoAnimate.Map_AnimatePtr_AnimateDBID), animate)
-	delete((*backRepoAnimate.Map_AnimateDBID_AnimatePtr), id)
-	delete((*backRepoAnimate.Map_AnimateDBID_AnimateDB), id)
+	delete(backRepoAnimate.Map_AnimatePtr_AnimateDBID, animate)
+	delete(backRepoAnimate.Map_AnimateDBID_AnimatePtr, id)
+	delete(backRepoAnimate.Map_AnimateDBID_AnimateDB, id)
 
 	return
 }
@@ -270,7 +238,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CommitDeleteInstance(id uint) (Err
 func (backRepoAnimate *BackRepoAnimateStruct) CommitPhaseOneInstance(animate *models.Animate) (Error error) {
 
 	// check if the animate is not commited yet
-	if _, ok := (*backRepoAnimate.Map_AnimatePtr_AnimateDBID)[animate]; ok {
+	if _, ok := backRepoAnimate.Map_AnimatePtr_AnimateDBID[animate]; ok {
 		return
 	}
 
@@ -284,9 +252,9 @@ func (backRepoAnimate *BackRepoAnimateStruct) CommitPhaseOneInstance(animate *mo
 	}
 
 	// update stores
-	(*backRepoAnimate.Map_AnimatePtr_AnimateDBID)[animate] = animateDB.ID
-	(*backRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID] = animate
-	(*backRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB.ID] = &animateDB
+	backRepoAnimate.Map_AnimatePtr_AnimateDBID[animate] = animateDB.ID
+	backRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB.ID] = animate
+	backRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB.ID] = &animateDB
 
 	return
 }
@@ -295,7 +263,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CommitPhaseOneInstance(animate *mo
 // Phase Two is the update of instance with the field in the database
 func (backRepoAnimate *BackRepoAnimateStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, animate := range *backRepoAnimate.Map_AnimateDBID_AnimatePtr {
+	for idx, animate := range backRepoAnimate.Map_AnimateDBID_AnimatePtr {
 		backRepoAnimate.CommitPhaseTwoInstance(backRepo, idx, animate)
 	}
 
@@ -307,7 +275,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CommitPhaseTwo(backRepo *BackRepoS
 func (backRepoAnimate *BackRepoAnimateStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, animate *models.Animate) (Error error) {
 
 	// fetch matching animateDB
-	if animateDB, ok := (*backRepoAnimate.Map_AnimateDBID_AnimateDB)[idx]; ok {
+	if animateDB, ok := backRepoAnimate.Map_AnimateDBID_AnimateDB[idx]; ok {
 
 		animateDB.CopyBasicFieldsFromAnimate(animate)
 
@@ -351,7 +319,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		animate, ok := (*backRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+		animate, ok := backRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB.ID]
 		if ok {
 			delete(animateInstancesToBeRemovedFromTheStage, animate)
 		}
@@ -362,10 +330,10 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOne() (Error error) {
 		animate.Unstage(backRepoAnimate.GetStage())
 
 		// remove instance from the back repo 3 maps
-		animateID := (*backRepoAnimate.Map_AnimatePtr_AnimateDBID)[animate]
-		delete((*backRepoAnimate.Map_AnimatePtr_AnimateDBID), animate)
-		delete((*backRepoAnimate.Map_AnimateDBID_AnimateDB), animateID)
-		delete((*backRepoAnimate.Map_AnimateDBID_AnimatePtr), animateID)
+		animateID := backRepoAnimate.Map_AnimatePtr_AnimateDBID[animate]
+		delete(backRepoAnimate.Map_AnimatePtr_AnimateDBID, animate)
+		delete(backRepoAnimate.Map_AnimateDBID_AnimateDB, animateID)
+		delete(backRepoAnimate.Map_AnimateDBID_AnimatePtr, animateID)
 	}
 
 	return
@@ -375,12 +343,12 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOne() (Error error) {
 // models version of the animateDB
 func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOneInstance(animateDB *AnimateDB) (Error error) {
 
-	animate, ok := (*backRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+	animate, ok := backRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB.ID]
 	if !ok {
 		animate = new(models.Animate)
 
-		(*backRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID] = animate
-		(*backRepoAnimate.Map_AnimatePtr_AnimateDBID)[animate] = animateDB.ID
+		backRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB.ID] = animate
+		backRepoAnimate.Map_AnimatePtr_AnimateDBID[animate] = animateDB.ID
 
 		// append model store with the new element
 		animate.Name = animateDB.Name_Data.String
@@ -395,7 +363,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOneInstance(animateDB
 	// Map_AnimateDBID_AnimateDB)[animateDB hold variable pointers
 	animateDB_Data := *animateDB
 	preservedPtrToAnimate := &animateDB_Data
-	(*backRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB.ID] = preservedPtrToAnimate
+	backRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB.ID] = preservedPtrToAnimate
 
 	return
 }
@@ -405,7 +373,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseOneInstance(animateDB
 func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, animateDB := range *backRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB := range backRepoAnimate.Map_AnimateDBID_AnimateDB {
 		backRepoAnimate.CheckoutPhaseTwoInstance(backRepo, animateDB)
 	}
 	return
@@ -415,7 +383,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseTwo(backRepo *BackRep
 // Phase Two is the update of instance with the field in the database
 func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, animateDB *AnimateDB) (Error error) {
 
-	animate := (*backRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+	animate := backRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB.ID]
 	_ = animate // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -425,7 +393,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) CheckoutPhaseTwoInstance(backRepo 
 // CommitAnimate allows commit of a single animate (if already staged)
 func (backRepo *BackRepoStruct) CommitAnimate(animate *models.Animate) {
 	backRepo.BackRepoAnimate.CommitPhaseOneInstance(animate)
-	if id, ok := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[animate]; ok {
+	if id, ok := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[animate]; ok {
 		backRepo.BackRepoAnimate.CommitPhaseTwoInstance(backRepo, id, animate)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -434,9 +402,9 @@ func (backRepo *BackRepoStruct) CommitAnimate(animate *models.Animate) {
 // CommitAnimate allows checkout of a single animate (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutAnimate(animate *models.Animate) {
 	// check if the animate is staged
-	if _, ok := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[animate]; ok {
+	if _, ok := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[animate]; ok {
 
-		if id, ok := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[animate]; ok {
+		if id, ok := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[animate]; ok {
 			var animateDB AnimateDB
 			animateDB.ID = id
 
@@ -518,7 +486,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*AnimateDB, 0)
-	for _, animateDB := range *backRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB := range backRepoAnimate.Map_AnimateDBID_AnimateDB {
 		forBackup = append(forBackup, animateDB)
 	}
 
@@ -544,7 +512,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*AnimateDB, 0)
-	for _, animateDB := range *backRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB := range backRepoAnimate.Map_AnimateDBID_AnimateDB {
 		forBackup = append(forBackup, animateDB)
 	}
 
@@ -609,7 +577,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) rowVisitorAnimate(row *xlsx.Row) e
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB.ID] = animateDB
+		backRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB.ID] = animateDB
 		BackRepoAnimateid_atBckpTime_newID[animateDB_ID_atBackupTime] = animateDB.ID
 	}
 	return nil
@@ -646,7 +614,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB.ID] = animateDB
+		backRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB.ID] = animateDB
 		BackRepoAnimateid_atBckpTime_newID[animateDB_ID_atBackupTime] = animateDB.ID
 	}
 
@@ -659,7 +627,7 @@ func (backRepoAnimate *BackRepoAnimateStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoAnimate *BackRepoAnimateStruct) RestorePhaseTwo() {
 
-	for _, animateDB := range *backRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB := range backRepoAnimate.Map_AnimateDBID_AnimateDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = animateDB

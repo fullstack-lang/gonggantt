@@ -141,13 +141,13 @@ var Path_Fields = []string{
 
 type BackRepoPathStruct struct {
 	// stores PathDB according to their gorm ID
-	Map_PathDBID_PathDB *map[uint]*PathDB
+	Map_PathDBID_PathDB map[uint]*PathDB
 
 	// stores PathDB ID according to Path address
-	Map_PathPtr_PathDBID *map[*models.Path]uint
+	Map_PathPtr_PathDBID map[*models.Path]uint
 
 	// stores Path according to their gorm ID
-	Map_PathDBID_PathPtr *map[uint]*models.Path
+	Map_PathDBID_PathPtr map[uint]*models.Path
 
 	db *gorm.DB
 
@@ -165,40 +165,8 @@ func (backRepoPath *BackRepoPathStruct) GetDB() *gorm.DB {
 
 // GetPathDBFromPathPtr is a handy function to access the back repo instance from the stage instance
 func (backRepoPath *BackRepoPathStruct) GetPathDBFromPathPtr(path *models.Path) (pathDB *PathDB) {
-	id := (*backRepoPath.Map_PathPtr_PathDBID)[path]
-	pathDB = (*backRepoPath.Map_PathDBID_PathDB)[id]
-	return
-}
-
-// BackRepoPath.Init set up the BackRepo of the Path
-func (backRepoPath *BackRepoPathStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoPath.Map_PathDBID_PathPtr != nil {
-		err := errors.New("In Init, backRepoPath.Map_PathDBID_PathPtr should be nil")
-		return err
-	}
-
-	if backRepoPath.Map_PathDBID_PathDB != nil {
-		err := errors.New("In Init, backRepoPath.Map_PathDBID_PathDB should be nil")
-		return err
-	}
-
-	if backRepoPath.Map_PathPtr_PathDBID != nil {
-		err := errors.New("In Init, backRepoPath.Map_PathPtr_PathDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Path, 0)
-	backRepoPath.Map_PathDBID_PathPtr = &tmp
-
-	tmpDB := make(map[uint]*PathDB, 0)
-	backRepoPath.Map_PathDBID_PathDB = &tmpDB
-
-	tmpID := make(map[*models.Path]uint, 0)
-	backRepoPath.Map_PathPtr_PathDBID = &tmpID
-
-	backRepoPath.db = db
-	backRepoPath.stage = stage
+	id := backRepoPath.Map_PathPtr_PathDBID[path]
+	pathDB = backRepoPath.Map_PathDBID_PathDB[id]
 	return
 }
 
@@ -212,7 +180,7 @@ func (backRepoPath *BackRepoPathStruct) CommitPhaseOne(stage *models.StageStruct
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, path := range *backRepoPath.Map_PathDBID_PathPtr {
+	for id, path := range backRepoPath.Map_PathDBID_PathPtr {
 		if _, ok := stage.Paths[path]; !ok {
 			backRepoPath.CommitDeleteInstance(id)
 		}
@@ -224,19 +192,19 @@ func (backRepoPath *BackRepoPathStruct) CommitPhaseOne(stage *models.StageStruct
 // BackRepoPath.CommitDeleteInstance commits deletion of Path to the BackRepo
 func (backRepoPath *BackRepoPathStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	path := (*backRepoPath.Map_PathDBID_PathPtr)[id]
+	path := backRepoPath.Map_PathDBID_PathPtr[id]
 
 	// path is not staged anymore, remove pathDB
-	pathDB := (*backRepoPath.Map_PathDBID_PathDB)[id]
+	pathDB := backRepoPath.Map_PathDBID_PathDB[id]
 	query := backRepoPath.db.Unscoped().Delete(&pathDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoPath.Map_PathPtr_PathDBID), path)
-	delete((*backRepoPath.Map_PathDBID_PathPtr), id)
-	delete((*backRepoPath.Map_PathDBID_PathDB), id)
+	delete(backRepoPath.Map_PathPtr_PathDBID, path)
+	delete(backRepoPath.Map_PathDBID_PathPtr, id)
+	delete(backRepoPath.Map_PathDBID_PathDB, id)
 
 	return
 }
@@ -246,7 +214,7 @@ func (backRepoPath *BackRepoPathStruct) CommitDeleteInstance(id uint) (Error err
 func (backRepoPath *BackRepoPathStruct) CommitPhaseOneInstance(path *models.Path) (Error error) {
 
 	// check if the path is not commited yet
-	if _, ok := (*backRepoPath.Map_PathPtr_PathDBID)[path]; ok {
+	if _, ok := backRepoPath.Map_PathPtr_PathDBID[path]; ok {
 		return
 	}
 
@@ -260,9 +228,9 @@ func (backRepoPath *BackRepoPathStruct) CommitPhaseOneInstance(path *models.Path
 	}
 
 	// update stores
-	(*backRepoPath.Map_PathPtr_PathDBID)[path] = pathDB.ID
-	(*backRepoPath.Map_PathDBID_PathPtr)[pathDB.ID] = path
-	(*backRepoPath.Map_PathDBID_PathDB)[pathDB.ID] = &pathDB
+	backRepoPath.Map_PathPtr_PathDBID[path] = pathDB.ID
+	backRepoPath.Map_PathDBID_PathPtr[pathDB.ID] = path
+	backRepoPath.Map_PathDBID_PathDB[pathDB.ID] = &pathDB
 
 	return
 }
@@ -271,7 +239,7 @@ func (backRepoPath *BackRepoPathStruct) CommitPhaseOneInstance(path *models.Path
 // Phase Two is the update of instance with the field in the database
 func (backRepoPath *BackRepoPathStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, path := range *backRepoPath.Map_PathDBID_PathPtr {
+	for idx, path := range backRepoPath.Map_PathDBID_PathPtr {
 		backRepoPath.CommitPhaseTwoInstance(backRepo, idx, path)
 	}
 
@@ -283,7 +251,7 @@ func (backRepoPath *BackRepoPathStruct) CommitPhaseTwo(backRepo *BackRepoStruct)
 func (backRepoPath *BackRepoPathStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, path *models.Path) (Error error) {
 
 	// fetch matching pathDB
-	if pathDB, ok := (*backRepoPath.Map_PathDBID_PathDB)[idx]; ok {
+	if pathDB, ok := backRepoPath.Map_PathDBID_PathDB[idx]; ok {
 
 		pathDB.CopyBasicFieldsFromPath(path)
 
@@ -346,7 +314,7 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		path, ok := (*backRepoPath.Map_PathDBID_PathPtr)[pathDB.ID]
+		path, ok := backRepoPath.Map_PathDBID_PathPtr[pathDB.ID]
 		if ok {
 			delete(pathInstancesToBeRemovedFromTheStage, path)
 		}
@@ -357,10 +325,10 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOne() (Error error) {
 		path.Unstage(backRepoPath.GetStage())
 
 		// remove instance from the back repo 3 maps
-		pathID := (*backRepoPath.Map_PathPtr_PathDBID)[path]
-		delete((*backRepoPath.Map_PathPtr_PathDBID), path)
-		delete((*backRepoPath.Map_PathDBID_PathDB), pathID)
-		delete((*backRepoPath.Map_PathDBID_PathPtr), pathID)
+		pathID := backRepoPath.Map_PathPtr_PathDBID[path]
+		delete(backRepoPath.Map_PathPtr_PathDBID, path)
+		delete(backRepoPath.Map_PathDBID_PathDB, pathID)
+		delete(backRepoPath.Map_PathDBID_PathPtr, pathID)
 	}
 
 	return
@@ -370,12 +338,12 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOne() (Error error) {
 // models version of the pathDB
 func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOneInstance(pathDB *PathDB) (Error error) {
 
-	path, ok := (*backRepoPath.Map_PathDBID_PathPtr)[pathDB.ID]
+	path, ok := backRepoPath.Map_PathDBID_PathPtr[pathDB.ID]
 	if !ok {
 		path = new(models.Path)
 
-		(*backRepoPath.Map_PathDBID_PathPtr)[pathDB.ID] = path
-		(*backRepoPath.Map_PathPtr_PathDBID)[path] = pathDB.ID
+		backRepoPath.Map_PathDBID_PathPtr[pathDB.ID] = path
+		backRepoPath.Map_PathPtr_PathDBID[path] = pathDB.ID
 
 		// append model store with the new element
 		path.Name = pathDB.Name_Data.String
@@ -390,7 +358,7 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOneInstance(pathDB *PathDB)
 	// Map_PathDBID_PathDB)[pathDB hold variable pointers
 	pathDB_Data := *pathDB
 	preservedPtrToPath := &pathDB_Data
-	(*backRepoPath.Map_PathDBID_PathDB)[pathDB.ID] = preservedPtrToPath
+	backRepoPath.Map_PathDBID_PathDB[pathDB.ID] = preservedPtrToPath
 
 	return
 }
@@ -400,7 +368,7 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseOneInstance(pathDB *PathDB)
 func (backRepoPath *BackRepoPathStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, pathDB := range *backRepoPath.Map_PathDBID_PathDB {
+	for _, pathDB := range backRepoPath.Map_PathDBID_PathDB {
 		backRepoPath.CheckoutPhaseTwoInstance(backRepo, pathDB)
 	}
 	return
@@ -410,7 +378,7 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseTwo(backRepo *BackRepoStruc
 // Phase Two is the update of instance with the field in the database
 func (backRepoPath *BackRepoPathStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, pathDB *PathDB) (Error error) {
 
-	path := (*backRepoPath.Map_PathDBID_PathPtr)[pathDB.ID]
+	path := backRepoPath.Map_PathDBID_PathPtr[pathDB.ID]
 	_ = path // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -420,11 +388,11 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 	// 1. reset the slice
 	path.Animates = path.Animates[:0]
 	// 2. loop all instances in the type in the association end
-	for _, animateDB_AssocEnd := range *backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB_AssocEnd := range backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if animateDB_AssocEnd.Path_AnimatesDBID.Int64 == int64(pathDB.ID) {
 			// 4. fetch the associated instance in the stage
-			animate_AssocEnd := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB_AssocEnd.ID]
+			animate_AssocEnd := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB_AssocEnd.ID]
 			// 5. append it the association slice
 			path.Animates = append(path.Animates, animate_AssocEnd)
 		}
@@ -432,11 +400,11 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 
 	// sort the array according to the order
 	sort.Slice(path.Animates, func(i, j int) bool {
-		animateDB_i_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[path.Animates[i]]
-		animateDB_j_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[path.Animates[j]]
+		animateDB_i_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[path.Animates[i]]
+		animateDB_j_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[path.Animates[j]]
 
-		animateDB_i := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_i_ID]
-		animateDB_j := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_j_ID]
+		animateDB_i := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_i_ID]
+		animateDB_j := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_j_ID]
 
 		return animateDB_i.Path_AnimatesDBID_Index.Int64 < animateDB_j.Path_AnimatesDBID_Index.Int64
 	})
@@ -447,7 +415,7 @@ func (backRepoPath *BackRepoPathStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 // CommitPath allows commit of a single path (if already staged)
 func (backRepo *BackRepoStruct) CommitPath(path *models.Path) {
 	backRepo.BackRepoPath.CommitPhaseOneInstance(path)
-	if id, ok := (*backRepo.BackRepoPath.Map_PathPtr_PathDBID)[path]; ok {
+	if id, ok := backRepo.BackRepoPath.Map_PathPtr_PathDBID[path]; ok {
 		backRepo.BackRepoPath.CommitPhaseTwoInstance(backRepo, id, path)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -456,9 +424,9 @@ func (backRepo *BackRepoStruct) CommitPath(path *models.Path) {
 // CommitPath allows checkout of a single path (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutPath(path *models.Path) {
 	// check if the path is staged
-	if _, ok := (*backRepo.BackRepoPath.Map_PathPtr_PathDBID)[path]; ok {
+	if _, ok := backRepo.BackRepoPath.Map_PathPtr_PathDBID[path]; ok {
 
-		if id, ok := (*backRepo.BackRepoPath.Map_PathPtr_PathDBID)[path]; ok {
+		if id, ok := backRepo.BackRepoPath.Map_PathPtr_PathDBID[path]; ok {
 			var pathDB PathDB
 			pathDB.ID = id
 
@@ -564,7 +532,7 @@ func (backRepoPath *BackRepoPathStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*PathDB, 0)
-	for _, pathDB := range *backRepoPath.Map_PathDBID_PathDB {
+	for _, pathDB := range backRepoPath.Map_PathDBID_PathDB {
 		forBackup = append(forBackup, pathDB)
 	}
 
@@ -590,7 +558,7 @@ func (backRepoPath *BackRepoPathStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*PathDB, 0)
-	for _, pathDB := range *backRepoPath.Map_PathDBID_PathDB {
+	for _, pathDB := range backRepoPath.Map_PathDBID_PathDB {
 		forBackup = append(forBackup, pathDB)
 	}
 
@@ -655,7 +623,7 @@ func (backRepoPath *BackRepoPathStruct) rowVisitorPath(row *xlsx.Row) error {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoPath.Map_PathDBID_PathDB)[pathDB.ID] = pathDB
+		backRepoPath.Map_PathDBID_PathDB[pathDB.ID] = pathDB
 		BackRepoPathid_atBckpTime_newID[pathDB_ID_atBackupTime] = pathDB.ID
 	}
 	return nil
@@ -692,7 +660,7 @@ func (backRepoPath *BackRepoPathStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoPath.Map_PathDBID_PathDB)[pathDB.ID] = pathDB
+		backRepoPath.Map_PathDBID_PathDB[pathDB.ID] = pathDB
 		BackRepoPathid_atBckpTime_newID[pathDB_ID_atBackupTime] = pathDB.ID
 	}
 
@@ -705,7 +673,7 @@ func (backRepoPath *BackRepoPathStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoPath *BackRepoPathStruct) RestorePhaseTwo() {
 
-	for _, pathDB := range *backRepoPath.Map_PathDBID_PathDB {
+	for _, pathDB := range backRepoPath.Map_PathDBID_PathDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = pathDB

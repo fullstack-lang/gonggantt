@@ -151,7 +151,7 @@ func (controller *Controller) PostText(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoText.CheckoutPhaseOneInstance(&textDB)
-	text := (*backRepo.BackRepoText.Map_TextDBID_TextPtr)[textDB.ID]
+	text := backRepo.BackRepoText.Map_TextDBID_TextPtr[textDB.ID]
 
 	if text != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), text)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateText(c *gin.Context) {
 	textDB.CopyBasicFieldsToText(textNew)
 
 	// get stage instance from DB instance, and call callback function
-	textOld := (*backRepo.BackRepoText.Map_TextDBID_TextPtr)[textDB.ID]
+	textOld := backRepo.BackRepoText.Map_TextDBID_TextPtr[textDB.ID]
 	if textOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), textOld, textNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteText(c *gin.Context) {
 	textDB.CopyBasicFieldsToText(textDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	textStaged := (*backRepo.BackRepoText.Map_TextDBID_TextPtr)[textDB.ID]
+	textStaged := backRepo.BackRepoText.Map_TextDBID_TextPtr[textDB.ID]
 	if textStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), textStaged, textDeleted)
 	}

@@ -141,13 +141,13 @@ var Polyline_Fields = []string{
 
 type BackRepoPolylineStruct struct {
 	// stores PolylineDB according to their gorm ID
-	Map_PolylineDBID_PolylineDB *map[uint]*PolylineDB
+	Map_PolylineDBID_PolylineDB map[uint]*PolylineDB
 
 	// stores PolylineDB ID according to Polyline address
-	Map_PolylinePtr_PolylineDBID *map[*models.Polyline]uint
+	Map_PolylinePtr_PolylineDBID map[*models.Polyline]uint
 
 	// stores Polyline according to their gorm ID
-	Map_PolylineDBID_PolylinePtr *map[uint]*models.Polyline
+	Map_PolylineDBID_PolylinePtr map[uint]*models.Polyline
 
 	db *gorm.DB
 
@@ -165,40 +165,8 @@ func (backRepoPolyline *BackRepoPolylineStruct) GetDB() *gorm.DB {
 
 // GetPolylineDBFromPolylinePtr is a handy function to access the back repo instance from the stage instance
 func (backRepoPolyline *BackRepoPolylineStruct) GetPolylineDBFromPolylinePtr(polyline *models.Polyline) (polylineDB *PolylineDB) {
-	id := (*backRepoPolyline.Map_PolylinePtr_PolylineDBID)[polyline]
-	polylineDB = (*backRepoPolyline.Map_PolylineDBID_PolylineDB)[id]
-	return
-}
-
-// BackRepoPolyline.Init set up the BackRepo of the Polyline
-func (backRepoPolyline *BackRepoPolylineStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoPolyline.Map_PolylineDBID_PolylinePtr != nil {
-		err := errors.New("In Init, backRepoPolyline.Map_PolylineDBID_PolylinePtr should be nil")
-		return err
-	}
-
-	if backRepoPolyline.Map_PolylineDBID_PolylineDB != nil {
-		err := errors.New("In Init, backRepoPolyline.Map_PolylineDBID_PolylineDB should be nil")
-		return err
-	}
-
-	if backRepoPolyline.Map_PolylinePtr_PolylineDBID != nil {
-		err := errors.New("In Init, backRepoPolyline.Map_PolylinePtr_PolylineDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Polyline, 0)
-	backRepoPolyline.Map_PolylineDBID_PolylinePtr = &tmp
-
-	tmpDB := make(map[uint]*PolylineDB, 0)
-	backRepoPolyline.Map_PolylineDBID_PolylineDB = &tmpDB
-
-	tmpID := make(map[*models.Polyline]uint, 0)
-	backRepoPolyline.Map_PolylinePtr_PolylineDBID = &tmpID
-
-	backRepoPolyline.db = db
-	backRepoPolyline.stage = stage
+	id := backRepoPolyline.Map_PolylinePtr_PolylineDBID[polyline]
+	polylineDB = backRepoPolyline.Map_PolylineDBID_PolylineDB[id]
 	return
 }
 
@@ -212,7 +180,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CommitPhaseOne(stage *models.Sta
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, polyline := range *backRepoPolyline.Map_PolylineDBID_PolylinePtr {
+	for id, polyline := range backRepoPolyline.Map_PolylineDBID_PolylinePtr {
 		if _, ok := stage.Polylines[polyline]; !ok {
 			backRepoPolyline.CommitDeleteInstance(id)
 		}
@@ -224,19 +192,19 @@ func (backRepoPolyline *BackRepoPolylineStruct) CommitPhaseOne(stage *models.Sta
 // BackRepoPolyline.CommitDeleteInstance commits deletion of Polyline to the BackRepo
 func (backRepoPolyline *BackRepoPolylineStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	polyline := (*backRepoPolyline.Map_PolylineDBID_PolylinePtr)[id]
+	polyline := backRepoPolyline.Map_PolylineDBID_PolylinePtr[id]
 
 	// polyline is not staged anymore, remove polylineDB
-	polylineDB := (*backRepoPolyline.Map_PolylineDBID_PolylineDB)[id]
+	polylineDB := backRepoPolyline.Map_PolylineDBID_PolylineDB[id]
 	query := backRepoPolyline.db.Unscoped().Delete(&polylineDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoPolyline.Map_PolylinePtr_PolylineDBID), polyline)
-	delete((*backRepoPolyline.Map_PolylineDBID_PolylinePtr), id)
-	delete((*backRepoPolyline.Map_PolylineDBID_PolylineDB), id)
+	delete(backRepoPolyline.Map_PolylinePtr_PolylineDBID, polyline)
+	delete(backRepoPolyline.Map_PolylineDBID_PolylinePtr, id)
+	delete(backRepoPolyline.Map_PolylineDBID_PolylineDB, id)
 
 	return
 }
@@ -246,7 +214,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CommitDeleteInstance(id uint) (E
 func (backRepoPolyline *BackRepoPolylineStruct) CommitPhaseOneInstance(polyline *models.Polyline) (Error error) {
 
 	// check if the polyline is not commited yet
-	if _, ok := (*backRepoPolyline.Map_PolylinePtr_PolylineDBID)[polyline]; ok {
+	if _, ok := backRepoPolyline.Map_PolylinePtr_PolylineDBID[polyline]; ok {
 		return
 	}
 
@@ -260,9 +228,9 @@ func (backRepoPolyline *BackRepoPolylineStruct) CommitPhaseOneInstance(polyline 
 	}
 
 	// update stores
-	(*backRepoPolyline.Map_PolylinePtr_PolylineDBID)[polyline] = polylineDB.ID
-	(*backRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID] = polyline
-	(*backRepoPolyline.Map_PolylineDBID_PolylineDB)[polylineDB.ID] = &polylineDB
+	backRepoPolyline.Map_PolylinePtr_PolylineDBID[polyline] = polylineDB.ID
+	backRepoPolyline.Map_PolylineDBID_PolylinePtr[polylineDB.ID] = polyline
+	backRepoPolyline.Map_PolylineDBID_PolylineDB[polylineDB.ID] = &polylineDB
 
 	return
 }
@@ -271,7 +239,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CommitPhaseOneInstance(polyline 
 // Phase Two is the update of instance with the field in the database
 func (backRepoPolyline *BackRepoPolylineStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, polyline := range *backRepoPolyline.Map_PolylineDBID_PolylinePtr {
+	for idx, polyline := range backRepoPolyline.Map_PolylineDBID_PolylinePtr {
 		backRepoPolyline.CommitPhaseTwoInstance(backRepo, idx, polyline)
 	}
 
@@ -283,7 +251,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CommitPhaseTwo(backRepo *BackRep
 func (backRepoPolyline *BackRepoPolylineStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, polyline *models.Polyline) (Error error) {
 
 	// fetch matching polylineDB
-	if polylineDB, ok := (*backRepoPolyline.Map_PolylineDBID_PolylineDB)[idx]; ok {
+	if polylineDB, ok := backRepoPolyline.Map_PolylineDBID_PolylineDB[idx]; ok {
 
 		polylineDB.CopyBasicFieldsFromPolyline(polyline)
 
@@ -346,7 +314,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOne() (Error error)
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		polyline, ok := (*backRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+		polyline, ok := backRepoPolyline.Map_PolylineDBID_PolylinePtr[polylineDB.ID]
 		if ok {
 			delete(polylineInstancesToBeRemovedFromTheStage, polyline)
 		}
@@ -357,10 +325,10 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOne() (Error error)
 		polyline.Unstage(backRepoPolyline.GetStage())
 
 		// remove instance from the back repo 3 maps
-		polylineID := (*backRepoPolyline.Map_PolylinePtr_PolylineDBID)[polyline]
-		delete((*backRepoPolyline.Map_PolylinePtr_PolylineDBID), polyline)
-		delete((*backRepoPolyline.Map_PolylineDBID_PolylineDB), polylineID)
-		delete((*backRepoPolyline.Map_PolylineDBID_PolylinePtr), polylineID)
+		polylineID := backRepoPolyline.Map_PolylinePtr_PolylineDBID[polyline]
+		delete(backRepoPolyline.Map_PolylinePtr_PolylineDBID, polyline)
+		delete(backRepoPolyline.Map_PolylineDBID_PolylineDB, polylineID)
+		delete(backRepoPolyline.Map_PolylineDBID_PolylinePtr, polylineID)
 	}
 
 	return
@@ -370,12 +338,12 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOne() (Error error)
 // models version of the polylineDB
 func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOneInstance(polylineDB *PolylineDB) (Error error) {
 
-	polyline, ok := (*backRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+	polyline, ok := backRepoPolyline.Map_PolylineDBID_PolylinePtr[polylineDB.ID]
 	if !ok {
 		polyline = new(models.Polyline)
 
-		(*backRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID] = polyline
-		(*backRepoPolyline.Map_PolylinePtr_PolylineDBID)[polyline] = polylineDB.ID
+		backRepoPolyline.Map_PolylineDBID_PolylinePtr[polylineDB.ID] = polyline
+		backRepoPolyline.Map_PolylinePtr_PolylineDBID[polyline] = polylineDB.ID
 
 		// append model store with the new element
 		polyline.Name = polylineDB.Name_Data.String
@@ -390,7 +358,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOneInstance(polylin
 	// Map_PolylineDBID_PolylineDB)[polylineDB hold variable pointers
 	polylineDB_Data := *polylineDB
 	preservedPtrToPolyline := &polylineDB_Data
-	(*backRepoPolyline.Map_PolylineDBID_PolylineDB)[polylineDB.ID] = preservedPtrToPolyline
+	backRepoPolyline.Map_PolylineDBID_PolylineDB[polylineDB.ID] = preservedPtrToPolyline
 
 	return
 }
@@ -400,7 +368,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseOneInstance(polylin
 func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, polylineDB := range *backRepoPolyline.Map_PolylineDBID_PolylineDB {
+	for _, polylineDB := range backRepoPolyline.Map_PolylineDBID_PolylineDB {
 		backRepoPolyline.CheckoutPhaseTwoInstance(backRepo, polylineDB)
 	}
 	return
@@ -410,7 +378,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseTwo(backRepo *BackR
 // Phase Two is the update of instance with the field in the database
 func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, polylineDB *PolylineDB) (Error error) {
 
-	polyline := (*backRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+	polyline := backRepoPolyline.Map_PolylineDBID_PolylinePtr[polylineDB.ID]
 	_ = polyline // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -420,11 +388,11 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseTwoInstance(backRep
 	// 1. reset the slice
 	polyline.Animates = polyline.Animates[:0]
 	// 2. loop all instances in the type in the association end
-	for _, animateDB_AssocEnd := range *backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB_AssocEnd := range backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if animateDB_AssocEnd.Polyline_AnimatesDBID.Int64 == int64(polylineDB.ID) {
 			// 4. fetch the associated instance in the stage
-			animate_AssocEnd := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB_AssocEnd.ID]
+			animate_AssocEnd := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB_AssocEnd.ID]
 			// 5. append it the association slice
 			polyline.Animates = append(polyline.Animates, animate_AssocEnd)
 		}
@@ -432,11 +400,11 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseTwoInstance(backRep
 
 	// sort the array according to the order
 	sort.Slice(polyline.Animates, func(i, j int) bool {
-		animateDB_i_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[polyline.Animates[i]]
-		animateDB_j_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[polyline.Animates[j]]
+		animateDB_i_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[polyline.Animates[i]]
+		animateDB_j_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[polyline.Animates[j]]
 
-		animateDB_i := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_i_ID]
-		animateDB_j := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_j_ID]
+		animateDB_i := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_i_ID]
+		animateDB_j := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_j_ID]
 
 		return animateDB_i.Polyline_AnimatesDBID_Index.Int64 < animateDB_j.Polyline_AnimatesDBID_Index.Int64
 	})
@@ -447,7 +415,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) CheckoutPhaseTwoInstance(backRep
 // CommitPolyline allows commit of a single polyline (if already staged)
 func (backRepo *BackRepoStruct) CommitPolyline(polyline *models.Polyline) {
 	backRepo.BackRepoPolyline.CommitPhaseOneInstance(polyline)
-	if id, ok := (*backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID)[polyline]; ok {
+	if id, ok := backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID[polyline]; ok {
 		backRepo.BackRepoPolyline.CommitPhaseTwoInstance(backRepo, id, polyline)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -456,9 +424,9 @@ func (backRepo *BackRepoStruct) CommitPolyline(polyline *models.Polyline) {
 // CommitPolyline allows checkout of a single polyline (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutPolyline(polyline *models.Polyline) {
 	// check if the polyline is staged
-	if _, ok := (*backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID)[polyline]; ok {
+	if _, ok := backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID[polyline]; ok {
 
-		if id, ok := (*backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID)[polyline]; ok {
+		if id, ok := backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID[polyline]; ok {
 			var polylineDB PolylineDB
 			polylineDB.ID = id
 
@@ -564,7 +532,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*PolylineDB, 0)
-	for _, polylineDB := range *backRepoPolyline.Map_PolylineDBID_PolylineDB {
+	for _, polylineDB := range backRepoPolyline.Map_PolylineDBID_PolylineDB {
 		forBackup = append(forBackup, polylineDB)
 	}
 
@@ -590,7 +558,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*PolylineDB, 0)
-	for _, polylineDB := range *backRepoPolyline.Map_PolylineDBID_PolylineDB {
+	for _, polylineDB := range backRepoPolyline.Map_PolylineDBID_PolylineDB {
 		forBackup = append(forBackup, polylineDB)
 	}
 
@@ -655,7 +623,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) rowVisitorPolyline(row *xlsx.Row
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoPolyline.Map_PolylineDBID_PolylineDB)[polylineDB.ID] = polylineDB
+		backRepoPolyline.Map_PolylineDBID_PolylineDB[polylineDB.ID] = polylineDB
 		BackRepoPolylineid_atBckpTime_newID[polylineDB_ID_atBackupTime] = polylineDB.ID
 	}
 	return nil
@@ -692,7 +660,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) RestorePhaseOne(dirPath string) 
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoPolyline.Map_PolylineDBID_PolylineDB)[polylineDB.ID] = polylineDB
+		backRepoPolyline.Map_PolylineDBID_PolylineDB[polylineDB.ID] = polylineDB
 		BackRepoPolylineid_atBckpTime_newID[polylineDB_ID_atBackupTime] = polylineDB.ID
 	}
 
@@ -705,7 +673,7 @@ func (backRepoPolyline *BackRepoPolylineStruct) RestorePhaseOne(dirPath string) 
 // to compute new index
 func (backRepoPolyline *BackRepoPolylineStruct) RestorePhaseTwo() {
 
-	for _, polylineDB := range *backRepoPolyline.Map_PolylineDBID_PolylineDB {
+	for _, polylineDB := range backRepoPolyline.Map_PolylineDBID_PolylineDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = polylineDB

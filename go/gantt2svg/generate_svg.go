@@ -28,13 +28,13 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(
 	gongsvgStage.Reset()
 	gongsvgStage.Commit()
 
-	if len(*gonggantt_models.GetGongstructInstancesSet[gonggantt_models.Gantt]()) != 1 {
+	if len(*gonggantt_models.GetGongstructInstancesSet[gonggantt_models.Gantt](gongganttStage)) != 1 {
 		log.Printf("It is supposed to have only one gantt chart")
 		return
 	}
 
 	var ganttToRender *gonggantt_models.Gantt
-	for gantt := range *gonggantt_models.GetGongstructInstancesSet[gonggantt_models.Gantt]() {
+	for gantt := range *gonggantt_models.GetGongstructInstancesSet[gonggantt_models.Gantt](gongganttStage) {
 		ganttToRender = gantt
 	}
 	ganttToRender.ComputeStartAndEndDate()
@@ -54,7 +54,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(
 	RatioBarToLaneHeight := ganttToRender.RatioBarToLaneHeight
 	barHeigth := LaneHeight * RatioBarToLaneHeight
 	YTopMargin := ganttToRender.YTopMargin
-	yTimeLine := LaneHeight*float64(len(*gonggantt_models.GetGongstructInstancesSet[gonggantt_models.Lane]())) + YTopMargin
+	yTimeLine := LaneHeight*float64(len(*gonggantt_models.GetGongstructInstancesSet[gonggantt_models.Lane](gongganttStage))) + YTopMargin
 
 	XLeftText := ganttToRender.XLeftText
 	TextHeight := ganttToRender.TextHeight

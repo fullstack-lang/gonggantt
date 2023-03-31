@@ -8,21 +8,21 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func SerializeStage(filename string) {
+func SerializeStage(stage *StageStruct, filename string) {
 
 	f := excelize.NewFile()
 	{
 		// insertion point
-		SerializeExcelize[Animate](f)
-		SerializeExcelize[Circle](f)
-		SerializeExcelize[Ellipse](f)
-		SerializeExcelize[Line](f)
-		SerializeExcelize[Path](f)
-		SerializeExcelize[Polygone](f)
-		SerializeExcelize[Polyline](f)
-		SerializeExcelize[Rect](f)
-		SerializeExcelize[SVG](f)
-		SerializeExcelize[Text](f)
+		SerializeExcelize[Animate](stage, f)
+		SerializeExcelize[Circle](stage, f)
+		SerializeExcelize[Ellipse](stage, f)
+		SerializeExcelize[Line](stage, f)
+		SerializeExcelize[Path](stage, f)
+		SerializeExcelize[Polygone](stage, f)
+		SerializeExcelize[Polyline](stage, f)
+		SerializeExcelize[Rect](stage, f)
+		SerializeExcelize[SVG](stage, f)
+		SerializeExcelize[Text](stage, f)
 	}
 
 	var tab ExcelizeTabulator
@@ -43,7 +43,7 @@ type Tabulator interface {
 	AddCell(sheetName string, rowId, columnIndex int, value string)
 }
 
-func Serialize[Type Gongstruct](tab Tabulator) {
+func Serialize[Type Gongstruct](stage *StageStruct, tab Tabulator) {
 	sheetName := GetGongstructName[Type]()
 
 	// Create a new sheet.
@@ -55,7 +55,7 @@ func Serialize[Type Gongstruct](tab Tabulator) {
 		// f.SetCellStr(sheetName, fmt.Sprintf("%s%d", IntToLetters(int32(index+1)), line), fieldName)
 	}
 
-	set := *GetGongstructInstancesSet[Type]()
+	set := *GetGongstructInstancesSet[Type](stage)
 	for instance := range set {
 		line := tab.AddRow(sheetName)
 		for index, fieldName := range GetFields[Type]() {
@@ -87,13 +87,13 @@ func (tab *ExcelizeTabulator) AddCell(sheetName string, rowId, columnIndex int, 
 
 }
 
-func SerializeExcelize[Type Gongstruct](f *excelize.File) {
+func SerializeExcelize[Type Gongstruct](stage *StageStruct, f *excelize.File) {
 	sheetName := GetGongstructName[Type]()
 
 	// Create a new sheet.
 	f.NewSheet(sheetName)
 
-	set := *GetGongstructInstancesSet[Type]()
+	set := *GetGongstructInstancesSet[Type](stage)
 	line := 1
 
 	for index, fieldName := range GetFields[Type]() {

@@ -119,13 +119,13 @@ var Arrow_Fields = []string{
 
 type BackRepoArrowStruct struct {
 	// stores ArrowDB according to their gorm ID
-	Map_ArrowDBID_ArrowDB *map[uint]*ArrowDB
+	Map_ArrowDBID_ArrowDB map[uint]*ArrowDB
 
 	// stores ArrowDB ID according to Arrow address
-	Map_ArrowPtr_ArrowDBID *map[*models.Arrow]uint
+	Map_ArrowPtr_ArrowDBID map[*models.Arrow]uint
 
 	// stores Arrow according to their gorm ID
-	Map_ArrowDBID_ArrowPtr *map[uint]*models.Arrow
+	Map_ArrowDBID_ArrowPtr map[uint]*models.Arrow
 
 	db *gorm.DB
 
@@ -143,40 +143,8 @@ func (backRepoArrow *BackRepoArrowStruct) GetDB() *gorm.DB {
 
 // GetArrowDBFromArrowPtr is a handy function to access the back repo instance from the stage instance
 func (backRepoArrow *BackRepoArrowStruct) GetArrowDBFromArrowPtr(arrow *models.Arrow) (arrowDB *ArrowDB) {
-	id := (*backRepoArrow.Map_ArrowPtr_ArrowDBID)[arrow]
-	arrowDB = (*backRepoArrow.Map_ArrowDBID_ArrowDB)[id]
-	return
-}
-
-// BackRepoArrow.Init set up the BackRepo of the Arrow
-func (backRepoArrow *BackRepoArrowStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoArrow.Map_ArrowDBID_ArrowPtr != nil {
-		err := errors.New("In Init, backRepoArrow.Map_ArrowDBID_ArrowPtr should be nil")
-		return err
-	}
-
-	if backRepoArrow.Map_ArrowDBID_ArrowDB != nil {
-		err := errors.New("In Init, backRepoArrow.Map_ArrowDBID_ArrowDB should be nil")
-		return err
-	}
-
-	if backRepoArrow.Map_ArrowPtr_ArrowDBID != nil {
-		err := errors.New("In Init, backRepoArrow.Map_ArrowPtr_ArrowDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Arrow, 0)
-	backRepoArrow.Map_ArrowDBID_ArrowPtr = &tmp
-
-	tmpDB := make(map[uint]*ArrowDB, 0)
-	backRepoArrow.Map_ArrowDBID_ArrowDB = &tmpDB
-
-	tmpID := make(map[*models.Arrow]uint, 0)
-	backRepoArrow.Map_ArrowPtr_ArrowDBID = &tmpID
-
-	backRepoArrow.db = db
-	backRepoArrow.stage = stage
+	id := backRepoArrow.Map_ArrowPtr_ArrowDBID[arrow]
+	arrowDB = backRepoArrow.Map_ArrowDBID_ArrowDB[id]
 	return
 }
 
@@ -190,7 +158,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseOne(stage *models.StageStru
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, arrow := range *backRepoArrow.Map_ArrowDBID_ArrowPtr {
+	for id, arrow := range backRepoArrow.Map_ArrowDBID_ArrowPtr {
 		if _, ok := stage.Arrows[arrow]; !ok {
 			backRepoArrow.CommitDeleteInstance(id)
 		}
@@ -202,19 +170,19 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseOne(stage *models.StageStru
 // BackRepoArrow.CommitDeleteInstance commits deletion of Arrow to the BackRepo
 func (backRepoArrow *BackRepoArrowStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	arrow := (*backRepoArrow.Map_ArrowDBID_ArrowPtr)[id]
+	arrow := backRepoArrow.Map_ArrowDBID_ArrowPtr[id]
 
 	// arrow is not staged anymore, remove arrowDB
-	arrowDB := (*backRepoArrow.Map_ArrowDBID_ArrowDB)[id]
+	arrowDB := backRepoArrow.Map_ArrowDBID_ArrowDB[id]
 	query := backRepoArrow.db.Unscoped().Delete(&arrowDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoArrow.Map_ArrowPtr_ArrowDBID), arrow)
-	delete((*backRepoArrow.Map_ArrowDBID_ArrowPtr), id)
-	delete((*backRepoArrow.Map_ArrowDBID_ArrowDB), id)
+	delete(backRepoArrow.Map_ArrowPtr_ArrowDBID, arrow)
+	delete(backRepoArrow.Map_ArrowDBID_ArrowPtr, id)
+	delete(backRepoArrow.Map_ArrowDBID_ArrowDB, id)
 
 	return
 }
@@ -224,7 +192,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitDeleteInstance(id uint) (Error e
 func (backRepoArrow *BackRepoArrowStruct) CommitPhaseOneInstance(arrow *models.Arrow) (Error error) {
 
 	// check if the arrow is not commited yet
-	if _, ok := (*backRepoArrow.Map_ArrowPtr_ArrowDBID)[arrow]; ok {
+	if _, ok := backRepoArrow.Map_ArrowPtr_ArrowDBID[arrow]; ok {
 		return
 	}
 
@@ -238,9 +206,9 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseOneInstance(arrow *models.A
 	}
 
 	// update stores
-	(*backRepoArrow.Map_ArrowPtr_ArrowDBID)[arrow] = arrowDB.ID
-	(*backRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID] = arrow
-	(*backRepoArrow.Map_ArrowDBID_ArrowDB)[arrowDB.ID] = &arrowDB
+	backRepoArrow.Map_ArrowPtr_ArrowDBID[arrow] = arrowDB.ID
+	backRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB.ID] = arrow
+	backRepoArrow.Map_ArrowDBID_ArrowDB[arrowDB.ID] = &arrowDB
 
 	return
 }
@@ -249,7 +217,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseOneInstance(arrow *models.A
 // Phase Two is the update of instance with the field in the database
 func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, arrow := range *backRepoArrow.Map_ArrowDBID_ArrowPtr {
+	for idx, arrow := range backRepoArrow.Map_ArrowDBID_ArrowPtr {
 		backRepoArrow.CommitPhaseTwoInstance(backRepo, idx, arrow)
 	}
 
@@ -261,7 +229,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwo(backRepo *BackRepoStruc
 func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, arrow *models.Arrow) (Error error) {
 
 	// fetch matching arrowDB
-	if arrowDB, ok := (*backRepoArrow.Map_ArrowDBID_ArrowDB)[idx]; ok {
+	if arrowDB, ok := backRepoArrow.Map_ArrowDBID_ArrowDB[idx]; ok {
 
 		arrowDB.CopyBasicFieldsFromArrow(arrow)
 
@@ -269,7 +237,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackR
 		// commit pointer value arrow.From translates to updating the arrow.FromID
 		arrowDB.FromID.Valid = true // allow for a 0 value (nil association)
 		if arrow.From != nil {
-			if FromId, ok := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[arrow.From]; ok {
+			if FromId, ok := backRepo.BackRepoBar.Map_BarPtr_BarDBID[arrow.From]; ok {
 				arrowDB.FromID.Int64 = int64(FromId)
 				arrowDB.FromID.Valid = true
 			}
@@ -278,7 +246,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackR
 		// commit pointer value arrow.To translates to updating the arrow.ToID
 		arrowDB.ToID.Valid = true // allow for a 0 value (nil association)
 		if arrow.To != nil {
-			if ToId, ok := (*backRepo.BackRepoBar.Map_BarPtr_BarDBID)[arrow.To]; ok {
+			if ToId, ok := backRepo.BackRepoBar.Map_BarPtr_BarDBID[arrow.To]; ok {
 				arrowDB.ToID.Int64 = int64(ToId)
 				arrowDB.ToID.Valid = true
 			}
@@ -323,7 +291,7 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		arrow, ok := (*backRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+		arrow, ok := backRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB.ID]
 		if ok {
 			delete(arrowInstancesToBeRemovedFromTheStage, arrow)
 		}
@@ -334,10 +302,10 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOne() (Error error) {
 		arrow.Unstage(backRepoArrow.GetStage())
 
 		// remove instance from the back repo 3 maps
-		arrowID := (*backRepoArrow.Map_ArrowPtr_ArrowDBID)[arrow]
-		delete((*backRepoArrow.Map_ArrowPtr_ArrowDBID), arrow)
-		delete((*backRepoArrow.Map_ArrowDBID_ArrowDB), arrowID)
-		delete((*backRepoArrow.Map_ArrowDBID_ArrowPtr), arrowID)
+		arrowID := backRepoArrow.Map_ArrowPtr_ArrowDBID[arrow]
+		delete(backRepoArrow.Map_ArrowPtr_ArrowDBID, arrow)
+		delete(backRepoArrow.Map_ArrowDBID_ArrowDB, arrowID)
+		delete(backRepoArrow.Map_ArrowDBID_ArrowPtr, arrowID)
 	}
 
 	return
@@ -347,12 +315,12 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOne() (Error error) {
 // models version of the arrowDB
 func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOneInstance(arrowDB *ArrowDB) (Error error) {
 
-	arrow, ok := (*backRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+	arrow, ok := backRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB.ID]
 	if !ok {
 		arrow = new(models.Arrow)
 
-		(*backRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID] = arrow
-		(*backRepoArrow.Map_ArrowPtr_ArrowDBID)[arrow] = arrowDB.ID
+		backRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB.ID] = arrow
+		backRepoArrow.Map_ArrowPtr_ArrowDBID[arrow] = arrowDB.ID
 
 		// append model store with the new element
 		arrow.Name = arrowDB.Name_Data.String
@@ -367,7 +335,7 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOneInstance(arrowDB *Arro
 	// Map_ArrowDBID_ArrowDB)[arrowDB hold variable pointers
 	arrowDB_Data := *arrowDB
 	preservedPtrToArrow := &arrowDB_Data
-	(*backRepoArrow.Map_ArrowDBID_ArrowDB)[arrowDB.ID] = preservedPtrToArrow
+	backRepoArrow.Map_ArrowDBID_ArrowDB[arrowDB.ID] = preservedPtrToArrow
 
 	return
 }
@@ -377,7 +345,7 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOneInstance(arrowDB *Arro
 func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, arrowDB := range *backRepoArrow.Map_ArrowDBID_ArrowDB {
+	for _, arrowDB := range backRepoArrow.Map_ArrowDBID_ArrowDB {
 		backRepoArrow.CheckoutPhaseTwoInstance(backRepo, arrowDB)
 	}
 	return
@@ -387,17 +355,17 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseTwo(backRepo *BackRepoStr
 // Phase Two is the update of instance with the field in the database
 func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, arrowDB *ArrowDB) (Error error) {
 
-	arrow := (*backRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB.ID]
+	arrow := backRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB.ID]
 	_ = arrow // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
 	// From field
 	if arrowDB.FromID.Int64 != 0 {
-		arrow.From = (*backRepo.BackRepoBar.Map_BarDBID_BarPtr)[uint(arrowDB.FromID.Int64)]
+		arrow.From = backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(arrowDB.FromID.Int64)]
 	}
 	// To field
 	if arrowDB.ToID.Int64 != 0 {
-		arrow.To = (*backRepo.BackRepoBar.Map_BarDBID_BarPtr)[uint(arrowDB.ToID.Int64)]
+		arrow.To = backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(arrowDB.ToID.Int64)]
 	}
 	return
 }
@@ -405,7 +373,7 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 // CommitArrow allows commit of a single arrow (if already staged)
 func (backRepo *BackRepoStruct) CommitArrow(arrow *models.Arrow) {
 	backRepo.BackRepoArrow.CommitPhaseOneInstance(arrow)
-	if id, ok := (*backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID)[arrow]; ok {
+	if id, ok := backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID[arrow]; ok {
 		backRepo.BackRepoArrow.CommitPhaseTwoInstance(backRepo, id, arrow)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -414,9 +382,9 @@ func (backRepo *BackRepoStruct) CommitArrow(arrow *models.Arrow) {
 // CommitArrow allows checkout of a single arrow (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutArrow(arrow *models.Arrow) {
 	// check if the arrow is staged
-	if _, ok := (*backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID)[arrow]; ok {
+	if _, ok := backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID[arrow]; ok {
 
-		if id, ok := (*backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID)[arrow]; ok {
+		if id, ok := backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID[arrow]; ok {
 			var arrowDB ArrowDB
 			arrowDB.ID = id
 
@@ -482,7 +450,7 @@ func (backRepoArrow *BackRepoArrowStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*ArrowDB, 0)
-	for _, arrowDB := range *backRepoArrow.Map_ArrowDBID_ArrowDB {
+	for _, arrowDB := range backRepoArrow.Map_ArrowDBID_ArrowDB {
 		forBackup = append(forBackup, arrowDB)
 	}
 
@@ -508,7 +476,7 @@ func (backRepoArrow *BackRepoArrowStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*ArrowDB, 0)
-	for _, arrowDB := range *backRepoArrow.Map_ArrowDBID_ArrowDB {
+	for _, arrowDB := range backRepoArrow.Map_ArrowDBID_ArrowDB {
 		forBackup = append(forBackup, arrowDB)
 	}
 
@@ -573,7 +541,7 @@ func (backRepoArrow *BackRepoArrowStruct) rowVisitorArrow(row *xlsx.Row) error {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoArrow.Map_ArrowDBID_ArrowDB)[arrowDB.ID] = arrowDB
+		backRepoArrow.Map_ArrowDBID_ArrowDB[arrowDB.ID] = arrowDB
 		BackRepoArrowid_atBckpTime_newID[arrowDB_ID_atBackupTime] = arrowDB.ID
 	}
 	return nil
@@ -610,7 +578,7 @@ func (backRepoArrow *BackRepoArrowStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoArrow.Map_ArrowDBID_ArrowDB)[arrowDB.ID] = arrowDB
+		backRepoArrow.Map_ArrowDBID_ArrowDB[arrowDB.ID] = arrowDB
 		BackRepoArrowid_atBckpTime_newID[arrowDB_ID_atBackupTime] = arrowDB.ID
 	}
 
@@ -623,7 +591,7 @@ func (backRepoArrow *BackRepoArrowStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoArrow *BackRepoArrowStruct) RestorePhaseTwo() {
 
-	for _, arrowDB := range *backRepoArrow.Map_ArrowDBID_ArrowDB {
+	for _, arrowDB := range backRepoArrow.Map_ArrowDBID_ArrowDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = arrowDB

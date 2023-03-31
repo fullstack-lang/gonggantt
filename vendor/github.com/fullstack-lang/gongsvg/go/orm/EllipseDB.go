@@ -159,13 +159,13 @@ var Ellipse_Fields = []string{
 
 type BackRepoEllipseStruct struct {
 	// stores EllipseDB according to their gorm ID
-	Map_EllipseDBID_EllipseDB *map[uint]*EllipseDB
+	Map_EllipseDBID_EllipseDB map[uint]*EllipseDB
 
 	// stores EllipseDB ID according to Ellipse address
-	Map_EllipsePtr_EllipseDBID *map[*models.Ellipse]uint
+	Map_EllipsePtr_EllipseDBID map[*models.Ellipse]uint
 
 	// stores Ellipse according to their gorm ID
-	Map_EllipseDBID_EllipsePtr *map[uint]*models.Ellipse
+	Map_EllipseDBID_EllipsePtr map[uint]*models.Ellipse
 
 	db *gorm.DB
 
@@ -183,40 +183,8 @@ func (backRepoEllipse *BackRepoEllipseStruct) GetDB() *gorm.DB {
 
 // GetEllipseDBFromEllipsePtr is a handy function to access the back repo instance from the stage instance
 func (backRepoEllipse *BackRepoEllipseStruct) GetEllipseDBFromEllipsePtr(ellipse *models.Ellipse) (ellipseDB *EllipseDB) {
-	id := (*backRepoEllipse.Map_EllipsePtr_EllipseDBID)[ellipse]
-	ellipseDB = (*backRepoEllipse.Map_EllipseDBID_EllipseDB)[id]
-	return
-}
-
-// BackRepoEllipse.Init set up the BackRepo of the Ellipse
-func (backRepoEllipse *BackRepoEllipseStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoEllipse.Map_EllipseDBID_EllipsePtr != nil {
-		err := errors.New("In Init, backRepoEllipse.Map_EllipseDBID_EllipsePtr should be nil")
-		return err
-	}
-
-	if backRepoEllipse.Map_EllipseDBID_EllipseDB != nil {
-		err := errors.New("In Init, backRepoEllipse.Map_EllipseDBID_EllipseDB should be nil")
-		return err
-	}
-
-	if backRepoEllipse.Map_EllipsePtr_EllipseDBID != nil {
-		err := errors.New("In Init, backRepoEllipse.Map_EllipsePtr_EllipseDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Ellipse, 0)
-	backRepoEllipse.Map_EllipseDBID_EllipsePtr = &tmp
-
-	tmpDB := make(map[uint]*EllipseDB, 0)
-	backRepoEllipse.Map_EllipseDBID_EllipseDB = &tmpDB
-
-	tmpID := make(map[*models.Ellipse]uint, 0)
-	backRepoEllipse.Map_EllipsePtr_EllipseDBID = &tmpID
-
-	backRepoEllipse.db = db
-	backRepoEllipse.stage = stage
+	id := backRepoEllipse.Map_EllipsePtr_EllipseDBID[ellipse]
+	ellipseDB = backRepoEllipse.Map_EllipseDBID_EllipseDB[id]
 	return
 }
 
@@ -230,7 +198,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CommitPhaseOne(stage *models.Stage
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, ellipse := range *backRepoEllipse.Map_EllipseDBID_EllipsePtr {
+	for id, ellipse := range backRepoEllipse.Map_EllipseDBID_EllipsePtr {
 		if _, ok := stage.Ellipses[ellipse]; !ok {
 			backRepoEllipse.CommitDeleteInstance(id)
 		}
@@ -242,19 +210,19 @@ func (backRepoEllipse *BackRepoEllipseStruct) CommitPhaseOne(stage *models.Stage
 // BackRepoEllipse.CommitDeleteInstance commits deletion of Ellipse to the BackRepo
 func (backRepoEllipse *BackRepoEllipseStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	ellipse := (*backRepoEllipse.Map_EllipseDBID_EllipsePtr)[id]
+	ellipse := backRepoEllipse.Map_EllipseDBID_EllipsePtr[id]
 
 	// ellipse is not staged anymore, remove ellipseDB
-	ellipseDB := (*backRepoEllipse.Map_EllipseDBID_EllipseDB)[id]
+	ellipseDB := backRepoEllipse.Map_EllipseDBID_EllipseDB[id]
 	query := backRepoEllipse.db.Unscoped().Delete(&ellipseDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoEllipse.Map_EllipsePtr_EllipseDBID), ellipse)
-	delete((*backRepoEllipse.Map_EllipseDBID_EllipsePtr), id)
-	delete((*backRepoEllipse.Map_EllipseDBID_EllipseDB), id)
+	delete(backRepoEllipse.Map_EllipsePtr_EllipseDBID, ellipse)
+	delete(backRepoEllipse.Map_EllipseDBID_EllipsePtr, id)
+	delete(backRepoEllipse.Map_EllipseDBID_EllipseDB, id)
 
 	return
 }
@@ -264,7 +232,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CommitDeleteInstance(id uint) (Err
 func (backRepoEllipse *BackRepoEllipseStruct) CommitPhaseOneInstance(ellipse *models.Ellipse) (Error error) {
 
 	// check if the ellipse is not commited yet
-	if _, ok := (*backRepoEllipse.Map_EllipsePtr_EllipseDBID)[ellipse]; ok {
+	if _, ok := backRepoEllipse.Map_EllipsePtr_EllipseDBID[ellipse]; ok {
 		return
 	}
 
@@ -278,9 +246,9 @@ func (backRepoEllipse *BackRepoEllipseStruct) CommitPhaseOneInstance(ellipse *mo
 	}
 
 	// update stores
-	(*backRepoEllipse.Map_EllipsePtr_EllipseDBID)[ellipse] = ellipseDB.ID
-	(*backRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID] = ellipse
-	(*backRepoEllipse.Map_EllipseDBID_EllipseDB)[ellipseDB.ID] = &ellipseDB
+	backRepoEllipse.Map_EllipsePtr_EllipseDBID[ellipse] = ellipseDB.ID
+	backRepoEllipse.Map_EllipseDBID_EllipsePtr[ellipseDB.ID] = ellipse
+	backRepoEllipse.Map_EllipseDBID_EllipseDB[ellipseDB.ID] = &ellipseDB
 
 	return
 }
@@ -289,7 +257,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CommitPhaseOneInstance(ellipse *mo
 // Phase Two is the update of instance with the field in the database
 func (backRepoEllipse *BackRepoEllipseStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, ellipse := range *backRepoEllipse.Map_EllipseDBID_EllipsePtr {
+	for idx, ellipse := range backRepoEllipse.Map_EllipseDBID_EllipsePtr {
 		backRepoEllipse.CommitPhaseTwoInstance(backRepo, idx, ellipse)
 	}
 
@@ -301,7 +269,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CommitPhaseTwo(backRepo *BackRepoS
 func (backRepoEllipse *BackRepoEllipseStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, ellipse *models.Ellipse) (Error error) {
 
 	// fetch matching ellipseDB
-	if ellipseDB, ok := (*backRepoEllipse.Map_EllipseDBID_EllipseDB)[idx]; ok {
+	if ellipseDB, ok := backRepoEllipse.Map_EllipseDBID_EllipseDB[idx]; ok {
 
 		ellipseDB.CopyBasicFieldsFromEllipse(ellipse)
 
@@ -364,7 +332,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		ellipse, ok := (*backRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+		ellipse, ok := backRepoEllipse.Map_EllipseDBID_EllipsePtr[ellipseDB.ID]
 		if ok {
 			delete(ellipseInstancesToBeRemovedFromTheStage, ellipse)
 		}
@@ -375,10 +343,10 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOne() (Error error) {
 		ellipse.Unstage(backRepoEllipse.GetStage())
 
 		// remove instance from the back repo 3 maps
-		ellipseID := (*backRepoEllipse.Map_EllipsePtr_EllipseDBID)[ellipse]
-		delete((*backRepoEllipse.Map_EllipsePtr_EllipseDBID), ellipse)
-		delete((*backRepoEllipse.Map_EllipseDBID_EllipseDB), ellipseID)
-		delete((*backRepoEllipse.Map_EllipseDBID_EllipsePtr), ellipseID)
+		ellipseID := backRepoEllipse.Map_EllipsePtr_EllipseDBID[ellipse]
+		delete(backRepoEllipse.Map_EllipsePtr_EllipseDBID, ellipse)
+		delete(backRepoEllipse.Map_EllipseDBID_EllipseDB, ellipseID)
+		delete(backRepoEllipse.Map_EllipseDBID_EllipsePtr, ellipseID)
 	}
 
 	return
@@ -388,12 +356,12 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOne() (Error error) {
 // models version of the ellipseDB
 func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOneInstance(ellipseDB *EllipseDB) (Error error) {
 
-	ellipse, ok := (*backRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+	ellipse, ok := backRepoEllipse.Map_EllipseDBID_EllipsePtr[ellipseDB.ID]
 	if !ok {
 		ellipse = new(models.Ellipse)
 
-		(*backRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID] = ellipse
-		(*backRepoEllipse.Map_EllipsePtr_EllipseDBID)[ellipse] = ellipseDB.ID
+		backRepoEllipse.Map_EllipseDBID_EllipsePtr[ellipseDB.ID] = ellipse
+		backRepoEllipse.Map_EllipsePtr_EllipseDBID[ellipse] = ellipseDB.ID
 
 		// append model store with the new element
 		ellipse.Name = ellipseDB.Name_Data.String
@@ -408,7 +376,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOneInstance(ellipseDB
 	// Map_EllipseDBID_EllipseDB)[ellipseDB hold variable pointers
 	ellipseDB_Data := *ellipseDB
 	preservedPtrToEllipse := &ellipseDB_Data
-	(*backRepoEllipse.Map_EllipseDBID_EllipseDB)[ellipseDB.ID] = preservedPtrToEllipse
+	backRepoEllipse.Map_EllipseDBID_EllipseDB[ellipseDB.ID] = preservedPtrToEllipse
 
 	return
 }
@@ -418,7 +386,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseOneInstance(ellipseDB
 func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, ellipseDB := range *backRepoEllipse.Map_EllipseDBID_EllipseDB {
+	for _, ellipseDB := range backRepoEllipse.Map_EllipseDBID_EllipseDB {
 		backRepoEllipse.CheckoutPhaseTwoInstance(backRepo, ellipseDB)
 	}
 	return
@@ -428,7 +396,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseTwo(backRepo *BackRep
 // Phase Two is the update of instance with the field in the database
 func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, ellipseDB *EllipseDB) (Error error) {
 
-	ellipse := (*backRepoEllipse.Map_EllipseDBID_EllipsePtr)[ellipseDB.ID]
+	ellipse := backRepoEllipse.Map_EllipseDBID_EllipsePtr[ellipseDB.ID]
 	_ = ellipse // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -438,11 +406,11 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseTwoInstance(backRepo 
 	// 1. reset the slice
 	ellipse.Animates = ellipse.Animates[:0]
 	// 2. loop all instances in the type in the association end
-	for _, animateDB_AssocEnd := range *backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB_AssocEnd := range backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if animateDB_AssocEnd.Ellipse_AnimatesDBID.Int64 == int64(ellipseDB.ID) {
 			// 4. fetch the associated instance in the stage
-			animate_AssocEnd := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB_AssocEnd.ID]
+			animate_AssocEnd := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB_AssocEnd.ID]
 			// 5. append it the association slice
 			ellipse.Animates = append(ellipse.Animates, animate_AssocEnd)
 		}
@@ -450,11 +418,11 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseTwoInstance(backRepo 
 
 	// sort the array according to the order
 	sort.Slice(ellipse.Animates, func(i, j int) bool {
-		animateDB_i_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[ellipse.Animates[i]]
-		animateDB_j_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[ellipse.Animates[j]]
+		animateDB_i_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[ellipse.Animates[i]]
+		animateDB_j_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[ellipse.Animates[j]]
 
-		animateDB_i := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_i_ID]
-		animateDB_j := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_j_ID]
+		animateDB_i := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_i_ID]
+		animateDB_j := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_j_ID]
 
 		return animateDB_i.Ellipse_AnimatesDBID_Index.Int64 < animateDB_j.Ellipse_AnimatesDBID_Index.Int64
 	})
@@ -465,7 +433,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) CheckoutPhaseTwoInstance(backRepo 
 // CommitEllipse allows commit of a single ellipse (if already staged)
 func (backRepo *BackRepoStruct) CommitEllipse(ellipse *models.Ellipse) {
 	backRepo.BackRepoEllipse.CommitPhaseOneInstance(ellipse)
-	if id, ok := (*backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID)[ellipse]; ok {
+	if id, ok := backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID[ellipse]; ok {
 		backRepo.BackRepoEllipse.CommitPhaseTwoInstance(backRepo, id, ellipse)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -474,9 +442,9 @@ func (backRepo *BackRepoStruct) CommitEllipse(ellipse *models.Ellipse) {
 // CommitEllipse allows checkout of a single ellipse (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutEllipse(ellipse *models.Ellipse) {
 	// check if the ellipse is staged
-	if _, ok := (*backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID)[ellipse]; ok {
+	if _, ok := backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID[ellipse]; ok {
 
-		if id, ok := (*backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID)[ellipse]; ok {
+		if id, ok := backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID[ellipse]; ok {
 			var ellipseDB EllipseDB
 			ellipseDB.ID = id
 
@@ -606,7 +574,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*EllipseDB, 0)
-	for _, ellipseDB := range *backRepoEllipse.Map_EllipseDBID_EllipseDB {
+	for _, ellipseDB := range backRepoEllipse.Map_EllipseDBID_EllipseDB {
 		forBackup = append(forBackup, ellipseDB)
 	}
 
@@ -632,7 +600,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*EllipseDB, 0)
-	for _, ellipseDB := range *backRepoEllipse.Map_EllipseDBID_EllipseDB {
+	for _, ellipseDB := range backRepoEllipse.Map_EllipseDBID_EllipseDB {
 		forBackup = append(forBackup, ellipseDB)
 	}
 
@@ -697,7 +665,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) rowVisitorEllipse(row *xlsx.Row) e
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoEllipse.Map_EllipseDBID_EllipseDB)[ellipseDB.ID] = ellipseDB
+		backRepoEllipse.Map_EllipseDBID_EllipseDB[ellipseDB.ID] = ellipseDB
 		BackRepoEllipseid_atBckpTime_newID[ellipseDB_ID_atBackupTime] = ellipseDB.ID
 	}
 	return nil
@@ -734,7 +702,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoEllipse.Map_EllipseDBID_EllipseDB)[ellipseDB.ID] = ellipseDB
+		backRepoEllipse.Map_EllipseDBID_EllipseDB[ellipseDB.ID] = ellipseDB
 		BackRepoEllipseid_atBckpTime_newID[ellipseDB_ID_atBackupTime] = ellipseDB.ID
 	}
 
@@ -747,7 +715,7 @@ func (backRepoEllipse *BackRepoEllipseStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoEllipse *BackRepoEllipseStruct) RestorePhaseTwo() {
 
-	for _, ellipseDB := range *backRepoEllipse.Map_EllipseDBID_EllipseDB {
+	for _, ellipseDB := range backRepoEllipse.Map_EllipseDBID_EllipseDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = ellipseDB

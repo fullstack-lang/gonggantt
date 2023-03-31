@@ -151,7 +151,7 @@ func (controller *Controller) PostLine(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoLine.CheckoutPhaseOneInstance(&lineDB)
-	line := (*backRepo.BackRepoLine.Map_LineDBID_LinePtr)[lineDB.ID]
+	line := backRepo.BackRepoLine.Map_LineDBID_LinePtr[lineDB.ID]
 
 	if line != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), line)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateLine(c *gin.Context) {
 	lineDB.CopyBasicFieldsToLine(lineNew)
 
 	// get stage instance from DB instance, and call callback function
-	lineOld := (*backRepo.BackRepoLine.Map_LineDBID_LinePtr)[lineDB.ID]
+	lineOld := backRepo.BackRepoLine.Map_LineDBID_LinePtr[lineDB.ID]
 	if lineOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), lineOld, lineNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteLine(c *gin.Context) {
 	lineDB.CopyBasicFieldsToLine(lineDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	lineStaged := (*backRepo.BackRepoLine.Map_LineDBID_LinePtr)[lineDB.ID]
+	lineStaged := backRepo.BackRepoLine.Map_LineDBID_LinePtr[lineDB.ID]
 	if lineStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), lineStaged, lineDeleted)
 	}

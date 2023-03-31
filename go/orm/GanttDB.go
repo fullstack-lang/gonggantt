@@ -233,13 +233,13 @@ var Gantt_Fields = []string{
 
 type BackRepoGanttStruct struct {
 	// stores GanttDB according to their gorm ID
-	Map_GanttDBID_GanttDB *map[uint]*GanttDB
+	Map_GanttDBID_GanttDB map[uint]*GanttDB
 
 	// stores GanttDB ID according to Gantt address
-	Map_GanttPtr_GanttDBID *map[*models.Gantt]uint
+	Map_GanttPtr_GanttDBID map[*models.Gantt]uint
 
 	// stores Gantt according to their gorm ID
-	Map_GanttDBID_GanttPtr *map[uint]*models.Gantt
+	Map_GanttDBID_GanttPtr map[uint]*models.Gantt
 
 	db *gorm.DB
 
@@ -257,40 +257,8 @@ func (backRepoGantt *BackRepoGanttStruct) GetDB() *gorm.DB {
 
 // GetGanttDBFromGanttPtr is a handy function to access the back repo instance from the stage instance
 func (backRepoGantt *BackRepoGanttStruct) GetGanttDBFromGanttPtr(gantt *models.Gantt) (ganttDB *GanttDB) {
-	id := (*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt]
-	ganttDB = (*backRepoGantt.Map_GanttDBID_GanttDB)[id]
-	return
-}
-
-// BackRepoGantt.Init set up the BackRepo of the Gantt
-func (backRepoGantt *BackRepoGanttStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoGantt.Map_GanttDBID_GanttPtr != nil {
-		err := errors.New("In Init, backRepoGantt.Map_GanttDBID_GanttPtr should be nil")
-		return err
-	}
-
-	if backRepoGantt.Map_GanttDBID_GanttDB != nil {
-		err := errors.New("In Init, backRepoGantt.Map_GanttDBID_GanttDB should be nil")
-		return err
-	}
-
-	if backRepoGantt.Map_GanttPtr_GanttDBID != nil {
-		err := errors.New("In Init, backRepoGantt.Map_GanttPtr_GanttDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Gantt, 0)
-	backRepoGantt.Map_GanttDBID_GanttPtr = &tmp
-
-	tmpDB := make(map[uint]*GanttDB, 0)
-	backRepoGantt.Map_GanttDBID_GanttDB = &tmpDB
-
-	tmpID := make(map[*models.Gantt]uint, 0)
-	backRepoGantt.Map_GanttPtr_GanttDBID = &tmpID
-
-	backRepoGantt.db = db
-	backRepoGantt.stage = stage
+	id := backRepoGantt.Map_GanttPtr_GanttDBID[gantt]
+	ganttDB = backRepoGantt.Map_GanttDBID_GanttDB[id]
 	return
 }
 
@@ -304,7 +272,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseOne(stage *models.StageStru
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, gantt := range *backRepoGantt.Map_GanttDBID_GanttPtr {
+	for id, gantt := range backRepoGantt.Map_GanttDBID_GanttPtr {
 		if _, ok := stage.Gantts[gantt]; !ok {
 			backRepoGantt.CommitDeleteInstance(id)
 		}
@@ -316,19 +284,19 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseOne(stage *models.StageStru
 // BackRepoGantt.CommitDeleteInstance commits deletion of Gantt to the BackRepo
 func (backRepoGantt *BackRepoGanttStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	gantt := (*backRepoGantt.Map_GanttDBID_GanttPtr)[id]
+	gantt := backRepoGantt.Map_GanttDBID_GanttPtr[id]
 
 	// gantt is not staged anymore, remove ganttDB
-	ganttDB := (*backRepoGantt.Map_GanttDBID_GanttDB)[id]
+	ganttDB := backRepoGantt.Map_GanttDBID_GanttDB[id]
 	query := backRepoGantt.db.Unscoped().Delete(&ganttDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoGantt.Map_GanttPtr_GanttDBID), gantt)
-	delete((*backRepoGantt.Map_GanttDBID_GanttPtr), id)
-	delete((*backRepoGantt.Map_GanttDBID_GanttDB), id)
+	delete(backRepoGantt.Map_GanttPtr_GanttDBID, gantt)
+	delete(backRepoGantt.Map_GanttDBID_GanttPtr, id)
+	delete(backRepoGantt.Map_GanttDBID_GanttDB, id)
 
 	return
 }
@@ -338,7 +306,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitDeleteInstance(id uint) (Error e
 func (backRepoGantt *BackRepoGanttStruct) CommitPhaseOneInstance(gantt *models.Gantt) (Error error) {
 
 	// check if the gantt is not commited yet
-	if _, ok := (*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt]; ok {
+	if _, ok := backRepoGantt.Map_GanttPtr_GanttDBID[gantt]; ok {
 		return
 	}
 
@@ -352,9 +320,9 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseOneInstance(gantt *models.G
 	}
 
 	// update stores
-	(*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt] = ganttDB.ID
-	(*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID] = gantt
-	(*backRepoGantt.Map_GanttDBID_GanttDB)[ganttDB.ID] = &ganttDB
+	backRepoGantt.Map_GanttPtr_GanttDBID[gantt] = ganttDB.ID
+	backRepoGantt.Map_GanttDBID_GanttPtr[ganttDB.ID] = gantt
+	backRepoGantt.Map_GanttDBID_GanttDB[ganttDB.ID] = &ganttDB
 
 	return
 }
@@ -363,7 +331,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseOneInstance(gantt *models.G
 // Phase Two is the update of instance with the field in the database
 func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, gantt := range *backRepoGantt.Map_GanttDBID_GanttPtr {
+	for idx, gantt := range backRepoGantt.Map_GanttDBID_GanttPtr {
 		backRepoGantt.CommitPhaseTwoInstance(backRepo, idx, gantt)
 	}
 
@@ -375,7 +343,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwo(backRepo *BackRepoStruc
 func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, gantt *models.Gantt) (Error error) {
 
 	// fetch matching ganttDB
-	if ganttDB, ok := (*backRepoGantt.Map_GanttDBID_GanttDB)[idx]; ok {
+	if ganttDB, ok := backRepoGantt.Map_GanttDBID_GanttDB[idx]; ok {
 
 		ganttDB.CopyBasicFieldsFromGantt(gantt)
 
@@ -495,7 +463,7 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		gantt, ok := (*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+		gantt, ok := backRepoGantt.Map_GanttDBID_GanttPtr[ganttDB.ID]
 		if ok {
 			delete(ganttInstancesToBeRemovedFromTheStage, gantt)
 		}
@@ -506,10 +474,10 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 		gantt.Unstage(backRepoGantt.GetStage())
 
 		// remove instance from the back repo 3 maps
-		ganttID := (*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt]
-		delete((*backRepoGantt.Map_GanttPtr_GanttDBID), gantt)
-		delete((*backRepoGantt.Map_GanttDBID_GanttDB), ganttID)
-		delete((*backRepoGantt.Map_GanttDBID_GanttPtr), ganttID)
+		ganttID := backRepoGantt.Map_GanttPtr_GanttDBID[gantt]
+		delete(backRepoGantt.Map_GanttPtr_GanttDBID, gantt)
+		delete(backRepoGantt.Map_GanttDBID_GanttDB, ganttID)
+		delete(backRepoGantt.Map_GanttDBID_GanttPtr, ganttID)
 	}
 
 	return
@@ -519,12 +487,12 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 // models version of the ganttDB
 func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOneInstance(ganttDB *GanttDB) (Error error) {
 
-	gantt, ok := (*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	gantt, ok := backRepoGantt.Map_GanttDBID_GanttPtr[ganttDB.ID]
 	if !ok {
 		gantt = new(models.Gantt)
 
-		(*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID] = gantt
-		(*backRepoGantt.Map_GanttPtr_GanttDBID)[gantt] = ganttDB.ID
+		backRepoGantt.Map_GanttDBID_GanttPtr[ganttDB.ID] = gantt
+		backRepoGantt.Map_GanttPtr_GanttDBID[gantt] = ganttDB.ID
 
 		// append model store with the new element
 		gantt.Name = ganttDB.Name_Data.String
@@ -539,7 +507,7 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOneInstance(ganttDB *Gant
 	// Map_GanttDBID_GanttDB)[ganttDB hold variable pointers
 	ganttDB_Data := *ganttDB
 	preservedPtrToGantt := &ganttDB_Data
-	(*backRepoGantt.Map_GanttDBID_GanttDB)[ganttDB.ID] = preservedPtrToGantt
+	backRepoGantt.Map_GanttDBID_GanttDB[ganttDB.ID] = preservedPtrToGantt
 
 	return
 }
@@ -549,7 +517,7 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOneInstance(ganttDB *Gant
 func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, ganttDB := range *backRepoGantt.Map_GanttDBID_GanttDB {
+	for _, ganttDB := range backRepoGantt.Map_GanttDBID_GanttDB {
 		backRepoGantt.CheckoutPhaseTwoInstance(backRepo, ganttDB)
 	}
 	return
@@ -559,7 +527,7 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwo(backRepo *BackRepoStr
 // Phase Two is the update of instance with the field in the database
 func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, ganttDB *GanttDB) (Error error) {
 
-	gantt := (*backRepoGantt.Map_GanttDBID_GanttPtr)[ganttDB.ID]
+	gantt := backRepoGantt.Map_GanttDBID_GanttPtr[ganttDB.ID]
 	_ = gantt // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -569,11 +537,11 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 	// 1. reset the slice
 	gantt.Lanes = gantt.Lanes[:0]
 	// 2. loop all instances in the type in the association end
-	for _, laneDB_AssocEnd := range *backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
+	for _, laneDB_AssocEnd := range backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if laneDB_AssocEnd.Gantt_LanesDBID.Int64 == int64(ganttDB.ID) {
 			// 4. fetch the associated instance in the stage
-			lane_AssocEnd := (*backRepo.BackRepoLane.Map_LaneDBID_LanePtr)[laneDB_AssocEnd.ID]
+			lane_AssocEnd := backRepo.BackRepoLane.Map_LaneDBID_LanePtr[laneDB_AssocEnd.ID]
 			// 5. append it the association slice
 			gantt.Lanes = append(gantt.Lanes, lane_AssocEnd)
 		}
@@ -581,11 +549,11 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 
 	// sort the array according to the order
 	sort.Slice(gantt.Lanes, func(i, j int) bool {
-		laneDB_i_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[gantt.Lanes[i]]
-		laneDB_j_ID := (*backRepo.BackRepoLane.Map_LanePtr_LaneDBID)[gantt.Lanes[j]]
+		laneDB_i_ID := backRepo.BackRepoLane.Map_LanePtr_LaneDBID[gantt.Lanes[i]]
+		laneDB_j_ID := backRepo.BackRepoLane.Map_LanePtr_LaneDBID[gantt.Lanes[j]]
 
-		laneDB_i := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_i_ID]
-		laneDB_j := (*backRepo.BackRepoLane.Map_LaneDBID_LaneDB)[laneDB_j_ID]
+		laneDB_i := backRepo.BackRepoLane.Map_LaneDBID_LaneDB[laneDB_i_ID]
+		laneDB_j := backRepo.BackRepoLane.Map_LaneDBID_LaneDB[laneDB_j_ID]
 
 		return laneDB_i.Gantt_LanesDBID_Index.Int64 < laneDB_j.Gantt_LanesDBID_Index.Int64
 	})
@@ -596,11 +564,11 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 	// 1. reset the slice
 	gantt.Milestones = gantt.Milestones[:0]
 	// 2. loop all instances in the type in the association end
-	for _, milestoneDB_AssocEnd := range *backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB {
+	for _, milestoneDB_AssocEnd := range backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if milestoneDB_AssocEnd.Gantt_MilestonesDBID.Int64 == int64(ganttDB.ID) {
 			// 4. fetch the associated instance in the stage
-			milestone_AssocEnd := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr)[milestoneDB_AssocEnd.ID]
+			milestone_AssocEnd := backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB_AssocEnd.ID]
 			// 5. append it the association slice
 			gantt.Milestones = append(gantt.Milestones, milestone_AssocEnd)
 		}
@@ -608,11 +576,11 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 
 	// sort the array according to the order
 	sort.Slice(gantt.Milestones, func(i, j int) bool {
-		milestoneDB_i_ID := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[gantt.Milestones[i]]
-		milestoneDB_j_ID := (*backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID)[gantt.Milestones[j]]
+		milestoneDB_i_ID := backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID[gantt.Milestones[i]]
+		milestoneDB_j_ID := backRepo.BackRepoMilestone.Map_MilestonePtr_MilestoneDBID[gantt.Milestones[j]]
 
-		milestoneDB_i := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB_i_ID]
-		milestoneDB_j := (*backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB)[milestoneDB_j_ID]
+		milestoneDB_i := backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB[milestoneDB_i_ID]
+		milestoneDB_j := backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestoneDB[milestoneDB_j_ID]
 
 		return milestoneDB_i.Gantt_MilestonesDBID_Index.Int64 < milestoneDB_j.Gantt_MilestonesDBID_Index.Int64
 	})
@@ -623,11 +591,11 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 	// 1. reset the slice
 	gantt.Groups = gantt.Groups[:0]
 	// 2. loop all instances in the type in the association end
-	for _, groupDB_AssocEnd := range *backRepo.BackRepoGroup.Map_GroupDBID_GroupDB {
+	for _, groupDB_AssocEnd := range backRepo.BackRepoGroup.Map_GroupDBID_GroupDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if groupDB_AssocEnd.Gantt_GroupsDBID.Int64 == int64(ganttDB.ID) {
 			// 4. fetch the associated instance in the stage
-			group_AssocEnd := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr)[groupDB_AssocEnd.ID]
+			group_AssocEnd := backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr[groupDB_AssocEnd.ID]
 			// 5. append it the association slice
 			gantt.Groups = append(gantt.Groups, group_AssocEnd)
 		}
@@ -635,11 +603,11 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 
 	// sort the array according to the order
 	sort.Slice(gantt.Groups, func(i, j int) bool {
-		groupDB_i_ID := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[gantt.Groups[i]]
-		groupDB_j_ID := (*backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID)[gantt.Groups[j]]
+		groupDB_i_ID := backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID[gantt.Groups[i]]
+		groupDB_j_ID := backRepo.BackRepoGroup.Map_GroupPtr_GroupDBID[gantt.Groups[j]]
 
-		groupDB_i := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDB_i_ID]
-		groupDB_j := (*backRepo.BackRepoGroup.Map_GroupDBID_GroupDB)[groupDB_j_ID]
+		groupDB_i := backRepo.BackRepoGroup.Map_GroupDBID_GroupDB[groupDB_i_ID]
+		groupDB_j := backRepo.BackRepoGroup.Map_GroupDBID_GroupDB[groupDB_j_ID]
 
 		return groupDB_i.Gantt_GroupsDBID_Index.Int64 < groupDB_j.Gantt_GroupsDBID_Index.Int64
 	})
@@ -650,11 +618,11 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 	// 1. reset the slice
 	gantt.Arrows = gantt.Arrows[:0]
 	// 2. loop all instances in the type in the association end
-	for _, arrowDB_AssocEnd := range *backRepo.BackRepoArrow.Map_ArrowDBID_ArrowDB {
+	for _, arrowDB_AssocEnd := range backRepo.BackRepoArrow.Map_ArrowDBID_ArrowDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if arrowDB_AssocEnd.Gantt_ArrowsDBID.Int64 == int64(ganttDB.ID) {
 			// 4. fetch the associated instance in the stage
-			arrow_AssocEnd := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr)[arrowDB_AssocEnd.ID]
+			arrow_AssocEnd := backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB_AssocEnd.ID]
 			// 5. append it the association slice
 			gantt.Arrows = append(gantt.Arrows, arrow_AssocEnd)
 		}
@@ -662,11 +630,11 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 
 	// sort the array according to the order
 	sort.Slice(gantt.Arrows, func(i, j int) bool {
-		arrowDB_i_ID := (*backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID)[gantt.Arrows[i]]
-		arrowDB_j_ID := (*backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID)[gantt.Arrows[j]]
+		arrowDB_i_ID := backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID[gantt.Arrows[i]]
+		arrowDB_j_ID := backRepo.BackRepoArrow.Map_ArrowPtr_ArrowDBID[gantt.Arrows[j]]
 
-		arrowDB_i := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowDB)[arrowDB_i_ID]
-		arrowDB_j := (*backRepo.BackRepoArrow.Map_ArrowDBID_ArrowDB)[arrowDB_j_ID]
+		arrowDB_i := backRepo.BackRepoArrow.Map_ArrowDBID_ArrowDB[arrowDB_i_ID]
+		arrowDB_j := backRepo.BackRepoArrow.Map_ArrowDBID_ArrowDB[arrowDB_j_ID]
 
 		return arrowDB_i.Gantt_ArrowsDBID_Index.Int64 < arrowDB_j.Gantt_ArrowsDBID_Index.Int64
 	})
@@ -677,7 +645,7 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 // CommitGantt allows commit of a single gantt (if already staged)
 func (backRepo *BackRepoStruct) CommitGantt(gantt *models.Gantt) {
 	backRepo.BackRepoGantt.CommitPhaseOneInstance(gantt)
-	if id, ok := (*backRepo.BackRepoGantt.Map_GanttPtr_GanttDBID)[gantt]; ok {
+	if id, ok := backRepo.BackRepoGantt.Map_GanttPtr_GanttDBID[gantt]; ok {
 		backRepo.BackRepoGantt.CommitPhaseTwoInstance(backRepo, id, gantt)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -686,9 +654,9 @@ func (backRepo *BackRepoStruct) CommitGantt(gantt *models.Gantt) {
 // CommitGantt allows checkout of a single gantt (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutGantt(gantt *models.Gantt) {
 	// check if the gantt is staged
-	if _, ok := (*backRepo.BackRepoGantt.Map_GanttPtr_GanttDBID)[gantt]; ok {
+	if _, ok := backRepo.BackRepoGantt.Map_GanttPtr_GanttDBID[gantt]; ok {
 
-		if id, ok := (*backRepo.BackRepoGantt.Map_GanttPtr_GanttDBID)[gantt]; ok {
+		if id, ok := backRepo.BackRepoGantt.Map_GanttPtr_GanttDBID[gantt]; ok {
 			var ganttDB GanttDB
 			ganttDB.ID = id
 
@@ -922,7 +890,7 @@ func (backRepoGantt *BackRepoGanttStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*GanttDB, 0)
-	for _, ganttDB := range *backRepoGantt.Map_GanttDBID_GanttDB {
+	for _, ganttDB := range backRepoGantt.Map_GanttDBID_GanttDB {
 		forBackup = append(forBackup, ganttDB)
 	}
 
@@ -948,7 +916,7 @@ func (backRepoGantt *BackRepoGanttStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*GanttDB, 0)
-	for _, ganttDB := range *backRepoGantt.Map_GanttDBID_GanttDB {
+	for _, ganttDB := range backRepoGantt.Map_GanttDBID_GanttDB {
 		forBackup = append(forBackup, ganttDB)
 	}
 
@@ -1013,7 +981,7 @@ func (backRepoGantt *BackRepoGanttStruct) rowVisitorGantt(row *xlsx.Row) error {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoGantt.Map_GanttDBID_GanttDB)[ganttDB.ID] = ganttDB
+		backRepoGantt.Map_GanttDBID_GanttDB[ganttDB.ID] = ganttDB
 		BackRepoGanttid_atBckpTime_newID[ganttDB_ID_atBackupTime] = ganttDB.ID
 	}
 	return nil
@@ -1050,7 +1018,7 @@ func (backRepoGantt *BackRepoGanttStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoGantt.Map_GanttDBID_GanttDB)[ganttDB.ID] = ganttDB
+		backRepoGantt.Map_GanttDBID_GanttDB[ganttDB.ID] = ganttDB
 		BackRepoGanttid_atBckpTime_newID[ganttDB_ID_atBackupTime] = ganttDB.ID
 	}
 
@@ -1063,7 +1031,7 @@ func (backRepoGantt *BackRepoGanttStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoGantt *BackRepoGanttStruct) RestorePhaseTwo() {
 
-	for _, ganttDB := range *backRepoGantt.Map_GanttDBID_GanttDB {
+	for _, ganttDB := range backRepoGantt.Map_GanttDBID_GanttDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = ganttDB

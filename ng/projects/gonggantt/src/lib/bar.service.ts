@@ -45,11 +45,12 @@ export class BarService {
   /** GET bars from the server */
   getBars(GONG__StackPath: string = ""): Observable<BarDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<BarDB[]>(this.barsUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched bars')),
+        tap(),
+		// tap(_ => this.log('fetched bars')),
         catchError(this.handleError<BarDB[]>('getBars', []))
       );
   }
@@ -76,7 +77,7 @@ export class BarService {
       params: params
     }
 
-	return this.http.post<BarDB>(this.barsUrl, bardb, httpOptions).pipe(
+    return this.http.post<BarDB>(this.barsUrl, bardb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         bardb.Lane_Bars_reverse = _Lane_Bars_reverse
@@ -134,11 +135,11 @@ export class BarService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in BarService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("BarService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -149,6 +150,6 @@ export class BarService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

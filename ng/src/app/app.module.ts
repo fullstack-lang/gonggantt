@@ -4,9 +4,6 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { GongganttModule } from 'gonggantt'
-
-
 
 // for angular material
 import { MatSliderModule } from '@angular/material/slider';
@@ -35,8 +32,13 @@ import { GongdocdiagramsModule } from 'gongdocdiagrams'
 
 import { GongModule } from 'gong'
 
+import { GongganttModule } from 'gonggantt'
+import { GongganttspecificModule } from 'gongganttspecific'
+import { GongstructSelectionService } from 'gonggantt'
+
 import { GongsvgspecificModule } from 'gongsvgspecific'
 import { GongsvgModule } from 'gongsvg'
+
 
 // mandatory
 import { HttpClientModule } from '@angular/common/http';
@@ -48,6 +50,8 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+
+    HttpClientModule,
 
     MatSliderModule,
     MatSelectModule,
@@ -67,19 +71,22 @@ import { HttpClientModule } from '@angular/common/http';
 
     AngularSplitModule,
 
-    GongsvgspecificModule,
-    GongsvgModule,
+    // gong stack (for analysis of gong code in the current stack)
+    GongModule,
 
-    // gongdoc stack
+    // gongdoc stack (for displaying UML diagrams of the gong code in the current stack)
     GongdocModule,
     GongdocdiagramsModule,
 
-    GongModule,
+    GongganttModule,
+    GongganttspecificModule,
 
-    HttpClientModule,
-    GongganttModule
+    GongsvgspecificModule,
+    GongsvgModule,
   ],
-  providers: [],
+  providers: [
+    GongstructSelectionService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

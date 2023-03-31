@@ -45,11 +45,12 @@ export class EllipseService {
   /** GET ellipses from the server */
   getEllipses(GONG__StackPath: string = ""): Observable<EllipseDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<EllipseDB[]>(this.ellipsesUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched ellipses')),
+        tap(),
+		// tap(_ => this.log('fetched ellipses')),
         catchError(this.handleError<EllipseDB[]>('getEllipses', []))
       );
   }
@@ -77,7 +78,7 @@ export class EllipseService {
       params: params
     }
 
-	return this.http.post<EllipseDB>(this.ellipsesUrl, ellipsedb, httpOptions).pipe(
+    return this.http.post<EllipseDB>(this.ellipsesUrl, ellipsedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         ellipsedb.SVG_Ellipses_reverse = _SVG_Ellipses_reverse
@@ -136,11 +137,11 @@ export class EllipseService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in EllipseService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("EllipseService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -151,6 +152,6 @@ export class EllipseService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

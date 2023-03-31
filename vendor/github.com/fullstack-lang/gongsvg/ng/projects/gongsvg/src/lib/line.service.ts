@@ -45,11 +45,12 @@ export class LineService {
   /** GET lines from the server */
   getLines(GONG__StackPath: string = ""): Observable<LineDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<LineDB[]>(this.linesUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched lines')),
+        tap(),
+		// tap(_ => this.log('fetched lines')),
         catchError(this.handleError<LineDB[]>('getLines', []))
       );
   }
@@ -77,7 +78,7 @@ export class LineService {
       params: params
     }
 
-	return this.http.post<LineDB>(this.linesUrl, linedb, httpOptions).pipe(
+    return this.http.post<LineDB>(this.linesUrl, linedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         linedb.SVG_Lines_reverse = _SVG_Lines_reverse
@@ -136,11 +137,11 @@ export class LineService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in LineService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("LineService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -151,6 +152,6 @@ export class LineService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

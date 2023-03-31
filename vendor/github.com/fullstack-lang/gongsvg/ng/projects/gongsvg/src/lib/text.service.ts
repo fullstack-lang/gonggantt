@@ -45,11 +45,12 @@ export class TextService {
   /** GET texts from the server */
   getTexts(GONG__StackPath: string = ""): Observable<TextDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<TextDB[]>(this.textsUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched texts')),
+        tap(),
+		// tap(_ => this.log('fetched texts')),
         catchError(this.handleError<TextDB[]>('getTexts', []))
       );
   }
@@ -77,7 +78,7 @@ export class TextService {
       params: params
     }
 
-	return this.http.post<TextDB>(this.textsUrl, textdb, httpOptions).pipe(
+    return this.http.post<TextDB>(this.textsUrl, textdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         textdb.SVG_Texts_reverse = _SVG_Texts_reverse
@@ -136,11 +137,11 @@ export class TextService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in TextService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("TextService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -151,6 +152,6 @@ export class TextService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

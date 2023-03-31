@@ -151,7 +151,7 @@ func (controller *Controller) PostPath(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoPath.CheckoutPhaseOneInstance(&pathDB)
-	path := (*backRepo.BackRepoPath.Map_PathDBID_PathPtr)[pathDB.ID]
+	path := backRepo.BackRepoPath.Map_PathDBID_PathPtr[pathDB.ID]
 
 	if path != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), path)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdatePath(c *gin.Context) {
 	pathDB.CopyBasicFieldsToPath(pathNew)
 
 	// get stage instance from DB instance, and call callback function
-	pathOld := (*backRepo.BackRepoPath.Map_PathDBID_PathPtr)[pathDB.ID]
+	pathOld := backRepo.BackRepoPath.Map_PathDBID_PathPtr[pathDB.ID]
 	if pathOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), pathOld, pathNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeletePath(c *gin.Context) {
 	pathDB.CopyBasicFieldsToPath(pathDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	pathStaged := (*backRepo.BackRepoPath.Map_PathDBID_PathPtr)[pathDB.ID]
+	pathStaged := backRepo.BackRepoPath.Map_PathDBID_PathPtr[pathDB.ID]
 	if pathStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), pathStaged, pathDeleted)
 	}

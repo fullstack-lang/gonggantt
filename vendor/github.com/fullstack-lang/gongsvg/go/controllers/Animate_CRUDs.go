@@ -151,7 +151,7 @@ func (controller *Controller) PostAnimate(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoAnimate.CheckoutPhaseOneInstance(&animateDB)
-	animate := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+	animate := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB.ID]
 
 	if animate != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), animate)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateAnimate(c *gin.Context) {
 	animateDB.CopyBasicFieldsToAnimate(animateNew)
 
 	// get stage instance from DB instance, and call callback function
-	animateOld := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+	animateOld := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB.ID]
 	if animateOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), animateOld, animateNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteAnimate(c *gin.Context) {
 	animateDB.CopyBasicFieldsToAnimate(animateDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	animateStaged := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB.ID]
+	animateStaged := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB.ID]
 	if animateStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), animateStaged, animateDeleted)
 	}

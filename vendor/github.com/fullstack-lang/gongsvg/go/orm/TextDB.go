@@ -153,13 +153,13 @@ var Text_Fields = []string{
 
 type BackRepoTextStruct struct {
 	// stores TextDB according to their gorm ID
-	Map_TextDBID_TextDB *map[uint]*TextDB
+	Map_TextDBID_TextDB map[uint]*TextDB
 
 	// stores TextDB ID according to Text address
-	Map_TextPtr_TextDBID *map[*models.Text]uint
+	Map_TextPtr_TextDBID map[*models.Text]uint
 
 	// stores Text according to their gorm ID
-	Map_TextDBID_TextPtr *map[uint]*models.Text
+	Map_TextDBID_TextPtr map[uint]*models.Text
 
 	db *gorm.DB
 
@@ -177,40 +177,8 @@ func (backRepoText *BackRepoTextStruct) GetDB() *gorm.DB {
 
 // GetTextDBFromTextPtr is a handy function to access the back repo instance from the stage instance
 func (backRepoText *BackRepoTextStruct) GetTextDBFromTextPtr(text *models.Text) (textDB *TextDB) {
-	id := (*backRepoText.Map_TextPtr_TextDBID)[text]
-	textDB = (*backRepoText.Map_TextDBID_TextDB)[id]
-	return
-}
-
-// BackRepoText.Init set up the BackRepo of the Text
-func (backRepoText *BackRepoTextStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoText.Map_TextDBID_TextPtr != nil {
-		err := errors.New("In Init, backRepoText.Map_TextDBID_TextPtr should be nil")
-		return err
-	}
-
-	if backRepoText.Map_TextDBID_TextDB != nil {
-		err := errors.New("In Init, backRepoText.Map_TextDBID_TextDB should be nil")
-		return err
-	}
-
-	if backRepoText.Map_TextPtr_TextDBID != nil {
-		err := errors.New("In Init, backRepoText.Map_TextPtr_TextDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Text, 0)
-	backRepoText.Map_TextDBID_TextPtr = &tmp
-
-	tmpDB := make(map[uint]*TextDB, 0)
-	backRepoText.Map_TextDBID_TextDB = &tmpDB
-
-	tmpID := make(map[*models.Text]uint, 0)
-	backRepoText.Map_TextPtr_TextDBID = &tmpID
-
-	backRepoText.db = db
-	backRepoText.stage = stage
+	id := backRepoText.Map_TextPtr_TextDBID[text]
+	textDB = backRepoText.Map_TextDBID_TextDB[id]
 	return
 }
 
@@ -224,7 +192,7 @@ func (backRepoText *BackRepoTextStruct) CommitPhaseOne(stage *models.StageStruct
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, text := range *backRepoText.Map_TextDBID_TextPtr {
+	for id, text := range backRepoText.Map_TextDBID_TextPtr {
 		if _, ok := stage.Texts[text]; !ok {
 			backRepoText.CommitDeleteInstance(id)
 		}
@@ -236,19 +204,19 @@ func (backRepoText *BackRepoTextStruct) CommitPhaseOne(stage *models.StageStruct
 // BackRepoText.CommitDeleteInstance commits deletion of Text to the BackRepo
 func (backRepoText *BackRepoTextStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	text := (*backRepoText.Map_TextDBID_TextPtr)[id]
+	text := backRepoText.Map_TextDBID_TextPtr[id]
 
 	// text is not staged anymore, remove textDB
-	textDB := (*backRepoText.Map_TextDBID_TextDB)[id]
+	textDB := backRepoText.Map_TextDBID_TextDB[id]
 	query := backRepoText.db.Unscoped().Delete(&textDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoText.Map_TextPtr_TextDBID), text)
-	delete((*backRepoText.Map_TextDBID_TextPtr), id)
-	delete((*backRepoText.Map_TextDBID_TextDB), id)
+	delete(backRepoText.Map_TextPtr_TextDBID, text)
+	delete(backRepoText.Map_TextDBID_TextPtr, id)
+	delete(backRepoText.Map_TextDBID_TextDB, id)
 
 	return
 }
@@ -258,7 +226,7 @@ func (backRepoText *BackRepoTextStruct) CommitDeleteInstance(id uint) (Error err
 func (backRepoText *BackRepoTextStruct) CommitPhaseOneInstance(text *models.Text) (Error error) {
 
 	// check if the text is not commited yet
-	if _, ok := (*backRepoText.Map_TextPtr_TextDBID)[text]; ok {
+	if _, ok := backRepoText.Map_TextPtr_TextDBID[text]; ok {
 		return
 	}
 
@@ -272,9 +240,9 @@ func (backRepoText *BackRepoTextStruct) CommitPhaseOneInstance(text *models.Text
 	}
 
 	// update stores
-	(*backRepoText.Map_TextPtr_TextDBID)[text] = textDB.ID
-	(*backRepoText.Map_TextDBID_TextPtr)[textDB.ID] = text
-	(*backRepoText.Map_TextDBID_TextDB)[textDB.ID] = &textDB
+	backRepoText.Map_TextPtr_TextDBID[text] = textDB.ID
+	backRepoText.Map_TextDBID_TextPtr[textDB.ID] = text
+	backRepoText.Map_TextDBID_TextDB[textDB.ID] = &textDB
 
 	return
 }
@@ -283,7 +251,7 @@ func (backRepoText *BackRepoTextStruct) CommitPhaseOneInstance(text *models.Text
 // Phase Two is the update of instance with the field in the database
 func (backRepoText *BackRepoTextStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, text := range *backRepoText.Map_TextDBID_TextPtr {
+	for idx, text := range backRepoText.Map_TextDBID_TextPtr {
 		backRepoText.CommitPhaseTwoInstance(backRepo, idx, text)
 	}
 
@@ -295,7 +263,7 @@ func (backRepoText *BackRepoTextStruct) CommitPhaseTwo(backRepo *BackRepoStruct)
 func (backRepoText *BackRepoTextStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, text *models.Text) (Error error) {
 
 	// fetch matching textDB
-	if textDB, ok := (*backRepoText.Map_TextDBID_TextDB)[idx]; ok {
+	if textDB, ok := backRepoText.Map_TextDBID_TextDB[idx]; ok {
 
 		textDB.CopyBasicFieldsFromText(text)
 
@@ -358,7 +326,7 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		text, ok := (*backRepoText.Map_TextDBID_TextPtr)[textDB.ID]
+		text, ok := backRepoText.Map_TextDBID_TextPtr[textDB.ID]
 		if ok {
 			delete(textInstancesToBeRemovedFromTheStage, text)
 		}
@@ -369,10 +337,10 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseOne() (Error error) {
 		text.Unstage(backRepoText.GetStage())
 
 		// remove instance from the back repo 3 maps
-		textID := (*backRepoText.Map_TextPtr_TextDBID)[text]
-		delete((*backRepoText.Map_TextPtr_TextDBID), text)
-		delete((*backRepoText.Map_TextDBID_TextDB), textID)
-		delete((*backRepoText.Map_TextDBID_TextPtr), textID)
+		textID := backRepoText.Map_TextPtr_TextDBID[text]
+		delete(backRepoText.Map_TextPtr_TextDBID, text)
+		delete(backRepoText.Map_TextDBID_TextDB, textID)
+		delete(backRepoText.Map_TextDBID_TextPtr, textID)
 	}
 
 	return
@@ -382,12 +350,12 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseOne() (Error error) {
 // models version of the textDB
 func (backRepoText *BackRepoTextStruct) CheckoutPhaseOneInstance(textDB *TextDB) (Error error) {
 
-	text, ok := (*backRepoText.Map_TextDBID_TextPtr)[textDB.ID]
+	text, ok := backRepoText.Map_TextDBID_TextPtr[textDB.ID]
 	if !ok {
 		text = new(models.Text)
 
-		(*backRepoText.Map_TextDBID_TextPtr)[textDB.ID] = text
-		(*backRepoText.Map_TextPtr_TextDBID)[text] = textDB.ID
+		backRepoText.Map_TextDBID_TextPtr[textDB.ID] = text
+		backRepoText.Map_TextPtr_TextDBID[text] = textDB.ID
 
 		// append model store with the new element
 		text.Name = textDB.Name_Data.String
@@ -402,7 +370,7 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseOneInstance(textDB *TextDB)
 	// Map_TextDBID_TextDB)[textDB hold variable pointers
 	textDB_Data := *textDB
 	preservedPtrToText := &textDB_Data
-	(*backRepoText.Map_TextDBID_TextDB)[textDB.ID] = preservedPtrToText
+	backRepoText.Map_TextDBID_TextDB[textDB.ID] = preservedPtrToText
 
 	return
 }
@@ -412,7 +380,7 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseOneInstance(textDB *TextDB)
 func (backRepoText *BackRepoTextStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, textDB := range *backRepoText.Map_TextDBID_TextDB {
+	for _, textDB := range backRepoText.Map_TextDBID_TextDB {
 		backRepoText.CheckoutPhaseTwoInstance(backRepo, textDB)
 	}
 	return
@@ -422,7 +390,7 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseTwo(backRepo *BackRepoStruc
 // Phase Two is the update of instance with the field in the database
 func (backRepoText *BackRepoTextStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, textDB *TextDB) (Error error) {
 
-	text := (*backRepoText.Map_TextDBID_TextPtr)[textDB.ID]
+	text := backRepoText.Map_TextDBID_TextPtr[textDB.ID]
 	_ = text // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -432,11 +400,11 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 	// 1. reset the slice
 	text.Animates = text.Animates[:0]
 	// 2. loop all instances in the type in the association end
-	for _, animateDB_AssocEnd := range *backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB_AssocEnd := range backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if animateDB_AssocEnd.Text_AnimatesDBID.Int64 == int64(textDB.ID) {
 			// 4. fetch the associated instance in the stage
-			animate_AssocEnd := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB_AssocEnd.ID]
+			animate_AssocEnd := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB_AssocEnd.ID]
 			// 5. append it the association slice
 			text.Animates = append(text.Animates, animate_AssocEnd)
 		}
@@ -444,11 +412,11 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 
 	// sort the array according to the order
 	sort.Slice(text.Animates, func(i, j int) bool {
-		animateDB_i_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[text.Animates[i]]
-		animateDB_j_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[text.Animates[j]]
+		animateDB_i_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[text.Animates[i]]
+		animateDB_j_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[text.Animates[j]]
 
-		animateDB_i := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_i_ID]
-		animateDB_j := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_j_ID]
+		animateDB_i := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_i_ID]
+		animateDB_j := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_j_ID]
 
 		return animateDB_i.Text_AnimatesDBID_Index.Int64 < animateDB_j.Text_AnimatesDBID_Index.Int64
 	})
@@ -459,7 +427,7 @@ func (backRepoText *BackRepoTextStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 // CommitText allows commit of a single text (if already staged)
 func (backRepo *BackRepoStruct) CommitText(text *models.Text) {
 	backRepo.BackRepoText.CommitPhaseOneInstance(text)
-	if id, ok := (*backRepo.BackRepoText.Map_TextPtr_TextDBID)[text]; ok {
+	if id, ok := backRepo.BackRepoText.Map_TextPtr_TextDBID[text]; ok {
 		backRepo.BackRepoText.CommitPhaseTwoInstance(backRepo, id, text)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -468,9 +436,9 @@ func (backRepo *BackRepoStruct) CommitText(text *models.Text) {
 // CommitText allows checkout of a single text (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutText(text *models.Text) {
 	// check if the text is staged
-	if _, ok := (*backRepo.BackRepoText.Map_TextPtr_TextDBID)[text]; ok {
+	if _, ok := backRepo.BackRepoText.Map_TextPtr_TextDBID[text]; ok {
 
-		if id, ok := (*backRepo.BackRepoText.Map_TextPtr_TextDBID)[text]; ok {
+		if id, ok := backRepo.BackRepoText.Map_TextPtr_TextDBID[text]; ok {
 			var textDB TextDB
 			textDB.ID = id
 
@@ -592,7 +560,7 @@ func (backRepoText *BackRepoTextStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*TextDB, 0)
-	for _, textDB := range *backRepoText.Map_TextDBID_TextDB {
+	for _, textDB := range backRepoText.Map_TextDBID_TextDB {
 		forBackup = append(forBackup, textDB)
 	}
 
@@ -618,7 +586,7 @@ func (backRepoText *BackRepoTextStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*TextDB, 0)
-	for _, textDB := range *backRepoText.Map_TextDBID_TextDB {
+	for _, textDB := range backRepoText.Map_TextDBID_TextDB {
 		forBackup = append(forBackup, textDB)
 	}
 
@@ -683,7 +651,7 @@ func (backRepoText *BackRepoTextStruct) rowVisitorText(row *xlsx.Row) error {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoText.Map_TextDBID_TextDB)[textDB.ID] = textDB
+		backRepoText.Map_TextDBID_TextDB[textDB.ID] = textDB
 		BackRepoTextid_atBckpTime_newID[textDB_ID_atBackupTime] = textDB.ID
 	}
 	return nil
@@ -720,7 +688,7 @@ func (backRepoText *BackRepoTextStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoText.Map_TextDBID_TextDB)[textDB.ID] = textDB
+		backRepoText.Map_TextDBID_TextDB[textDB.ID] = textDB
 		BackRepoTextid_atBckpTime_newID[textDB_ID_atBackupTime] = textDB.ID
 	}
 
@@ -733,7 +701,7 @@ func (backRepoText *BackRepoTextStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoText *BackRepoTextStruct) RestorePhaseTwo() {
 
-	for _, textDB := range *backRepoText.Map_TextDBID_TextDB {
+	for _, textDB := range backRepoText.Map_TextDBID_TextDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = textDB

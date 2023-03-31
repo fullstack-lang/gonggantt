@@ -46,11 +46,12 @@ export class LaneService {
   /** GET lanes from the server */
   getLanes(GONG__StackPath: string = ""): Observable<LaneDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<LaneDB[]>(this.lanesUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched lanes')),
+        tap(),
+		// tap(_ => this.log('fetched lanes')),
         catchError(this.handleError<LaneDB[]>('getLanes', []))
       );
   }
@@ -80,7 +81,7 @@ export class LaneService {
       params: params
     }
 
-	return this.http.post<LaneDB>(this.lanesUrl, lanedb, httpOptions).pipe(
+    return this.http.post<LaneDB>(this.lanesUrl, lanedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
@@ -143,11 +144,11 @@ export class LaneService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in LaneService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("LaneService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -158,6 +159,6 @@ export class LaneService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

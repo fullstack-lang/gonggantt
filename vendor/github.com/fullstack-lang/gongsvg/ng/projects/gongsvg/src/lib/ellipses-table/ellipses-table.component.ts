@@ -19,6 +19,8 @@ import { EllipseService } from '../ellipse.service'
 
 // insertion point for additional imports
 
+import { RouteService } from '../route-service';
+
 // TableComponent is initilizaed from different routes
 // TableComponentMode detail different cases 
 enum TableComponentMode {
@@ -163,6 +165,8 @@ export class EllipsesTableComponent implements OnInit {
 
     private router: Router,
     private activatedRoute: ActivatedRoute,
+
+    private routeService: RouteService,
   ) {
 
     // compute mode
@@ -301,18 +305,15 @@ export class EllipsesTableComponent implements OnInit {
 
   }
 
-  // display ellipse in router
-  displayEllipseInRouter(ellipseID: number) {
-    this.router.navigate(["github_com_fullstack_lang_gongsvg_go-" + "ellipse-display", ellipseID])
-  }
-
   // set editor outlet
   setEditorRouterOutlet(ellipseID: number) {
-    this.router.navigate([{
-      outlets: {
-        github_com_fullstack_lang_gongsvg_go_editor: ["github_com_fullstack_lang_gongsvg_go-" + "ellipse-detail", ellipseID, this.GONG__StackPath]
-      }
-    }]);
+    let outletName = this.routeService.getEditorOutlet(this.GONG__StackPath)
+    let fullPath = this.routeService.getPathRoot() + "-" + "ellipse" + "-detail"
+
+    let outletConf: any = {}
+    outletConf[outletName] = [fullPath, ellipseID, this.GONG__StackPath]
+
+    this.router.navigate([{ outlets: outletConf }])
   }
 
   /** Whether the number of selected elements matches the total number of rows. */

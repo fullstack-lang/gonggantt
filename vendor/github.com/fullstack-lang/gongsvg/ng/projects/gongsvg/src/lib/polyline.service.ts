@@ -45,11 +45,12 @@ export class PolylineService {
   /** GET polylines from the server */
   getPolylines(GONG__StackPath: string = ""): Observable<PolylineDB[]> {
 
-	let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
     return this.http.get<PolylineDB[]>(this.polylinesUrl, { params: params })
       .pipe(
-        tap(_ => this.log('fetched polylines')),
+        tap(),
+		// tap(_ => this.log('fetched polylines')),
         catchError(this.handleError<PolylineDB[]>('getPolylines', []))
       );
   }
@@ -77,7 +78,7 @@ export class PolylineService {
       params: params
     }
 
-	return this.http.post<PolylineDB>(this.polylinesUrl, polylinedb, httpOptions).pipe(
+    return this.http.post<PolylineDB>(this.polylinesUrl, polylinedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
         polylinedb.SVG_Polylines_reverse = _SVG_Polylines_reverse
@@ -136,11 +137,11 @@ export class PolylineService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation', result?: T) {
+  private handleError<T>(operation = 'operation in PolylineService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      console.error("PolylineService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);
@@ -151,6 +152,6 @@ export class PolylineService {
   }
 
   private log(message: string) {
-
+      console.log(message)
   }
 }

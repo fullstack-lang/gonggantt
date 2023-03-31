@@ -153,13 +153,13 @@ var Circle_Fields = []string{
 
 type BackRepoCircleStruct struct {
 	// stores CircleDB according to their gorm ID
-	Map_CircleDBID_CircleDB *map[uint]*CircleDB
+	Map_CircleDBID_CircleDB map[uint]*CircleDB
 
 	// stores CircleDB ID according to Circle address
-	Map_CirclePtr_CircleDBID *map[*models.Circle]uint
+	Map_CirclePtr_CircleDBID map[*models.Circle]uint
 
 	// stores Circle according to their gorm ID
-	Map_CircleDBID_CirclePtr *map[uint]*models.Circle
+	Map_CircleDBID_CirclePtr map[uint]*models.Circle
 
 	db *gorm.DB
 
@@ -177,40 +177,8 @@ func (backRepoCircle *BackRepoCircleStruct) GetDB() *gorm.DB {
 
 // GetCircleDBFromCirclePtr is a handy function to access the back repo instance from the stage instance
 func (backRepoCircle *BackRepoCircleStruct) GetCircleDBFromCirclePtr(circle *models.Circle) (circleDB *CircleDB) {
-	id := (*backRepoCircle.Map_CirclePtr_CircleDBID)[circle]
-	circleDB = (*backRepoCircle.Map_CircleDBID_CircleDB)[id]
-	return
-}
-
-// BackRepoCircle.Init set up the BackRepo of the Circle
-func (backRepoCircle *BackRepoCircleStruct) Init(stage *models.StageStruct, db *gorm.DB) (Error error) {
-
-	if backRepoCircle.Map_CircleDBID_CirclePtr != nil {
-		err := errors.New("In Init, backRepoCircle.Map_CircleDBID_CirclePtr should be nil")
-		return err
-	}
-
-	if backRepoCircle.Map_CircleDBID_CircleDB != nil {
-		err := errors.New("In Init, backRepoCircle.Map_CircleDBID_CircleDB should be nil")
-		return err
-	}
-
-	if backRepoCircle.Map_CirclePtr_CircleDBID != nil {
-		err := errors.New("In Init, backRepoCircle.Map_CirclePtr_CircleDBID should be nil")
-		return err
-	}
-
-	tmp := make(map[uint]*models.Circle, 0)
-	backRepoCircle.Map_CircleDBID_CirclePtr = &tmp
-
-	tmpDB := make(map[uint]*CircleDB, 0)
-	backRepoCircle.Map_CircleDBID_CircleDB = &tmpDB
-
-	tmpID := make(map[*models.Circle]uint, 0)
-	backRepoCircle.Map_CirclePtr_CircleDBID = &tmpID
-
-	backRepoCircle.db = db
-	backRepoCircle.stage = stage
+	id := backRepoCircle.Map_CirclePtr_CircleDBID[circle]
+	circleDB = backRepoCircle.Map_CircleDBID_CircleDB[id]
 	return
 }
 
@@ -224,7 +192,7 @@ func (backRepoCircle *BackRepoCircleStruct) CommitPhaseOne(stage *models.StageSt
 
 	// parse all backRepo instance and checks wether some instance have been unstaged
 	// in this case, remove them from the back repo
-	for id, circle := range *backRepoCircle.Map_CircleDBID_CirclePtr {
+	for id, circle := range backRepoCircle.Map_CircleDBID_CirclePtr {
 		if _, ok := stage.Circles[circle]; !ok {
 			backRepoCircle.CommitDeleteInstance(id)
 		}
@@ -236,19 +204,19 @@ func (backRepoCircle *BackRepoCircleStruct) CommitPhaseOne(stage *models.StageSt
 // BackRepoCircle.CommitDeleteInstance commits deletion of Circle to the BackRepo
 func (backRepoCircle *BackRepoCircleStruct) CommitDeleteInstance(id uint) (Error error) {
 
-	circle := (*backRepoCircle.Map_CircleDBID_CirclePtr)[id]
+	circle := backRepoCircle.Map_CircleDBID_CirclePtr[id]
 
 	// circle is not staged anymore, remove circleDB
-	circleDB := (*backRepoCircle.Map_CircleDBID_CircleDB)[id]
+	circleDB := backRepoCircle.Map_CircleDBID_CircleDB[id]
 	query := backRepoCircle.db.Unscoped().Delete(&circleDB)
 	if query.Error != nil {
 		return query.Error
 	}
 
 	// update stores
-	delete((*backRepoCircle.Map_CirclePtr_CircleDBID), circle)
-	delete((*backRepoCircle.Map_CircleDBID_CirclePtr), id)
-	delete((*backRepoCircle.Map_CircleDBID_CircleDB), id)
+	delete(backRepoCircle.Map_CirclePtr_CircleDBID, circle)
+	delete(backRepoCircle.Map_CircleDBID_CirclePtr, id)
+	delete(backRepoCircle.Map_CircleDBID_CircleDB, id)
 
 	return
 }
@@ -258,7 +226,7 @@ func (backRepoCircle *BackRepoCircleStruct) CommitDeleteInstance(id uint) (Error
 func (backRepoCircle *BackRepoCircleStruct) CommitPhaseOneInstance(circle *models.Circle) (Error error) {
 
 	// check if the circle is not commited yet
-	if _, ok := (*backRepoCircle.Map_CirclePtr_CircleDBID)[circle]; ok {
+	if _, ok := backRepoCircle.Map_CirclePtr_CircleDBID[circle]; ok {
 		return
 	}
 
@@ -272,9 +240,9 @@ func (backRepoCircle *BackRepoCircleStruct) CommitPhaseOneInstance(circle *model
 	}
 
 	// update stores
-	(*backRepoCircle.Map_CirclePtr_CircleDBID)[circle] = circleDB.ID
-	(*backRepoCircle.Map_CircleDBID_CirclePtr)[circleDB.ID] = circle
-	(*backRepoCircle.Map_CircleDBID_CircleDB)[circleDB.ID] = &circleDB
+	backRepoCircle.Map_CirclePtr_CircleDBID[circle] = circleDB.ID
+	backRepoCircle.Map_CircleDBID_CirclePtr[circleDB.ID] = circle
+	backRepoCircle.Map_CircleDBID_CircleDB[circleDB.ID] = &circleDB
 
 	return
 }
@@ -283,7 +251,7 @@ func (backRepoCircle *BackRepoCircleStruct) CommitPhaseOneInstance(circle *model
 // Phase Two is the update of instance with the field in the database
 func (backRepoCircle *BackRepoCircleStruct) CommitPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
-	for idx, circle := range *backRepoCircle.Map_CircleDBID_CirclePtr {
+	for idx, circle := range backRepoCircle.Map_CircleDBID_CirclePtr {
 		backRepoCircle.CommitPhaseTwoInstance(backRepo, idx, circle)
 	}
 
@@ -295,7 +263,7 @@ func (backRepoCircle *BackRepoCircleStruct) CommitPhaseTwo(backRepo *BackRepoStr
 func (backRepoCircle *BackRepoCircleStruct) CommitPhaseTwoInstance(backRepo *BackRepoStruct, idx uint, circle *models.Circle) (Error error) {
 
 	// fetch matching circleDB
-	if circleDB, ok := (*backRepoCircle.Map_CircleDBID_CircleDB)[idx]; ok {
+	if circleDB, ok := backRepoCircle.Map_CircleDBID_CircleDB[idx]; ok {
 
 		circleDB.CopyBasicFieldsFromCircle(circle)
 
@@ -358,7 +326,7 @@ func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseOne() (Error error) {
 
 		// do not remove this instance from the stage, therefore
 		// remove instance from the list of instances to be be removed from the stage
-		circle, ok := (*backRepoCircle.Map_CircleDBID_CirclePtr)[circleDB.ID]
+		circle, ok := backRepoCircle.Map_CircleDBID_CirclePtr[circleDB.ID]
 		if ok {
 			delete(circleInstancesToBeRemovedFromTheStage, circle)
 		}
@@ -369,10 +337,10 @@ func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseOne() (Error error) {
 		circle.Unstage(backRepoCircle.GetStage())
 
 		// remove instance from the back repo 3 maps
-		circleID := (*backRepoCircle.Map_CirclePtr_CircleDBID)[circle]
-		delete((*backRepoCircle.Map_CirclePtr_CircleDBID), circle)
-		delete((*backRepoCircle.Map_CircleDBID_CircleDB), circleID)
-		delete((*backRepoCircle.Map_CircleDBID_CirclePtr), circleID)
+		circleID := backRepoCircle.Map_CirclePtr_CircleDBID[circle]
+		delete(backRepoCircle.Map_CirclePtr_CircleDBID, circle)
+		delete(backRepoCircle.Map_CircleDBID_CircleDB, circleID)
+		delete(backRepoCircle.Map_CircleDBID_CirclePtr, circleID)
 	}
 
 	return
@@ -382,12 +350,12 @@ func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseOne() (Error error) {
 // models version of the circleDB
 func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseOneInstance(circleDB *CircleDB) (Error error) {
 
-	circle, ok := (*backRepoCircle.Map_CircleDBID_CirclePtr)[circleDB.ID]
+	circle, ok := backRepoCircle.Map_CircleDBID_CirclePtr[circleDB.ID]
 	if !ok {
 		circle = new(models.Circle)
 
-		(*backRepoCircle.Map_CircleDBID_CirclePtr)[circleDB.ID] = circle
-		(*backRepoCircle.Map_CirclePtr_CircleDBID)[circle] = circleDB.ID
+		backRepoCircle.Map_CircleDBID_CirclePtr[circleDB.ID] = circle
+		backRepoCircle.Map_CirclePtr_CircleDBID[circle] = circleDB.ID
 
 		// append model store with the new element
 		circle.Name = circleDB.Name_Data.String
@@ -402,7 +370,7 @@ func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseOneInstance(circleDB *C
 	// Map_CircleDBID_CircleDB)[circleDB hold variable pointers
 	circleDB_Data := *circleDB
 	preservedPtrToCircle := &circleDB_Data
-	(*backRepoCircle.Map_CircleDBID_CircleDB)[circleDB.ID] = preservedPtrToCircle
+	backRepoCircle.Map_CircleDBID_CircleDB[circleDB.ID] = preservedPtrToCircle
 
 	return
 }
@@ -412,7 +380,7 @@ func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseOneInstance(circleDB *C
 func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseTwo(backRepo *BackRepoStruct) (Error error) {
 
 	// parse all DB instance and update all pointer fields of the translated models instance
-	for _, circleDB := range *backRepoCircle.Map_CircleDBID_CircleDB {
+	for _, circleDB := range backRepoCircle.Map_CircleDBID_CircleDB {
 		backRepoCircle.CheckoutPhaseTwoInstance(backRepo, circleDB)
 	}
 	return
@@ -422,7 +390,7 @@ func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseTwo(backRepo *BackRepoS
 // Phase Two is the update of instance with the field in the database
 func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, circleDB *CircleDB) (Error error) {
 
-	circle := (*backRepoCircle.Map_CircleDBID_CirclePtr)[circleDB.ID]
+	circle := backRepoCircle.Map_CircleDBID_CirclePtr[circleDB.ID]
 	_ = circle // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
@@ -432,11 +400,11 @@ func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseTwoInstance(backRepo *B
 	// 1. reset the slice
 	circle.Animations = circle.Animations[:0]
 	// 2. loop all instances in the type in the association end
-	for _, animateDB_AssocEnd := range *backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
+	for _, animateDB_AssocEnd := range backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
 		if animateDB_AssocEnd.Circle_AnimationsDBID.Int64 == int64(circleDB.ID) {
 			// 4. fetch the associated instance in the stage
-			animate_AssocEnd := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr)[animateDB_AssocEnd.ID]
+			animate_AssocEnd := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimatePtr[animateDB_AssocEnd.ID]
 			// 5. append it the association slice
 			circle.Animations = append(circle.Animations, animate_AssocEnd)
 		}
@@ -444,11 +412,11 @@ func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseTwoInstance(backRepo *B
 
 	// sort the array according to the order
 	sort.Slice(circle.Animations, func(i, j int) bool {
-		animateDB_i_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[circle.Animations[i]]
-		animateDB_j_ID := (*backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID)[circle.Animations[j]]
+		animateDB_i_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[circle.Animations[i]]
+		animateDB_j_ID := backRepo.BackRepoAnimate.Map_AnimatePtr_AnimateDBID[circle.Animations[j]]
 
-		animateDB_i := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_i_ID]
-		animateDB_j := (*backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB)[animateDB_j_ID]
+		animateDB_i := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_i_ID]
+		animateDB_j := backRepo.BackRepoAnimate.Map_AnimateDBID_AnimateDB[animateDB_j_ID]
 
 		return animateDB_i.Circle_AnimationsDBID_Index.Int64 < animateDB_j.Circle_AnimationsDBID_Index.Int64
 	})
@@ -459,7 +427,7 @@ func (backRepoCircle *BackRepoCircleStruct) CheckoutPhaseTwoInstance(backRepo *B
 // CommitCircle allows commit of a single circle (if already staged)
 func (backRepo *BackRepoStruct) CommitCircle(circle *models.Circle) {
 	backRepo.BackRepoCircle.CommitPhaseOneInstance(circle)
-	if id, ok := (*backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID)[circle]; ok {
+	if id, ok := backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID[circle]; ok {
 		backRepo.BackRepoCircle.CommitPhaseTwoInstance(backRepo, id, circle)
 	}
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
@@ -468,9 +436,9 @@ func (backRepo *BackRepoStruct) CommitCircle(circle *models.Circle) {
 // CommitCircle allows checkout of a single circle (if already staged and with a BackRepo id)
 func (backRepo *BackRepoStruct) CheckoutCircle(circle *models.Circle) {
 	// check if the circle is staged
-	if _, ok := (*backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID)[circle]; ok {
+	if _, ok := backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID[circle]; ok {
 
-		if id, ok := (*backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID)[circle]; ok {
+		if id, ok := backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID[circle]; ok {
 			var circleDB CircleDB
 			circleDB.ID = id
 
@@ -592,7 +560,7 @@ func (backRepoCircle *BackRepoCircleStruct) Backup(dirPath string) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*CircleDB, 0)
-	for _, circleDB := range *backRepoCircle.Map_CircleDBID_CircleDB {
+	for _, circleDB := range backRepoCircle.Map_CircleDBID_CircleDB {
 		forBackup = append(forBackup, circleDB)
 	}
 
@@ -618,7 +586,7 @@ func (backRepoCircle *BackRepoCircleStruct) BackupXL(file *xlsx.File) {
 	// organize the map into an array with increasing IDs, in order to have repoductible
 	// backup file
 	forBackup := make([]*CircleDB, 0)
-	for _, circleDB := range *backRepoCircle.Map_CircleDBID_CircleDB {
+	for _, circleDB := range backRepoCircle.Map_CircleDBID_CircleDB {
 		forBackup = append(forBackup, circleDB)
 	}
 
@@ -683,7 +651,7 @@ func (backRepoCircle *BackRepoCircleStruct) rowVisitorCircle(row *xlsx.Row) erro
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoCircle.Map_CircleDBID_CircleDB)[circleDB.ID] = circleDB
+		backRepoCircle.Map_CircleDBID_CircleDB[circleDB.ID] = circleDB
 		BackRepoCircleid_atBckpTime_newID[circleDB_ID_atBackupTime] = circleDB.ID
 	}
 	return nil
@@ -720,7 +688,7 @@ func (backRepoCircle *BackRepoCircleStruct) RestorePhaseOne(dirPath string) {
 		if query.Error != nil {
 			log.Panic(query.Error)
 		}
-		(*backRepoCircle.Map_CircleDBID_CircleDB)[circleDB.ID] = circleDB
+		backRepoCircle.Map_CircleDBID_CircleDB[circleDB.ID] = circleDB
 		BackRepoCircleid_atBckpTime_newID[circleDB_ID_atBackupTime] = circleDB.ID
 	}
 
@@ -733,7 +701,7 @@ func (backRepoCircle *BackRepoCircleStruct) RestorePhaseOne(dirPath string) {
 // to compute new index
 func (backRepoCircle *BackRepoCircleStruct) RestorePhaseTwo() {
 
-	for _, circleDB := range *backRepoCircle.Map_CircleDBID_CircleDB {
+	for _, circleDB := range backRepoCircle.Map_CircleDBID_CircleDB {
 
 		// next line of code is to avert unused variable compilation error
 		_ = circleDB

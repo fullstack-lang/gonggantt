@@ -151,7 +151,7 @@ func (controller *Controller) PostPolyline(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoPolyline.CheckoutPhaseOneInstance(&polylineDB)
-	polyline := (*backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+	polyline := backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr[polylineDB.ID]
 
 	if polyline != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), polyline)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdatePolyline(c *gin.Context) {
 	polylineDB.CopyBasicFieldsToPolyline(polylineNew)
 
 	// get stage instance from DB instance, and call callback function
-	polylineOld := (*backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+	polylineOld := backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr[polylineDB.ID]
 	if polylineOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), polylineOld, polylineNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeletePolyline(c *gin.Context) {
 	polylineDB.CopyBasicFieldsToPolyline(polylineDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	polylineStaged := (*backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr)[polylineDB.ID]
+	polylineStaged := backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr[polylineDB.ID]
 	if polylineStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), polylineStaged, polylineDeleted)
 	}

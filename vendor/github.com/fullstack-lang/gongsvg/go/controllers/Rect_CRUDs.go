@@ -151,7 +151,7 @@ func (controller *Controller) PostRect(c *gin.Context) {
 
 	// get an instance (not staged) from DB instance, and call callback function
 	backRepo.BackRepoRect.CheckoutPhaseOneInstance(&rectDB)
-	rect := (*backRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+	rect := backRepo.BackRepoRect.Map_RectDBID_RectPtr[rectDB.ID]
 
 	if rect != nil {
 		models.AfterCreateFromFront(backRepo.GetStage(), rect)
@@ -273,7 +273,7 @@ func (controller *Controller) UpdateRect(c *gin.Context) {
 	rectDB.CopyBasicFieldsToRect(rectNew)
 
 	// get stage instance from DB instance, and call callback function
-	rectOld := (*backRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+	rectOld := backRepo.BackRepoRect.Map_RectDBID_RectPtr[rectDB.ID]
 	if rectOld != nil {
 		models.AfterUpdateFromFront(backRepo.GetStage(), rectOld, rectNew)
 	}
@@ -330,7 +330,7 @@ func (controller *Controller) DeleteRect(c *gin.Context) {
 	rectDB.CopyBasicFieldsToRect(rectDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	rectStaged := (*backRepo.BackRepoRect.Map_RectDBID_RectPtr)[rectDB.ID]
+	rectStaged := backRepo.BackRepoRect.Map_RectDBID_RectPtr[rectDB.ID]
 	if rectStaged != nil {
 		models.AfterDeleteFromFront(backRepo.GetStage(), rectStaged, rectDeleted)
 	}
