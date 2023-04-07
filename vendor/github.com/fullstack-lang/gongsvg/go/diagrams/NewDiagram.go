@@ -53,27 +53,27 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 
 	"ref_models.Rect": &(ref_models.Rect{}),
 
-	"ref_models.SVG": &(ref_models.SVG{}),
+	"ref_models.SVG": &(ref_models.Layer{}),
 
-	"ref_models.SVG.Circles": (ref_models.SVG{}).Circles,
+	"ref_models.SVG.Circles": (ref_models.Layer{}).Circles,
 
-	"ref_models.SVG.Display": (ref_models.SVG{}).Display,
+	"ref_models.SVG.Display": (ref_models.Layer{}).Display,
 
-	"ref_models.SVG.Ellipses": (ref_models.SVG{}).Ellipses,
+	"ref_models.SVG.Ellipses": (ref_models.Layer{}).Ellipses,
 
-	"ref_models.SVG.Lines": (ref_models.SVG{}).Lines,
+	"ref_models.SVG.Lines": (ref_models.Layer{}).Lines,
 
-	"ref_models.SVG.Name": (ref_models.SVG{}).Name,
+	"ref_models.SVG.Name": (ref_models.Layer{}).Name,
 
-	"ref_models.SVG.Paths": (ref_models.SVG{}).Paths,
+	"ref_models.SVG.Paths": (ref_models.Layer{}).Paths,
 
-	"ref_models.SVG.Polygones": (ref_models.SVG{}).Polygones,
+	"ref_models.SVG.Polygones": (ref_models.Layer{}).Polygones,
 
-	"ref_models.SVG.Polylines": (ref_models.SVG{}).Polylines,
+	"ref_models.SVG.Polylines": (ref_models.Layer{}).Polylines,
 
-	"ref_models.SVG.Rects": (ref_models.SVG{}).Rects,
+	"ref_models.SVG.Rects": (ref_models.Layer{}).Rects,
 
-	"ref_models.SVG.Texts": (ref_models.SVG{}).Texts,
+	"ref_models.SVG.Texts": (ref_models.Layer{}).Texts,
 
 	"ref_models.Text": &(ref_models.Text{}),
 }
@@ -643,5 +643,3 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Link__000007_Rects.Middlevertice = __Vertice__000007_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_SVG_and_NewDiagram_Rect
 	__Link__000008_Texts.Middlevertice = __Vertice__000008_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_SVG_and_NewDiagram_Text
 }
-
-

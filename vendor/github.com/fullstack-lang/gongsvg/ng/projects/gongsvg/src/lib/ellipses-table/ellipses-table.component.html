@@ -96,10 +96,10 @@
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="SVG_Ellipses">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (SVG) Ellipses </th>
+        <ng-container matColumnDef="Layer_Ellipses">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (Layer) Ellipses </th>
             <td mat-cell *matCellDef="let ellipse">
-                {{frontRepo.SVGs.get(ellipse.SVG_EllipsesDBID.Int64)?.Name}}
+                {{frontRepo.Layers.get(ellipse.Layer_EllipsesDBID.Int64)?.Name}}
             </td>
         </ng-container>
 

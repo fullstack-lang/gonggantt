@@ -8,30 +8,30 @@ import { DialogData } from '../front-repo.service'
 import { SelectionModel } from '@angular/cdk/collections';
 
 import { Router, RouterState } from '@angular/router';
-import { SVGDB } from '../svg-db'
-import { SVGService } from '../svg.service'
+import { LayerDB } from '../layer-db'
+import { LayerService } from '../layer.service'
 
 import { FrontRepoService, FrontRepo } from '../front-repo.service'
 import { NullInt64 } from '../null-int64'
 
 @Component({
-  selector: 'lib-svg-sorting',
-  templateUrl: './svg-sorting.component.html',
-  styleUrls: ['./svg-sorting.component.css']
+  selector: 'lib-layer-sorting',
+  templateUrl: './layer-sorting.component.html',
+  styleUrls: ['./layer-sorting.component.css']
 })
-export class SVGSortingComponent implements OnInit {
+export class LayerSortingComponent implements OnInit {
 
   frontRepo: FrontRepo = new (FrontRepo)
 
-  // array of SVG instances that are in the association
-  associatedSVGs = new Array<SVGDB>();
+  // array of Layer instances that are in the association
+  associatedLayers = new Array<LayerDB>();
 
   constructor(
-    private svgService: SVGService,
+    private layerService: LayerService,
     private frontRepoService: FrontRepoService,
 
-    // not null if the component is called as a selection component of svg instances
-    public dialogRef: MatDialogRef<SVGSortingComponent>,
+    // not null if the component is called as a selection component of layer instances
+    public dialogRef: MatDialogRef<LayerSortingComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public dialogData: DialogData,
 
     private router: Router,
@@ -42,31 +42,31 @@ export class SVGSortingComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getSVGs()
+    this.getLayers()
   }
 
-  getSVGs(): void {
+  getLayers(): void {
     this.frontRepoService.pull(this.dialogData.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
         let index = 0
-        for (let svg of this.frontRepo.SVGs_array) {
+        for (let layer of this.frontRepo.Layers_array) {
           let ID = this.dialogData.ID
-          let revPointerID = svg[this.dialogData.ReversePointer as keyof SVGDB] as unknown as NullInt64
-          let revPointerID_Index = svg[this.dialogData.ReversePointer + "_Index" as keyof SVGDB] as unknown as NullInt64
+          let revPointerID = layer[this.dialogData.ReversePointer as keyof LayerDB] as unknown as NullInt64
+          let revPointerID_Index = layer[this.dialogData.ReversePointer + "_Index" as keyof LayerDB] as unknown as NullInt64
           if (revPointerID.Int64 == ID) {
             if (revPointerID_Index == undefined) {
               revPointerID_Index = new NullInt64
               revPointerID_Index.Valid = true
               revPointerID_Index.Int64 = index++
             }
-            this.associatedSVGs.push(svg)
+            this.associatedLayers.push(layer)
           }
         }
 
-        // sort associated svg according to order
-        this.associatedSVGs.sort((t1, t2) => {
+        // sort associated layer according to order
+        this.associatedLayers.sort((t1, t2) => {
           let t1_revPointerID_Index = t1[this.dialogData.ReversePointer + "_Index" as keyof typeof t1] as unknown as NullInt64
           let t2_revPointerID_Index = t2[this.dialogData.ReversePointer + "_Index" as keyof typeof t2] as unknown as NullInt64
           if (t1_revPointerID_Index && t2_revPointerID_Index) {
@@ -84,13 +84,13 @@ export class SVGSortingComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.associatedSVGs, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.associatedLayers, event.previousIndex, event.currentIndex);
 
-    // set the order of SVG instances
+    // set the order of Layer instances
     let index = 0
 
-    for (let svg of this.associatedSVGs) {
-      let revPointerID_Index = svg[this.dialogData.ReversePointer + "_Index" as keyof SVGDB] as unknown as NullInt64
+    for (let layer of this.associatedLayers) {
+      let revPointerID_Index = layer[this.dialogData.ReversePointer + "_Index" as keyof LayerDB] as unknown as NullInt64
       revPointerID_Index.Valid = true
       revPointerID_Index.Int64 = index++
     }
@@ -98,11 +98,11 @@ export class SVGSortingComponent implements OnInit {
 
   save() {
 
-    this.associatedSVGs.forEach(
-      svg => {
-        this.svgService.updateSVG(svg, this.dialogData.GONG__StackPath)
-          .subscribe(svg => {
-            this.svgService.SVGServiceChanged.next("update")
+    this.associatedLayers.forEach(
+      layer => {
+        this.layerService.updateLayer(layer, this.dialogData.GONG__StackPath)
+          .subscribe(layer => {
+            this.layerService.LayerServiceChanged.next("update")
           });
       }
     )

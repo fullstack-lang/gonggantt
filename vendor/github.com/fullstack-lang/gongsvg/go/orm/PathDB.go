@@ -46,11 +46,11 @@ type PathAPI struct {
 type PathPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
 
-	// Implementation of a reverse ID for field SVG{}.Paths []*Path
-	SVG_PathsDBID sql.NullInt64
+	// Implementation of a reverse ID for field Layer{}.Paths []*Path
+	Layer_PathsDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
-	SVG_PathsDBID_Index sql.NullInt64
+	Layer_PathsDBID_Index sql.NullInt64
 }
 
 // PathDB describes a path in the database
@@ -680,9 +680,9 @@ func (backRepoPath *BackRepoPathStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// This reindex path.Paths
-		if pathDB.SVG_PathsDBID.Int64 != 0 {
-			pathDB.SVG_PathsDBID.Int64 =
-				int64(BackRepoSVGid_atBckpTime_newID[uint(pathDB.SVG_PathsDBID.Int64)])
+		if pathDB.Layer_PathsDBID.Int64 != 0 {
+			pathDB.Layer_PathsDBID.Int64 =
+				int64(BackRepoLayerid_atBckpTime_newID[uint(pathDB.Layer_PathsDBID.Int64)])
 		}
 
 		// update databse with new index encoding

@@ -38,7 +38,7 @@ export class SvgComponent implements OnInit {
   lastPushFromFrontNb = -1
   currTime: number = 0
 
-  svgSingloton?: gongsvg.SVGDB
+  svgSingloton?: gongsvg.LayerDB
 
   constructor(
     private gongsvgFrontRepoService: gongsvg.FrontRepoService,
@@ -48,7 +48,7 @@ export class SvgComponent implements OnInit {
 
   ngOnInit(): void {
 
-    console.log("Svg component->ngOnInit : GONG__StackPath, " + this.GONG__StackPath )
+    console.log("Svg component->ngOnInit : GONG__StackPath, " + this.GONG__StackPath)
 
     // see above for the explanation
     this.gongsvgNbFromBackService.getCommitNbFromBack(500, this.GONG__StackPath).subscribe(
@@ -69,7 +69,7 @@ export class SvgComponent implements OnInit {
       gongsvgsFrontRepo => {
         this.gongsvgFrontRepo = gongsvgsFrontRepo
 
-        this.svgSingloton = this.gongsvgFrontRepo.SVGs_array[0]
+        this.svgSingloton = this.gongsvgFrontRepo.Layers_array[0]
         console.log("svgSingloton " + this.svgSingloton?.Name)
 
       }

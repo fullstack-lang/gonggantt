@@ -5,6 +5,8 @@
   import { CircleSortingComponent } from './circle-sorting/circle-sorting.component'
   import { EllipsesTableComponent } from './ellipses-table/ellipses-table.component'
   import { EllipseSortingComponent } from './ellipse-sorting/ellipse-sorting.component'
+  import { LayersTableComponent } from './layers-table/layers-table.component'
+  import { LayerSortingComponent } from './layer-sorting/layer-sorting.component'
   import { LinesTableComponent } from './lines-table/lines-table.component'
   import { LineSortingComponent } from './line-sorting/line-sorting.component'
   import { PathsTableComponent } from './paths-table/paths-table.component'
@@ -15,8 +17,6 @@
   import { PolylineSortingComponent } from './polyline-sorting/polyline-sorting.component'
   import { RectsTableComponent } from './rects-table/rects-table.component'
   import { RectSortingComponent } from './rect-sorting/rect-sorting.component'
-  import { SVGsTableComponent } from './svgs-table/svgs-table.component'
-  import { SVGSortingComponent } from './svg-sorting/svg-sorting.component'
   import { TextsTableComponent } from './texts-table/texts-table.component'
   import { TextSortingComponent } from './text-sorting/text-sorting.component'
 
@@ -27,6 +27,8 @@
   export const MapOfCircleSortingComponents: Map<string, any> = new Map([["CircleSortingComponent", CircleSortingComponent],])
   export const MapOfEllipsesComponents: Map<string, any> = new Map([["EllipsesTableComponent", EllipsesTableComponent],])
   export const MapOfEllipseSortingComponents: Map<string, any> = new Map([["EllipseSortingComponent", EllipseSortingComponent],])
+  export const MapOfLayersComponents: Map<string, any> = new Map([["LayersTableComponent", LayersTableComponent],])
+  export const MapOfLayerSortingComponents: Map<string, any> = new Map([["LayerSortingComponent", LayerSortingComponent],])
   export const MapOfLinesComponents: Map<string, any> = new Map([["LinesTableComponent", LinesTableComponent],])
   export const MapOfLineSortingComponents: Map<string, any> = new Map([["LineSortingComponent", LineSortingComponent],])
   export const MapOfPathsComponents: Map<string, any> = new Map([["PathsTableComponent", PathsTableComponent],])
@@ -37,8 +39,6 @@
   export const MapOfPolylineSortingComponents: Map<string, any> = new Map([["PolylineSortingComponent", PolylineSortingComponent],])
   export const MapOfRectsComponents: Map<string, any> = new Map([["RectsTableComponent", RectsTableComponent],])
   export const MapOfRectSortingComponents: Map<string, any> = new Map([["RectSortingComponent", RectSortingComponent],])
-  export const MapOfSVGsComponents: Map<string, any> = new Map([["SVGsTableComponent", SVGsTableComponent],])
-  export const MapOfSVGSortingComponents: Map<string, any> = new Map([["SVGSortingComponent", SVGSortingComponent],])
   export const MapOfTextsComponents: Map<string, any> = new Map([["TextsTableComponent", TextsTableComponent],])
   export const MapOfTextSortingComponents: Map<string, any> = new Map([["TextSortingComponent", TextSortingComponent],])
 
@@ -50,12 +50,12 @@ export const MapOfComponents: Map<string, any> =
       ["Animate", MapOfAnimatesComponents],
       ["Circle", MapOfCirclesComponents],
       ["Ellipse", MapOfEllipsesComponents],
+      ["Layer", MapOfLayersComponents],
       ["Line", MapOfLinesComponents],
       ["Path", MapOfPathsComponents],
       ["Polygone", MapOfPolygonesComponents],
       ["Polyline", MapOfPolylinesComponents],
       ["Rect", MapOfRectsComponents],
-      ["SVG", MapOfSVGsComponents],
       ["Text", MapOfTextsComponents],
     ]
   )
@@ -68,12 +68,12 @@ export const MapOfSortingComponents: Map<string, any> =
       ["Animate", MapOfAnimateSortingComponents],
       ["Circle", MapOfCircleSortingComponents],
       ["Ellipse", MapOfEllipseSortingComponents],
+      ["Layer", MapOfLayerSortingComponents],
       ["Line", MapOfLineSortingComponents],
       ["Path", MapOfPathSortingComponents],
       ["Polygone", MapOfPolygoneSortingComponents],
       ["Polyline", MapOfPolylineSortingComponents],
       ["Rect", MapOfRectSortingComponents],
-      ["SVG", MapOfSVGSortingComponents],
       ["Text", MapOfTextSortingComponents],
     ]
   )

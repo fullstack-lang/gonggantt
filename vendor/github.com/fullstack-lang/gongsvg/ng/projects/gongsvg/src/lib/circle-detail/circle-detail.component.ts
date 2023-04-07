@@ -10,7 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
-import { SVGDB } from '../svg-db'
+import { LayerDB } from '../layer-db'
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -24,7 +24,7 @@ enum CircleDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Circles_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Circles_SET,
 }
 
 @Component({
@@ -95,8 +95,8 @@ export class CircleDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Circles":
-						// console.log("Circle" + " is instanciated with back pointer to instance " + this.id + " SVG association Circles")
-						this.state = CircleDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Circles_SET
+						// console.log("Circle" + " is instanciated with back pointer to instance " + this.id + " Layer association Circles")
+						this.state = CircleDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Circles_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -134,9 +134,9 @@ export class CircleDetailComponent implements OnInit {
 						this.circle = circle!
 						break;
 					// insertion point for init of association field
-					case CircleDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Circles_SET:
+					case CircleDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Circles_SET:
 						this.circle = new (CircleDB)
-						this.circle.SVG_Circles_reverse = frontRepo.SVGs.get(this.id)!
+						this.circle.Layer_Circles_reverse = frontRepo.Layers.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -159,17 +159,17 @@ export class CircleDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.circle.SVG_Circles_reverse != undefined) {
-			if (this.circle.SVG_CirclesDBID == undefined) {
-				this.circle.SVG_CirclesDBID = new NullInt64
+		if (this.circle.Layer_Circles_reverse != undefined) {
+			if (this.circle.Layer_CirclesDBID == undefined) {
+				this.circle.Layer_CirclesDBID = new NullInt64
 			}
-			this.circle.SVG_CirclesDBID.Int64 = this.circle.SVG_Circles_reverse.ID
-			this.circle.SVG_CirclesDBID.Valid = true
-			if (this.circle.SVG_CirclesDBID_Index == undefined) {
-				this.circle.SVG_CirclesDBID_Index = new NullInt64
+			this.circle.Layer_CirclesDBID.Int64 = this.circle.Layer_Circles_reverse.ID
+			this.circle.Layer_CirclesDBID.Valid = true
+			if (this.circle.Layer_CirclesDBID_Index == undefined) {
+				this.circle.Layer_CirclesDBID_Index = new NullInt64
 			}
-			this.circle.SVG_CirclesDBID_Index.Valid = true
-			this.circle.SVG_Circles_reverse = new SVGDB // very important, otherwise, circular JSON
+			this.circle.Layer_CirclesDBID_Index.Valid = true
+			this.circle.Layer_Circles_reverse = new LayerDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {

@@ -11,20 +11,20 @@ import { BehaviorSubject } from 'rxjs';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
-import { SVGDB } from './svg-db';
+import { LayerDB } from './layer-db';
 
 // insertion point for imports
 
 @Injectable({
   providedIn: 'root'
 })
-export class SVGService {
+export class LayerService {
 
   // Kamar Raïmo: Adding a way to communicate between components that share information
   // so that they are notified of a change.
-  SVGServiceChanged: BehaviorSubject<string> = new BehaviorSubject("");
+  LayerServiceChanged: BehaviorSubject<string> = new BehaviorSubject("");
 
-  private svgsUrl: string
+  private layersUrl: string
 
   constructor(
     private http: HttpClient,
@@ -38,46 +38,46 @@ export class SVGService {
     origin = origin.replace("4200", "8080")
 
     // compute path to the service
-    this.svgsUrl = origin + '/api/github.com/fullstack-lang/gongsvg/go/v1/svgs';
+    this.layersUrl = origin + '/api/github.com/fullstack-lang/gongsvg/go/v1/layers';
   }
 
-  /** GET svgs from the server */
-  getSVGs(GONG__StackPath: string): Observable<SVGDB[]> {
+  /** GET layers from the server */
+  getLayers(GONG__StackPath: string): Observable<LayerDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
-    return this.http.get<SVGDB[]>(this.svgsUrl, { params: params })
+    return this.http.get<LayerDB[]>(this.layersUrl, { params: params })
       .pipe(
         tap(),
-		// tap(_ => this.log('fetched svgs')),
-        catchError(this.handleError<SVGDB[]>('getSVGs', []))
+		// tap(_ => this.log('fetched layers')),
+        catchError(this.handleError<LayerDB[]>('getLayers', []))
       );
   }
 
-  /** GET svg by id. Will 404 if id not found */
-  getSVG(id: number, GONG__StackPath: string): Observable<SVGDB> {
+  /** GET layer by id. Will 404 if id not found */
+  getLayer(id: number, GONG__StackPath: string): Observable<LayerDB> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
-    const url = `${this.svgsUrl}/${id}`;
-    return this.http.get<SVGDB>(url, { params: params }).pipe(
-      // tap(_ => this.log(`fetched svg id=${id}`)),
-      catchError(this.handleError<SVGDB>(`getSVG id=${id}`))
+    const url = `${this.layersUrl}/${id}`;
+    return this.http.get<LayerDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched layer id=${id}`)),
+      catchError(this.handleError<LayerDB>(`getLayer id=${id}`))
     );
   }
 
-  /** POST: add a new svg to the server */
-  postSVG(svgdb: SVGDB, GONG__StackPath: string): Observable<SVGDB> {
+  /** POST: add a new layer to the server */
+  postLayer(layerdb: LayerDB, GONG__StackPath: string): Observable<LayerDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    svgdb.Rects = []
-    svgdb.Texts = []
-    svgdb.Circles = []
-    svgdb.Lines = []
-    svgdb.Ellipses = []
-    svgdb.Polylines = []
-    svgdb.Polygones = []
-    svgdb.Paths = []
+    layerdb.Rects = []
+    layerdb.Texts = []
+    layerdb.Circles = []
+    layerdb.Lines = []
+    layerdb.Ellipses = []
+    layerdb.Polylines = []
+    layerdb.Polygones = []
+    layerdb.Paths = []
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -85,19 +85,19 @@ export class SVGService {
       params: params
     }
 
-    return this.http.post<SVGDB>(this.svgsUrl, svgdb, httpOptions).pipe(
+    return this.http.post<LayerDB>(this.layersUrl, layerdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        // this.log(`posted svgdb id=${svgdb.ID}`)
+        // this.log(`posted layerdb id=${layerdb.ID}`)
       }),
-      catchError(this.handleError<SVGDB>('postSVG'))
+      catchError(this.handleError<LayerDB>('postLayer'))
     );
   }
 
-  /** DELETE: delete the svgdb from the server */
-  deleteSVG(svgdb: SVGDB | number, GONG__StackPath: string): Observable<SVGDB> {
-    const id = typeof svgdb === 'number' ? svgdb : svgdb.ID;
-    const url = `${this.svgsUrl}/${id}`;
+  /** DELETE: delete the layerdb from the server */
+  deleteLayer(layerdb: LayerDB | number, GONG__StackPath: string): Observable<LayerDB> {
+    const id = typeof layerdb === 'number' ? layerdb : layerdb.ID;
+    const url = `${this.layersUrl}/${id}`;
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -105,26 +105,26 @@ export class SVGService {
       params: params
     };
 
-    return this.http.delete<SVGDB>(url, httpOptions).pipe(
-      tap(_ => this.log(`deleted svgdb id=${id}`)),
-      catchError(this.handleError<SVGDB>('deleteSVG'))
+    return this.http.delete<LayerDB>(url, httpOptions).pipe(
+      tap(_ => this.log(`deleted layerdb id=${id}`)),
+      catchError(this.handleError<LayerDB>('deleteLayer'))
     );
   }
 
-  /** PUT: update the svgdb on the server */
-  updateSVG(svgdb: SVGDB, GONG__StackPath: string): Observable<SVGDB> {
-    const id = typeof svgdb === 'number' ? svgdb : svgdb.ID;
-    const url = `${this.svgsUrl}/${id}`;
+  /** PUT: update the layerdb on the server */
+  updateLayer(layerdb: LayerDB, GONG__StackPath: string): Observable<LayerDB> {
+    const id = typeof layerdb === 'number' ? layerdb : layerdb.ID;
+    const url = `${this.layersUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    svgdb.Rects = []
-    svgdb.Texts = []
-    svgdb.Circles = []
-    svgdb.Lines = []
-    svgdb.Ellipses = []
-    svgdb.Polylines = []
-    svgdb.Polygones = []
-    svgdb.Paths = []
+    layerdb.Rects = []
+    layerdb.Texts = []
+    layerdb.Circles = []
+    layerdb.Lines = []
+    layerdb.Ellipses = []
+    layerdb.Polylines = []
+    layerdb.Polygones = []
+    layerdb.Paths = []
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -132,12 +132,12 @@ export class SVGService {
       params: params
     };
 
-    return this.http.put<SVGDB>(url, svgdb, httpOptions).pipe(
+    return this.http.put<LayerDB>(url, layerdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        this.log(`updated svgdb id=${svgdb.ID}`)
+        this.log(`updated layerdb id=${layerdb.ID}`)
       }),
-      catchError(this.handleError<SVGDB>('updateSVG'))
+      catchError(this.handleError<LayerDB>('updateLayer'))
     );
   }
 
@@ -147,11 +147,11 @@ export class SVGService {
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
    */
-  private handleError<T>(operation = 'operation in SVGService', result?: T) {
+  private handleError<T>(operation = 'operation in LayerService', result?: T) {
     return (error: any): Observable<T> => {
 
       // TODO: send the error to remote logging infrastructure
-      console.error("SVGService" + error); // log to console instead
+      console.error("LayerService" + error); // log to console instead
 
       // TODO: better job of transforming error for user consumption
       this.log(`${operation} failed: ${error.message}`);

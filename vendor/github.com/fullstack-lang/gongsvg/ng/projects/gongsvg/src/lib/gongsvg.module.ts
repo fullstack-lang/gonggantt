@@ -51,6 +51,10 @@ import { EllipsesTableComponent } from './ellipses-table/ellipses-table.componen
 import { EllipseSortingComponent } from './ellipse-sorting/ellipse-sorting.component'
 import { EllipseDetailComponent } from './ellipse-detail/ellipse-detail.component'
 
+import { LayersTableComponent } from './layers-table/layers-table.component'
+import { LayerSortingComponent } from './layer-sorting/layer-sorting.component'
+import { LayerDetailComponent } from './layer-detail/layer-detail.component'
+
 import { LinesTableComponent } from './lines-table/lines-table.component'
 import { LineSortingComponent } from './line-sorting/line-sorting.component'
 import { LineDetailComponent } from './line-detail/line-detail.component'
@@ -70,10 +74,6 @@ import { PolylineDetailComponent } from './polyline-detail/polyline-detail.compo
 import { RectsTableComponent } from './rects-table/rects-table.component'
 import { RectSortingComponent } from './rect-sorting/rect-sorting.component'
 import { RectDetailComponent } from './rect-detail/rect-detail.component'
-
-import { SVGsTableComponent } from './svgs-table/svgs-table.component'
-import { SVGSortingComponent } from './svg-sorting/svg-sorting.component'
-import { SVGDetailComponent } from './svg-detail/svg-detail.component'
 
 import { TextsTableComponent } from './texts-table/texts-table.component'
 import { TextSortingComponent } from './text-sorting/text-sorting.component'
@@ -95,6 +95,10 @@ import { TextDetailComponent } from './text-detail/text-detail.component'
 		EllipseSortingComponent,
 		EllipseDetailComponent,
 
+		LayersTableComponent,
+		LayerSortingComponent,
+		LayerDetailComponent,
+
 		LinesTableComponent,
 		LineSortingComponent,
 		LineDetailComponent,
@@ -114,10 +118,6 @@ import { TextDetailComponent } from './text-detail/text-detail.component'
 		RectsTableComponent,
 		RectSortingComponent,
 		RectDetailComponent,
-
-		SVGsTableComponent,
-		SVGSortingComponent,
-		SVGDetailComponent,
 
 		TextsTableComponent,
 		TextSortingComponent,
@@ -174,6 +174,10 @@ import { TextDetailComponent } from './text-detail/text-detail.component'
 		EllipseSortingComponent,
 		EllipseDetailComponent,
 
+		LayersTableComponent,
+		LayerSortingComponent,
+		LayerDetailComponent,
+
 		LinesTableComponent,
 		LineSortingComponent,
 		LineDetailComponent,
@@ -193,10 +197,6 @@ import { TextDetailComponent } from './text-detail/text-detail.component'
 		RectsTableComponent,
 		RectSortingComponent,
 		RectDetailComponent,
-
-		SVGsTableComponent,
-		SVGSortingComponent,
-		SVGDetailComponent,
 
 		TextsTableComponent,
 		TextSortingComponent,

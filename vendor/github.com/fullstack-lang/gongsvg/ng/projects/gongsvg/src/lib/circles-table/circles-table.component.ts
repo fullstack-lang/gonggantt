@@ -102,9 +102,9 @@ export class CirclesTableComponent implements OnInit {
         case 'Transform':
           return circleDB.Transform;
 
-        case 'SVG_Circles':
-          if (this.frontRepo.SVGs.get(circleDB.SVG_CirclesDBID.Int64) != undefined) {
-            return this.frontRepo.SVGs.get(circleDB.SVG_CirclesDBID.Int64)!.Name
+        case 'Layer_Circles':
+          if (this.frontRepo.Layers.get(circleDB.Layer_CirclesDBID.Int64) != undefined) {
+            return this.frontRepo.Layers.get(circleDB.Layer_CirclesDBID.Int64)!.Name
           } else {
             return ""
           }
@@ -133,8 +133,8 @@ export class CirclesTableComponent implements OnInit {
       mergedContent += circleDB.StrokeWidth.toString()
       mergedContent += circleDB.StrokeDashArray.toLowerCase()
       mergedContent += circleDB.Transform.toLowerCase()
-      if (circleDB.SVG_CirclesDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.SVGs.get(circleDB.SVG_CirclesDBID.Int64)!.Name.toLowerCase()
+      if (circleDB.Layer_CirclesDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Layers.get(circleDB.Layer_CirclesDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -201,7 +201,7 @@ export class CirclesTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Circles",
+        "Layer_Circles",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -215,7 +215,7 @@ export class CirclesTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Circles",
+        "Layer_Circles",
       ]
       this.selection = new SelectionModel<CircleDB>(allowMultiSelect, this.initialSelection);
     }

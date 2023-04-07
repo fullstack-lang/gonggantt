@@ -11,7 +11,7 @@ import { PathDB } from './path-db'
 // usefull for managing pointer ID values that can be nullable
 import { NullInt64 } from './null-int64'
 
-export class SVGDB {
+export class LayerDB {
 	CreatedAt?: string
 	DeletedAt?: string
 	ID: number = 0

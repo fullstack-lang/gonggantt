@@ -46,11 +46,11 @@ type RectAPI struct {
 type RectPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
 
-	// Implementation of a reverse ID for field SVG{}.Rects []*Rect
-	SVG_RectsDBID sql.NullInt64
+	// Implementation of a reverse ID for field Layer{}.Rects []*Rect
+	Layer_RectsDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
-	SVG_RectsDBID_Index sql.NullInt64
+	Layer_RectsDBID_Index sql.NullInt64
 }
 
 // RectDB describes a rect in the database
@@ -751,9 +751,9 @@ func (backRepoRect *BackRepoRectStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// This reindex rect.Rects
-		if rectDB.SVG_RectsDBID.Int64 != 0 {
-			rectDB.SVG_RectsDBID.Int64 =
-				int64(BackRepoSVGid_atBckpTime_newID[uint(rectDB.SVG_RectsDBID.Int64)])
+		if rectDB.Layer_RectsDBID.Int64 != 0 {
+			rectDB.Layer_RectsDBID.Int64 =
+				int64(BackRepoLayerid_atBckpTime_newID[uint(rectDB.Layer_RectsDBID.Int64)])
 		}
 
 		// update databse with new index encoding

@@ -14,8 +14,8 @@ import { SelectionModel } from '@angular/cdk/collections';
 const allowMultiSelect = true;
 
 import { ActivatedRoute, Router, RouterState } from '@angular/router';
-import { SVGDB } from '../svg-db'
-import { SVGService } from '../svg.service'
+import { LayerDB } from '../layer-db'
+import { LayerService } from '../layer.service'
 
 // insertion point for additional imports
 
@@ -31,26 +31,26 @@ enum TableComponentMode {
 
 // generated table component
 @Component({
-  selector: 'app-svgstable',
-  templateUrl: './svgs-table.component.html',
-  styleUrls: ['./svgs-table.component.css'],
+  selector: 'app-layerstable',
+  templateUrl: './layers-table.component.html',
+  styleUrls: ['./layers-table.component.css'],
 })
-export class SVGsTableComponent implements OnInit {
+export class LayersTableComponent implements OnInit {
 
   @Input() GONG__StackPath: string = ""
 
   // mode at invocation
   mode: TableComponentMode = TableComponentMode.DISPLAY_MODE
 
-  // used if the component is called as a selection component of SVG instances
-  selection: SelectionModel<SVGDB> = new (SelectionModel)
-  initialSelection = new Array<SVGDB>()
+  // used if the component is called as a selection component of Layer instances
+  selection: SelectionModel<LayerDB> = new (SelectionModel)
+  initialSelection = new Array<LayerDB>()
 
   // the data source for the table
-  svgs: SVGDB[] = []
-  matTableDataSource: MatTableDataSource<SVGDB> = new (MatTableDataSource)
+  layers: LayerDB[] = []
+  matTableDataSource: MatTableDataSource<LayerDB> = new (MatTableDataSource)
 
-  // front repo, that will be referenced by this.svgs
+  // front repo, that will be referenced by this.layers
   frontRepo: FrontRepo = new (FrontRepo)
 
   // displayedColumns is referenced by the MatTable component for specify what columns
@@ -66,17 +66,17 @@ export class SVGsTableComponent implements OnInit {
   ngAfterViewInit() {
 
     // enable sorting on all fields (including pointers and reverse pointer)
-    this.matTableDataSource.sortingDataAccessor = (svgDB: SVGDB, property: string) => {
+    this.matTableDataSource.sortingDataAccessor = (layerDB: LayerDB, property: string) => {
       switch (property) {
         case 'ID':
-          return svgDB.ID
+          return layerDB.ID
 
         // insertion point for specific sorting accessor
         case 'Display':
-          return svgDB.Display ? "true" : "false";
+          return layerDB.Display ? "true" : "false";
 
         case 'Name':
-          return svgDB.Name;
+          return layerDB.Name;
 
         default:
           console.assert(false, "Unknown field")
@@ -85,14 +85,14 @@ export class SVGsTableComponent implements OnInit {
     };
 
     // enable filtering on all fields (including pointers and reverse pointer, which is not done by default)
-    this.matTableDataSource.filterPredicate = (svgDB: SVGDB, filter: string) => {
+    this.matTableDataSource.filterPredicate = (layerDB: LayerDB, filter: string) => {
 
       // filtering is based on finding a lower case filter into a concatenated string
-      // the svgDB properties
+      // the layerDB properties
       let mergedContent = ""
 
       // insertion point for merging of fields
-      mergedContent += svgDB.Name.toLowerCase()
+      mergedContent += layerDB.Name.toLowerCase()
 
       let isSelected = mergedContent.includes(filter.toLowerCase())
       return isSelected
@@ -108,11 +108,11 @@ export class SVGsTableComponent implements OnInit {
   }
 
   constructor(
-    private svgService: SVGService,
+    private layerService: LayerService,
     private frontRepoService: FrontRepoService,
 
-    // not null if the component is called as a selection component of svg instances
-    public dialogRef: MatDialogRef<SVGsTableComponent>,
+    // not null if the component is called as a selection component of layer instances
+    public dialogRef: MatDialogRef<LayersTableComponent>,
     @Optional() @Inject(MAT_DIALOG_DATA) public dialogData: DialogData,
 
     private router: Router,
@@ -138,10 +138,10 @@ export class SVGsTableComponent implements OnInit {
     }
 
     // observable for changes in structs
-    this.svgService.SVGServiceChanged.subscribe(
+    this.layerService.LayerServiceChanged.subscribe(
       message => {
         if (message == "post" || message == "update" || message == "delete") {
-          this.getSVGs()
+          this.getLayers()
         }
       }
     )
@@ -155,7 +155,7 @@ export class SVGsTableComponent implements OnInit {
         "Display",
         "Name",
       ]
-      this.selection = new SelectionModel<SVGDB>(allowMultiSelect, this.initialSelection);
+      this.selection = new SelectionModel<LayerDB>(allowMultiSelect, this.initialSelection);
     }
 
   }
@@ -166,84 +166,84 @@ export class SVGsTableComponent implements OnInit {
       this.GONG__StackPath = stackPath
     }
 
-    this.getSVGs()
+    this.getLayers()
 
-    this.matTableDataSource = new MatTableDataSource(this.svgs)
+    this.matTableDataSource = new MatTableDataSource(this.layers)
   }
 
-  getSVGs(): void {
+  getLayers(): void {
     this.frontRepoService.pull(this.GONG__StackPath).subscribe(
       frontRepo => {
         this.frontRepo = frontRepo
 
-        this.svgs = this.frontRepo.SVGs_array;
+        this.layers = this.frontRepo.Layers_array;
 
         // insertion point for time duration Recoveries
         // insertion point for enum int Recoveries
 
         // in case the component is called as a selection component
         if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
-          for (let svg of this.svgs) {
+          for (let layer of this.layers) {
             let ID = this.dialogData.ID
-            let revPointer = svg[this.dialogData.ReversePointer as keyof SVGDB] as unknown as NullInt64
+            let revPointer = layer[this.dialogData.ReversePointer as keyof LayerDB] as unknown as NullInt64
             if (revPointer.Int64 == ID) {
-              this.initialSelection.push(svg)
+              this.initialSelection.push(layer)
             }
-            this.selection = new SelectionModel<SVGDB>(allowMultiSelect, this.initialSelection);
+            this.selection = new SelectionModel<LayerDB>(allowMultiSelect, this.initialSelection);
           }
         }
 
         if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
 
-          let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, SVGDB>
+          let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, LayerDB>
           let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
-          // we associates on sourceInstance of type SourceStruct with a MANY MANY associations to SVGDB
+          // we associates on sourceInstance of type SourceStruct with a MANY MANY associations to LayerDB
           // the field name is sourceField
-          let sourceFieldArray = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as SVGDB[]
+          let sourceFieldArray = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]! as unknown as LayerDB[]
           if (sourceFieldArray != null) {
             for (let associationInstance of sourceFieldArray) {
-              let svg = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as SVGDB
-              this.initialSelection.push(svg)
+              let layer = associationInstance[this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LayerDB
+              this.initialSelection.push(layer)
             }
           }
 
-          this.selection = new SelectionModel<SVGDB>(allowMultiSelect, this.initialSelection);
+          this.selection = new SelectionModel<LayerDB>(allowMultiSelect, this.initialSelection);
         }
 
         // update the mat table data source
-        this.matTableDataSource.data = this.svgs
+        this.matTableDataSource.data = this.layers
       }
     )
   }
 
-  // newSVG initiate a new svg
-  // create a new SVG objet
-  newSVG() {
+  // newLayer initiate a new layer
+  // create a new Layer objet
+  newLayer() {
   }
 
-  deleteSVG(svgID: number, svg: SVGDB) {
-    // list of svgs is truncated of svg before the delete
-    this.svgs = this.svgs.filter(h => h !== svg);
+  deleteLayer(layerID: number, layer: LayerDB) {
+    // list of layers is truncated of layer before the delete
+    this.layers = this.layers.filter(h => h !== layer);
 
-    this.svgService.deleteSVG(svgID, this.GONG__StackPath).subscribe(
-      svg => {
-        this.svgService.SVGServiceChanged.next("delete")
+    this.layerService.deleteLayer(layerID, this.GONG__StackPath).subscribe(
+      layer => {
+        this.layerService.LayerServiceChanged.next("delete")
       }
     );
   }
 
-  editSVG(svgID: number, svg: SVGDB) {
+  editLayer(layerID: number, layer: LayerDB) {
 
   }
 
   // set editor outlet
-  setEditorRouterOutlet(svgID: number) {
+  setEditorRouterOutlet(layerID: number) {
     let outletName = this.routeService.getEditorOutlet(this.GONG__StackPath)
-    let fullPath = this.routeService.getPathRoot() + "-" + "svg" + "-detail"
+    let fullPath = this.routeService.getPathRoot() + "-" + "layer" + "-detail"
 
     let outletConf: any = {}
-    outletConf[outletName] = [fullPath, svgID, this.GONG__StackPath]
+    outletConf[outletName] = [fullPath, layerID, this.GONG__StackPath]
 
     this.router.navigate([{ outlets: outletConf }])
   }
@@ -251,7 +251,7 @@ export class SVGsTableComponent implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.svgs.length;
+    const numRows = this.layers.length;
     return numSelected === numRows;
   }
 
@@ -259,39 +259,39 @@ export class SVGsTableComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.svgs.forEach(row => this.selection.select(row));
+      this.layers.forEach(row => this.selection.select(row));
   }
 
   save() {
 
     if (this.mode == TableComponentMode.ONE_MANY_ASSOCIATION_MODE) {
 
-      let toUpdate = new Set<SVGDB>()
+      let toUpdate = new Set<LayerDB>()
 
-      // reset all initial selection of svg that belong to svg
-      for (let svg of this.initialSelection) {
-        let index = svg[this.dialogData.ReversePointer as keyof SVGDB] as unknown as NullInt64
+      // reset all initial selection of layer that belong to layer
+      for (let layer of this.initialSelection) {
+        let index = layer[this.dialogData.ReversePointer as keyof LayerDB] as unknown as NullInt64
         index.Int64 = 0
         index.Valid = true
-        toUpdate.add(svg)
+        toUpdate.add(layer)
 
       }
 
-      // from selection, set svg that belong to svg
-      for (let svg of this.selection.selected) {
+      // from selection, set layer that belong to layer
+      for (let layer of this.selection.selected) {
         let ID = this.dialogData.ID as number
-        let reversePointer = svg[this.dialogData.ReversePointer as keyof SVGDB] as unknown as NullInt64
+        let reversePointer = layer[this.dialogData.ReversePointer as keyof LayerDB] as unknown as NullInt64
         reversePointer.Int64 = ID
         reversePointer.Valid = true
-        toUpdate.add(svg)
+        toUpdate.add(layer)
       }
 
 
-      // update all svg (only update selection & initial selection)
-      for (let svg of toUpdate) {
-        this.svgService.updateSVG(svg, this.GONG__StackPath)
-          .subscribe(svg => {
-            this.svgService.SVGServiceChanged.next("update")
+      // update all layer (only update selection & initial selection)
+      for (let layer of toUpdate) {
+        this.layerService.updateLayer(layer, this.GONG__StackPath)
+          .subscribe(layer => {
+            this.layerService.LayerServiceChanged.next("update")
           });
       }
     }
@@ -299,26 +299,26 @@ export class SVGsTableComponent implements OnInit {
     if (this.mode == TableComponentMode.MANY_MANY_ASSOCIATION_MODE) {
 
       // get the source instance via the map of instances in the front repo
-      let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, SVGDB>
+      let mapOfSourceInstances = this.frontRepo[this.dialogData.SourceStruct + "s" as keyof FrontRepo] as Map<number, LayerDB>
       let sourceInstance = mapOfSourceInstances.get(this.dialogData.ID)!
 
       // First, parse all instance of the association struct and remove the instance
       // that have unselect
-      let unselectedSVG = new Set<number>()
-      for (let svg of this.initialSelection) {
-        if (this.selection.selected.includes(svg)) {
-          // console.log("svg " + svg.Name + " is still selected")
+      let unselectedLayer = new Set<number>()
+      for (let layer of this.initialSelection) {
+        if (this.selection.selected.includes(layer)) {
+          // console.log("layer " + layer.Name + " is still selected")
         } else {
-          console.log("svg " + svg.Name + " has been unselected")
-          unselectedSVG.add(svg.ID)
-          console.log("is unselected " + unselectedSVG.has(svg.ID))
+          console.log("layer " + layer.Name + " has been unselected")
+          unselectedLayer.add(layer.ID)
+          console.log("is unselected " + unselectedLayer.has(layer.ID))
         }
       }
 
       // delete the association instance
       let associationInstance = sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]
-      let svg = associationInstance![this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as SVGDB
-      if (unselectedSVG.has(svg.ID)) {
+      let layer = associationInstance![this.dialogData.IntermediateStructField as keyof typeof associationInstance] as unknown as LayerDB
+      if (unselectedLayer.has(layer.ID)) {
         this.frontRepoService.deleteService(this.dialogData.IntermediateStruct, associationInstance)
 
 
@@ -326,38 +326,38 @@ export class SVGsTableComponent implements OnInit {
 
       // is the source array is empty create it
       if (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] == undefined) {
-        (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] as unknown as Array<SVGDB>) = new Array<SVGDB>()
+        (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance] as unknown as Array<LayerDB>) = new Array<LayerDB>()
       }
 
       // second, parse all instance of the selected
       if (sourceInstance[this.dialogData.SourceField as keyof typeof sourceInstance]) {
         this.selection.selected.forEach(
-          svg => {
-            if (!this.initialSelection.includes(svg)) {
-              // console.log("svg " + svg.Name + " has been added to the selection")
+          layer => {
+            if (!this.initialSelection.includes(layer)) {
+              // console.log("layer " + layer.Name + " has been added to the selection")
 
               let associationInstance = {
-                Name: sourceInstance["Name"] + "-" + svg.Name,
+                Name: sourceInstance["Name"] + "-" + layer.Name,
               }
 
               let index = associationInstance[this.dialogData.IntermediateStructField + "ID" as keyof typeof associationInstance] as unknown as NullInt64
-              index.Int64 = svg.ID
+              index.Int64 = layer.ID
               index.Valid = true
 
               let indexDB = associationInstance[this.dialogData.IntermediateStructField + "DBID" as keyof typeof associationInstance] as unknown as NullInt64
-              indexDB.Int64 = svg.ID
+              indexDB.Int64 = layer.ID
               index.Valid = true
 
               this.frontRepoService.postService(this.dialogData.IntermediateStruct, associationInstance)
 
             } else {
-              // console.log("svg " + svg.Name + " is still selected")
+              // console.log("layer " + layer.Name + " is still selected")
             }
           }
         )
       }
 
-      // this.selection = new SelectionModel<SVGDB>(allowMultiSelect, this.initialSelection);
+      // this.selection = new SelectionModel<LayerDB>(allowMultiSelect, this.initialSelection);
     }
 
     // why pizza ?

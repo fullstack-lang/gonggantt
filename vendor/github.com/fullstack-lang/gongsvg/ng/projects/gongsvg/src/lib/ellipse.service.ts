@@ -14,7 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { EllipseDB } from './ellipse-db';
 
 // insertion point for imports
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 @Injectable({
   providedIn: 'root'
@@ -72,8 +72,8 @@ export class EllipseService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     ellipsedb.Animates = []
-    let _SVG_Ellipses_reverse = ellipsedb.SVG_Ellipses_reverse
-    ellipsedb.SVG_Ellipses_reverse = new SVGDB
+    let _Layer_Ellipses_reverse = ellipsedb.Layer_Ellipses_reverse
+    ellipsedb.Layer_Ellipses_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -84,7 +84,7 @@ export class EllipseService {
     return this.http.post<EllipseDB>(this.ellipsesUrl, ellipsedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        ellipsedb.SVG_Ellipses_reverse = _SVG_Ellipses_reverse
+        ellipsedb.Layer_Ellipses_reverse = _Layer_Ellipses_reverse
         // this.log(`posted ellipsedb id=${ellipsedb.ID}`)
       }),
       catchError(this.handleError<EllipseDB>('postEllipse'))
@@ -115,8 +115,8 @@ export class EllipseService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     ellipsedb.Animates = []
-    let _SVG_Ellipses_reverse = ellipsedb.SVG_Ellipses_reverse
-    ellipsedb.SVG_Ellipses_reverse = new SVGDB
+    let _Layer_Ellipses_reverse = ellipsedb.Layer_Ellipses_reverse
+    ellipsedb.Layer_Ellipses_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -127,7 +127,7 @@ export class EllipseService {
     return this.http.put<EllipseDB>(url, ellipsedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        ellipsedb.SVG_Ellipses_reverse = _SVG_Ellipses_reverse
+        ellipsedb.Layer_Ellipses_reverse = _Layer_Ellipses_reverse
         this.log(`updated ellipsedb id=${ellipsedb.ID}`)
       }),
       catchError(this.handleError<EllipseDB>('updateEllipse'))

@@ -10,7 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
-import { SVGDB } from '../svg-db'
+import { LayerDB } from '../layer-db'
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -24,7 +24,7 @@ enum PolygoneDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Polygones_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Polygones_SET,
 }
 
 @Component({
@@ -95,8 +95,8 @@ export class PolygoneDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Polygones":
-						// console.log("Polygone" + " is instanciated with back pointer to instance " + this.id + " SVG association Polygones")
-						this.state = PolygoneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Polygones_SET
+						// console.log("Polygone" + " is instanciated with back pointer to instance " + this.id + " Layer association Polygones")
+						this.state = PolygoneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Polygones_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -134,9 +134,9 @@ export class PolygoneDetailComponent implements OnInit {
 						this.polygone = polygone!
 						break;
 					// insertion point for init of association field
-					case PolygoneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Polygones_SET:
+					case PolygoneDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Polygones_SET:
 						this.polygone = new (PolygoneDB)
-						this.polygone.SVG_Polygones_reverse = frontRepo.SVGs.get(this.id)!
+						this.polygone.Layer_Polygones_reverse = frontRepo.Layers.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -159,17 +159,17 @@ export class PolygoneDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.polygone.SVG_Polygones_reverse != undefined) {
-			if (this.polygone.SVG_PolygonesDBID == undefined) {
-				this.polygone.SVG_PolygonesDBID = new NullInt64
+		if (this.polygone.Layer_Polygones_reverse != undefined) {
+			if (this.polygone.Layer_PolygonesDBID == undefined) {
+				this.polygone.Layer_PolygonesDBID = new NullInt64
 			}
-			this.polygone.SVG_PolygonesDBID.Int64 = this.polygone.SVG_Polygones_reverse.ID
-			this.polygone.SVG_PolygonesDBID.Valid = true
-			if (this.polygone.SVG_PolygonesDBID_Index == undefined) {
-				this.polygone.SVG_PolygonesDBID_Index = new NullInt64
+			this.polygone.Layer_PolygonesDBID.Int64 = this.polygone.Layer_Polygones_reverse.ID
+			this.polygone.Layer_PolygonesDBID.Valid = true
+			if (this.polygone.Layer_PolygonesDBID_Index == undefined) {
+				this.polygone.Layer_PolygonesDBID_Index = new NullInt64
 			}
-			this.polygone.SVG_PolygonesDBID_Index.Valid = true
-			this.polygone.SVG_Polygones_reverse = new SVGDB // very important, otherwise, circular JSON
+			this.polygone.Layer_PolygonesDBID_Index.Valid = true
+			this.polygone.Layer_Polygones_reverse = new LayerDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {

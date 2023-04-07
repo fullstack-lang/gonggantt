@@ -14,7 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { LineDB } from './line-db';
 
 // insertion point for imports
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 @Injectable({
   providedIn: 'root'
@@ -72,8 +72,8 @@ export class LineService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     linedb.Animates = []
-    let _SVG_Lines_reverse = linedb.SVG_Lines_reverse
-    linedb.SVG_Lines_reverse = new SVGDB
+    let _Layer_Lines_reverse = linedb.Layer_Lines_reverse
+    linedb.Layer_Lines_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -84,7 +84,7 @@ export class LineService {
     return this.http.post<LineDB>(this.linesUrl, linedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        linedb.SVG_Lines_reverse = _SVG_Lines_reverse
+        linedb.Layer_Lines_reverse = _Layer_Lines_reverse
         // this.log(`posted linedb id=${linedb.ID}`)
       }),
       catchError(this.handleError<LineDB>('postLine'))
@@ -115,8 +115,8 @@ export class LineService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     linedb.Animates = []
-    let _SVG_Lines_reverse = linedb.SVG_Lines_reverse
-    linedb.SVG_Lines_reverse = new SVGDB
+    let _Layer_Lines_reverse = linedb.Layer_Lines_reverse
+    linedb.Layer_Lines_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -127,7 +127,7 @@ export class LineService {
     return this.http.put<LineDB>(url, linedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        linedb.SVG_Lines_reverse = _SVG_Lines_reverse
+        linedb.Layer_Lines_reverse = _Layer_Lines_reverse
         this.log(`updated linedb id=${linedb.ID}`)
       }),
       catchError(this.handleError<LineDB>('updateLine'))

@@ -14,7 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { TextDB } from './text-db';
 
 // insertion point for imports
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 @Injectable({
   providedIn: 'root'
@@ -72,8 +72,8 @@ export class TextService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     textdb.Animates = []
-    let _SVG_Texts_reverse = textdb.SVG_Texts_reverse
-    textdb.SVG_Texts_reverse = new SVGDB
+    let _Layer_Texts_reverse = textdb.Layer_Texts_reverse
+    textdb.Layer_Texts_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -84,7 +84,7 @@ export class TextService {
     return this.http.post<TextDB>(this.textsUrl, textdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        textdb.SVG_Texts_reverse = _SVG_Texts_reverse
+        textdb.Layer_Texts_reverse = _Layer_Texts_reverse
         // this.log(`posted textdb id=${textdb.ID}`)
       }),
       catchError(this.handleError<TextDB>('postText'))
@@ -115,8 +115,8 @@ export class TextService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     textdb.Animates = []
-    let _SVG_Texts_reverse = textdb.SVG_Texts_reverse
-    textdb.SVG_Texts_reverse = new SVGDB
+    let _Layer_Texts_reverse = textdb.Layer_Texts_reverse
+    textdb.Layer_Texts_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -127,7 +127,7 @@ export class TextService {
     return this.http.put<TextDB>(url, textdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        textdb.SVG_Texts_reverse = _SVG_Texts_reverse
+        textdb.Layer_Texts_reverse = _Layer_Texts_reverse
         this.log(`updated textdb id=${textdb.ID}`)
       }),
       catchError(this.handleError<TextDB>('updateText'))

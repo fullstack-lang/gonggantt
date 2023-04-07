@@ -160,11 +160,11 @@
     <mat-checkbox [formControl]="SelectedFormControl">Selected</mat-checkbox>
 
     <mat-form-field class="detail-full-width">
-        <mat-label>(SVG) Rects</mat-label>
-        <mat-select [compareWith]="compareObjects" [(ngModel)]="rect.SVG_Rects_reverse" [ngModelOptions]="{standalone: true}">
+        <mat-label>(Layer) Rects</mat-label>
+        <mat-select [compareWith]="compareObjects" [(ngModel)]="rect.Layer_Rects_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
-            <mat-option *ngFor="let svg of frontRepo.SVGs_array" [value]="svg">
-                {{svg.Name}}
+            <mat-option *ngFor="let layer of frontRepo.Layers_array" [value]="layer">
+                {{layer.Name}}
             </mat-option>
         </mat-select>
     </mat-form-field>

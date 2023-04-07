@@ -102,9 +102,9 @@ export class TextsTableComponent implements OnInit {
         case 'Transform':
           return textDB.Transform;
 
-        case 'SVG_Texts':
-          if (this.frontRepo.SVGs.get(textDB.SVG_TextsDBID.Int64) != undefined) {
-            return this.frontRepo.SVGs.get(textDB.SVG_TextsDBID.Int64)!.Name
+        case 'Layer_Texts':
+          if (this.frontRepo.Layers.get(textDB.Layer_TextsDBID.Int64) != undefined) {
+            return this.frontRepo.Layers.get(textDB.Layer_TextsDBID.Int64)!.Name
           } else {
             return ""
           }
@@ -133,8 +133,8 @@ export class TextsTableComponent implements OnInit {
       mergedContent += textDB.StrokeWidth.toString()
       mergedContent += textDB.StrokeDashArray.toLowerCase()
       mergedContent += textDB.Transform.toLowerCase()
-      if (textDB.SVG_TextsDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.SVGs.get(textDB.SVG_TextsDBID.Int64)!.Name.toLowerCase()
+      if (textDB.Layer_TextsDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Layers.get(textDB.Layer_TextsDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -201,7 +201,7 @@ export class TextsTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Texts",
+        "Layer_Texts",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -215,7 +215,7 @@ export class TextsTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Texts",
+        "Layer_Texts",
       ]
       this.selection = new SelectionModel<TextDB>(allowMultiSelect, this.initialSelection);
     }

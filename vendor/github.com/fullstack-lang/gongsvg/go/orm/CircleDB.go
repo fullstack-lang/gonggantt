@@ -46,11 +46,11 @@ type CircleAPI struct {
 type CirclePointersEnconding struct {
 	// insertion for pointer fields encoding declaration
 
-	// Implementation of a reverse ID for field SVG{}.Circles []*Circle
-	SVG_CirclesDBID sql.NullInt64
+	// Implementation of a reverse ID for field Layer{}.Circles []*Circle
+	Layer_CirclesDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
-	SVG_CirclesDBID_Index sql.NullInt64
+	Layer_CirclesDBID_Index sql.NullInt64
 }
 
 // CircleDB describes a circle in the database
@@ -708,9 +708,9 @@ func (backRepoCircle *BackRepoCircleStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// This reindex circle.Circles
-		if circleDB.SVG_CirclesDBID.Int64 != 0 {
-			circleDB.SVG_CirclesDBID.Int64 =
-				int64(BackRepoSVGid_atBckpTime_newID[uint(circleDB.SVG_CirclesDBID.Int64)])
+		if circleDB.Layer_CirclesDBID.Int64 != 0 {
+			circleDB.Layer_CirclesDBID.Int64 =
+				int64(BackRepoLayerid_atBckpTime_newID[uint(circleDB.Layer_CirclesDBID.Int64)])
 		}
 
 		// update databse with new index encoding

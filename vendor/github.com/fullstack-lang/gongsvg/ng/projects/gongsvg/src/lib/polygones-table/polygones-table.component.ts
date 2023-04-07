@@ -96,9 +96,9 @@ export class PolygonesTableComponent implements OnInit {
         case 'Transform':
           return polygoneDB.Transform;
 
-        case 'SVG_Polygones':
-          if (this.frontRepo.SVGs.get(polygoneDB.SVG_PolygonesDBID.Int64) != undefined) {
-            return this.frontRepo.SVGs.get(polygoneDB.SVG_PolygonesDBID.Int64)!.Name
+        case 'Layer_Polygones':
+          if (this.frontRepo.Layers.get(polygoneDB.Layer_PolygonesDBID.Int64) != undefined) {
+            return this.frontRepo.Layers.get(polygoneDB.Layer_PolygonesDBID.Int64)!.Name
           } else {
             return ""
           }
@@ -125,8 +125,8 @@ export class PolygonesTableComponent implements OnInit {
       mergedContent += polygoneDB.StrokeWidth.toString()
       mergedContent += polygoneDB.StrokeDashArray.toLowerCase()
       mergedContent += polygoneDB.Transform.toLowerCase()
-      if (polygoneDB.SVG_PolygonesDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.SVGs.get(polygoneDB.SVG_PolygonesDBID.Int64)!.Name.toLowerCase()
+      if (polygoneDB.Layer_PolygonesDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Layers.get(polygoneDB.Layer_PolygonesDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -191,7 +191,7 @@ export class PolygonesTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Polygones",
+        "Layer_Polygones",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -203,7 +203,7 @@ export class PolygonesTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Polygones",
+        "Layer_Polygones",
       ]
       this.selection = new SelectionModel<PolygoneDB>(allowMultiSelect, this.initialSelection);
     }

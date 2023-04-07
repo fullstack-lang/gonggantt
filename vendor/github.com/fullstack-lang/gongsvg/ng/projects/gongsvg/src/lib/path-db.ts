@@ -1,6 +1,6 @@
 // insertion point for imports
 import { AnimateDB } from './animate-db'
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 // usefull for managing pointer ID values that can be nullable
 import { NullInt64 } from './null-int64'
@@ -22,8 +22,8 @@ export class PathDB {
 
 	// insertion point for other declarations
 	Animates?: Array<AnimateDB>
-	SVG_PathsDBID: NullInt64 = new NullInt64
-	SVG_PathsDBID_Index: NullInt64  = new NullInt64 // store the index of the path instance in SVG.Paths
-	SVG_Paths_reverse?: SVGDB 
+	Layer_PathsDBID: NullInt64 = new NullInt64
+	Layer_PathsDBID_Index: NullInt64  = new NullInt64 // store the index of the path instance in Layer.Paths
+	Layer_Paths_reverse?: LayerDB 
 
 }

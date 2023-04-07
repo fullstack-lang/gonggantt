@@ -1,6 +1,6 @@
 <svg class="child">
     <g>
-        <circle [attr.cx]="Circle?.CX" [attr.cy]="Circle?.CY" [attr.r]="Circle?.Radius" [attr.fill]="Circle?.Color!" [attr.fill-opacity]="Circle?.FillOpacity"
+        <circle class="overlay" [attr.cx]="Circle?.CX" [attr.cy]="Circle?.CY" [attr.r]="Circle?.Radius" [attr.fill]="Circle?.Color!" [attr.fill-opacity]="Circle?.FillOpacity"
             [attr.stroke]="Circle?.Stroke" [attr.stroke-width]="Circle?.StrokeWidth" [attr.stroke-dasharray]="Circle?.StrokeDashArray"
             [attr.transform]="Circle?.Transform">
 

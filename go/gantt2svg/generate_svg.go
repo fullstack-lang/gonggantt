@@ -42,7 +42,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(
 	//
 	// SVG
 	//
-	svg := new(gongsvg_models.SVG).Stage(gongsvgStage)
+	svg := new(gongsvg_models.Layer).Stage(gongsvgStage)
 	svg.Name = "New Gantt Chart"
 	svg.Display = true
 

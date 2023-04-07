@@ -14,7 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { RectDB } from './rect-db';
 
 // insertion point for imports
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 @Injectable({
   providedIn: 'root'
@@ -72,8 +72,8 @@ export class RectService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     rectdb.Animations = []
-    let _SVG_Rects_reverse = rectdb.SVG_Rects_reverse
-    rectdb.SVG_Rects_reverse = new SVGDB
+    let _Layer_Rects_reverse = rectdb.Layer_Rects_reverse
+    rectdb.Layer_Rects_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -84,7 +84,7 @@ export class RectService {
     return this.http.post<RectDB>(this.rectsUrl, rectdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        rectdb.SVG_Rects_reverse = _SVG_Rects_reverse
+        rectdb.Layer_Rects_reverse = _Layer_Rects_reverse
         // this.log(`posted rectdb id=${rectdb.ID}`)
       }),
       catchError(this.handleError<RectDB>('postRect'))
@@ -115,8 +115,8 @@ export class RectService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     rectdb.Animations = []
-    let _SVG_Rects_reverse = rectdb.SVG_Rects_reverse
-    rectdb.SVG_Rects_reverse = new SVGDB
+    let _Layer_Rects_reverse = rectdb.Layer_Rects_reverse
+    rectdb.Layer_Rects_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -127,7 +127,7 @@ export class RectService {
     return this.http.put<RectDB>(url, rectdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        rectdb.SVG_Rects_reverse = _SVG_Rects_reverse
+        rectdb.Layer_Rects_reverse = _Layer_Rects_reverse
         this.log(`updated rectdb id=${rectdb.ID}`)
       }),
       catchError(this.handleError<RectDB>('updateRect'))

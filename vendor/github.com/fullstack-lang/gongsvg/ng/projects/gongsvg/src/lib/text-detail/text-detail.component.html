@@ -159,11 +159,11 @@
         </mat-grid-tile>
     </mat-grid-list>
     <mat-form-field class="detail-full-width">
-        <mat-label>(SVG) Texts</mat-label>
-        <mat-select [compareWith]="compareObjects" [(ngModel)]="text.SVG_Texts_reverse" [ngModelOptions]="{standalone: true}">
+        <mat-label>(Layer) Texts</mat-label>
+        <mat-select [compareWith]="compareObjects" [(ngModel)]="text.Layer_Texts_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
-            <mat-option *ngFor="let svg of frontRepo.SVGs_array" [value]="svg">
-                {{svg.Name}}
+            <mat-option *ngFor="let layer of frontRepo.Layers_array" [value]="layer">
+                {{layer.Name}}
             </mat-option>
         </mat-select>
     </mat-form-field>

@@ -46,11 +46,11 @@ type PolylineAPI struct {
 type PolylinePointersEnconding struct {
 	// insertion for pointer fields encoding declaration
 
-	// Implementation of a reverse ID for field SVG{}.Polylines []*Polyline
-	SVG_PolylinesDBID sql.NullInt64
+	// Implementation of a reverse ID for field Layer{}.Polylines []*Polyline
+	Layer_PolylinesDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
-	SVG_PolylinesDBID_Index sql.NullInt64
+	Layer_PolylinesDBID_Index sql.NullInt64
 }
 
 // PolylineDB describes a polyline in the database
@@ -680,9 +680,9 @@ func (backRepoPolyline *BackRepoPolylineStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// This reindex polyline.Polylines
-		if polylineDB.SVG_PolylinesDBID.Int64 != 0 {
-			polylineDB.SVG_PolylinesDBID.Int64 =
-				int64(BackRepoSVGid_atBckpTime_newID[uint(polylineDB.SVG_PolylinesDBID.Int64)])
+		if polylineDB.Layer_PolylinesDBID.Int64 != 0 {
+			polylineDB.Layer_PolylinesDBID.Int64 =
+				int64(BackRepoLayerid_atBckpTime_newID[uint(polylineDB.Layer_PolylinesDBID.Int64)])
 		}
 
 		// update databse with new index encoding

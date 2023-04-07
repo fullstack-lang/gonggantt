@@ -111,9 +111,9 @@ export class RectsTableComponent implements OnInit {
         case 'Selected':
           return rectDB.Selected ? "true" : "false";
 
-        case 'SVG_Rects':
-          if (this.frontRepo.SVGs.get(rectDB.SVG_RectsDBID.Int64) != undefined) {
-            return this.frontRepo.SVGs.get(rectDB.SVG_RectsDBID.Int64)!.Name
+        case 'Layer_Rects':
+          if (this.frontRepo.Layers.get(rectDB.Layer_RectsDBID.Int64) != undefined) {
+            return this.frontRepo.Layers.get(rectDB.Layer_RectsDBID.Int64)!.Name
           } else {
             return ""
           }
@@ -144,8 +144,8 @@ export class RectsTableComponent implements OnInit {
       mergedContent += rectDB.StrokeWidth.toString()
       mergedContent += rectDB.StrokeDashArray.toLowerCase()
       mergedContent += rectDB.Transform.toLowerCase()
-      if (rectDB.SVG_RectsDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.SVGs.get(rectDB.SVG_RectsDBID.Int64)!.Name.toLowerCase()
+      if (rectDB.Layer_RectsDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Layers.get(rectDB.Layer_RectsDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -215,7 +215,7 @@ export class RectsTableComponent implements OnInit {
         "StrokeDashArray",
         "Transform",
         "Selected",
-        "SVG_Rects",
+        "Layer_Rects",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -232,7 +232,7 @@ export class RectsTableComponent implements OnInit {
         "StrokeDashArray",
         "Transform",
         "Selected",
-        "SVG_Rects",
+        "Layer_Rects",
       ]
       this.selection = new SelectionModel<RectDB>(allowMultiSelect, this.initialSelection);
     }

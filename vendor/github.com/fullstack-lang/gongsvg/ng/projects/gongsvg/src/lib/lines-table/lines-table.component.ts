@@ -105,9 +105,9 @@ export class LinesTableComponent implements OnInit {
         case 'Transform':
           return lineDB.Transform;
 
-        case 'SVG_Lines':
-          if (this.frontRepo.SVGs.get(lineDB.SVG_LinesDBID.Int64) != undefined) {
-            return this.frontRepo.SVGs.get(lineDB.SVG_LinesDBID.Int64)!.Name
+        case 'Layer_Lines':
+          if (this.frontRepo.Layers.get(lineDB.Layer_LinesDBID.Int64) != undefined) {
+            return this.frontRepo.Layers.get(lineDB.Layer_LinesDBID.Int64)!.Name
           } else {
             return ""
           }
@@ -137,8 +137,8 @@ export class LinesTableComponent implements OnInit {
       mergedContent += lineDB.StrokeWidth.toString()
       mergedContent += lineDB.StrokeDashArray.toLowerCase()
       mergedContent += lineDB.Transform.toLowerCase()
-      if (lineDB.SVG_LinesDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.SVGs.get(lineDB.SVG_LinesDBID.Int64)!.Name.toLowerCase()
+      if (lineDB.Layer_LinesDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Layers.get(lineDB.Layer_LinesDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -206,7 +206,7 @@ export class LinesTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Lines",
+        "Layer_Lines",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -221,7 +221,7 @@ export class LinesTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Lines",
+        "Layer_Lines",
       ]
       this.selection = new SelectionModel<LineDB>(allowMultiSelect, this.initialSelection);
     }

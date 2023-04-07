@@ -96,9 +96,9 @@ export class PolylinesTableComponent implements OnInit {
         case 'Transform':
           return polylineDB.Transform;
 
-        case 'SVG_Polylines':
-          if (this.frontRepo.SVGs.get(polylineDB.SVG_PolylinesDBID.Int64) != undefined) {
-            return this.frontRepo.SVGs.get(polylineDB.SVG_PolylinesDBID.Int64)!.Name
+        case 'Layer_Polylines':
+          if (this.frontRepo.Layers.get(polylineDB.Layer_PolylinesDBID.Int64) != undefined) {
+            return this.frontRepo.Layers.get(polylineDB.Layer_PolylinesDBID.Int64)!.Name
           } else {
             return ""
           }
@@ -125,8 +125,8 @@ export class PolylinesTableComponent implements OnInit {
       mergedContent += polylineDB.StrokeWidth.toString()
       mergedContent += polylineDB.StrokeDashArray.toLowerCase()
       mergedContent += polylineDB.Transform.toLowerCase()
-      if (polylineDB.SVG_PolylinesDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.SVGs.get(polylineDB.SVG_PolylinesDBID.Int64)!.Name.toLowerCase()
+      if (polylineDB.Layer_PolylinesDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Layers.get(polylineDB.Layer_PolylinesDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -191,7 +191,7 @@ export class PolylinesTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Polylines",
+        "Layer_Polylines",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -203,7 +203,7 @@ export class PolylinesTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Polylines",
+        "Layer_Polylines",
       ]
       this.selection = new SelectionModel<PolylineDB>(allowMultiSelect, this.initialSelection);
     }

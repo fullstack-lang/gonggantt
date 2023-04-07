@@ -1,6 +1,6 @@
 // insertion point for imports
 import { AnimateDB } from './animate-db'
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 // usefull for managing pointer ID values that can be nullable
 import { NullInt64 } from './null-int64'
@@ -27,8 +27,8 @@ export class RectDB {
 
 	// insertion point for other declarations
 	Animations?: Array<AnimateDB>
-	SVG_RectsDBID: NullInt64 = new NullInt64
-	SVG_RectsDBID_Index: NullInt64  = new NullInt64 // store the index of the rect instance in SVG.Rects
-	SVG_Rects_reverse?: SVGDB 
+	Layer_RectsDBID: NullInt64 = new NullInt64
+	Layer_RectsDBID_Index: NullInt64  = new NullInt64 // store the index of the rect instance in Layer.Rects
+	Layer_Rects_reverse?: LayerDB 
 
 }

@@ -46,11 +46,11 @@ type TextAPI struct {
 type TextPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
 
-	// Implementation of a reverse ID for field SVG{}.Texts []*Text
-	SVG_TextsDBID sql.NullInt64
+	// Implementation of a reverse ID for field Layer{}.Texts []*Text
+	Layer_TextsDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
-	SVG_TextsDBID_Index sql.NullInt64
+	Layer_TextsDBID_Index sql.NullInt64
 }
 
 // TextDB describes a text in the database
@@ -708,9 +708,9 @@ func (backRepoText *BackRepoTextStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// This reindex text.Texts
-		if textDB.SVG_TextsDBID.Int64 != 0 {
-			textDB.SVG_TextsDBID.Int64 =
-				int64(BackRepoSVGid_atBckpTime_newID[uint(textDB.SVG_TextsDBID.Int64)])
+		if textDB.Layer_TextsDBID.Int64 != 0 {
+			textDB.Layer_TextsDBID.Int64 =
+				int64(BackRepoLayerid_atBckpTime_newID[uint(textDB.Layer_TextsDBID.Int64)])
 		}
 
 		// update databse with new index encoding

@@ -14,7 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { CircleDB } from './circle-db';
 
 // insertion point for imports
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 @Injectable({
   providedIn: 'root'
@@ -72,8 +72,8 @@ export class CircleService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     circledb.Animations = []
-    let _SVG_Circles_reverse = circledb.SVG_Circles_reverse
-    circledb.SVG_Circles_reverse = new SVGDB
+    let _Layer_Circles_reverse = circledb.Layer_Circles_reverse
+    circledb.Layer_Circles_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -84,7 +84,7 @@ export class CircleService {
     return this.http.post<CircleDB>(this.circlesUrl, circledb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        circledb.SVG_Circles_reverse = _SVG_Circles_reverse
+        circledb.Layer_Circles_reverse = _Layer_Circles_reverse
         // this.log(`posted circledb id=${circledb.ID}`)
       }),
       catchError(this.handleError<CircleDB>('postCircle'))
@@ -115,8 +115,8 @@ export class CircleService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     circledb.Animations = []
-    let _SVG_Circles_reverse = circledb.SVG_Circles_reverse
-    circledb.SVG_Circles_reverse = new SVGDB
+    let _Layer_Circles_reverse = circledb.Layer_Circles_reverse
+    circledb.Layer_Circles_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -127,7 +127,7 @@ export class CircleService {
     return this.http.put<CircleDB>(url, circledb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        circledb.SVG_Circles_reverse = _SVG_Circles_reverse
+        circledb.Layer_Circles_reverse = _Layer_Circles_reverse
         this.log(`updated circledb id=${circledb.ID}`)
       }),
       catchError(this.handleError<CircleDB>('updateCircle'))

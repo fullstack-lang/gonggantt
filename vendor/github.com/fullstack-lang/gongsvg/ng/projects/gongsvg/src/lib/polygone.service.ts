@@ -14,7 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { PolygoneDB } from './polygone-db';
 
 // insertion point for imports
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 @Injectable({
   providedIn: 'root'
@@ -72,8 +72,8 @@ export class PolygoneService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     polygonedb.Animates = []
-    let _SVG_Polygones_reverse = polygonedb.SVG_Polygones_reverse
-    polygonedb.SVG_Polygones_reverse = new SVGDB
+    let _Layer_Polygones_reverse = polygonedb.Layer_Polygones_reverse
+    polygonedb.Layer_Polygones_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -84,7 +84,7 @@ export class PolygoneService {
     return this.http.post<PolygoneDB>(this.polygonesUrl, polygonedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        polygonedb.SVG_Polygones_reverse = _SVG_Polygones_reverse
+        polygonedb.Layer_Polygones_reverse = _Layer_Polygones_reverse
         // this.log(`posted polygonedb id=${polygonedb.ID}`)
       }),
       catchError(this.handleError<PolygoneDB>('postPolygone'))
@@ -115,8 +115,8 @@ export class PolygoneService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     polygonedb.Animates = []
-    let _SVG_Polygones_reverse = polygonedb.SVG_Polygones_reverse
-    polygonedb.SVG_Polygones_reverse = new SVGDB
+    let _Layer_Polygones_reverse = polygonedb.Layer_Polygones_reverse
+    polygonedb.Layer_Polygones_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -127,7 +127,7 @@ export class PolygoneService {
     return this.http.put<PolygoneDB>(url, polygonedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        polygonedb.SVG_Polygones_reverse = _SVG_Polygones_reverse
+        polygonedb.Layer_Polygones_reverse = _Layer_Polygones_reverse
         this.log(`updated polygonedb id=${polygonedb.ID}`)
       }),
       catchError(this.handleError<PolygoneDB>('updatePolygone'))

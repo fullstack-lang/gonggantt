@@ -17,6 +17,10 @@ func AfterCreateFromFront[Type Gongstruct](stage *StageStruct, instance *Type) {
 		if stage.OnAfterEllipseCreateCallback != nil {
 			stage.OnAfterEllipseCreateCallback.OnAfterCreate(stage, target)
 		}
+	case *Layer:
+		if stage.OnAfterLayerCreateCallback != nil {
+			stage.OnAfterLayerCreateCallback.OnAfterCreate(stage, target)
+		}
 	case *Line:
 		if stage.OnAfterLineCreateCallback != nil {
 			stage.OnAfterLineCreateCallback.OnAfterCreate(stage, target)
@@ -36,10 +40,6 @@ func AfterCreateFromFront[Type Gongstruct](stage *StageStruct, instance *Type) {
 	case *Rect:
 		if stage.OnAfterRectCreateCallback != nil {
 			stage.OnAfterRectCreateCallback.OnAfterCreate(stage, target)
-		}
-	case *SVG:
-		if stage.OnAfterSVGCreateCallback != nil {
-			stage.OnAfterSVGCreateCallback.OnAfterCreate(stage, target)
 		}
 	case *Text:
 		if stage.OnAfterTextCreateCallback != nil {
@@ -70,6 +70,11 @@ func AfterUpdateFromFront[Type Gongstruct](stage *StageStruct, old, new *Type) {
 		if stage.OnAfterEllipseUpdateCallback != nil {
 			stage.OnAfterEllipseUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
 		}
+	case *Layer:
+		newTarget := any(new).(*Layer)
+		if stage.OnAfterLayerUpdateCallback != nil {
+			stage.OnAfterLayerUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
+		}
 	case *Line:
 		newTarget := any(new).(*Line)
 		if stage.OnAfterLineUpdateCallback != nil {
@@ -94,11 +99,6 @@ func AfterUpdateFromFront[Type Gongstruct](stage *StageStruct, old, new *Type) {
 		newTarget := any(new).(*Rect)
 		if stage.OnAfterRectUpdateCallback != nil {
 			stage.OnAfterRectUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
-		}
-	case *SVG:
-		newTarget := any(new).(*SVG)
-		if stage.OnAfterSVGUpdateCallback != nil {
-			stage.OnAfterSVGUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
 		}
 	case *Text:
 		newTarget := any(new).(*Text)
@@ -130,6 +130,11 @@ func AfterDeleteFromFront[Type Gongstruct](stage *StageStruct, staged, front *Ty
 			staged := any(staged).(*Ellipse)
 			stage.OnAfterEllipseDeleteCallback.OnAfterDelete(stage, staged, front)
 		}
+	case *Layer:
+		if stage.OnAfterLayerDeleteCallback != nil {
+			staged := any(staged).(*Layer)
+			stage.OnAfterLayerDeleteCallback.OnAfterDelete(stage, staged, front)
+		}
 	case *Line:
 		if stage.OnAfterLineDeleteCallback != nil {
 			staged := any(staged).(*Line)
@@ -154,11 +159,6 @@ func AfterDeleteFromFront[Type Gongstruct](stage *StageStruct, staged, front *Ty
 		if stage.OnAfterRectDeleteCallback != nil {
 			staged := any(staged).(*Rect)
 			stage.OnAfterRectDeleteCallback.OnAfterDelete(stage, staged, front)
-		}
-	case *SVG:
-		if stage.OnAfterSVGDeleteCallback != nil {
-			staged := any(staged).(*SVG)
-			stage.OnAfterSVGDeleteCallback.OnAfterDelete(stage, staged, front)
 		}
 	case *Text:
 		if stage.OnAfterTextDeleteCallback != nil {
@@ -187,6 +187,10 @@ func AfterReadFromFront[Type Gongstruct](stage *StageStruct, instance *Type) {
 		if stage.OnAfterEllipseReadCallback != nil {
 			stage.OnAfterEllipseReadCallback.OnAfterRead(stage, target)
 		}
+	case *Layer:
+		if stage.OnAfterLayerReadCallback != nil {
+			stage.OnAfterLayerReadCallback.OnAfterRead(stage, target)
+		}
 	case *Line:
 		if stage.OnAfterLineReadCallback != nil {
 			stage.OnAfterLineReadCallback.OnAfterRead(stage, target)
@@ -206,10 +210,6 @@ func AfterReadFromFront[Type Gongstruct](stage *StageStruct, instance *Type) {
 	case *Rect:
 		if stage.OnAfterRectReadCallback != nil {
 			stage.OnAfterRectReadCallback.OnAfterRead(stage, target)
-		}
-	case *SVG:
-		if stage.OnAfterSVGReadCallback != nil {
-			stage.OnAfterSVGReadCallback.OnAfterRead(stage, target)
 		}
 	case *Text:
 		if stage.OnAfterTextReadCallback != nil {
@@ -235,6 +235,9 @@ func SetCallbackAfterUpdateFromFront[Type Gongstruct](stage *StageStruct, callba
 	case *Ellipse:
 		stage.OnAfterEllipseUpdateCallback = any(callback).(OnAfterUpdateInterface[Ellipse])
 	
+	case *Layer:
+		stage.OnAfterLayerUpdateCallback = any(callback).(OnAfterUpdateInterface[Layer])
+	
 	case *Line:
 		stage.OnAfterLineUpdateCallback = any(callback).(OnAfterUpdateInterface[Line])
 	
@@ -249,9 +252,6 @@ func SetCallbackAfterUpdateFromFront[Type Gongstruct](stage *StageStruct, callba
 	
 	case *Rect:
 		stage.OnAfterRectUpdateCallback = any(callback).(OnAfterUpdateInterface[Rect])
-	
-	case *SVG:
-		stage.OnAfterSVGUpdateCallback = any(callback).(OnAfterUpdateInterface[SVG])
 	
 	case *Text:
 		stage.OnAfterTextUpdateCallback = any(callback).(OnAfterUpdateInterface[Text])
@@ -272,6 +272,9 @@ func SetCallbackAfterCreateFromFront[Type Gongstruct](stage *StageStruct, callba
 	case *Ellipse:
 		stage.OnAfterEllipseCreateCallback = any(callback).(OnAfterCreateInterface[Ellipse])
 	
+	case *Layer:
+		stage.OnAfterLayerCreateCallback = any(callback).(OnAfterCreateInterface[Layer])
+	
 	case *Line:
 		stage.OnAfterLineCreateCallback = any(callback).(OnAfterCreateInterface[Line])
 	
@@ -286,9 +289,6 @@ func SetCallbackAfterCreateFromFront[Type Gongstruct](stage *StageStruct, callba
 	
 	case *Rect:
 		stage.OnAfterRectCreateCallback = any(callback).(OnAfterCreateInterface[Rect])
-	
-	case *SVG:
-		stage.OnAfterSVGCreateCallback = any(callback).(OnAfterCreateInterface[SVG])
 	
 	case *Text:
 		stage.OnAfterTextCreateCallback = any(callback).(OnAfterCreateInterface[Text])
@@ -309,6 +309,9 @@ func SetCallbackAfterDeleteFromFront[Type Gongstruct](stage *StageStruct, callba
 	case *Ellipse:
 		stage.OnAfterEllipseDeleteCallback = any(callback).(OnAfterDeleteInterface[Ellipse])
 	
+	case *Layer:
+		stage.OnAfterLayerDeleteCallback = any(callback).(OnAfterDeleteInterface[Layer])
+	
 	case *Line:
 		stage.OnAfterLineDeleteCallback = any(callback).(OnAfterDeleteInterface[Line])
 	
@@ -323,9 +326,6 @@ func SetCallbackAfterDeleteFromFront[Type Gongstruct](stage *StageStruct, callba
 	
 	case *Rect:
 		stage.OnAfterRectDeleteCallback = any(callback).(OnAfterDeleteInterface[Rect])
-	
-	case *SVG:
-		stage.OnAfterSVGDeleteCallback = any(callback).(OnAfterDeleteInterface[SVG])
 	
 	case *Text:
 		stage.OnAfterTextDeleteCallback = any(callback).(OnAfterDeleteInterface[Text])
@@ -346,6 +346,9 @@ func SetCallbackAfterReadFromFront[Type Gongstruct](stage *StageStruct, callback
 	case *Ellipse:
 		stage.OnAfterEllipseReadCallback = any(callback).(OnAfterReadInterface[Ellipse])
 	
+	case *Layer:
+		stage.OnAfterLayerReadCallback = any(callback).(OnAfterReadInterface[Layer])
+	
 	case *Line:
 		stage.OnAfterLineReadCallback = any(callback).(OnAfterReadInterface[Line])
 	
@@ -360,9 +363,6 @@ func SetCallbackAfterReadFromFront[Type Gongstruct](stage *StageStruct, callback
 	
 	case *Rect:
 		stage.OnAfterRectReadCallback = any(callback).(OnAfterReadInterface[Rect])
-	
-	case *SVG:
-		stage.OnAfterSVGReadCallback = any(callback).(OnAfterReadInterface[SVG])
 	
 	case *Text:
 		stage.OnAfterTextReadCallback = any(callback).(OnAfterReadInterface[Text])

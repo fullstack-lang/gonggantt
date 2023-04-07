@@ -46,11 +46,11 @@ type LineAPI struct {
 type LinePointersEnconding struct {
 	// insertion for pointer fields encoding declaration
 
-	// Implementation of a reverse ID for field SVG{}.Lines []*Line
-	SVG_LinesDBID sql.NullInt64
+	// Implementation of a reverse ID for field Layer{}.Lines []*Line
+	Layer_LinesDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
-	SVG_LinesDBID_Index sql.NullInt64
+	Layer_LinesDBID_Index sql.NullInt64
 }
 
 // LineDB describes a line in the database
@@ -722,9 +722,9 @@ func (backRepoLine *BackRepoLineStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// This reindex line.Lines
-		if lineDB.SVG_LinesDBID.Int64 != 0 {
-			lineDB.SVG_LinesDBID.Int64 =
-				int64(BackRepoSVGid_atBckpTime_newID[uint(lineDB.SVG_LinesDBID.Int64)])
+		if lineDB.Layer_LinesDBID.Int64 != 0 {
+			lineDB.Layer_LinesDBID.Int64 =
+				int64(BackRepoLayerid_atBckpTime_newID[uint(lineDB.Layer_LinesDBID.Int64)])
 		}
 
 		// update databse with new index encoding

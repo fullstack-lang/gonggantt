@@ -1,6 +1,6 @@
 package models
 
-type SVG struct {
+type Layer struct {
 	Display bool
 
 	Name string

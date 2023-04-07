@@ -13,14 +13,14 @@ import (
 )
 
 // declaration in order to justify use of the models import
-var __SVG__dummysDeclaration__ models.SVG
-var __SVG_time__dummyDeclaration time.Duration
+var __Layer__dummysDeclaration__ models.Layer
+var __Layer_time__dummyDeclaration time.Duration
 
-// An SVGID parameter model.
+// An LayerID parameter model.
 //
 // This is used for operations that want the ID of an order in the path
-// swagger:parameters getSVG updateSVG deleteSVG
-type SVGID struct {
+// swagger:parameters getLayer updateLayer deleteLayer
+type LayerID struct {
 	// The ID of the order
 	//
 	// in: path
@@ -28,29 +28,29 @@ type SVGID struct {
 	ID int64
 }
 
-// SVGInput is a schema that can validate the user’s
+// LayerInput is a schema that can validate the user’s
 // input to prevent us from getting invalid data
-// swagger:parameters postSVG updateSVG
-type SVGInput struct {
-	// The SVG to submit or modify
+// swagger:parameters postLayer updateLayer
+type LayerInput struct {
+	// The Layer to submit or modify
 	// in: body
-	SVG *orm.SVGAPI
+	Layer *orm.LayerAPI
 }
 
-// GetSVGs
+// GetLayers
 //
-// swagger:route GET /svgs svgs getSVGs
+// swagger:route GET /layers layers getLayers
 //
-// # Get all svgs
+// # Get all layers
 //
 // Responses:
 // default: genericError
 //
-//	200: svgDBResponse
-func (controller *Controller) GetSVGs(c *gin.Context) {
+//	200: layerDBResponse
+func (controller *Controller) GetLayers(c *gin.Context) {
 
 	// source slice
-	var svgDBs []orm.SVGDB
+	var layerDBs []orm.LayerDB
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -58,13 +58,13 @@ func (controller *Controller) GetSVGs(c *gin.Context) {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
-			// log.Println("GetSVGs", "GONG__StackPath", stackPath)
+			// log.Println("GetLayers", "GONG__StackPath", stackPath)
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
-	db := backRepo.BackRepoSVG.GetDB()
+	db := backRepo.BackRepoLayer.GetDB()
 
-	query := db.Find(&svgDBs)
+	query := db.Find(&layerDBs)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -75,29 +75,29 @@ func (controller *Controller) GetSVGs(c *gin.Context) {
 	}
 
 	// slice that will be transmitted to the front
-	svgAPIs := make([]orm.SVGAPI, 0)
+	layerAPIs := make([]orm.LayerAPI, 0)
 
-	// for each svg, update fields from the database nullable fields
-	for idx := range svgDBs {
-		svgDB := &svgDBs[idx]
-		_ = svgDB
-		var svgAPI orm.SVGAPI
+	// for each layer, update fields from the database nullable fields
+	for idx := range layerDBs {
+		layerDB := &layerDBs[idx]
+		_ = layerDB
+		var layerAPI orm.LayerAPI
 
 		// insertion point for updating fields
-		svgAPI.ID = svgDB.ID
-		svgDB.CopyBasicFieldsToSVG(&svgAPI.SVG)
-		svgAPI.SVGPointersEnconding = svgDB.SVGPointersEnconding
-		svgAPIs = append(svgAPIs, svgAPI)
+		layerAPI.ID = layerDB.ID
+		layerDB.CopyBasicFieldsToLayer(&layerAPI.Layer)
+		layerAPI.LayerPointersEnconding = layerDB.LayerPointersEnconding
+		layerAPIs = append(layerAPIs, layerAPI)
 	}
 
-	c.JSON(http.StatusOK, svgAPIs)
+	c.JSON(http.StatusOK, layerAPIs)
 }
 
-// PostSVG
+// PostLayer
 //
-// swagger:route POST /svgs svgs postSVG
+// swagger:route POST /layers layers postLayer
 //
-// Creates a svg
+// Creates a layer
 //
 //	Consumes:
 //	- application/json
@@ -107,7 +107,7 @@ func (controller *Controller) GetSVGs(c *gin.Context) {
 //
 //	Responses:
 //	  200: nodeDBResponse
-func (controller *Controller) PostSVG(c *gin.Context) {
+func (controller *Controller) PostLayer(c *gin.Context) {
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -115,14 +115,14 @@ func (controller *Controller) PostSVG(c *gin.Context) {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
-			// log.Println("PostSVGs", "GONG__StackPath", stackPath)
+			// log.Println("PostLayers", "GONG__StackPath", stackPath)
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
-	db := backRepo.BackRepoSVG.GetDB()
+	db := backRepo.BackRepoLayer.GetDB()
 
 	// Validate input
-	var input orm.SVGAPI
+	var input orm.LayerAPI
 
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -134,12 +134,12 @@ func (controller *Controller) PostSVG(c *gin.Context) {
 		return
 	}
 
-	// Create svg
-	svgDB := orm.SVGDB{}
-	svgDB.SVGPointersEnconding = input.SVGPointersEnconding
-	svgDB.CopyBasicFieldsFromSVG(&input.SVG)
+	// Create layer
+	layerDB := orm.LayerDB{}
+	layerDB.LayerPointersEnconding = input.LayerPointersEnconding
+	layerDB.CopyBasicFieldsFromLayer(&input.Layer)
 
-	query := db.Create(&svgDB)
+	query := db.Create(&layerDB)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -150,31 +150,31 @@ func (controller *Controller) PostSVG(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	backRepo.BackRepoSVG.CheckoutPhaseOneInstance(&svgDB)
-	svg := backRepo.BackRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID]
+	backRepo.BackRepoLayer.CheckoutPhaseOneInstance(&layerDB)
+	layer := backRepo.BackRepoLayer.Map_LayerDBID_LayerPtr[layerDB.ID]
 
-	if svg != nil {
-		models.AfterCreateFromFront(backRepo.GetStage(), svg)
+	if layer != nil {
+		models.AfterCreateFromFront(backRepo.GetStage(), layer)
 	}
 
 	// a POST is equivalent to a back repo commit increase
 	// (this will be improved with implementation of unit of work design pattern)
 	backRepo.IncrementPushFromFrontNb()
 
-	c.JSON(http.StatusOK, svgDB)
+	c.JSON(http.StatusOK, layerDB)
 }
 
-// GetSVG
+// GetLayer
 //
-// swagger:route GET /svgs/{ID} svgs getSVG
+// swagger:route GET /layers/{ID} layers getLayer
 //
-// Gets the details for a svg.
+// Gets the details for a layer.
 //
 // Responses:
 // default: genericError
 //
-//	200: svgDBResponse
-func (controller *Controller) GetSVG(c *gin.Context) {
+//	200: layerDBResponse
+func (controller *Controller) GetLayer(c *gin.Context) {
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -182,15 +182,15 @@ func (controller *Controller) GetSVG(c *gin.Context) {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
-			// log.Println("GetSVG", "GONG__StackPath", stackPath)
+			// log.Println("GetLayer", "GONG__StackPath", stackPath)
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
-	db := backRepo.BackRepoSVG.GetDB()
+	db := backRepo.BackRepoLayer.GetDB()
 
-	// Get svgDB in DB
-	var svgDB orm.SVGDB
-	if err := db.First(&svgDB, c.Param("id")).Error; err != nil {
+	// Get layerDB in DB
+	var layerDB orm.LayerDB
+	if err := db.First(&layerDB, c.Param("id")).Error; err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -199,25 +199,25 @@ func (controller *Controller) GetSVG(c *gin.Context) {
 		return
 	}
 
-	var svgAPI orm.SVGAPI
-	svgAPI.ID = svgDB.ID
-	svgAPI.SVGPointersEnconding = svgDB.SVGPointersEnconding
-	svgDB.CopyBasicFieldsToSVG(&svgAPI.SVG)
+	var layerAPI orm.LayerAPI
+	layerAPI.ID = layerDB.ID
+	layerAPI.LayerPointersEnconding = layerDB.LayerPointersEnconding
+	layerDB.CopyBasicFieldsToLayer(&layerAPI.Layer)
 
-	c.JSON(http.StatusOK, svgAPI)
+	c.JSON(http.StatusOK, layerAPI)
 }
 
-// UpdateSVG
+// UpdateLayer
 //
-// swagger:route PATCH /svgs/{ID} svgs updateSVG
+// swagger:route PATCH /layers/{ID} layers updateLayer
 //
-// # Update a svg
+// # Update a layer
 //
 // Responses:
 // default: genericError
 //
-//	200: svgDBResponse
-func (controller *Controller) UpdateSVG(c *gin.Context) {
+//	200: layerDBResponse
+func (controller *Controller) UpdateLayer(c *gin.Context) {
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -225,14 +225,14 @@ func (controller *Controller) UpdateSVG(c *gin.Context) {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
-			// log.Println("UpdateSVG", "GONG__StackPath", stackPath)
+			// log.Println("UpdateLayer", "GONG__StackPath", stackPath)
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
-	db := backRepo.BackRepoSVG.GetDB()
+	db := backRepo.BackRepoLayer.GetDB()
 
 	// Validate input
-	var input orm.SVGAPI
+	var input orm.LayerAPI
 	if err := c.ShouldBindJSON(&input); err != nil {
 		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -240,10 +240,10 @@ func (controller *Controller) UpdateSVG(c *gin.Context) {
 	}
 
 	// Get model if exist
-	var svgDB orm.SVGDB
+	var layerDB orm.LayerDB
 
-	// fetch the svg
-	query := db.First(&svgDB, c.Param("id"))
+	// fetch the layer
+	query := db.First(&layerDB, c.Param("id"))
 
 	if query.Error != nil {
 		var returnError GenericError
@@ -255,10 +255,10 @@ func (controller *Controller) UpdateSVG(c *gin.Context) {
 	}
 
 	// update
-	svgDB.CopyBasicFieldsFromSVG(&input.SVG)
-	svgDB.SVGPointersEnconding = input.SVGPointersEnconding
+	layerDB.CopyBasicFieldsFromLayer(&input.Layer)
+	layerDB.LayerPointersEnconding = input.LayerPointersEnconding
 
-	query = db.Model(&svgDB).Updates(svgDB)
+	query = db.Model(&layerDB).Updates(layerDB)
 	if query.Error != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
@@ -269,13 +269,13 @@ func (controller *Controller) UpdateSVG(c *gin.Context) {
 	}
 
 	// get an instance (not staged) from DB instance, and call callback function
-	svgNew := new(models.SVG)
-	svgDB.CopyBasicFieldsToSVG(svgNew)
+	layerNew := new(models.Layer)
+	layerDB.CopyBasicFieldsToLayer(layerNew)
 
 	// get stage instance from DB instance, and call callback function
-	svgOld := backRepo.BackRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID]
-	if svgOld != nil {
-		models.AfterUpdateFromFront(backRepo.GetStage(), svgOld, svgNew)
+	layerOld := backRepo.BackRepoLayer.Map_LayerDBID_LayerPtr[layerDB.ID]
+	if layerOld != nil {
+		models.AfterUpdateFromFront(backRepo.GetStage(), layerOld, layerNew)
 	}
 
 	// an UPDATE generates a back repo commit increase
@@ -284,20 +284,20 @@ func (controller *Controller) UpdateSVG(c *gin.Context) {
 	// generates a checkout
 	backRepo.IncrementPushFromFrontNb()
 
-	// return status OK with the marshalling of the the svgDB
-	c.JSON(http.StatusOK, svgDB)
+	// return status OK with the marshalling of the the layerDB
+	c.JSON(http.StatusOK, layerDB)
 }
 
-// DeleteSVG
+// DeleteLayer
 //
-// swagger:route DELETE /svgs/{ID} svgs deleteSVG
+// swagger:route DELETE /layers/{ID} layers deleteLayer
 //
-// # Delete a svg
+// # Delete a layer
 //
 // default: genericError
 //
-//	200: svgDBResponse
-func (controller *Controller) DeleteSVG(c *gin.Context) {
+//	200: layerDBResponse
+func (controller *Controller) DeleteLayer(c *gin.Context) {
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -305,15 +305,15 @@ func (controller *Controller) DeleteSVG(c *gin.Context) {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
-			// log.Println("DeleteSVG", "GONG__StackPath", stackPath)
+			// log.Println("DeleteLayer", "GONG__StackPath", stackPath)
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
-	db := backRepo.BackRepoSVG.GetDB()
+	db := backRepo.BackRepoLayer.GetDB()
 
 	// Get model if exist
-	var svgDB orm.SVGDB
-	if err := db.First(&svgDB, c.Param("id")).Error; err != nil {
+	var layerDB orm.LayerDB
+	if err := db.First(&layerDB, c.Param("id")).Error; err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -323,16 +323,16 @@ func (controller *Controller) DeleteSVG(c *gin.Context) {
 	}
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
-	db.Unscoped().Delete(&svgDB)
+	db.Unscoped().Delete(&layerDB)
 
 	// get an instance (not staged) from DB instance, and call callback function
-	svgDeleted := new(models.SVG)
-	svgDB.CopyBasicFieldsToSVG(svgDeleted)
+	layerDeleted := new(models.Layer)
+	layerDB.CopyBasicFieldsToLayer(layerDeleted)
 
 	// get stage instance from DB instance, and call callback function
-	svgStaged := backRepo.BackRepoSVG.Map_SVGDBID_SVGPtr[svgDB.ID]
-	if svgStaged != nil {
-		models.AfterDeleteFromFront(backRepo.GetStage(), svgStaged, svgDeleted)
+	layerStaged := backRepo.BackRepoLayer.Map_LayerDBID_LayerPtr[layerDB.ID]
+	if layerStaged != nil {
+		models.AfterDeleteFromFront(backRepo.GetStage(), layerStaged, layerDeleted)
 	}
 
 	// a DELETE generates a back repo commit increase

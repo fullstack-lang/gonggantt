@@ -10,7 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
-import { SVGDB } from '../svg-db'
+import { LayerDB } from '../layer-db'
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -24,7 +24,7 @@ enum PolylineDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Polylines_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Polylines_SET,
 }
 
 @Component({
@@ -95,8 +95,8 @@ export class PolylineDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Polylines":
-						// console.log("Polyline" + " is instanciated with back pointer to instance " + this.id + " SVG association Polylines")
-						this.state = PolylineDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Polylines_SET
+						// console.log("Polyline" + " is instanciated with back pointer to instance " + this.id + " Layer association Polylines")
+						this.state = PolylineDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Polylines_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -134,9 +134,9 @@ export class PolylineDetailComponent implements OnInit {
 						this.polyline = polyline!
 						break;
 					// insertion point for init of association field
-					case PolylineDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Polylines_SET:
+					case PolylineDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Polylines_SET:
 						this.polyline = new (PolylineDB)
-						this.polyline.SVG_Polylines_reverse = frontRepo.SVGs.get(this.id)!
+						this.polyline.Layer_Polylines_reverse = frontRepo.Layers.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -159,17 +159,17 @@ export class PolylineDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.polyline.SVG_Polylines_reverse != undefined) {
-			if (this.polyline.SVG_PolylinesDBID == undefined) {
-				this.polyline.SVG_PolylinesDBID = new NullInt64
+		if (this.polyline.Layer_Polylines_reverse != undefined) {
+			if (this.polyline.Layer_PolylinesDBID == undefined) {
+				this.polyline.Layer_PolylinesDBID = new NullInt64
 			}
-			this.polyline.SVG_PolylinesDBID.Int64 = this.polyline.SVG_Polylines_reverse.ID
-			this.polyline.SVG_PolylinesDBID.Valid = true
-			if (this.polyline.SVG_PolylinesDBID_Index == undefined) {
-				this.polyline.SVG_PolylinesDBID_Index = new NullInt64
+			this.polyline.Layer_PolylinesDBID.Int64 = this.polyline.Layer_Polylines_reverse.ID
+			this.polyline.Layer_PolylinesDBID.Valid = true
+			if (this.polyline.Layer_PolylinesDBID_Index == undefined) {
+				this.polyline.Layer_PolylinesDBID_Index = new NullInt64
 			}
-			this.polyline.SVG_PolylinesDBID_Index.Valid = true
-			this.polyline.SVG_Polylines_reverse = new SVGDB // very important, otherwise, circular JSON
+			this.polyline.Layer_PolylinesDBID_Index.Valid = true
+			this.polyline.Layer_Polylines_reverse = new LayerDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {

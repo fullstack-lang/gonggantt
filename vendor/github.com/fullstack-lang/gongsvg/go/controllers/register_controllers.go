@@ -62,6 +62,13 @@ func registerControllers(r *gin.Engine) {
 		v1.PUT("/v1/ellipses/:id", GetController().UpdateEllipse)
 		v1.DELETE("/v1/ellipses/:id", GetController().DeleteEllipse)
 
+		v1.GET("/v1/layers", GetController().GetLayers)
+		v1.GET("/v1/layers/:id", GetController().GetLayer)
+		v1.POST("/v1/layers", GetController().PostLayer)
+		v1.PATCH("/v1/layers/:id", GetController().UpdateLayer)
+		v1.PUT("/v1/layers/:id", GetController().UpdateLayer)
+		v1.DELETE("/v1/layers/:id", GetController().DeleteLayer)
+
 		v1.GET("/v1/lines", GetController().GetLines)
 		v1.GET("/v1/lines/:id", GetController().GetLine)
 		v1.POST("/v1/lines", GetController().PostLine)
@@ -96,13 +103,6 @@ func registerControllers(r *gin.Engine) {
 		v1.PATCH("/v1/rects/:id", GetController().UpdateRect)
 		v1.PUT("/v1/rects/:id", GetController().UpdateRect)
 		v1.DELETE("/v1/rects/:id", GetController().DeleteRect)
-
-		v1.GET("/v1/svgs", GetController().GetSVGs)
-		v1.GET("/v1/svgs/:id", GetController().GetSVG)
-		v1.POST("/v1/svgs", GetController().PostSVG)
-		v1.PATCH("/v1/svgs/:id", GetController().UpdateSVG)
-		v1.PUT("/v1/svgs/:id", GetController().UpdateSVG)
-		v1.DELETE("/v1/svgs/:id", GetController().DeleteSVG)
 
 		v1.GET("/v1/texts", GetController().GetTexts)
 		v1.GET("/v1/texts/:id", GetController().GetText)

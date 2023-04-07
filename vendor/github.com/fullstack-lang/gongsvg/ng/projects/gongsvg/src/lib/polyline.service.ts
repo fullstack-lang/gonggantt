@@ -14,7 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { PolylineDB } from './polyline-db';
 
 // insertion point for imports
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 @Injectable({
   providedIn: 'root'
@@ -72,8 +72,8 @@ export class PolylineService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     polylinedb.Animates = []
-    let _SVG_Polylines_reverse = polylinedb.SVG_Polylines_reverse
-    polylinedb.SVG_Polylines_reverse = new SVGDB
+    let _Layer_Polylines_reverse = polylinedb.Layer_Polylines_reverse
+    polylinedb.Layer_Polylines_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -84,7 +84,7 @@ export class PolylineService {
     return this.http.post<PolylineDB>(this.polylinesUrl, polylinedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        polylinedb.SVG_Polylines_reverse = _SVG_Polylines_reverse
+        polylinedb.Layer_Polylines_reverse = _Layer_Polylines_reverse
         // this.log(`posted polylinedb id=${polylinedb.ID}`)
       }),
       catchError(this.handleError<PolylineDB>('postPolyline'))
@@ -115,8 +115,8 @@ export class PolylineService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     polylinedb.Animates = []
-    let _SVG_Polylines_reverse = polylinedb.SVG_Polylines_reverse
-    polylinedb.SVG_Polylines_reverse = new SVGDB
+    let _Layer_Polylines_reverse = polylinedb.Layer_Polylines_reverse
+    polylinedb.Layer_Polylines_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -127,7 +127,7 @@ export class PolylineService {
     return this.http.put<PolylineDB>(url, polylinedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        polylinedb.SVG_Polylines_reverse = _SVG_Polylines_reverse
+        polylinedb.Layer_Polylines_reverse = _Layer_Polylines_reverse
         this.log(`updated polylinedb id=${polylinedb.ID}`)
       }),
       catchError(this.handleError<PolylineDB>('updatePolyline'))

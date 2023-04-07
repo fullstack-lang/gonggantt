@@ -105,9 +105,9 @@ export class EllipsesTableComponent implements OnInit {
         case 'Transform':
           return ellipseDB.Transform;
 
-        case 'SVG_Ellipses':
-          if (this.frontRepo.SVGs.get(ellipseDB.SVG_EllipsesDBID.Int64) != undefined) {
-            return this.frontRepo.SVGs.get(ellipseDB.SVG_EllipsesDBID.Int64)!.Name
+        case 'Layer_Ellipses':
+          if (this.frontRepo.Layers.get(ellipseDB.Layer_EllipsesDBID.Int64) != undefined) {
+            return this.frontRepo.Layers.get(ellipseDB.Layer_EllipsesDBID.Int64)!.Name
           } else {
             return ""
           }
@@ -137,8 +137,8 @@ export class EllipsesTableComponent implements OnInit {
       mergedContent += ellipseDB.StrokeWidth.toString()
       mergedContent += ellipseDB.StrokeDashArray.toLowerCase()
       mergedContent += ellipseDB.Transform.toLowerCase()
-      if (ellipseDB.SVG_EllipsesDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.SVGs.get(ellipseDB.SVG_EllipsesDBID.Int64)!.Name.toLowerCase()
+      if (ellipseDB.Layer_EllipsesDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Layers.get(ellipseDB.Layer_EllipsesDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -206,7 +206,7 @@ export class EllipsesTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Ellipses",
+        "Layer_Ellipses",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -221,7 +221,7 @@ export class EllipsesTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Ellipses",
+        "Layer_Ellipses",
       ]
       this.selection = new SelectionModel<EllipseDB>(allowMultiSelect, this.initialSelection);
     }

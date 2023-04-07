@@ -306,12 +306,12 @@ var __gong__map_Indentifiers_gongstructName = make(map[string]string)
 var __gong__map_Animate = make(map[string]*Animate)
 var __gong__map_Circle = make(map[string]*Circle)
 var __gong__map_Ellipse = make(map[string]*Ellipse)
+var __gong__map_Layer = make(map[string]*Layer)
 var __gong__map_Line = make(map[string]*Line)
 var __gong__map_Path = make(map[string]*Path)
 var __gong__map_Polygone = make(map[string]*Polygone)
 var __gong__map_Polyline = make(map[string]*Polyline)
 var __gong__map_Rect = make(map[string]*Rect)
-var __gong__map_SVG = make(map[string]*SVG)
 var __gong__map_Text = make(map[string]*Text)
 
 // Parser needs to be configured for having the [Name1.Name2] or [pkg.Name1] ...
@@ -497,6 +497,10 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 										instanceEllipse := (&Ellipse{Name: instanceName}).Stage(stage)
 										instance = any(instanceEllipse)
 										__gong__map_Ellipse[identifier] = instanceEllipse
+									case "Layer":
+										instanceLayer := (&Layer{Name: instanceName}).Stage(stage)
+										instance = any(instanceLayer)
+										__gong__map_Layer[identifier] = instanceLayer
 									case "Line":
 										instanceLine := (&Line{Name: instanceName}).Stage(stage)
 										instance = any(instanceLine)
@@ -517,10 +521,6 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 										instanceRect := (&Rect{Name: instanceName}).Stage(stage)
 										instance = any(instanceRect)
 										__gong__map_Rect[identifier] = instanceRect
-									case "SVG":
-										instanceSVG := (&SVG{Name: instanceName}).Stage(stage)
-										instance = any(instanceSVG)
-										__gong__map_SVG[identifier] = instanceSVG
 									case "Text":
 										instanceText := (&Text{Name: instanceName}).Stage(stage)
 										instance = any(instanceText)
@@ -573,6 +573,10 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 							switch fieldName {
 							// insertion point for date assign code
 							}
+						case "Layer":
+							switch fieldName {
+							// insertion point for date assign code
+							}
 						case "Line":
 							switch fieldName {
 							// insertion point for date assign code
@@ -590,10 +594,6 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 							// insertion point for date assign code
 							}
 						case "Rect":
-							switch fieldName {
-							// insertion point for date assign code
-							}
-						case "SVG":
 							switch fieldName {
 							// insertion point for date assign code
 							}
@@ -650,6 +650,58 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 							__gong__map_Ellipse[identifier].Animates =
 								append(__gong__map_Ellipse[identifier].Animates, target)
 						}
+					case "Layer":
+						switch fieldName {
+						// insertion point for slice of pointers assign code
+						case "Rects":
+							// remove first and last char
+							targetIdentifier := ident.Name
+							target := __gong__map_Rect[targetIdentifier]
+							__gong__map_Layer[identifier].Rects =
+								append(__gong__map_Layer[identifier].Rects, target)
+						case "Texts":
+							// remove first and last char
+							targetIdentifier := ident.Name
+							target := __gong__map_Text[targetIdentifier]
+							__gong__map_Layer[identifier].Texts =
+								append(__gong__map_Layer[identifier].Texts, target)
+						case "Circles":
+							// remove first and last char
+							targetIdentifier := ident.Name
+							target := __gong__map_Circle[targetIdentifier]
+							__gong__map_Layer[identifier].Circles =
+								append(__gong__map_Layer[identifier].Circles, target)
+						case "Lines":
+							// remove first and last char
+							targetIdentifier := ident.Name
+							target := __gong__map_Line[targetIdentifier]
+							__gong__map_Layer[identifier].Lines =
+								append(__gong__map_Layer[identifier].Lines, target)
+						case "Ellipses":
+							// remove first and last char
+							targetIdentifier := ident.Name
+							target := __gong__map_Ellipse[targetIdentifier]
+							__gong__map_Layer[identifier].Ellipses =
+								append(__gong__map_Layer[identifier].Ellipses, target)
+						case "Polylines":
+							// remove first and last char
+							targetIdentifier := ident.Name
+							target := __gong__map_Polyline[targetIdentifier]
+							__gong__map_Layer[identifier].Polylines =
+								append(__gong__map_Layer[identifier].Polylines, target)
+						case "Polygones":
+							// remove first and last char
+							targetIdentifier := ident.Name
+							target := __gong__map_Polygone[targetIdentifier]
+							__gong__map_Layer[identifier].Polygones =
+								append(__gong__map_Layer[identifier].Polygones, target)
+						case "Paths":
+							// remove first and last char
+							targetIdentifier := ident.Name
+							target := __gong__map_Path[targetIdentifier]
+							__gong__map_Layer[identifier].Paths =
+								append(__gong__map_Layer[identifier].Paths, target)
+						}
 					case "Line":
 						switch fieldName {
 						// insertion point for slice of pointers assign code
@@ -699,58 +751,6 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 							target := __gong__map_Animate[targetIdentifier]
 							__gong__map_Rect[identifier].Animations =
 								append(__gong__map_Rect[identifier].Animations, target)
-						}
-					case "SVG":
-						switch fieldName {
-						// insertion point for slice of pointers assign code
-						case "Rects":
-							// remove first and last char
-							targetIdentifier := ident.Name
-							target := __gong__map_Rect[targetIdentifier]
-							__gong__map_SVG[identifier].Rects =
-								append(__gong__map_SVG[identifier].Rects, target)
-						case "Texts":
-							// remove first and last char
-							targetIdentifier := ident.Name
-							target := __gong__map_Text[targetIdentifier]
-							__gong__map_SVG[identifier].Texts =
-								append(__gong__map_SVG[identifier].Texts, target)
-						case "Circles":
-							// remove first and last char
-							targetIdentifier := ident.Name
-							target := __gong__map_Circle[targetIdentifier]
-							__gong__map_SVG[identifier].Circles =
-								append(__gong__map_SVG[identifier].Circles, target)
-						case "Lines":
-							// remove first and last char
-							targetIdentifier := ident.Name
-							target := __gong__map_Line[targetIdentifier]
-							__gong__map_SVG[identifier].Lines =
-								append(__gong__map_SVG[identifier].Lines, target)
-						case "Ellipses":
-							// remove first and last char
-							targetIdentifier := ident.Name
-							target := __gong__map_Ellipse[targetIdentifier]
-							__gong__map_SVG[identifier].Ellipses =
-								append(__gong__map_SVG[identifier].Ellipses, target)
-						case "Polylines":
-							// remove first and last char
-							targetIdentifier := ident.Name
-							target := __gong__map_Polyline[targetIdentifier]
-							__gong__map_SVG[identifier].Polylines =
-								append(__gong__map_SVG[identifier].Polylines, target)
-						case "Polygones":
-							// remove first and last char
-							targetIdentifier := ident.Name
-							target := __gong__map_Polygone[targetIdentifier]
-							__gong__map_SVG[identifier].Polygones =
-								append(__gong__map_SVG[identifier].Polygones, target)
-						case "Paths":
-							// remove first and last char
-							targetIdentifier := ident.Name
-							target := __gong__map_Path[targetIdentifier]
-							__gong__map_SVG[identifier].Paths =
-								append(__gong__map_SVG[identifier].Paths, target)
 						}
 					case "Text":
 						switch fieldName {
@@ -946,6 +946,14 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 					// remove first and last char
 					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
 					__gong__map_Ellipse[identifier].Transform = fielValue
+				}
+			case "Layer":
+				switch fieldName {
+				// insertion point for field dependant code
+				case "Name":
+					// remove first and last char
+					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
+					__gong__map_Layer[identifier].Name = fielValue
 				}
 			case "Line":
 				switch fieldName {
@@ -1212,14 +1220,6 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
 					__gong__map_Rect[identifier].Transform = fielValue
 				}
-			case "SVG":
-				switch fieldName {
-				// insertion point for field dependant code
-				case "Name":
-					// remove first and last char
-					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
-					__gong__map_SVG[identifier].Name = fielValue
-				}
 			case "Text":
 				switch fieldName {
 				// insertion point for field dependant code
@@ -1302,6 +1302,17 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 				switch fieldName {
 				// insertion point for field dependant code
 				}
+			case "Layer":
+				switch fieldName {
+				// insertion point for field dependant code
+				case "Display":
+					// convert string to boolean
+					fielValue, err := strconv.ParseBool(ident.Name)
+					if err != nil {
+						log.Fatalln(err)
+					}
+					__gong__map_Layer[identifier].Display = fielValue
+				}
 			case "Line":
 				switch fieldName {
 				// insertion point for field dependant code
@@ -1328,17 +1339,6 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 						log.Fatalln(err)
 					}
 					__gong__map_Rect[identifier].Selected = fielValue
-				}
-			case "SVG":
-				switch fieldName {
-				// insertion point for field dependant code
-				case "Display":
-					// convert string to boolean
-					fielValue, err := strconv.ParseBool(ident.Name)
-					if err != nil {
-						log.Fatalln(err)
-					}
-					__gong__map_SVG[identifier].Display = fielValue
 				}
 			case "Text":
 				switch fieldName {
@@ -1384,6 +1384,10 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 					switch fieldName {
 					// insertion point for enum assign code
 					}
+				case "Layer":
+					switch fieldName {
+					// insertion point for enum assign code
+					}
 				case "Line":
 					switch fieldName {
 					// insertion point for enum assign code
@@ -1401,10 +1405,6 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 					// insertion point for enum assign code
 					}
 				case "Rect":
-					switch fieldName {
-					// insertion point for enum assign code
-					}
-				case "SVG":
 					switch fieldName {
 					// insertion point for enum assign code
 					}

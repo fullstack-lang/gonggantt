@@ -10,7 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
-import { SVGDB } from '../svg-db'
+import { LayerDB } from '../layer-db'
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -24,7 +24,7 @@ enum TextDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Texts_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Texts_SET,
 }
 
 @Component({
@@ -95,8 +95,8 @@ export class TextDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Texts":
-						// console.log("Text" + " is instanciated with back pointer to instance " + this.id + " SVG association Texts")
-						this.state = TextDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Texts_SET
+						// console.log("Text" + " is instanciated with back pointer to instance " + this.id + " Layer association Texts")
+						this.state = TextDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Texts_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -134,9 +134,9 @@ export class TextDetailComponent implements OnInit {
 						this.text = text!
 						break;
 					// insertion point for init of association field
-					case TextDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Texts_SET:
+					case TextDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Texts_SET:
 						this.text = new (TextDB)
-						this.text.SVG_Texts_reverse = frontRepo.SVGs.get(this.id)!
+						this.text.Layer_Texts_reverse = frontRepo.Layers.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -159,17 +159,17 @@ export class TextDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.text.SVG_Texts_reverse != undefined) {
-			if (this.text.SVG_TextsDBID == undefined) {
-				this.text.SVG_TextsDBID = new NullInt64
+		if (this.text.Layer_Texts_reverse != undefined) {
+			if (this.text.Layer_TextsDBID == undefined) {
+				this.text.Layer_TextsDBID = new NullInt64
 			}
-			this.text.SVG_TextsDBID.Int64 = this.text.SVG_Texts_reverse.ID
-			this.text.SVG_TextsDBID.Valid = true
-			if (this.text.SVG_TextsDBID_Index == undefined) {
-				this.text.SVG_TextsDBID_Index = new NullInt64
+			this.text.Layer_TextsDBID.Int64 = this.text.Layer_Texts_reverse.ID
+			this.text.Layer_TextsDBID.Valid = true
+			if (this.text.Layer_TextsDBID_Index == undefined) {
+				this.text.Layer_TextsDBID_Index = new NullInt64
 			}
-			this.text.SVG_TextsDBID_Index.Valid = true
-			this.text.SVG_Texts_reverse = new SVGDB // very important, otherwise, circular JSON
+			this.text.Layer_TextsDBID_Index.Valid = true
+			this.text.Layer_Texts_reverse = new LayerDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {
