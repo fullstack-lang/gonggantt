@@ -25,6 +25,19 @@
             ]
         },
         {
+            "name": "go server unmarshallFromCode simple.go -marshallOnCommit simple",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/go/cmd/gonggantt",
+            "args": [
+                "-marshallOnCommit",
+                "simple",
+                "-unmarshallFromCode",
+                "simple.go",
+            ]
+        },
+        {
             "name": "Launch appv firefox localhost:4200",
             "type": "firefox",
             "request": "launch",
