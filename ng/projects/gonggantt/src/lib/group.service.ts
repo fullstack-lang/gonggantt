@@ -43,7 +43,7 @@ export class GroupService {
   }
 
   /** GET groups from the server */
-  getGroups(GONG__StackPath: string = ""): Observable<GroupDB[]> {
+  getGroups(GONG__StackPath: string): Observable<GroupDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -56,10 +56,13 @@ export class GroupService {
   }
 
   /** GET group by id. Will 404 if id not found */
-  getGroup(id: number): Observable<GroupDB> {
+  getGroup(id: number, GONG__StackPath: string): Observable<GroupDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.groupsUrl}/${id}`;
-    return this.http.get<GroupDB>(url).pipe(
-      tap(_ => this.log(`fetched group id=${id}`)),
+    return this.http.get<GroupDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched group id=${id}`)),
       catchError(this.handleError<GroupDB>(`getGroup id=${id}`))
     );
   }
@@ -82,7 +85,7 @@ export class GroupService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         groupdb.Gantt_Groups_reverse = _Gantt_Groups_reverse
-        this.log(`posted groupdb id=${groupdb.ID}`)
+        // this.log(`posted groupdb id=${groupdb.ID}`)
       }),
       catchError(this.handleError<GroupDB>('postGroup'))
     );

@@ -44,7 +44,7 @@ export class LaneService {
   }
 
   /** GET lanes from the server */
-  getLanes(GONG__StackPath: string = ""): Observable<LaneDB[]> {
+  getLanes(GONG__StackPath: string): Observable<LaneDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -57,10 +57,13 @@ export class LaneService {
   }
 
   /** GET lane by id. Will 404 if id not found */
-  getLane(id: number): Observable<LaneDB> {
+  getLane(id: number, GONG__StackPath: string): Observable<LaneDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.lanesUrl}/${id}`;
-    return this.http.get<LaneDB>(url).pipe(
-      tap(_ => this.log(`fetched lane id=${id}`)),
+    return this.http.get<LaneDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched lane id=${id}`)),
       catchError(this.handleError<LaneDB>(`getLane id=${id}`))
     );
   }
@@ -86,7 +89,7 @@ export class LaneService {
         // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
         lanedb.Group_GroupLanes_reverse = _Group_GroupLanes_reverse
-        this.log(`posted lanedb id=${lanedb.ID}`)
+        // this.log(`posted lanedb id=${lanedb.ID}`)
       }),
       catchError(this.handleError<LaneDB>('postLane'))
     );

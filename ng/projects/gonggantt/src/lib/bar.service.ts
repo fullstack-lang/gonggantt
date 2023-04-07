@@ -43,7 +43,7 @@ export class BarService {
   }
 
   /** GET bars from the server */
-  getBars(GONG__StackPath: string = ""): Observable<BarDB[]> {
+  getBars(GONG__StackPath: string): Observable<BarDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -56,10 +56,13 @@ export class BarService {
   }
 
   /** GET bar by id. Will 404 if id not found */
-  getBar(id: number): Observable<BarDB> {
+  getBar(id: number, GONG__StackPath: string): Observable<BarDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.barsUrl}/${id}`;
-    return this.http.get<BarDB>(url).pipe(
-      tap(_ => this.log(`fetched bar id=${id}`)),
+    return this.http.get<BarDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched bar id=${id}`)),
       catchError(this.handleError<BarDB>(`getBar id=${id}`))
     );
   }
@@ -81,7 +84,7 @@ export class BarService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         bardb.Lane_Bars_reverse = _Lane_Bars_reverse
-        this.log(`posted bardb id=${bardb.ID}`)
+        // this.log(`posted bardb id=${bardb.ID}`)
       }),
       catchError(this.handleError<BarDB>('postBar'))
     );

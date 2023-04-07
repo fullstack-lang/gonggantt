@@ -43,7 +43,7 @@ export class MilestoneService {
   }
 
   /** GET milestones from the server */
-  getMilestones(GONG__StackPath: string = ""): Observable<MilestoneDB[]> {
+  getMilestones(GONG__StackPath: string): Observable<MilestoneDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -56,10 +56,13 @@ export class MilestoneService {
   }
 
   /** GET milestone by id. Will 404 if id not found */
-  getMilestone(id: number): Observable<MilestoneDB> {
+  getMilestone(id: number, GONG__StackPath: string): Observable<MilestoneDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.milestonesUrl}/${id}`;
-    return this.http.get<MilestoneDB>(url).pipe(
-      tap(_ => this.log(`fetched milestone id=${id}`)),
+    return this.http.get<MilestoneDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched milestone id=${id}`)),
       catchError(this.handleError<MilestoneDB>(`getMilestone id=${id}`))
     );
   }
@@ -82,7 +85,7 @@ export class MilestoneService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         milestonedb.Gantt_Milestones_reverse = _Gantt_Milestones_reverse
-        this.log(`posted milestonedb id=${milestonedb.ID}`)
+        // this.log(`posted milestonedb id=${milestonedb.ID}`)
       }),
       catchError(this.handleError<MilestoneDB>('postMilestone'))
     );

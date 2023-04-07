@@ -44,7 +44,7 @@ export class LaneUseService {
   }
 
   /** GET laneuses from the server */
-  getLaneUses(GONG__StackPath: string = ""): Observable<LaneUseDB[]> {
+  getLaneUses(GONG__StackPath: string): Observable<LaneUseDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -57,10 +57,13 @@ export class LaneUseService {
   }
 
   /** GET laneuse by id. Will 404 if id not found */
-  getLaneUse(id: number): Observable<LaneUseDB> {
+  getLaneUse(id: number, GONG__StackPath: string): Observable<LaneUseDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.laneusesUrl}/${id}`;
-    return this.http.get<LaneUseDB>(url).pipe(
-      tap(_ => this.log(`fetched laneuse id=${id}`)),
+    return this.http.get<LaneUseDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched laneuse id=${id}`)),
       catchError(this.handleError<LaneUseDB>(`getLaneUse id=${id}`))
     );
   }
@@ -83,7 +86,7 @@ export class LaneUseService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = _Milestone_LanesToDisplayMilestoneUse_reverse
-        this.log(`posted laneusedb id=${laneusedb.ID}`)
+        // this.log(`posted laneusedb id=${laneusedb.ID}`)
       }),
       catchError(this.handleError<LaneUseDB>('postLaneUse'))
     );

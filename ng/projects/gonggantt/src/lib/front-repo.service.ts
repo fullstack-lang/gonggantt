@@ -631,7 +631,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.arrowService.getArrows()
+          this.arrowService.getArrows(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             arrows,
@@ -709,7 +709,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.barService.getBars()
+          this.barService.getBars(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             bars,
@@ -773,7 +773,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.ganttService.getGantts()
+          this.ganttService.getGantts(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             gantts,
@@ -824,7 +824,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.groupService.getGroups()
+          this.groupService.getGroups(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             groups,
@@ -888,7 +888,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.laneService.getLanes()
+          this.laneService.getLanes(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             lanes,
@@ -965,7 +965,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.laneuseService.getLaneUses()
+          this.laneuseService.getLaneUses(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             laneuses,
@@ -1036,7 +1036,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.milestoneService.getMilestones()
+          this.milestoneService.getMilestones(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             milestones,
