@@ -886,7 +886,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.animateService.getAnimates()
+          this.animateService.getAnimates(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             animates,
@@ -1041,7 +1041,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.circleService.getCircles()
+          this.circleService.getCircles(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             circles,
@@ -1105,7 +1105,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.ellipseService.getEllipses()
+          this.ellipseService.getEllipses(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             ellipses,
@@ -1169,7 +1169,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.lineService.getLines()
+          this.lineService.getLines(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             lines,
@@ -1233,7 +1233,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.pathService.getPaths()
+          this.pathService.getPaths(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             paths,
@@ -1297,7 +1297,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.polygoneService.getPolygones()
+          this.polygoneService.getPolygones(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             polygones,
@@ -1361,7 +1361,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.polylineService.getPolylines()
+          this.polylineService.getPolylines(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             polylines,
@@ -1425,7 +1425,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.rectService.getRects()
+          this.rectService.getRects(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             rects,
@@ -1489,7 +1489,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.svgService.getSVGs()
+          this.svgService.getSVGs(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             svgs,
@@ -1540,7 +1540,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.textService.getTexts()
+          this.textService.getTexts(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             texts,

@@ -43,7 +43,7 @@ export class PolylineService {
   }
 
   /** GET polylines from the server */
-  getPolylines(GONG__StackPath: string = ""): Observable<PolylineDB[]> {
+  getPolylines(GONG__StackPath: string): Observable<PolylineDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -56,10 +56,13 @@ export class PolylineService {
   }
 
   /** GET polyline by id. Will 404 if id not found */
-  getPolyline(id: number): Observable<PolylineDB> {
+  getPolyline(id: number, GONG__StackPath: string): Observable<PolylineDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.polylinesUrl}/${id}`;
-    return this.http.get<PolylineDB>(url).pipe(
-      tap(_ => this.log(`fetched polyline id=${id}`)),
+    return this.http.get<PolylineDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched polyline id=${id}`)),
       catchError(this.handleError<PolylineDB>(`getPolyline id=${id}`))
     );
   }
@@ -82,7 +85,7 @@ export class PolylineService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         polylinedb.SVG_Polylines_reverse = _SVG_Polylines_reverse
-        this.log(`posted polylinedb id=${polylinedb.ID}`)
+        // this.log(`posted polylinedb id=${polylinedb.ID}`)
       }),
       catchError(this.handleError<PolylineDB>('postPolyline'))
     );

@@ -43,7 +43,7 @@ export class LineService {
   }
 
   /** GET lines from the server */
-  getLines(GONG__StackPath: string = ""): Observable<LineDB[]> {
+  getLines(GONG__StackPath: string): Observable<LineDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -56,10 +56,13 @@ export class LineService {
   }
 
   /** GET line by id. Will 404 if id not found */
-  getLine(id: number): Observable<LineDB> {
+  getLine(id: number, GONG__StackPath: string): Observable<LineDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.linesUrl}/${id}`;
-    return this.http.get<LineDB>(url).pipe(
-      tap(_ => this.log(`fetched line id=${id}`)),
+    return this.http.get<LineDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched line id=${id}`)),
       catchError(this.handleError<LineDB>(`getLine id=${id}`))
     );
   }
@@ -82,7 +85,7 @@ export class LineService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         linedb.SVG_Lines_reverse = _SVG_Lines_reverse
-        this.log(`posted linedb id=${linedb.ID}`)
+        // this.log(`posted linedb id=${linedb.ID}`)
       }),
       catchError(this.handleError<LineDB>('postLine'))
     );

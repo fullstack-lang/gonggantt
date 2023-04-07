@@ -127,7 +127,11 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	// store meta package import
 	MetaPackageImportPath  string
 	MetaPackageImportAlias string
-	Map_DocLink_Renaming   map[string]GONG__Identifier
+
+	// to be removed after fix of [issue](https://github.com/golang/go/issues/57559)
+	// map to enable docLink renaming when an identifier is renamed
+	Map_DocLink_Renaming map[string]GONG__Identifier
+	// the to be removed stops here
 }
 
 type GONG__Identifier struct {
@@ -240,6 +244,10 @@ func NewStage() (stage *StageStruct) {
 
 		// end of insertion point
 		Map_GongStructName_InstancesNb: make(map[string]int),
+
+		// to be removed after fix of [issue](https://github.com/golang/go/issues/57559)
+		Map_DocLink_Renaming: make(map[string]GONG__Identifier),
+		// the to be removed stops here
 	}
 
 	return
@@ -903,7 +911,7 @@ type GongstructMapString interface {
 // it is usefull because it allows refactoring of gong struct identifier
 func GongGetSet[Type GongstructSet](stage *StageStruct) *Type {
 	var ret Type
-	
+
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case map[*Animate]any:
@@ -1428,7 +1436,7 @@ func GetFields[Type Gongstruct]() (res []string) {
 	case Polyline:
 		res = []string{"Name", "Points", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
 	case Rect:
-		res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations"}
+		res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations", "Selected"}
 	case SVG:
 		res = []string{"Display", "Name", "Rects", "Texts", "Circles", "Lines", "Ellipses", "Polylines", "Polygones", "Paths"}
 	case Text:
@@ -1668,6 +1676,8 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 				}
 				res += __instance__.Name
 			}
+		case "Selected":
+			res = fmt.Sprintf("%t", any(instance).(Rect).Selected)
 		}
 	case SVG:
 		switch fieldName {

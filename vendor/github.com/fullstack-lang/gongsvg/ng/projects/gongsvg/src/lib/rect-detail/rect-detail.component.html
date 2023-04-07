@@ -156,6 +156,9 @@
             </button>
         </mat-grid-tile>
     </mat-grid-list>
+    <!-- -->
+    <mat-checkbox [formControl]="SelectedFormControl">Selected</mat-checkbox>
+
     <mat-form-field class="detail-full-width">
         <mat-label>(SVG) Rects</mat-label>
         <mat-select [compareWith]="compareObjects" [(ngModel)]="rect.SVG_Rects_reverse" [ngModelOptions]="{standalone: true}">

@@ -43,7 +43,7 @@ export class PolygoneService {
   }
 
   /** GET polygones from the server */
-  getPolygones(GONG__StackPath: string = ""): Observable<PolygoneDB[]> {
+  getPolygones(GONG__StackPath: string): Observable<PolygoneDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -56,10 +56,13 @@ export class PolygoneService {
   }
 
   /** GET polygone by id. Will 404 if id not found */
-  getPolygone(id: number): Observable<PolygoneDB> {
+  getPolygone(id: number, GONG__StackPath: string): Observable<PolygoneDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.polygonesUrl}/${id}`;
-    return this.http.get<PolygoneDB>(url).pipe(
-      tap(_ => this.log(`fetched polygone id=${id}`)),
+    return this.http.get<PolygoneDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched polygone id=${id}`)),
       catchError(this.handleError<PolygoneDB>(`getPolygone id=${id}`))
     );
   }
@@ -82,7 +85,7 @@ export class PolygoneService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         polygonedb.SVG_Polygones_reverse = _SVG_Polygones_reverse
-        this.log(`posted polygonedb id=${polygonedb.ID}`)
+        // this.log(`posted polygonedb id=${polygonedb.ID}`)
       }),
       catchError(this.handleError<PolygoneDB>('postPolygone'))
     );

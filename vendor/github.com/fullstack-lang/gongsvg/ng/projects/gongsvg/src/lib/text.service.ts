@@ -43,7 +43,7 @@ export class TextService {
   }
 
   /** GET texts from the server */
-  getTexts(GONG__StackPath: string = ""): Observable<TextDB[]> {
+  getTexts(GONG__StackPath: string): Observable<TextDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -56,10 +56,13 @@ export class TextService {
   }
 
   /** GET text by id. Will 404 if id not found */
-  getText(id: number): Observable<TextDB> {
+  getText(id: number, GONG__StackPath: string): Observable<TextDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.textsUrl}/${id}`;
-    return this.http.get<TextDB>(url).pipe(
-      tap(_ => this.log(`fetched text id=${id}`)),
+    return this.http.get<TextDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched text id=${id}`)),
       catchError(this.handleError<TextDB>(`getText id=${id}`))
     );
   }
@@ -82,7 +85,7 @@ export class TextService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         textdb.SVG_Texts_reverse = _SVG_Texts_reverse
-        this.log(`posted textdb id=${textdb.ID}`)
+        // this.log(`posted textdb id=${textdb.ID}`)
       }),
       catchError(this.handleError<TextDB>('postText'))
     );

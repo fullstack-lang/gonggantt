@@ -43,7 +43,7 @@ export class CircleService {
   }
 
   /** GET circles from the server */
-  getCircles(GONG__StackPath: string = ""): Observable<CircleDB[]> {
+  getCircles(GONG__StackPath: string): Observable<CircleDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -56,10 +56,13 @@ export class CircleService {
   }
 
   /** GET circle by id. Will 404 if id not found */
-  getCircle(id: number): Observable<CircleDB> {
+  getCircle(id: number, GONG__StackPath: string): Observable<CircleDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.circlesUrl}/${id}`;
-    return this.http.get<CircleDB>(url).pipe(
-      tap(_ => this.log(`fetched circle id=${id}`)),
+    return this.http.get<CircleDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched circle id=${id}`)),
       catchError(this.handleError<CircleDB>(`getCircle id=${id}`))
     );
   }
@@ -82,7 +85,7 @@ export class CircleService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         circledb.SVG_Circles_reverse = _SVG_Circles_reverse
-        this.log(`posted circledb id=${circledb.ID}`)
+        // this.log(`posted circledb id=${circledb.ID}`)
       }),
       catchError(this.handleError<CircleDB>('postCircle'))
     );

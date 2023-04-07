@@ -1,6 +1,7 @@
-<svg class="child">
+<svg class="child" (mousedown)="onSvgClick($event)">
     <g>
-        <rect [attr.x]="Rect?.X" [attr.y]="Rect?.Y" [attr.width]="Rect?.Width" [attr.height]="Rect?.Height" [attr.rx]="Rect?.RX" [attr.fill]="Rect?.Color"
+        <rect (click)="onClick($event)" 
+            [attr.x]="Rect?.X" [attr.y]="Rect?.Y" [attr.width]="Rect?.Width" [attr.height]="Rect?.Height" [attr.rx]="Rect?.RX" [attr.fill]="Rect?.Color"
             [attr.fill-opacity]="Rect?.FillOpacity" [attr.stroke]="Rect?.Stroke" [attr.stroke-width]="Rect?.StrokeWidth"
             [attr.stroke-dasharray]="Rect?.StrokeDashArray" [attr.transform]="Rect?.Transform">
 
@@ -9,6 +10,30 @@
             [attr.values]="animate.Values" 
             [attr.dur]="animate.Dur" 
             [attr.repeatCount]="animate.RepeatCount" />
+            
         </rect>
+
+        <!-- Left anchor -->
+        <circle *ngIf="Rect?.Selected"
+        [attr.cx]="(Rect?.X) ?? 0"
+         [attr.cy]="(Rect?.Y ?? 0) + (Rect?.Height ?? 0) / 2" 
+         [attr.r]="anchorRadius" 
+         [attr.fill]="(dragging && activeAnchor === 'left') ? draggingAnchorFillColor : anchorFillColor"
+
+         (mousedown)="startDrag($event, 'left')" (mousemove)="drag($event, 'left')" (mouseup)="endDrag()" (mouseleave)="endDrag()"
+         />
+
+        <!-- Right anchor -->
+        <circle *ngIf="Rect?.Selected"
+        [attr.cx]="(Rect?.X ?? 0) + (Rect?.Width ?? 0)"
+         [attr.cy]="(Rect?.Y ?? 0) + (Rect?.Height ?? 0) / 2" 
+         [attr.r]="anchorRadius"
+         [attr.fill]="(dragging && activeAnchor === 'right') ? draggingAnchorFillColor : anchorFillColor"
+
+         (mousedown)="startDrag($event, 'right')" (mousemove)="drag($event, 'right')" (mouseup)="endDrag()" (mouseleave)="endDrag()"
+         />
+
+        <!-- Right anchor -->
+
     </g>
 </svg>

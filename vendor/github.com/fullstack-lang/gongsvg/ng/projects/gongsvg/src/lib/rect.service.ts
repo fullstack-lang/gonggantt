@@ -43,7 +43,7 @@ export class RectService {
   }
 
   /** GET rects from the server */
-  getRects(GONG__StackPath: string = ""): Observable<RectDB[]> {
+  getRects(GONG__StackPath: string): Observable<RectDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -56,10 +56,13 @@ export class RectService {
   }
 
   /** GET rect by id. Will 404 if id not found */
-  getRect(id: number): Observable<RectDB> {
+  getRect(id: number, GONG__StackPath: string): Observable<RectDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.rectsUrl}/${id}`;
-    return this.http.get<RectDB>(url).pipe(
-      tap(_ => this.log(`fetched rect id=${id}`)),
+    return this.http.get<RectDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched rect id=${id}`)),
       catchError(this.handleError<RectDB>(`getRect id=${id}`))
     );
   }
@@ -82,7 +85,7 @@ export class RectService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         rectdb.SVG_Rects_reverse = _SVG_Rects_reverse
-        this.log(`posted rectdb id=${rectdb.ID}`)
+        // this.log(`posted rectdb id=${rectdb.ID}`)
       }),
       catchError(this.handleError<RectDB>('postRect'))
     );

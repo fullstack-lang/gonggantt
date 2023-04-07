@@ -108,6 +108,9 @@ export class RectsTableComponent implements OnInit {
         case 'Transform':
           return rectDB.Transform;
 
+        case 'Selected':
+          return rectDB.Selected ? "true" : "false";
+
         case 'SVG_Rects':
           if (this.frontRepo.SVGs.get(rectDB.SVG_RectsDBID.Int64) != undefined) {
             return this.frontRepo.SVGs.get(rectDB.SVG_RectsDBID.Int64)!.Name
@@ -211,6 +214,7 @@ export class RectsTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
+        "Selected",
         "SVG_Rects",
       ]
     } else {
@@ -227,6 +231,7 @@ export class RectsTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
+        "Selected",
         "SVG_Rects",
       ]
       this.selection = new SelectionModel<RectDB>(allowMultiSelect, this.initialSelection);
