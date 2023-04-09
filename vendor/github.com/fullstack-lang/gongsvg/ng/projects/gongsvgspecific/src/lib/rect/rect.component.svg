@@ -1,6 +1,6 @@
 <svg class="child" (mousedown)="onSvgClick($event)">
     <g>
-        <rect (click)="onClick($event)" 
+        <rect class="overlay" (click)="onClick($event)" 
             [attr.x]="Rect?.X" [attr.y]="Rect?.Y" [attr.width]="Rect?.Width" [attr.height]="Rect?.Height" [attr.rx]="Rect?.RX" [attr.fill]="Rect?.Color"
             [attr.fill-opacity]="Rect?.FillOpacity" [attr.stroke]="Rect?.Stroke" [attr.stroke-width]="Rect?.StrokeWidth"
             [attr.stroke-dasharray]="Rect?.StrokeDashArray" [attr.transform]="Rect?.Transform">
@@ -14,7 +14,7 @@
         </rect>
 
         <!-- Left anchor -->
-        <circle *ngIf="Rect?.Selected"
+        <circle class="overlay" *ngIf="Rect?.IsSelected"
         [attr.cx]="(Rect?.X) ?? 0"
          [attr.cy]="(Rect?.Y ?? 0) + (Rect?.Height ?? 0) / 2" 
          [attr.r]="anchorRadius" 
@@ -24,7 +24,7 @@
          />
 
         <!-- Right anchor -->
-        <circle *ngIf="Rect?.Selected"
+        <circle class="overlay" *ngIf="Rect?.IsSelected"
         [attr.cx]="(Rect?.X ?? 0) + (Rect?.Width ?? 0)"
          [attr.cy]="(Rect?.Y ?? 0) + (Rect?.Height ?? 0) / 2" 
          [attr.r]="anchorRadius"

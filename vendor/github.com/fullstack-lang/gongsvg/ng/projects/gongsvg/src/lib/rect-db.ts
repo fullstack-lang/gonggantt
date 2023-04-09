@@ -23,7 +23,8 @@ export class RectDB {
 	StrokeWidth: number = 0
 	StrokeDashArray: string = ""
 	Transform: string = ""
-	Selected: boolean = false
+	IsSelectable: boolean = false
+	IsSelected: boolean = false
 
 	// insertion point for other declarations
 	Animations?: Array<AnimateDB>

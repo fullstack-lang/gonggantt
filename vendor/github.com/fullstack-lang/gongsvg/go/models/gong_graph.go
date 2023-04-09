@@ -32,6 +32,9 @@ func IsStaged[Type Gongstruct](stage *StageStruct, instance *Type) (ok bool) {
 	case *Rect:
 		ok = stage.IsStagedRect(target)
 
+	case *SVG:
+		ok = stage.IsStagedSVG(target)
+
 	case *Text:
 		ok = stage.IsStagedText(target)
 
@@ -105,6 +108,13 @@ func IsStaged[Type Gongstruct](stage *StageStruct, instance *Type) (ok bool) {
 		return
 	}
 
+	func (stage *StageStruct) IsStagedSVG(svg *SVG) (ok bool) {
+
+		_, ok = stage.SVGs[svg]
+	
+		return
+	}
+
 	func (stage *StageStruct) IsStagedText(text *Text) (ok bool) {
 
 		_, ok = stage.Texts[text]
@@ -147,6 +157,9 @@ func StageBranch[Type Gongstruct](stage *StageStruct, instance *Type) {
 
 	case *Rect:
 		stage.StageBranchRect(target)
+
+	case *SVG:
+		stage.StageBranchSVG(target)
 
 	case *Text:
 		stage.StageBranchText(target)
@@ -337,6 +350,24 @@ func (stage *StageStruct) StageBranchRect(rect *Rect) {
 
 }
 
+func (stage *StageStruct) StageBranchSVG(svg *SVG) {
+
+	// check if instance is already staged
+	if IsStaged(stage, svg) {
+		return
+	}
+
+	svg.Stage(stage)
+
+	//insertion point for the staging of instances referenced by pointers
+
+	//insertion point for the staging of instances referenced by slice of pointers
+	for _, _layer := range svg.Layers {
+		StageBranch(stage, _layer)
+	}
+
+}
+
 func (stage *StageStruct) StageBranchText(text *Text) {
 
 	// check if instance is already staged
@@ -390,6 +421,9 @@ func UnstageBranch[Type Gongstruct](stage *StageStruct, instance *Type) {
 
 	case *Rect:
 		stage.UnstageBranchRect(target)
+
+	case *SVG:
+		stage.UnstageBranchSVG(target)
 
 	case *Text:
 		stage.UnstageBranchText(target)
@@ -576,6 +610,24 @@ func (stage *StageStruct) UnstageBranchRect(rect *Rect) {
 	//insertion point for the staging of instances referenced by slice of pointers
 	for _, _animate := range rect.Animations {
 		UnstageBranch(stage, _animate)
+	}
+
+}
+
+func (stage *StageStruct) UnstageBranchSVG(svg *SVG) {
+
+	// check if instance is already staged
+	if ! IsStaged(stage, svg) {
+		return
+	}
+
+	svg.Unstage(stage)
+
+	//insertion point for the staging of instances referenced by pointers
+
+	//insertion point for the staging of instances referenced by slice of pointers
+	for _, _layer := range svg.Layers {
+		UnstageBranch(stage, _layer)
 	}
 
 }

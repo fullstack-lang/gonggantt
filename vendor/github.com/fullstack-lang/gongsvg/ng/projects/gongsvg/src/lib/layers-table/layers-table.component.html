@@ -32,6 +32,13 @@
                 {{Layer.Name}}
             </td>
         </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="SVG_Layers">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (SVG) Layers </th>
+            <td mat-cell *matCellDef="let layer">
+                {{frontRepo.SVGs.get(layer.SVG_LayersDBID.Int64)?.Name}}
+            </td>
+        </ng-container>
 
         <ng-container matColumnDef="ID" sticky>
             <th mat-header-cell *matHeaderCellDef mat-sort-header> ID. </th>

@@ -39,6 +39,8 @@ type BackRepoStruct struct {
 
 	BackRepoRect BackRepoRectStruct
 
+	BackRepoSVG BackRepoSVGStruct
+
 	BackRepoText BackRepoTextStruct
 
 	CommitFromBackNb uint // records commit increments when performed by the back
@@ -86,6 +88,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		&PolygoneDB{},
 		&PolylineDB{},
 		&RectDB{},
+		&SVGDB{},
 		&TextDB{},
 	)
 
@@ -169,6 +172,14 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		db:    db,
 		stage: stage,
 	}
+	backRepo.BackRepoSVG = BackRepoSVGStruct{
+		Map_SVGDBID_SVGPtr: make(map[uint]*models.SVG, 0),
+		Map_SVGDBID_SVGDB:  make(map[uint]*SVGDB, 0),
+		Map_SVGPtr_SVGDBID: make(map[*models.SVG]uint, 0),
+
+		db:    db,
+		stage: stage,
+	}
 	backRepo.BackRepoText = BackRepoTextStruct{
 		Map_TextDBID_TextPtr: make(map[uint]*models.Text, 0),
 		Map_TextDBID_TextDB:  make(map[uint]*TextDB, 0),
@@ -231,6 +242,7 @@ func (backRepo *BackRepoStruct) Commit(stage *models.StageStruct) {
 	backRepo.BackRepoPolygone.CommitPhaseOne(stage)
 	backRepo.BackRepoPolyline.CommitPhaseOne(stage)
 	backRepo.BackRepoRect.CommitPhaseOne(stage)
+	backRepo.BackRepoSVG.CommitPhaseOne(stage)
 	backRepo.BackRepoText.CommitPhaseOne(stage)
 
 	// insertion point for per struct back repo phase two commit
@@ -243,6 +255,7 @@ func (backRepo *BackRepoStruct) Commit(stage *models.StageStruct) {
 	backRepo.BackRepoPolygone.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoPolyline.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoRect.CommitPhaseTwo(backRepo)
+	backRepo.BackRepoSVG.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoText.CommitPhaseTwo(backRepo)
 
 	backRepo.IncrementCommitFromBackNb()
@@ -260,6 +273,7 @@ func (backRepo *BackRepoStruct) Checkout(stage *models.StageStruct) {
 	backRepo.BackRepoPolygone.CheckoutPhaseOne()
 	backRepo.BackRepoPolyline.CheckoutPhaseOne()
 	backRepo.BackRepoRect.CheckoutPhaseOne()
+	backRepo.BackRepoSVG.CheckoutPhaseOne()
 	backRepo.BackRepoText.CheckoutPhaseOne()
 
 	// insertion point for per struct back repo phase two commit
@@ -272,6 +286,7 @@ func (backRepo *BackRepoStruct) Checkout(stage *models.StageStruct) {
 	backRepo.BackRepoPolygone.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoPolyline.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoRect.CheckoutPhaseTwo(backRepo)
+	backRepo.BackRepoSVG.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoText.CheckoutPhaseTwo(backRepo)
 }
 
@@ -308,6 +323,7 @@ func (backRepo *BackRepoStruct) Backup(stage *models.StageStruct, dirPath string
 	backRepo.BackRepoPolygone.Backup(dirPath)
 	backRepo.BackRepoPolyline.Backup(dirPath)
 	backRepo.BackRepoRect.Backup(dirPath)
+	backRepo.BackRepoSVG.Backup(dirPath)
 	backRepo.BackRepoText.Backup(dirPath)
 }
 
@@ -328,6 +344,7 @@ func (backRepo *BackRepoStruct) BackupXL(stage *models.StageStruct, dirPath stri
 	backRepo.BackRepoPolygone.BackupXL(file)
 	backRepo.BackRepoPolyline.BackupXL(file)
 	backRepo.BackRepoRect.BackupXL(file)
+	backRepo.BackRepoSVG.BackupXL(file)
 	backRepo.BackRepoText.BackupXL(file)
 
 	var b bytes.Buffer
@@ -362,6 +379,7 @@ func (backRepo *BackRepoStruct) Restore(stage *models.StageStruct, dirPath strin
 	backRepo.BackRepoPolygone.RestorePhaseOne(dirPath)
 	backRepo.BackRepoPolyline.RestorePhaseOne(dirPath)
 	backRepo.BackRepoRect.RestorePhaseOne(dirPath)
+	backRepo.BackRepoSVG.RestorePhaseOne(dirPath)
 	backRepo.BackRepoText.RestorePhaseOne(dirPath)
 
 	//
@@ -378,6 +396,7 @@ func (backRepo *BackRepoStruct) Restore(stage *models.StageStruct, dirPath strin
 	backRepo.BackRepoPolygone.RestorePhaseTwo()
 	backRepo.BackRepoPolyline.RestorePhaseTwo()
 	backRepo.BackRepoRect.RestorePhaseTwo()
+	backRepo.BackRepoSVG.RestorePhaseTwo()
 	backRepo.BackRepoText.RestorePhaseTwo()
 
 	backRepo.stage.Checkout()
@@ -415,6 +434,7 @@ func (backRepo *BackRepoStruct) RestoreXL(stage *models.StageStruct, dirPath str
 	backRepo.BackRepoPolygone.RestoreXLPhaseOne(file)
 	backRepo.BackRepoPolyline.RestoreXLPhaseOne(file)
 	backRepo.BackRepoRect.RestoreXLPhaseOne(file)
+	backRepo.BackRepoSVG.RestoreXLPhaseOne(file)
 	backRepo.BackRepoText.RestoreXLPhaseOne(file)
 
 	// commit the restored stage

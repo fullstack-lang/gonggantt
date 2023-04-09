@@ -157,7 +157,10 @@
         </mat-grid-tile>
     </mat-grid-list>
     <!-- -->
-    <mat-checkbox [formControl]="SelectedFormControl">Selected</mat-checkbox>
+    <mat-checkbox [formControl]="IsSelectableFormControl">IsSelectable</mat-checkbox>
+
+    <!-- -->
+    <mat-checkbox [formControl]="IsSelectedFormControl">IsSelected</mat-checkbox>
 
     <mat-form-field class="detail-full-width">
         <mat-label>(Layer) Rects</mat-label>

@@ -31,6 +31,9 @@ import { PolylineService } from './polyline.service'
 import { RectDB } from './rect-db'
 import { RectService } from './rect.service'
 
+import { SVGDB } from './svg-db'
+import { SVGService } from './svg.service'
+
 import { TextDB } from './text-db'
 import { TextService } from './text.service'
 
@@ -64,6 +67,9 @@ export class FrontRepo { // insertion point sub template
   Rects_array = new Array<RectDB>(); // array of repo instances
   Rects = new Map<number, RectDB>(); // map of repo instances
   Rects_batch = new Map<number, RectDB>(); // same but only in last GET (for finding repo instances to delete)
+  SVGs_array = new Array<SVGDB>(); // array of repo instances
+  SVGs = new Map<number, SVGDB>(); // map of repo instances
+  SVGs_batch = new Map<number, SVGDB>(); // same but only in last GET (for finding repo instances to delete)
   Texts_array = new Array<TextDB>(); // array of repo instances
   Texts = new Map<number, TextDB>(); // map of repo instances
   Texts_batch = new Map<number, TextDB>(); // same but only in last GET (for finding repo instances to delete)
@@ -138,6 +144,7 @@ export class FrontRepoService {
     private polygoneService: PolygoneService,
     private polylineService: PolylineService,
     private rectService: RectService,
+    private svgService: SVGService,
     private textService: TextService,
   ) { }
 
@@ -178,6 +185,7 @@ export class FrontRepoService {
     Observable<PolygoneDB[]>,
     Observable<PolylineDB[]>,
     Observable<RectDB[]>,
+    Observable<SVGDB[]>,
     Observable<TextDB[]>,
   ] = [ // insertion point sub template
       this.animateService.getAnimates(this.GONG__StackPath),
@@ -189,6 +197,7 @@ export class FrontRepoService {
       this.polygoneService.getPolygones(this.GONG__StackPath),
       this.polylineService.getPolylines(this.GONG__StackPath),
       this.rectService.getRects(this.GONG__StackPath),
+      this.svgService.getSVGs(this.GONG__StackPath),
       this.textService.getTexts(this.GONG__StackPath),
     ];
 
@@ -212,6 +221,7 @@ export class FrontRepoService {
       this.polygoneService.getPolygones(this.GONG__StackPath),
       this.polylineService.getPolylines(this.GONG__StackPath),
       this.rectService.getRects(this.GONG__StackPath),
+      this.svgService.getSVGs(this.GONG__StackPath),
       this.textService.getTexts(this.GONG__StackPath),
     ]
 
@@ -230,6 +240,7 @@ export class FrontRepoService {
             polygones_,
             polylines_,
             rects_,
+            svgs_,
             texts_,
           ]) => {
             // Typing can be messy with many items. Therefore, type casting is necessary here
@@ -252,6 +263,8 @@ export class FrontRepoService {
             polylines = polylines_ as PolylineDB[]
             var rects: RectDB[]
             rects = rects_ as RectDB[]
+            var svgs: SVGDB[]
+            svgs = svgs_ as SVGDB[]
             var texts: TextDB[]
             texts = texts_ as TextDB[]
 
@@ -556,6 +569,39 @@ export class FrontRepoService {
             });
 
             // init the array
+            this.frontRepo.SVGs_array = svgs
+
+            // clear the map that counts SVG in the GET
+            this.frontRepo.SVGs_batch.clear()
+
+            svgs.forEach(
+              svg => {
+                this.frontRepo.SVGs.set(svg.ID, svg)
+                this.frontRepo.SVGs_batch.set(svg.ID, svg)
+              }
+            )
+
+            // clear svgs that are absent from the batch
+            this.frontRepo.SVGs.forEach(
+              svg => {
+                if (this.frontRepo.SVGs_batch.get(svg.ID) == undefined) {
+                  this.frontRepo.SVGs.delete(svg.ID)
+                }
+              }
+            )
+
+            // sort SVGs_array array
+            this.frontRepo.SVGs_array.sort((t1, t2) => {
+              if (t1.Name > t2.Name) {
+                return 1;
+              }
+              if (t1.Name < t2.Name) {
+                return -1;
+              }
+              return 0;
+            });
+
+            // init the array
             this.frontRepo.Texts_array = texts
 
             // clear the map that counts Text in the GET
@@ -748,6 +794,19 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
 
                 // insertion point for redeeming ONE-MANY associations
+                // insertion point for slice of pointer field SVG.Layers redeeming
+                {
+                  let _svg = this.frontRepo.SVGs.get(layer.SVG_LayersDBID.Int64)
+                  if (_svg) {
+                    if (_svg.Layers == undefined) {
+                      _svg.Layers = new Array<LayerDB>()
+                    }
+                    _svg.Layers.push(layer)
+                    if (layer.SVG_Layers_reverse == undefined) {
+                      layer.SVG_Layers_reverse = _svg
+                    }
+                  }
+                }
               }
             )
             lines.forEach(
@@ -848,6 +907,13 @@ export class FrontRepoService {
                     }
                   }
                 }
+              }
+            )
+            svgs.forEach(
+              svg => {
+                // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
+
+                // insertion point for redeeming ONE-MANY associations
               }
             )
             texts.forEach(
@@ -1191,6 +1257,19 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
+                // insertion point for slice of pointer field SVG.Layers redeeming
+                {
+                  let _svg = this.frontRepo.SVGs.get(layer.SVG_LayersDBID.Int64)
+                  if (_svg) {
+                    if (_svg.Layers == undefined) {
+                      _svg.Layers = new Array<LayerDB>()
+                    }
+                    _svg.Layers.push(layer)
+                    if (layer.SVG_Layers_reverse == undefined) {
+                      layer.SVG_Layers_reverse = _svg
+                    }
+                  }
+                }
               }
             )
 
@@ -1535,6 +1614,57 @@ export class FrontRepoService {
     )
   }
 
+  // SVGPull performs a GET on SVG of the stack and redeem association pointers 
+  SVGPull(): Observable<FrontRepo> {
+    return new Observable<FrontRepo>(
+      (observer) => {
+        combineLatest([
+          this.svgService.getSVGs(this.GONG__StackPath)
+        ]).subscribe(
+          ([ // insertion point sub template 
+            svgs,
+          ]) => {
+            // init the array
+            this.frontRepo.SVGs_array = svgs
+
+            // clear the map that counts SVG in the GET
+            this.frontRepo.SVGs_batch.clear()
+
+            // 
+            // First Step: init map of instances
+            // insertion point sub template 
+            svgs.forEach(
+              svg => {
+                this.frontRepo.SVGs.set(svg.ID, svg)
+                this.frontRepo.SVGs_batch.set(svg.ID, svg)
+
+                // insertion point for redeeming ONE/ZERO-ONE associations
+
+                // insertion point for redeeming ONE-MANY associations
+              }
+            )
+
+            // clear svgs that are absent from the GET
+            this.frontRepo.SVGs.forEach(
+              svg => {
+                if (this.frontRepo.SVGs_batch.get(svg.ID) == undefined) {
+                  this.frontRepo.SVGs.delete(svg.ID)
+                }
+              }
+            )
+
+            // 
+            // Second Step: redeem pointers between instances (thanks to maps in the First Step)
+            // insertion point sub template 
+
+            // hand over control flow to observer
+            observer.next(this.frontRepo)
+          }
+        )
+      }
+    )
+  }
+
   // TextPull performs a GET on Text of the stack and redeem association pointers 
   TextPull(): Observable<FrontRepo> {
     return new Observable<FrontRepo>(
@@ -1628,6 +1758,9 @@ export function getPolylineUniqueID(id: number): number {
 export function getRectUniqueID(id: number): number {
   return 67 * id
 }
-export function getTextUniqueID(id: number): number {
+export function getSVGUniqueID(id: number): number {
   return 71 * id
+}
+export function getTextUniqueID(id: number): number {
+  return 73 * id
 }

@@ -14,6 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { LayerDB } from './layer-db';
 
 // insertion point for imports
+import { SVGDB } from './svg-db'
 
 @Injectable({
   providedIn: 'root'
@@ -78,6 +79,8 @@ export class LayerService {
     layerdb.Polylines = []
     layerdb.Polygones = []
     layerdb.Paths = []
+    let _SVG_Layers_reverse = layerdb.SVG_Layers_reverse
+    layerdb.SVG_Layers_reverse = new SVGDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -88,6 +91,7 @@ export class LayerService {
     return this.http.post<LayerDB>(this.layersUrl, layerdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+        layerdb.SVG_Layers_reverse = _SVG_Layers_reverse
         // this.log(`posted layerdb id=${layerdb.ID}`)
       }),
       catchError(this.handleError<LayerDB>('postLayer'))
@@ -125,6 +129,8 @@ export class LayerService {
     layerdb.Polylines = []
     layerdb.Polygones = []
     layerdb.Paths = []
+    let _SVG_Layers_reverse = layerdb.SVG_Layers_reverse
+    layerdb.SVG_Layers_reverse = new SVGDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -135,6 +141,7 @@ export class LayerService {
     return this.http.put<LayerDB>(url, layerdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+        layerdb.SVG_Layers_reverse = _SVG_Layers_reverse
         this.log(`updated layerdb id=${layerdb.ID}`)
       }),
       catchError(this.handleError<LayerDB>('updateLayer'))

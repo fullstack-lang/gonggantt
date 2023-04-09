@@ -35,7 +35,8 @@ enum RectDetailComponentState {
 export class RectDetailComponent implements OnInit {
 
 	// insertion point for declarations
-	SelectedFormControl: UntypedFormControl = new UntypedFormControl(false);
+	IsSelectableFormControl: UntypedFormControl = new UntypedFormControl(false);
+	IsSelectedFormControl: UntypedFormControl = new UntypedFormControl(false);
 
 	// the RectDB of interest
 	rect: RectDB = new RectDB
@@ -144,7 +145,8 @@ export class RectDetailComponent implements OnInit {
 				}
 
 				// insertion point for recovery of form controls value for bool fields
-				this.SelectedFormControl.setValue(this.rect.Selected)
+				this.IsSelectableFormControl.setValue(this.rect.IsSelectable)
+				this.IsSelectedFormControl.setValue(this.rect.IsSelected)
 			}
 		)
 
@@ -157,7 +159,8 @@ export class RectDetailComponent implements OnInit {
 		// pointers fields, after the translation, are nulled in order to perform serialization
 
 		// insertion point for translation/nullation of each field
-		this.rect.Selected = this.SelectedFormControl.value
+		this.rect.IsSelectable = this.IsSelectableFormControl.value
+		this.rect.IsSelected = this.IsSelectedFormControl.value
 
 		// save from the front pointer space to the non pointer space for serialization
 

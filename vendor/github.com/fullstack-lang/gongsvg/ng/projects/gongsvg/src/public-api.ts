@@ -70,6 +70,12 @@ export * from './lib/rects-table/rects-table.component'
 export * from './lib/rect-db'
 export * from './lib/rect.service'
 
+export * from './lib/svg-detail/svg-detail.component'
+export * from './lib/svg-sorting/svg-sorting.component'
+export * from './lib/svgs-table/svgs-table.component'
+export * from './lib/svg-db'
+export * from './lib/svg.service'
+
 export * from './lib/text-detail/text-detail.component'
 export * from './lib/text-sorting/text-sorting.component'
 export * from './lib/texts-table/texts-table.component'

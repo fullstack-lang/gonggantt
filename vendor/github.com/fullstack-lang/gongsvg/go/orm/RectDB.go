@@ -100,9 +100,13 @@ type RectDB struct {
 	// Declation for basic field rectDB.Transform
 	Transform_Data sql.NullString
 
-	// Declation for basic field rectDB.Selected
+	// Declation for basic field rectDB.IsSelectable
 	// provide the sql storage for the boolan
-	Selected_Data sql.NullBool
+	IsSelectable_Data sql.NullBool
+
+	// Declation for basic field rectDB.IsSelected
+	// provide the sql storage for the boolan
+	IsSelected_Data sql.NullBool
 	// encoding of pointers
 	RectPointersEnconding
 }
@@ -148,7 +152,9 @@ type RectWOP struct {
 
 	Transform string `xlsx:"12"`
 
-	Selected bool `xlsx:"13"`
+	IsSelectable bool `xlsx:"13"`
+
+	IsSelected bool `xlsx:"14"`
 	// insertion for WOP pointer fields
 }
 
@@ -167,7 +173,8 @@ var Rect_Fields = []string{
 	"StrokeWidth",
 	"StrokeDashArray",
 	"Transform",
-	"Selected",
+	"IsSelectable",
+	"IsSelected",
 }
 
 type BackRepoRectStruct struct {
@@ -510,8 +517,11 @@ func (rectDB *RectDB) CopyBasicFieldsFromRect(rect *models.Rect) {
 	rectDB.Transform_Data.String = rect.Transform
 	rectDB.Transform_Data.Valid = true
 
-	rectDB.Selected_Data.Bool = rect.Selected
-	rectDB.Selected_Data.Valid = true
+	rectDB.IsSelectable_Data.Bool = rect.IsSelectable
+	rectDB.IsSelectable_Data.Valid = true
+
+	rectDB.IsSelected_Data.Bool = rect.IsSelected
+	rectDB.IsSelected_Data.Valid = true
 }
 
 // CopyBasicFieldsFromRectWOP
@@ -554,8 +564,11 @@ func (rectDB *RectDB) CopyBasicFieldsFromRectWOP(rect *RectWOP) {
 	rectDB.Transform_Data.String = rect.Transform
 	rectDB.Transform_Data.Valid = true
 
-	rectDB.Selected_Data.Bool = rect.Selected
-	rectDB.Selected_Data.Valid = true
+	rectDB.IsSelectable_Data.Bool = rect.IsSelectable
+	rectDB.IsSelectable_Data.Valid = true
+
+	rectDB.IsSelected_Data.Bool = rect.IsSelected
+	rectDB.IsSelected_Data.Valid = true
 }
 
 // CopyBasicFieldsToRect
@@ -573,7 +586,8 @@ func (rectDB *RectDB) CopyBasicFieldsToRect(rect *models.Rect) {
 	rect.StrokeWidth = rectDB.StrokeWidth_Data.Float64
 	rect.StrokeDashArray = rectDB.StrokeDashArray_Data.String
 	rect.Transform = rectDB.Transform_Data.String
-	rect.Selected = rectDB.Selected_Data.Bool
+	rect.IsSelectable = rectDB.IsSelectable_Data.Bool
+	rect.IsSelected = rectDB.IsSelected_Data.Bool
 }
 
 // CopyBasicFieldsToRectWOP
@@ -592,7 +606,8 @@ func (rectDB *RectDB) CopyBasicFieldsToRectWOP(rect *RectWOP) {
 	rect.StrokeWidth = rectDB.StrokeWidth_Data.Float64
 	rect.StrokeDashArray = rectDB.StrokeDashArray_Data.String
 	rect.Transform = rectDB.Transform_Data.String
-	rect.Selected = rectDB.Selected_Data.Bool
+	rect.IsSelectable = rectDB.IsSelectable_Data.Bool
+	rect.IsSelected = rectDB.IsSelected_Data.Bool
 }
 
 // Backup generates a json file from a slice of all RectDB instances in the backrepo

@@ -25,12 +25,15 @@ export class RectComponent implements OnInit {
 
   onClick(event: MouseEvent) {
     event.stopPropagation(); // Prevent the event from bubbling up to the SVG element
-    this.Rect!.Selected = true
-    this.rectService.updateRect(this.Rect!, this.GONG__StackPath).subscribe()
+
+    if (this.Rect?.IsSelectable) {
+      this.Rect!.IsSelected = !this.Rect!.IsSelected
+      this.rectService.updateRect(this.Rect!, this.GONG__StackPath).subscribe()
+    }
   }
 
   onSvgClick(event: MouseEvent) {
-    this.Rect!.Selected = false
+    // this.Rect!.Selected = false
     this.rectService.updateRect(this.Rect!, this.GONG__StackPath).subscribe()
   }
 

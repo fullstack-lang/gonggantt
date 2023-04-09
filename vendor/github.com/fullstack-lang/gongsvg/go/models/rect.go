@@ -7,5 +7,6 @@ type Rect struct {
 
 	Animations []*Animate
 
-	Selected bool
+	IsSelectable bool
+	IsSelected   bool
 }

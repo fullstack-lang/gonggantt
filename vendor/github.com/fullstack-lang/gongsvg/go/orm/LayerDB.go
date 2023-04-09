@@ -45,6 +45,12 @@ type LayerAPI struct {
 // reverse pointers of slice of poitners to Struct
 type LayerPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
+
+	// Implementation of a reverse ID for field SVG{}.Layers []*Layer
+	SVG_LayersDBID sql.NullInt64
+
+	// implementation of the index of the withing the slice
+	SVG_LayersDBID_Index sql.NullInt64
 }
 
 // LayerDB describes a layer in the database
@@ -912,6 +918,12 @@ func (backRepoLayer *BackRepoLayerStruct) RestorePhaseTwo() {
 		_ = layerDB
 
 		// insertion point for reindexing pointers encoding
+		// This reindex layer.Layers
+		if layerDB.SVG_LayersDBID.Int64 != 0 {
+			layerDB.SVG_LayersDBID.Int64 =
+				int64(BackRepoSVGid_atBckpTime_newID[uint(layerDB.SVG_LayersDBID.Int64)])
+		}
+
 		// update databse with new index encoding
 		query := backRepoLayer.db.Model(layerDB).Updates(*layerDB)
 		if query.Error != nil {

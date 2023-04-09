@@ -29,6 +29,9 @@ import { PolylineDetailComponent } from './polyline-detail/polyline-detail.compo
 import { RectsTableComponent } from './rects-table/rects-table.component'
 import { RectDetailComponent } from './rect-detail/rect-detail.component'
 
+import { SVGsTableComponent } from './svgs-table/svgs-table.component'
+import { SVGDetailComponent } from './svg-detail/svg-detail.component'
+
 import { TextsTableComponent } from './texts-table/texts-table.component'
 import { TextDetailComponent } from './text-detail/text-detail.component'
 
@@ -360,6 +363,39 @@ export class RouteService {
         return route
     }
 
+    getSVGTablePath(): string {
+        return this.getPathRoot() + '-svgs/:GONG__StackPath'
+    }
+    getSVGTableRoute(stackPath: string): Route {
+        let route: Route =
+            { path: this.getSVGTablePath(), component: SVGsTableComponent, outlet: this.getTableOutlet(stackPath) }
+        return route
+    }
+    getSVGAdderPath(): string {
+        return this.getPathRoot() + '-svg-adder/:GONG__StackPath'
+    }
+    getSVGAdderRoute(stackPath: string): Route {
+        let route: Route =
+            { path: this.getSVGAdderPath(), component: SVGDetailComponent, outlet: this.getEditorOutlet(stackPath) }
+        return route
+    }
+    getSVGAdderForUsePath(): string {
+        return this.getPathRoot() + '-svg-adder/:id/:originStruct/:originStructFieldName/:GONG__StackPath'
+    }
+    getSVGAdderForUseRoute(stackPath: string): Route {
+        let route: Route =
+            { path: this.getSVGAdderForUsePath(), component: SVGDetailComponent, outlet: this.getEditorOutlet(stackPath) }
+        return route
+    }
+    getSVGDetailPath(): string {
+        return this.getPathRoot() + '-svg-detail/:id/:GONG__StackPath'
+    }
+    getSVGDetailRoute(stackPath: string): Route {
+        let route: Route =
+            { path: this.getSVGDetailPath(), component: SVGDetailComponent, outlet: this.getEditorOutlet(stackPath) }
+        return route
+    }
+
     getTextTablePath(): string {
         return this.getPathRoot() + '-texts/:GONG__StackPath'
     }
@@ -443,6 +479,11 @@ export class RouteService {
             this.getRectAdderRoute(stackPath),
             this.getRectAdderForUseRoute(stackPath),
             this.getRectDetailRoute(stackPath),
+
+            this.getSVGTableRoute(stackPath),
+            this.getSVGAdderRoute(stackPath),
+            this.getSVGAdderForUseRoute(stackPath),
+            this.getSVGDetailRoute(stackPath),
 
             this.getTextTableRoute(stackPath),
             this.getTextAdderRoute(stackPath),

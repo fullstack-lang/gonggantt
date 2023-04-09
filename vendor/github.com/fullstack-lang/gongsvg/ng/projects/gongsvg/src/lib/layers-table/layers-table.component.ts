@@ -78,6 +78,13 @@ export class LayersTableComponent implements OnInit {
         case 'Name':
           return layerDB.Name;
 
+        case 'SVG_Layers':
+          if (this.frontRepo.SVGs.get(layerDB.SVG_LayersDBID.Int64) != undefined) {
+            return this.frontRepo.SVGs.get(layerDB.SVG_LayersDBID.Int64)!.Name
+          } else {
+            return ""
+          }
+
         default:
           console.assert(false, "Unknown field")
           return "";
@@ -93,6 +100,10 @@ export class LayersTableComponent implements OnInit {
 
       // insertion point for merging of fields
       mergedContent += layerDB.Name.toLowerCase()
+      if (layerDB.SVG_LayersDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.SVGs.get(layerDB.SVG_LayersDBID.Int64)!.Name.toLowerCase()
+      }
+
 
       let isSelected = mergedContent.includes(filter.toLowerCase())
       return isSelected
@@ -149,11 +160,13 @@ export class LayersTableComponent implements OnInit {
       this.displayedColumns = ['ID', 'Delete', // insertion point for columns to display
         "Display",
         "Name",
+        "SVG_Layers",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Display",
         "Name",
+        "SVG_Layers",
       ]
       this.selection = new SelectionModel<LayerDB>(allowMultiSelect, this.initialSelection);
     }

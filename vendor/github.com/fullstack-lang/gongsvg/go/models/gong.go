@@ -102,6 +102,14 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterRectDeleteCallback OnAfterDeleteInterface[Rect]
 	OnAfterRectReadCallback   OnAfterReadInterface[Rect]
 
+	SVGs           map[*SVG]any
+	SVGs_mapString map[string]*SVG
+
+	OnAfterSVGCreateCallback OnAfterCreateInterface[SVG]
+	OnAfterSVGUpdateCallback OnAfterUpdateInterface[SVG]
+	OnAfterSVGDeleteCallback OnAfterDeleteInterface[SVG]
+	OnAfterSVGReadCallback   OnAfterReadInterface[SVG]
+
 	Texts           map[*Text]any
 	Texts_mapString map[string]*Text
 
@@ -192,6 +200,8 @@ type BackRepoInterface interface {
 	CheckoutPolyline(polyline *Polyline)
 	CommitRect(rect *Rect)
 	CheckoutRect(rect *Rect)
+	CommitSVG(svg *SVG)
+	CheckoutSVG(svg *SVG)
 	CommitText(text *Text)
 	CheckoutText(text *Text)
 	GetLastCommitFromBackNb() uint
@@ -239,6 +249,9 @@ func NewStage() (stage *StageStruct) {
 		Rects:           make(map[*Rect]any),
 		Rects_mapString: make(map[string]*Rect),
 
+		SVGs:           make(map[*SVG]any),
+		SVGs_mapString: make(map[string]*SVG),
+
 		Texts:           make(map[*Text]any),
 		Texts_mapString: make(map[string]*Text),
 
@@ -268,6 +281,7 @@ func (stage *StageStruct) Commit() {
 	stage.Map_GongStructName_InstancesNb["Polygone"] = len(stage.Polygones)
 	stage.Map_GongStructName_InstancesNb["Polyline"] = len(stage.Polylines)
 	stage.Map_GongStructName_InstancesNb["Rect"] = len(stage.Rects)
+	stage.Map_GongStructName_InstancesNb["SVG"] = len(stage.SVGs)
 	stage.Map_GongStructName_InstancesNb["Text"] = len(stage.Texts)
 
 }
@@ -287,6 +301,7 @@ func (stage *StageStruct) Checkout() {
 	stage.Map_GongStructName_InstancesNb["Polygone"] = len(stage.Polygones)
 	stage.Map_GongStructName_InstancesNb["Polyline"] = len(stage.Polylines)
 	stage.Map_GongStructName_InstancesNb["Rect"] = len(stage.Rects)
+	stage.Map_GongStructName_InstancesNb["SVG"] = len(stage.SVGs)
 	stage.Map_GongStructName_InstancesNb["Text"] = len(stage.Texts)
 
 }
@@ -680,6 +695,46 @@ func (rect *Rect) GetName() (res string) {
 	return rect.Name
 }
 
+// Stage puts svg to the model stage
+func (svg *SVG) Stage(stage *StageStruct) *SVG {
+	stage.SVGs[svg] = __member
+	stage.SVGs_mapString[svg.Name] = svg
+
+	return svg
+}
+
+// Unstage removes svg off the model stage
+func (svg *SVG) Unstage(stage *StageStruct) *SVG {
+	delete(stage.SVGs, svg)
+	delete(stage.SVGs_mapString, svg.Name)
+	return svg
+}
+
+// commit svg to the back repo (if it is already staged)
+func (svg *SVG) Commit(stage *StageStruct) *SVG {
+	if _, ok := stage.SVGs[svg]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitSVG(svg)
+		}
+	}
+	return svg
+}
+
+// Checkout svg to the back repo (if it is already staged)
+func (svg *SVG) Checkout(stage *StageStruct) *SVG {
+	if _, ok := stage.SVGs[svg]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutSVG(svg)
+		}
+	}
+	return svg
+}
+
+// for satisfaction of GongStruct interface
+func (svg *SVG) GetName() (res string) {
+	return svg.Name
+}
+
 // Stage puts text to the model stage
 func (text *Text) Stage(stage *StageStruct) *Text {
 	stage.Texts[text] = __member
@@ -731,6 +786,7 @@ type AllModelsStructCreateInterface interface { // insertion point for Callbacks
 	CreateORMPolygone(Polygone *Polygone)
 	CreateORMPolyline(Polyline *Polyline)
 	CreateORMRect(Rect *Rect)
+	CreateORMSVG(SVG *SVG)
 	CreateORMText(Text *Text)
 }
 
@@ -744,6 +800,7 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 	DeleteORMPolygone(Polygone *Polygone)
 	DeleteORMPolyline(Polyline *Polyline)
 	DeleteORMRect(Rect *Rect)
+	DeleteORMSVG(SVG *SVG)
 	DeleteORMText(Text *Text)
 }
 
@@ -774,6 +831,9 @@ func (stage *StageStruct) Reset() { // insertion point for array reset
 
 	stage.Rects = make(map[*Rect]any)
 	stage.Rects_mapString = make(map[string]*Rect)
+
+	stage.SVGs = make(map[*SVG]any)
+	stage.SVGs_mapString = make(map[string]*SVG)
 
 	stage.Texts = make(map[*Text]any)
 	stage.Texts_mapString = make(map[string]*Text)
@@ -807,6 +867,9 @@ func (stage *StageStruct) Nil() { // insertion point for array nil
 
 	stage.Rects = nil
 	stage.Rects_mapString = nil
+
+	stage.SVGs = nil
+	stage.SVGs_mapString = nil
 
 	stage.Texts = nil
 	stage.Texts_mapString = nil
@@ -850,6 +913,10 @@ func (stage *StageStruct) Unstage() { // insertion point for array nil
 		rect.Unstage(stage)
 	}
 
+	for svg := range stage.SVGs {
+		svg.Unstage(stage)
+	}
+
 	for text := range stage.Texts {
 		text.Unstage(stage)
 	}
@@ -862,7 +929,7 @@ func (stage *StageStruct) Unstage() { // insertion point for array nil
 // - full refactoring of Gongstruct identifiers / fields
 type Gongstruct interface {
 	// insertion point for generic types
-	Animate | Circle | Ellipse | Layer | Line | Path | Polygone | Polyline | Rect | Text
+	Animate | Circle | Ellipse | Layer | Line | Path | Polygone | Polyline | Rect | SVG | Text
 }
 
 // Gongstruct is the type parameter for generated generic function that allows
@@ -871,7 +938,7 @@ type Gongstruct interface {
 // - full refactoring of Gongstruct identifiers / fields
 type PointerToGongstruct interface {
 	// insertion point for generic types
-	*Animate | *Circle | *Ellipse | *Layer | *Line | *Path | *Polygone | *Polyline | *Rect | *Text
+	*Animate | *Circle | *Ellipse | *Layer | *Line | *Path | *Polygone | *Polyline | *Rect | *SVG | *Text
 	GetName() string
 }
 
@@ -887,6 +954,7 @@ type GongstructSet interface {
 		map[*Polygone]any |
 		map[*Polyline]any |
 		map[*Rect]any |
+		map[*SVG]any |
 		map[*Text]any |
 		map[*any]any // because go does not support an extra "|" at the end of type specifications
 }
@@ -903,6 +971,7 @@ type GongstructMapString interface {
 		map[string]*Polygone |
 		map[string]*Polyline |
 		map[string]*Rect |
+		map[string]*SVG |
 		map[string]*Text |
 		map[*any]any // because go does not support an extra "|" at the end of type specifications
 }
@@ -932,6 +1001,8 @@ func GongGetSet[Type GongstructSet](stage *StageStruct) *Type {
 		return any(&stage.Polylines).(*Type)
 	case map[*Rect]any:
 		return any(&stage.Rects).(*Type)
+	case map[*SVG]any:
+		return any(&stage.SVGs).(*Type)
 	case map[*Text]any:
 		return any(&stage.Texts).(*Type)
 	default:
@@ -964,6 +1035,8 @@ func GongGetMap[Type GongstructMapString](stage *StageStruct) *Type {
 		return any(&stage.Polylines_mapString).(*Type)
 	case map[string]*Rect:
 		return any(&stage.Rects_mapString).(*Type)
+	case map[string]*SVG:
+		return any(&stage.SVGs_mapString).(*Type)
 	case map[string]*Text:
 		return any(&stage.Texts_mapString).(*Type)
 	default:
@@ -996,6 +1069,8 @@ func GetGongstructInstancesSet[Type Gongstruct](stage *StageStruct) *map[*Type]a
 		return any(&stage.Polylines).(*map[*Type]any)
 	case Rect:
 		return any(&stage.Rects).(*map[*Type]any)
+	case SVG:
+		return any(&stage.SVGs).(*map[*Type]any)
 	case Text:
 		return any(&stage.Texts).(*map[*Type]any)
 	default:
@@ -1028,6 +1103,8 @@ func GetGongstructInstancesMap[Type Gongstruct](stage *StageStruct) *map[string]
 		return any(&stage.Polylines_mapString).(*map[string]*Type)
 	case Rect:
 		return any(&stage.Rects_mapString).(*map[string]*Type)
+	case SVG:
+		return any(&stage.SVGs_mapString).(*map[string]*Type)
 	case Text:
 		return any(&stage.Texts_mapString).(*map[string]*Type)
 	default:
@@ -1110,6 +1187,12 @@ func GetAssociationName[Type Gongstruct]() *Type {
 			// field is initialized with an instance of Animate with the name of the field
 			Animations: []*Animate{{Name: "Animations"}},
 		}).(*Type)
+	case SVG:
+		return any(&SVG{
+			// Initialisation of associations
+			// field is initialized with an instance of Layer with the name of the field
+			Layers: []*Layer{{Name: "Layers"}},
+		}).(*Type)
 	case Text:
 		return any(&Text{
 			// Initialisation of associations
@@ -1176,6 +1259,11 @@ func GetPointerReverseMap[Start, End Gongstruct](fieldname string, stage *StageS
 		}
 	// reverse maps of direct associations of Rect
 	case Rect:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of SVG
+	case SVG:
 		switch fieldname {
 		// insertion point for per direct association field
 		}
@@ -1365,6 +1453,19 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string, stage
 			}
 			return any(res).(map[*End]*Start)
 		}
+	// reverse maps of direct associations of SVG
+	case SVG:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Layers":
+			res := make(map[*Layer]*SVG)
+			for svg := range stage.SVGs {
+				for _, layer_ := range svg.Layers {
+					res[layer_] = svg
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
 	// reverse maps of direct associations of Text
 	case Text:
 		switch fieldname {
@@ -1408,6 +1509,8 @@ func GetGongstructName[Type Gongstruct]() (res string) {
 		res = "Polyline"
 	case Rect:
 		res = "Rect"
+	case SVG:
+		res = "SVG"
 	case Text:
 		res = "Text"
 	}
@@ -1438,7 +1541,9 @@ func GetFields[Type Gongstruct]() (res []string) {
 	case Polyline:
 		res = []string{"Name", "Points", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
 	case Rect:
-		res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations", "Selected"}
+		res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations", "IsSelectable", "IsSelected"}
+	case SVG:
+		res = []string{"Name", "Layers"}
 	case Text:
 		res = []string{"Name", "X", "Y", "Content", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
 	}
@@ -1740,8 +1845,23 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 				}
 				res += __instance__.Name
 			}
-		case "Selected":
-			res = fmt.Sprintf("%t", any(instance).(Rect).Selected)
+		case "IsSelectable":
+			res = fmt.Sprintf("%t", any(instance).(Rect).IsSelectable)
+		case "IsSelected":
+			res = fmt.Sprintf("%t", any(instance).(Rect).IsSelected)
+		}
+	case SVG:
+		switch fieldName {
+		// string value of fields
+		case "Name":
+			res = any(instance).(SVG).Name
+		case "Layers":
+			for idx, __instance__ := range any(instance).(SVG).Layers {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
 		}
 	case Text:
 		switch fieldName {

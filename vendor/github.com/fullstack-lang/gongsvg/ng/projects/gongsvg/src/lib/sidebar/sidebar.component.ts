@@ -29,6 +29,8 @@ import { PolylineService } from '../polyline.service'
 import { getPolylineUniqueID } from '../front-repo.service'
 import { RectService } from '../rect.service'
 import { getRectUniqueID } from '../front-repo.service'
+import { SVGService } from '../svg.service'
+import { getSVGUniqueID } from '../front-repo.service'
 import { TextService } from '../text.service'
 import { getTextUniqueID } from '../front-repo.service'
 
@@ -185,6 +187,7 @@ export class SidebarComponent implements OnInit {
     private polygoneService: PolygoneService,
     private polylineService: PolylineService,
     private rectService: RectService,
+    private svgService: SVGService,
     private textService: TextService,
 
     private routeService: RouteService,
@@ -287,6 +290,14 @@ export class SidebarComponent implements OnInit {
     )
     // observable for changes in structs
     this.rectService.RectServiceChanged.subscribe(
+      message => {
+        if (message == "post" || message == "update" || message == "delete") {
+          this.refresh()
+        }
+      }
+    )
+    // observable for changes in structs
+    this.svgService.SVGServiceChanged.subscribe(
       message => {
         if (message == "post" || message == "update" || message == "delete") {
           this.refresh()
@@ -1196,6 +1207,82 @@ export class SidebarComponent implements OnInit {
               children: new Array<GongNode>()
             }
             AnimationsGongNodeAssociation.children.push(animateNode)
+          })
+
+        }
+      )
+
+      /**
+      * fill up the SVG part of the mat tree
+      */
+      let svgGongNodeStruct: GongNode = {
+        name: "SVG",
+        type: GongNodeType.STRUCT,
+        id: 0,
+        uniqueIdPerStack: 13 * nonInstanceNodeId,
+        structName: "SVG",
+        associationField: "",
+        associatedStructName: "",
+        children: new Array<GongNode>()
+      }
+      nonInstanceNodeId = nonInstanceNodeId + 1
+      this.gongNodeTree.push(svgGongNodeStruct)
+
+      this.frontRepo.SVGs_array.sort((t1, t2) => {
+        if (t1.Name > t2.Name) {
+          return 1;
+        }
+        if (t1.Name < t2.Name) {
+          return -1;
+        }
+        return 0;
+      });
+
+      this.frontRepo.SVGs_array.forEach(
+        svgDB => {
+          let svgGongNodeInstance: GongNode = {
+            name: svgDB.Name,
+            type: GongNodeType.INSTANCE,
+            id: svgDB.ID,
+            uniqueIdPerStack: getSVGUniqueID(svgDB.ID),
+            structName: "SVG",
+            associationField: "",
+            associatedStructName: "",
+            children: new Array<GongNode>()
+          }
+          svgGongNodeStruct.children!.push(svgGongNodeInstance)
+
+          // insertion point for per field code
+          /**
+          * let append a node for the slide of pointer Layers
+          */
+          let LayersGongNodeAssociation: GongNode = {
+            name: "(Layer) Layers",
+            type: GongNodeType.ONE__ZERO_MANY_ASSOCIATION,
+            id: svgDB.ID,
+            uniqueIdPerStack: 19 * nonInstanceNodeId,
+            structName: "SVG",
+            associationField: "Layers",
+            associatedStructName: "Layer",
+            children: new Array<GongNode>()
+          }
+          nonInstanceNodeId = nonInstanceNodeId + 1
+          svgGongNodeInstance.children.push(LayersGongNodeAssociation)
+
+          svgDB.Layers?.forEach(layerDB => {
+            let layerNode: GongNode = {
+              name: layerDB.Name,
+              type: GongNodeType.INSTANCE,
+              id: layerDB.ID,
+              uniqueIdPerStack: // godel numbering (thank you kurt)
+                7 * getSVGUniqueID(svgDB.ID)
+                + 11 * getLayerUniqueID(layerDB.ID),
+              structName: "Layer",
+              associationField: "",
+              associatedStructName: "",
+              children: new Array<GongNode>()
+            }
+            LayersGongNodeAssociation.children.push(layerNode)
           })
 
         }

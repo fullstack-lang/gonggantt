@@ -17,6 +17,8 @@
   import { PolylineSortingComponent } from './polyline-sorting/polyline-sorting.component'
   import { RectsTableComponent } from './rects-table/rects-table.component'
   import { RectSortingComponent } from './rect-sorting/rect-sorting.component'
+  import { SVGsTableComponent } from './svgs-table/svgs-table.component'
+  import { SVGSortingComponent } from './svg-sorting/svg-sorting.component'
   import { TextsTableComponent } from './texts-table/texts-table.component'
   import { TextSortingComponent } from './text-sorting/text-sorting.component'
 
@@ -39,6 +41,8 @@
   export const MapOfPolylineSortingComponents: Map<string, any> = new Map([["PolylineSortingComponent", PolylineSortingComponent],])
   export const MapOfRectsComponents: Map<string, any> = new Map([["RectsTableComponent", RectsTableComponent],])
   export const MapOfRectSortingComponents: Map<string, any> = new Map([["RectSortingComponent", RectSortingComponent],])
+  export const MapOfSVGsComponents: Map<string, any> = new Map([["SVGsTableComponent", SVGsTableComponent],])
+  export const MapOfSVGSortingComponents: Map<string, any> = new Map([["SVGSortingComponent", SVGSortingComponent],])
   export const MapOfTextsComponents: Map<string, any> = new Map([["TextsTableComponent", TextsTableComponent],])
   export const MapOfTextSortingComponents: Map<string, any> = new Map([["TextSortingComponent", TextSortingComponent],])
 
@@ -56,6 +60,7 @@ export const MapOfComponents: Map<string, any> =
       ["Polygone", MapOfPolygonesComponents],
       ["Polyline", MapOfPolylinesComponents],
       ["Rect", MapOfRectsComponents],
+      ["SVG", MapOfSVGsComponents],
       ["Text", MapOfTextsComponents],
     ]
   )
@@ -74,6 +79,7 @@ export const MapOfSortingComponents: Map<string, any> =
       ["Polygone", MapOfPolygoneSortingComponents],
       ["Polyline", MapOfPolylineSortingComponents],
       ["Rect", MapOfRectSortingComponents],
+      ["SVG", MapOfSVGSortingComponents],
       ["Text", MapOfTextSortingComponents],
     ]
   )

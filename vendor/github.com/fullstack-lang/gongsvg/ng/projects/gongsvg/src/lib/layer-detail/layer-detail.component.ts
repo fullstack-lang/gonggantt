@@ -10,6 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
+import { SVGDB } from '../svg-db'
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -23,6 +24,7 @@ enum LayerDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
+	CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Layers_SET,
 }
 
 @Component({
@@ -93,6 +95,10 @@ export class LayerDetailComponent implements OnInit {
 			} else {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
+					case "Layers":
+						// console.log("Layer" + " is instanciated with back pointer to instance " + this.id + " SVG association Layers")
+						this.state = LayerDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Layers_SET
+						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
 				}
@@ -129,6 +135,10 @@ export class LayerDetailComponent implements OnInit {
 						this.layer = layer!
 						break;
 					// insertion point for init of association field
+					case LayerDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Layers_SET:
+						this.layer = new (LayerDB)
+						this.layer.SVG_Layers_reverse = frontRepo.SVGs.get(this.id)!
+						break;
 					default:
 						console.log(this.state + " is unkown state")
 				}
@@ -152,6 +162,18 @@ export class LayerDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
+		if (this.layer.SVG_Layers_reverse != undefined) {
+			if (this.layer.SVG_LayersDBID == undefined) {
+				this.layer.SVG_LayersDBID = new NullInt64
+			}
+			this.layer.SVG_LayersDBID.Int64 = this.layer.SVG_Layers_reverse.ID
+			this.layer.SVG_LayersDBID.Valid = true
+			if (this.layer.SVG_LayersDBID_Index == undefined) {
+				this.layer.SVG_LayersDBID_Index = new NullInt64
+			}
+			this.layer.SVG_LayersDBID_Index.Valid = true
+			this.layer.SVG_Layers_reverse = new SVGDB // very important, otherwise, circular JSON
+		}
 
 		switch (this.state) {
 			case LayerDetailComponentState.UPDATE_INSTANCE:

@@ -108,8 +108,11 @@ export class RectsTableComponent implements OnInit {
         case 'Transform':
           return rectDB.Transform;
 
-        case 'Selected':
-          return rectDB.Selected ? "true" : "false";
+        case 'IsSelectable':
+          return rectDB.IsSelectable ? "true" : "false";
+
+        case 'IsSelected':
+          return rectDB.IsSelected ? "true" : "false";
 
         case 'Layer_Rects':
           if (this.frontRepo.Layers.get(rectDB.Layer_RectsDBID.Int64) != undefined) {
@@ -214,7 +217,8 @@ export class RectsTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "Selected",
+        "IsSelectable",
+        "IsSelected",
         "Layer_Rects",
       ]
     } else {
@@ -231,7 +235,8 @@ export class RectsTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "Selected",
+        "IsSelectable",
+        "IsSelected",
         "Layer_Rects",
       ]
       this.selection = new SelectionModel<RectDB>(allowMultiSelect, this.initialSelection);

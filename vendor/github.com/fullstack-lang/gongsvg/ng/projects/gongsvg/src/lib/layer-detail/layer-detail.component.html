@@ -128,6 +128,15 @@
             </button>
         </mat-grid-tile>
     </mat-grid-list>
+    <mat-form-field class="detail-full-width">
+        <mat-label>(SVG) Layers</mat-label>
+        <mat-select [compareWith]="compareObjects" [(ngModel)]="layer.SVG_Layers_reverse" [ngModelOptions]="{standalone: true}">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let svg of frontRepo.SVGs_array" [value]="svg">
+                {{svg.Name}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
     <div class="details__save">
         <button mat-raised-button color="primary" (click)="save()">
             Save layer
