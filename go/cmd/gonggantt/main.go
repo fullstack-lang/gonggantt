@@ -34,17 +34,13 @@ var (
 	embeddedDiagrams = flag.Bool("embeddedDiagrams", false, "parse/analysis go/models and go/embeddedDiagrams")
 )
 
-// InjectionGateway is the singloton that stores all functions
-// that can set the objects the stage
-// InjectionGateway stores function as a map of names
-var InjectionGateway = make(map[string](func()))
-
 // hook marhalling to stage
-type BeforeCommitImplementation struct {
+type BeforeCommitOnGanttStage struct {
 	gongsvgStage *gongsvg_models.StageStruct
 }
 
-func (impl *BeforeCommitImplementation) BeforeCommit(
+// BeforeCommit meets the interface for the commit on the gantt stage
+func (impl *BeforeCommitOnGanttStage) BeforeCommit(
 	gongganttStage *gonggantt_models.StageStruct) {
 	file, err := os.Create(fmt.Sprintf("./%s.go", *marshallOnCommit))
 	if err != nil {
@@ -54,7 +50,23 @@ func (impl *BeforeCommitImplementation) BeforeCommit(
 
 	gongganttStage.Checkout()
 	gongganttStage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
-	gantt2svg.GanttToSVGTranformerSingloton.GenerateSvg(gongganttStage, impl.gongsvgStage)
+	gantt2svg.GanttToSVGMapperSingloton.GenerateSvg(gongganttStage, impl.gongsvgStage)
+}
+
+type BeforeCommitOnSVGStage struct {
+	gongganttStage *gonggantt_models.StageStruct
+}
+
+// BeforeCommit meets the interface for the commit on the gantt stage
+func (impl *BeforeCommitOnSVGStage) BeforeCommit(
+	gongsvgStage *gongsvg_models.StageStruct) {
+	file, err := os.Create(fmt.Sprintf("./%s.go", *marshallOnCommit))
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	defer file.Close()
+
+	gantt2svg.GanttToSVGMapperSingloton.UpdateGantt(gongsvgStage, impl.gongganttStage)
 }
 
 func main() {
@@ -69,14 +81,14 @@ func main() {
 	r := gonggantt_static.ServeStaticFiles(*logGINFlag)
 
 	// setup stack
-	gonganttStage := gonggantt_fullstack.NewStackInstance(r, "github.com/fullstack-lang/gonggantt/go/models")
+	gongganttStage := gonggantt_fullstack.NewStackInstance(r, "github.com/fullstack-lang/gonggantt/go/models")
 	gongsvgStage := gongsvg_fullstack.NewStackInstance(r, "github.com/fullstack-lang/gongsvg/go/models")
 
 	if *unmarshallFromCode != "" {
-		gonganttStage.Checkout()
-		gonganttStage.Reset()
-		gonganttStage.Commit()
-		err := gonggantt_models.ParseAstFile(gonganttStage, *unmarshallFromCode)
+		gongganttStage.Checkout()
+		gongganttStage.Reset()
+		gongganttStage.Commit()
+		err := gonggantt_models.ParseAstFile(gongganttStage, *unmarshallFromCode)
 
 		// if the application is run with -unmarshallFromCode=xxx.go -marshallOnCommit
 		// xxx.go might be absent the first time. However, this shall not be a show stopper.
@@ -84,17 +96,21 @@ func main() {
 			log.Println("no file to read " + err.Error())
 		}
 
-		gonganttStage.Commit()
+		gongganttStage.Commit()
 	} else {
 		// in case the database is used, checkout the content to the stage
-		gonganttStage.Checkout()
+		gongganttStage.Checkout()
 	}
 
 	// hook automatic marshall to go code at every commit
 	if *marshallOnCommit != "" {
-		hook := new(BeforeCommitImplementation)
-		hook.gongsvgStage = gongsvgStage
-		gonganttStage.OnInitCommitFromFrontCallback = hook
+		beforeCommitOnGanttStage := new(BeforeCommitOnGanttStage)
+		beforeCommitOnGanttStage.gongsvgStage = gongsvgStage
+		gongganttStage.OnInitCommitFromFrontCallback = beforeCommitOnGanttStage
+
+		beforeCommitOnSVGStage := new(BeforeCommitOnSVGStage)
+		beforeCommitOnSVGStage.gongganttStage = gongganttStage
+		gongsvgStage.OnInitCommitFromFrontCallback = beforeCommitOnSVGStage
 	}
 
 	gongdoc_load.Load(
@@ -104,7 +120,7 @@ func main() {
 		gonggantt_go.GoDiagramsDir,
 		r,
 		*embeddedDiagrams,
-		&gonganttStage.Map_GongStructName_InstancesNb)
+		&gongganttStage.Map_GongStructName_InstancesNb)
 
 	gongdoc_load.Load(
 		"gongsvg",
@@ -113,10 +129,10 @@ func main() {
 		gongsvg_go.GoDiagramsDir,
 		r,
 		true,
-		&gonganttStage.Map_GongStructName_InstancesNb)
+		&gongganttStage.Map_GongStructName_InstancesNb)
 
 	// initial publication
-	gantt2svg.GanttToSVGTranformerSingloton.GenerateSvg(gonganttStage, gongsvgStage)
+	gantt2svg.GanttToSVGMapperSingloton.GenerateSvg(gongganttStage, gongsvgStage)
 
 	log.Printf("Server ready serve on localhost:8080")
 	r.Run()

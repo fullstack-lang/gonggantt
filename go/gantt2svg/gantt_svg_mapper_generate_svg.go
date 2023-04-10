@@ -8,18 +8,10 @@ import (
 	"time"
 
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
-
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
 
-// type of the singloton for interception of gantt commit in order to generate
-// the svg
-type GanttToSVGTranformer struct {
-}
-
-var GanttToSVGTranformerSingloton GanttToSVGTranformer
-
-func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(
+func (ganttToSVGMapper *GanttToSVGMapper) GenerateSvg(
 	gongganttStage *gonggantt_models.StageStruct,
 	gongsvgStage *gongsvg_models.StageStruct) {
 
@@ -147,7 +139,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(
 	laneIndex := 0
 
 	// prepare a map of bar to barSVG
-	mapBar_BarSVG := make(map[*gonggantt_models.Bar]*gongsvg_models.Rect)
+	ganttToSVGMapper.mapBar_BarSVG = make(map[*gonggantt_models.Bar]*gongsvg_models.Rect)
 	for _, lane := range ganttToRender.Lanes {
 
 		laneSVG := new(gongsvg_models.Rect).Stage(gongsvgStage)
@@ -184,7 +176,7 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(
 		//
 		for _, bar := range lane.Bars {
 			barSVG := new(gongsvg_models.Rect).Stage(gongsvgStage)
-			mapBar_BarSVG[bar] = barSVG
+			ganttToSVGMapper.mapBar_BarSVG[bar] = barSVG
 			layerBars.Rects = append(layerBars.Rects, barSVG)
 			barSVG.Name = bar.Name
 			barSVG.IsSelectable = true
@@ -324,8 +316,8 @@ func (GanttToSVGTranformer *GanttToSVGTranformer) GenerateSvg(
 	//
 	for _, arrow := range ganttToRender.Arrows {
 
-		startBar := mapBar_BarSVG[arrow.From]
-		endBar := mapBar_BarSVG[arrow.To]
+		startBar := ganttToSVGMapper.mapBar_BarSVG[arrow.From]
+		endBar := ganttToSVGMapper.mapBar_BarSVG[arrow.To]
 
 		generate_arrow(
 			gongsvgStage,
