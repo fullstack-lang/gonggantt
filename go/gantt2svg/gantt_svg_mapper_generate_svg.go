@@ -138,7 +138,9 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 	laneIndex := 0
 
 	// prepare a map of bar to barSVG
-	ganttSVGMapper.mapBar_BarSVG = make(map[*gonggantt_models.Bar]*gongsvg_models.Rect)
+	ganttSVGMapper.mapBar_Rect = make(map[*gonggantt_models.Bar]*gongsvg_models.Rect)
+	ganttSVGMapper.mapRect4Bar_Bar = make(map[*gongsvg_models.Rect]*gonggantt_models.Bar)
+
 	for _, lane := range ganttSVGMapper.ganttToRender.Lanes {
 
 		laneSVG := new(gongsvg_models.Rect).Stage(gongsvgStage)
@@ -174,11 +176,12 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 		// Bar
 		//
 		for _, bar := range lane.Bars {
-			barSVG := new(gongsvg_models.Rect).Stage(gongsvgStage)
-			ganttSVGMapper.mapBar_BarSVG[bar] = barSVG
-			layerBars.Rects = append(layerBars.Rects, barSVG)
-			barSVG.Name = bar.Name
-			barSVG.IsSelectable = true
+			rect4Bar := new(gongsvg_models.Rect).Stage(gongsvgStage)
+			ganttSVGMapper.mapBar_Rect[bar] = rect4Bar
+			ganttSVGMapper.mapRect4Bar_Bar[rect4Bar] = bar
+			layerBars.Rects = append(layerBars.Rects, rect4Bar)
+			rect4Bar.Name = bar.Name
+			rect4Bar.IsSelectable = true
 
 			var barToDisplay gonggantt_models.Bar
 			barToDisplay = *bar
@@ -204,36 +207,36 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 				float64(durationFromBarEndAndBarStart) / float64(ganttSVGMapper.ganttToRender.ComputedEnd.Sub(ganttSVGMapper.ganttToRender.ComputedStart))
 			// log.Printf("Relative Duration is %f", durationBetweenBarEndAndBarStartRelativeToGanttDuration)
 
-			barSVG.X = XLeftLanes + (XRightMargin-XLeftLanes)*durationBetweenBarStartAndGanttStartRelativeToGanttDuration
-			barSVG.Y = currentY + (LaneHeight-barHeigth)/2.0
-			barSVG.Height = barHeigth
-			barSVG.Width = (XRightMargin - XLeftLanes) * durationBetweenBarEndAndBarStartRelativeToGanttDuration
+			rect4Bar.X = XLeftLanes + (XRightMargin-XLeftLanes)*durationBetweenBarStartAndGanttStartRelativeToGanttDuration
+			rect4Bar.Y = currentY + (LaneHeight-barHeigth)/2.0
+			rect4Bar.Height = barHeigth
+			rect4Bar.Width = (XRightMargin - XLeftLanes) * durationBetweenBarEndAndBarStartRelativeToGanttDuration
 
-			barSVG.Color = "blue"
+			rect4Bar.Color = "blue"
 			if bar.OptionnalColor != "" {
-				barSVG.Color = bar.OptionnalColor
+				rect4Bar.Color = bar.OptionnalColor
 			}
-			barSVG.FillOpacity = 0.1
+			rect4Bar.FillOpacity = 0.1
 			if bar.FillOpacity != 0.0 {
-				barSVG.FillOpacity = bar.FillOpacity
+				rect4Bar.FillOpacity = bar.FillOpacity
 			}
-			barSVG.Stroke = "blue"
+			rect4Bar.Stroke = "blue"
 			if bar.OptionnalStroke != "" {
-				barSVG.Stroke = bar.OptionnalStroke
+				rect4Bar.Stroke = bar.OptionnalStroke
 			}
-			barSVG.StrokeWidth = 0.5
+			rect4Bar.StrokeWidth = 0.5
 			if bar.StrokeWidth != 0.0 {
-				barSVG.StrokeWidth = bar.StrokeWidth
+				rect4Bar.StrokeWidth = bar.StrokeWidth
 			}
 			if bar.StrokeDashArray != "" {
-				barSVG.StrokeDashArray = bar.StrokeDashArray
+				rect4Bar.StrokeDashArray = bar.StrokeDashArray
 			}
 
 			// bar text
 			barText := new(gongsvg_models.Text).Stage(gongsvgStage)
 			barText.Name = bar.Name
 			barText.Content = barText.Name
-			barText.X = barSVG.X + XLeftText
+			barText.X = rect4Bar.X + XLeftText
 			barText.Y = currentY + LaneHeight/2.0 + TextHeight/2.0
 			barText.Color = "black"
 			barText.FillOpacity = 1.0
@@ -315,8 +318,8 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 	//
 	for _, arrow := range ganttSVGMapper.ganttToRender.Arrows {
 
-		startBar := ganttSVGMapper.mapBar_BarSVG[arrow.From]
-		endBar := ganttSVGMapper.mapBar_BarSVG[arrow.To]
+		startBar := ganttSVGMapper.mapBar_Rect[arrow.From]
+		endBar := ganttSVGMapper.mapBar_Rect[arrow.To]
 
 		generate_arrow(
 			gongsvgStage,

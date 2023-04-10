@@ -9,7 +9,8 @@ import (
 // type of the singloton for interception of gantt commit in order to generate
 // the svg
 type GanttSVGMapper struct {
-	mapBar_BarSVG map[*gonggantt_models.Bar]*gongsvg_models.Rect
+	mapBar_Rect     map[*gonggantt_models.Bar]*gongsvg_models.Rect
+	mapRect4Bar_Bar map[*gongsvg_models.Rect]*gonggantt_models.Bar
 
 	ganttToRender *gonggantt_models.Gantt
 }

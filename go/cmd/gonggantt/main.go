@@ -60,24 +60,19 @@ func (beforeCommitFromFrontOnGanttStage *BeforeCommitFromFrontOnGanttStage) Befo
 	beforeCommitFromFrontOnGanttStage.ganttSVGMapper.GenerateSvg(gongganttStage, beforeCommitFromFrontOnGanttStage.gongsvgStage)
 }
 
-type BeforeCommitFromFrontOnSVGStage struct {
+type OnAfterRectUpdate struct {
 	gongganttStage   *gonggantt_models.StageStruct
 	ganttToSVGMapper *gantt2svg.GanttSVGMapper
 }
 
-// BeforeCommit meets the interface for the commit on the gantt stage
-func (beforeCommitFromFrontOnSVGStage *BeforeCommitFromFrontOnSVGStage) BeforeCommit(
-	gongsvgStage *gongsvg_models.StageStruct) {
-	file, err := os.Create(fmt.Sprintf("./%s.go", *marshallOnCommit))
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	defer file.Close()
+func (onAfterRectUpdate *OnAfterRectUpdate) OnAfterUpdate(
+	gongsvgStage *gongsvg_models.StageStruct,
+	oldRect, newRect *gongsvg_models.Rect) {
 
-	beforeCommitFromFrontOnSVGStage.ganttToSVGMapper.UpdateGantt(gongsvgStage, beforeCommitFromFrontOnSVGStage.gongganttStage)
-
-	// update the updated gantt definition
-	beforeCommitFromFrontOnSVGStage.gongganttStage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
+	onAfterRectUpdate.ganttToSVGMapper.UpdateGantt(
+		gongsvgStage,
+		onAfterRectUpdate.gongganttStage,
+		oldRect, newRect)
 }
 
 func main() {
@@ -125,12 +120,12 @@ func main() {
 		// hook on the commit from front
 		gongganttStage.OnInitCommitFromFrontCallback = beforeCommitOnGanttStage
 
-		beforeCommitOnSVGStage := new(BeforeCommitFromFrontOnSVGStage)
-		beforeCommitOnSVGStage.gongganttStage = gongganttStage
-		beforeCommitOnSVGStage.ganttToSVGMapper = ganttSVGMapper
+		onAfterRectUpdate := new(OnAfterRectUpdate)
+		onAfterRectUpdate.gongganttStage = gongganttStage
+		onAfterRectUpdate.ganttToSVGMapper = ganttSVGMapper
 
 		// hook on the commit from front
-		gongsvgStage.OnInitCommitFromFrontCallback = beforeCommitOnSVGStage
+		gongsvgStage.OnAfterRectUpdateCallback = onAfterRectUpdate
 
 		// initial publication
 		ganttSVGMapper.GenerateSvg(gongganttStage, gongsvgStage)
