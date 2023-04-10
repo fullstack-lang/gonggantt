@@ -103,10 +103,24 @@
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="SVG_Rects">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (SVG) Rects </th>
+        <ng-container matColumnDef="IsSelectable">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> IsSelectable </th>
+            <td mat-cell *matCellDef="let Rect">
+                <mat-checkbox [checked]="Rect.IsSelectable" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="IsSelected">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> IsSelected </th>
+            <td mat-cell *matCellDef="let Rect">
+                <mat-checkbox [checked]="Rect.IsSelected" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="Layer_Rects">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (Layer) Rects </th>
             <td mat-cell *matCellDef="let rect">
-                {{frontRepo.SVGs.get(rect.SVG_RectsDBID.Int64)?.Name}}
+                {{frontRepo.Layers.get(rect.Layer_RectsDBID.Int64)?.Name}}
             </td>
         </ng-container>
 

@@ -10,7 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
-import { SVGDB } from '../svg-db'
+import { LayerDB } from '../layer-db'
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -24,7 +24,7 @@ enum PathDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Paths_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Paths_SET,
 }
 
 @Component({
@@ -95,8 +95,8 @@ export class PathDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Paths":
-						// console.log("Path" + " is instanciated with back pointer to instance " + this.id + " SVG association Paths")
-						this.state = PathDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Paths_SET
+						// console.log("Path" + " is instanciated with back pointer to instance " + this.id + " Layer association Paths")
+						this.state = PathDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Paths_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -134,9 +134,9 @@ export class PathDetailComponent implements OnInit {
 						this.path = path!
 						break;
 					// insertion point for init of association field
-					case PathDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Paths_SET:
+					case PathDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Paths_SET:
 						this.path = new (PathDB)
-						this.path.SVG_Paths_reverse = frontRepo.SVGs.get(this.id)!
+						this.path.Layer_Paths_reverse = frontRepo.Layers.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -159,17 +159,17 @@ export class PathDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.path.SVG_Paths_reverse != undefined) {
-			if (this.path.SVG_PathsDBID == undefined) {
-				this.path.SVG_PathsDBID = new NullInt64
+		if (this.path.Layer_Paths_reverse != undefined) {
+			if (this.path.Layer_PathsDBID == undefined) {
+				this.path.Layer_PathsDBID = new NullInt64
 			}
-			this.path.SVG_PathsDBID.Int64 = this.path.SVG_Paths_reverse.ID
-			this.path.SVG_PathsDBID.Valid = true
-			if (this.path.SVG_PathsDBID_Index == undefined) {
-				this.path.SVG_PathsDBID_Index = new NullInt64
+			this.path.Layer_PathsDBID.Int64 = this.path.Layer_Paths_reverse.ID
+			this.path.Layer_PathsDBID.Valid = true
+			if (this.path.Layer_PathsDBID_Index == undefined) {
+				this.path.Layer_PathsDBID_Index = new NullInt64
 			}
-			this.path.SVG_PathsDBID_Index.Valid = true
-			this.path.SVG_Paths_reverse = new SVGDB // very important, otherwise, circular JSON
+			this.path.Layer_PathsDBID_Index.Valid = true
+			this.path.Layer_Paths_reverse = new LayerDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {

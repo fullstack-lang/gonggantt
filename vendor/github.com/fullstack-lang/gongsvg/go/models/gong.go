@@ -54,6 +54,14 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	OnAfterEllipseDeleteCallback OnAfterDeleteInterface[Ellipse]
 	OnAfterEllipseReadCallback   OnAfterReadInterface[Ellipse]
 
+	Layers           map[*Layer]any
+	Layers_mapString map[string]*Layer
+
+	OnAfterLayerCreateCallback OnAfterCreateInterface[Layer]
+	OnAfterLayerUpdateCallback OnAfterUpdateInterface[Layer]
+	OnAfterLayerDeleteCallback OnAfterDeleteInterface[Layer]
+	OnAfterLayerReadCallback   OnAfterReadInterface[Layer]
+
 	Lines           map[*Line]any
 	Lines_mapString map[string]*Line
 
@@ -127,7 +135,11 @@ type StageStruct struct { // insertion point for definition of arrays registerin
 	// store meta package import
 	MetaPackageImportPath  string
 	MetaPackageImportAlias string
-	Map_DocLink_Renaming   map[string]GONG__Identifier
+
+	// to be removed after fix of [issue](https://github.com/golang/go/issues/57559)
+	// map to enable docLink renaming when an identifier is renamed
+	Map_DocLink_Renaming map[string]GONG__Identifier
+	// the to be removed stops here
 }
 
 type GONG__Identifier struct {
@@ -176,6 +188,8 @@ type BackRepoInterface interface {
 	CheckoutCircle(circle *Circle)
 	CommitEllipse(ellipse *Ellipse)
 	CheckoutEllipse(ellipse *Ellipse)
+	CommitLayer(layer *Layer)
+	CheckoutLayer(layer *Layer)
 	CommitLine(line *Line)
 	CheckoutLine(line *Line)
 	CommitPath(path *Path)
@@ -217,6 +231,9 @@ func NewStage() (stage *StageStruct) {
 		Ellipses:           make(map[*Ellipse]any),
 		Ellipses_mapString: make(map[string]*Ellipse),
 
+		Layers:           make(map[*Layer]any),
+		Layers_mapString: make(map[string]*Layer),
+
 		Lines:           make(map[*Line]any),
 		Lines_mapString: make(map[string]*Line),
 
@@ -240,6 +257,10 @@ func NewStage() (stage *StageStruct) {
 
 		// end of insertion point
 		Map_GongStructName_InstancesNb: make(map[string]int),
+
+		// to be removed after fix of [issue](https://github.com/golang/go/issues/57559)
+		Map_DocLink_Renaming: make(map[string]GONG__Identifier),
+		// the to be removed stops here
 	}
 
 	return
@@ -254,6 +275,7 @@ func (stage *StageStruct) Commit() {
 	stage.Map_GongStructName_InstancesNb["Animate"] = len(stage.Animates)
 	stage.Map_GongStructName_InstancesNb["Circle"] = len(stage.Circles)
 	stage.Map_GongStructName_InstancesNb["Ellipse"] = len(stage.Ellipses)
+	stage.Map_GongStructName_InstancesNb["Layer"] = len(stage.Layers)
 	stage.Map_GongStructName_InstancesNb["Line"] = len(stage.Lines)
 	stage.Map_GongStructName_InstancesNb["Path"] = len(stage.Paths)
 	stage.Map_GongStructName_InstancesNb["Polygone"] = len(stage.Polygones)
@@ -273,6 +295,7 @@ func (stage *StageStruct) Checkout() {
 	stage.Map_GongStructName_InstancesNb["Animate"] = len(stage.Animates)
 	stage.Map_GongStructName_InstancesNb["Circle"] = len(stage.Circles)
 	stage.Map_GongStructName_InstancesNb["Ellipse"] = len(stage.Ellipses)
+	stage.Map_GongStructName_InstancesNb["Layer"] = len(stage.Layers)
 	stage.Map_GongStructName_InstancesNb["Line"] = len(stage.Lines)
 	stage.Map_GongStructName_InstancesNb["Path"] = len(stage.Paths)
 	stage.Map_GongStructName_InstancesNb["Polygone"] = len(stage.Polygones)
@@ -430,6 +453,46 @@ func (ellipse *Ellipse) Checkout(stage *StageStruct) *Ellipse {
 // for satisfaction of GongStruct interface
 func (ellipse *Ellipse) GetName() (res string) {
 	return ellipse.Name
+}
+
+// Stage puts layer to the model stage
+func (layer *Layer) Stage(stage *StageStruct) *Layer {
+	stage.Layers[layer] = __member
+	stage.Layers_mapString[layer.Name] = layer
+
+	return layer
+}
+
+// Unstage removes layer off the model stage
+func (layer *Layer) Unstage(stage *StageStruct) *Layer {
+	delete(stage.Layers, layer)
+	delete(stage.Layers_mapString, layer.Name)
+	return layer
+}
+
+// commit layer to the back repo (if it is already staged)
+func (layer *Layer) Commit(stage *StageStruct) *Layer {
+	if _, ok := stage.Layers[layer]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CommitLayer(layer)
+		}
+	}
+	return layer
+}
+
+// Checkout layer to the back repo (if it is already staged)
+func (layer *Layer) Checkout(stage *StageStruct) *Layer {
+	if _, ok := stage.Layers[layer]; ok {
+		if stage.BackRepo != nil {
+			stage.BackRepo.CheckoutLayer(layer)
+		}
+	}
+	return layer
+}
+
+// for satisfaction of GongStruct interface
+func (layer *Layer) GetName() (res string) {
+	return layer.Name
 }
 
 // Stage puts line to the model stage
@@ -717,6 +780,7 @@ type AllModelsStructCreateInterface interface { // insertion point for Callbacks
 	CreateORMAnimate(Animate *Animate)
 	CreateORMCircle(Circle *Circle)
 	CreateORMEllipse(Ellipse *Ellipse)
+	CreateORMLayer(Layer *Layer)
 	CreateORMLine(Line *Line)
 	CreateORMPath(Path *Path)
 	CreateORMPolygone(Polygone *Polygone)
@@ -730,6 +794,7 @@ type AllModelsStructDeleteInterface interface { // insertion point for Callbacks
 	DeleteORMAnimate(Animate *Animate)
 	DeleteORMCircle(Circle *Circle)
 	DeleteORMEllipse(Ellipse *Ellipse)
+	DeleteORMLayer(Layer *Layer)
 	DeleteORMLine(Line *Line)
 	DeleteORMPath(Path *Path)
 	DeleteORMPolygone(Polygone *Polygone)
@@ -748,6 +813,9 @@ func (stage *StageStruct) Reset() { // insertion point for array reset
 
 	stage.Ellipses = make(map[*Ellipse]any)
 	stage.Ellipses_mapString = make(map[string]*Ellipse)
+
+	stage.Layers = make(map[*Layer]any)
+	stage.Layers_mapString = make(map[string]*Layer)
 
 	stage.Lines = make(map[*Line]any)
 	stage.Lines_mapString = make(map[string]*Line)
@@ -781,6 +849,9 @@ func (stage *StageStruct) Nil() { // insertion point for array nil
 
 	stage.Ellipses = nil
 	stage.Ellipses_mapString = nil
+
+	stage.Layers = nil
+	stage.Layers_mapString = nil
 
 	stage.Lines = nil
 	stage.Lines_mapString = nil
@@ -816,6 +887,10 @@ func (stage *StageStruct) Unstage() { // insertion point for array nil
 
 	for ellipse := range stage.Ellipses {
 		ellipse.Unstage(stage)
+	}
+
+	for layer := range stage.Layers {
+		layer.Unstage(stage)
 	}
 
 	for line := range stage.Lines {
@@ -854,7 +929,7 @@ func (stage *StageStruct) Unstage() { // insertion point for array nil
 // - full refactoring of Gongstruct identifiers / fields
 type Gongstruct interface {
 	// insertion point for generic types
-	Animate | Circle | Ellipse | Line | Path | Polygone | Polyline | Rect | SVG | Text
+	Animate | Circle | Ellipse | Layer | Line | Path | Polygone | Polyline | Rect | SVG | Text
 }
 
 // Gongstruct is the type parameter for generated generic function that allows
@@ -863,7 +938,7 @@ type Gongstruct interface {
 // - full refactoring of Gongstruct identifiers / fields
 type PointerToGongstruct interface {
 	// insertion point for generic types
-	*Animate | *Circle | *Ellipse | *Line | *Path | *Polygone | *Polyline | *Rect | *SVG | *Text
+	*Animate | *Circle | *Ellipse | *Layer | *Line | *Path | *Polygone | *Polyline | *Rect | *SVG | *Text
 	GetName() string
 }
 
@@ -873,6 +948,7 @@ type GongstructSet interface {
 		map[*Animate]any |
 		map[*Circle]any |
 		map[*Ellipse]any |
+		map[*Layer]any |
 		map[*Line]any |
 		map[*Path]any |
 		map[*Polygone]any |
@@ -889,6 +965,7 @@ type GongstructMapString interface {
 		map[string]*Animate |
 		map[string]*Circle |
 		map[string]*Ellipse |
+		map[string]*Layer |
 		map[string]*Line |
 		map[string]*Path |
 		map[string]*Polygone |
@@ -903,7 +980,7 @@ type GongstructMapString interface {
 // it is usefull because it allows refactoring of gong struct identifier
 func GongGetSet[Type GongstructSet](stage *StageStruct) *Type {
 	var ret Type
-	
+
 	switch any(ret).(type) {
 	// insertion point for generic get functions
 	case map[*Animate]any:
@@ -912,6 +989,8 @@ func GongGetSet[Type GongstructSet](stage *StageStruct) *Type {
 		return any(&stage.Circles).(*Type)
 	case map[*Ellipse]any:
 		return any(&stage.Ellipses).(*Type)
+	case map[*Layer]any:
+		return any(&stage.Layers).(*Type)
 	case map[*Line]any:
 		return any(&stage.Lines).(*Type)
 	case map[*Path]any:
@@ -944,6 +1023,8 @@ func GongGetMap[Type GongstructMapString](stage *StageStruct) *Type {
 		return any(&stage.Circles_mapString).(*Type)
 	case map[string]*Ellipse:
 		return any(&stage.Ellipses_mapString).(*Type)
+	case map[string]*Layer:
+		return any(&stage.Layers_mapString).(*Type)
 	case map[string]*Line:
 		return any(&stage.Lines_mapString).(*Type)
 	case map[string]*Path:
@@ -976,6 +1057,8 @@ func GetGongstructInstancesSet[Type Gongstruct](stage *StageStruct) *map[*Type]a
 		return any(&stage.Circles).(*map[*Type]any)
 	case Ellipse:
 		return any(&stage.Ellipses).(*map[*Type]any)
+	case Layer:
+		return any(&stage.Layers).(*map[*Type]any)
 	case Line:
 		return any(&stage.Lines).(*map[*Type]any)
 	case Path:
@@ -1008,6 +1091,8 @@ func GetGongstructInstancesMap[Type Gongstruct](stage *StageStruct) *map[string]
 		return any(&stage.Circles_mapString).(*map[string]*Type)
 	case Ellipse:
 		return any(&stage.Ellipses_mapString).(*map[string]*Type)
+	case Layer:
+		return any(&stage.Layers_mapString).(*map[string]*Type)
 	case Line:
 		return any(&stage.Lines_mapString).(*map[string]*Type)
 	case Path:
@@ -1052,6 +1137,26 @@ func GetAssociationName[Type Gongstruct]() *Type {
 			// field is initialized with an instance of Animate with the name of the field
 			Animates: []*Animate{{Name: "Animates"}},
 		}).(*Type)
+	case Layer:
+		return any(&Layer{
+			// Initialisation of associations
+			// field is initialized with an instance of Rect with the name of the field
+			Rects: []*Rect{{Name: "Rects"}},
+			// field is initialized with an instance of Text with the name of the field
+			Texts: []*Text{{Name: "Texts"}},
+			// field is initialized with an instance of Circle with the name of the field
+			Circles: []*Circle{{Name: "Circles"}},
+			// field is initialized with an instance of Line with the name of the field
+			Lines: []*Line{{Name: "Lines"}},
+			// field is initialized with an instance of Ellipse with the name of the field
+			Ellipses: []*Ellipse{{Name: "Ellipses"}},
+			// field is initialized with an instance of Polyline with the name of the field
+			Polylines: []*Polyline{{Name: "Polylines"}},
+			// field is initialized with an instance of Polygone with the name of the field
+			Polygones: []*Polygone{{Name: "Polygones"}},
+			// field is initialized with an instance of Path with the name of the field
+			Paths: []*Path{{Name: "Paths"}},
+		}).(*Type)
 	case Line:
 		return any(&Line{
 			// Initialisation of associations
@@ -1085,22 +1190,8 @@ func GetAssociationName[Type Gongstruct]() *Type {
 	case SVG:
 		return any(&SVG{
 			// Initialisation of associations
-			// field is initialized with an instance of Rect with the name of the field
-			Rects: []*Rect{{Name: "Rects"}},
-			// field is initialized with an instance of Text with the name of the field
-			Texts: []*Text{{Name: "Texts"}},
-			// field is initialized with an instance of Circle with the name of the field
-			Circles: []*Circle{{Name: "Circles"}},
-			// field is initialized with an instance of Line with the name of the field
-			Lines: []*Line{{Name: "Lines"}},
-			// field is initialized with an instance of Ellipse with the name of the field
-			Ellipses: []*Ellipse{{Name: "Ellipses"}},
-			// field is initialized with an instance of Polyline with the name of the field
-			Polylines: []*Polyline{{Name: "Polylines"}},
-			// field is initialized with an instance of Polygone with the name of the field
-			Polygones: []*Polygone{{Name: "Polygones"}},
-			// field is initialized with an instance of Path with the name of the field
-			Paths: []*Path{{Name: "Paths"}},
+			// field is initialized with an instance of Layer with the name of the field
+			Layers: []*Layer{{Name: "Layers"}},
 		}).(*Type)
 	case Text:
 		return any(&Text{
@@ -1138,6 +1229,11 @@ func GetPointerReverseMap[Start, End Gongstruct](fieldname string, stage *StageS
 		}
 	// reverse maps of direct associations of Ellipse
 	case Ellipse:
+		switch fieldname {
+		// insertion point for per direct association field
+		}
+	// reverse maps of direct associations of Layer
+	case Layer:
 		switch fieldname {
 		// insertion point for per direct association field
 		}
@@ -1223,6 +1319,75 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string, stage
 			}
 			return any(res).(map[*End]*Start)
 		}
+	// reverse maps of direct associations of Layer
+	case Layer:
+		switch fieldname {
+		// insertion point for per direct association field
+		case "Rects":
+			res := make(map[*Rect]*Layer)
+			for layer := range stage.Layers {
+				for _, rect_ := range layer.Rects {
+					res[rect_] = layer
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Texts":
+			res := make(map[*Text]*Layer)
+			for layer := range stage.Layers {
+				for _, text_ := range layer.Texts {
+					res[text_] = layer
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Circles":
+			res := make(map[*Circle]*Layer)
+			for layer := range stage.Layers {
+				for _, circle_ := range layer.Circles {
+					res[circle_] = layer
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Lines":
+			res := make(map[*Line]*Layer)
+			for layer := range stage.Layers {
+				for _, line_ := range layer.Lines {
+					res[line_] = layer
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Ellipses":
+			res := make(map[*Ellipse]*Layer)
+			for layer := range stage.Layers {
+				for _, ellipse_ := range layer.Ellipses {
+					res[ellipse_] = layer
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Polylines":
+			res := make(map[*Polyline]*Layer)
+			for layer := range stage.Layers {
+				for _, polyline_ := range layer.Polylines {
+					res[polyline_] = layer
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Polygones":
+			res := make(map[*Polygone]*Layer)
+			for layer := range stage.Layers {
+				for _, polygone_ := range layer.Polygones {
+					res[polygone_] = layer
+				}
+			}
+			return any(res).(map[*End]*Start)
+		case "Paths":
+			res := make(map[*Path]*Layer)
+			for layer := range stage.Layers {
+				for _, path_ := range layer.Paths {
+					res[path_] = layer
+				}
+			}
+			return any(res).(map[*End]*Start)
+		}
 	// reverse maps of direct associations of Line
 	case Line:
 		switch fieldname {
@@ -1292,67 +1457,11 @@ func GetSliceOfPointersReverseMap[Start, End Gongstruct](fieldname string, stage
 	case SVG:
 		switch fieldname {
 		// insertion point for per direct association field
-		case "Rects":
-			res := make(map[*Rect]*SVG)
+		case "Layers":
+			res := make(map[*Layer]*SVG)
 			for svg := range stage.SVGs {
-				for _, rect_ := range svg.Rects {
-					res[rect_] = svg
-				}
-			}
-			return any(res).(map[*End]*Start)
-		case "Texts":
-			res := make(map[*Text]*SVG)
-			for svg := range stage.SVGs {
-				for _, text_ := range svg.Texts {
-					res[text_] = svg
-				}
-			}
-			return any(res).(map[*End]*Start)
-		case "Circles":
-			res := make(map[*Circle]*SVG)
-			for svg := range stage.SVGs {
-				for _, circle_ := range svg.Circles {
-					res[circle_] = svg
-				}
-			}
-			return any(res).(map[*End]*Start)
-		case "Lines":
-			res := make(map[*Line]*SVG)
-			for svg := range stage.SVGs {
-				for _, line_ := range svg.Lines {
-					res[line_] = svg
-				}
-			}
-			return any(res).(map[*End]*Start)
-		case "Ellipses":
-			res := make(map[*Ellipse]*SVG)
-			for svg := range stage.SVGs {
-				for _, ellipse_ := range svg.Ellipses {
-					res[ellipse_] = svg
-				}
-			}
-			return any(res).(map[*End]*Start)
-		case "Polylines":
-			res := make(map[*Polyline]*SVG)
-			for svg := range stage.SVGs {
-				for _, polyline_ := range svg.Polylines {
-					res[polyline_] = svg
-				}
-			}
-			return any(res).(map[*End]*Start)
-		case "Polygones":
-			res := make(map[*Polygone]*SVG)
-			for svg := range stage.SVGs {
-				for _, polygone_ := range svg.Polygones {
-					res[polygone_] = svg
-				}
-			}
-			return any(res).(map[*End]*Start)
-		case "Paths":
-			res := make(map[*Path]*SVG)
-			for svg := range stage.SVGs {
-				for _, path_ := range svg.Paths {
-					res[path_] = svg
+				for _, layer_ := range svg.Layers {
+					res[layer_] = svg
 				}
 			}
 			return any(res).(map[*End]*Start)
@@ -1388,6 +1497,8 @@ func GetGongstructName[Type Gongstruct]() (res string) {
 		res = "Circle"
 	case Ellipse:
 		res = "Ellipse"
+	case Layer:
+		res = "Layer"
 	case Line:
 		res = "Line"
 	case Path:
@@ -1419,6 +1530,8 @@ func GetFields[Type Gongstruct]() (res []string) {
 		res = []string{"Name", "CX", "CY", "Radius", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations"}
 	case Ellipse:
 		res = []string{"Name", "CX", "CY", "RX", "RY", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
+	case Layer:
+		res = []string{"Display", "Name", "Rects", "Texts", "Circles", "Lines", "Ellipses", "Polylines", "Polygones", "Paths"}
 	case Line:
 		res = []string{"Name", "X1", "Y1", "X2", "Y2", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
 	case Path:
@@ -1428,9 +1541,9 @@ func GetFields[Type Gongstruct]() (res []string) {
 	case Polyline:
 		res = []string{"Name", "Points", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
 	case Rect:
-		res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations"}
+		res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations", "IsSelectable", "IsSelected"}
 	case SVG:
-		res = []string{"Display", "Name", "Rects", "Texts", "Circles", "Lines", "Ellipses", "Polylines", "Polygones", "Paths"}
+		res = []string{"Name", "Layers"}
 	case Text:
 		res = []string{"Name", "X", "Y", "Content", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
 	}
@@ -1514,6 +1627,70 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 			res = any(instance).(Ellipse).Transform
 		case "Animates":
 			for idx, __instance__ := range any(instance).(Ellipse).Animates {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		}
+	case Layer:
+		switch fieldName {
+		// string value of fields
+		case "Display":
+			res = fmt.Sprintf("%t", any(instance).(Layer).Display)
+		case "Name":
+			res = any(instance).(Layer).Name
+		case "Rects":
+			for idx, __instance__ := range any(instance).(Layer).Rects {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Texts":
+			for idx, __instance__ := range any(instance).(Layer).Texts {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Circles":
+			for idx, __instance__ := range any(instance).(Layer).Circles {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Lines":
+			for idx, __instance__ := range any(instance).(Layer).Lines {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Ellipses":
+			for idx, __instance__ := range any(instance).(Layer).Ellipses {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Polylines":
+			for idx, __instance__ := range any(instance).(Layer).Polylines {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Polygones":
+			for idx, __instance__ := range any(instance).(Layer).Polygones {
+				if idx > 0 {
+					res += "\n"
+				}
+				res += __instance__.Name
+			}
+		case "Paths":
+			for idx, __instance__ := range any(instance).(Layer).Paths {
 				if idx > 0 {
 					res += "\n"
 				}
@@ -1668,65 +1845,18 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 				}
 				res += __instance__.Name
 			}
+		case "IsSelectable":
+			res = fmt.Sprintf("%t", any(instance).(Rect).IsSelectable)
+		case "IsSelected":
+			res = fmt.Sprintf("%t", any(instance).(Rect).IsSelected)
 		}
 	case SVG:
 		switch fieldName {
 		// string value of fields
-		case "Display":
-			res = fmt.Sprintf("%t", any(instance).(SVG).Display)
 		case "Name":
 			res = any(instance).(SVG).Name
-		case "Rects":
-			for idx, __instance__ := range any(instance).(SVG).Rects {
-				if idx > 0 {
-					res += "\n"
-				}
-				res += __instance__.Name
-			}
-		case "Texts":
-			for idx, __instance__ := range any(instance).(SVG).Texts {
-				if idx > 0 {
-					res += "\n"
-				}
-				res += __instance__.Name
-			}
-		case "Circles":
-			for idx, __instance__ := range any(instance).(SVG).Circles {
-				if idx > 0 {
-					res += "\n"
-				}
-				res += __instance__.Name
-			}
-		case "Lines":
-			for idx, __instance__ := range any(instance).(SVG).Lines {
-				if idx > 0 {
-					res += "\n"
-				}
-				res += __instance__.Name
-			}
-		case "Ellipses":
-			for idx, __instance__ := range any(instance).(SVG).Ellipses {
-				if idx > 0 {
-					res += "\n"
-				}
-				res += __instance__.Name
-			}
-		case "Polylines":
-			for idx, __instance__ := range any(instance).(SVG).Polylines {
-				if idx > 0 {
-					res += "\n"
-				}
-				res += __instance__.Name
-			}
-		case "Polygones":
-			for idx, __instance__ := range any(instance).(SVG).Polygones {
-				if idx > 0 {
-					res += "\n"
-				}
-				res += __instance__.Name
-			}
-		case "Paths":
-			for idx, __instance__ := range any(instance).(SVG).Paths {
+		case "Layers":
+			for idx, __instance__ := range any(instance).(SVG).Layers {
 				if idx > 0 {
 					res += "\n"
 				}

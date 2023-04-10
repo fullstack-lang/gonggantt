@@ -13,6 +13,9 @@ import { CircleService } from './circle.service'
 import { EllipseDB } from './ellipse-db'
 import { EllipseService } from './ellipse.service'
 
+import { LayerDB } from './layer-db'
+import { LayerService } from './layer.service'
+
 import { LineDB } from './line-db'
 import { LineService } from './line.service'
 
@@ -46,6 +49,9 @@ export class FrontRepo { // insertion point sub template
   Ellipses_array = new Array<EllipseDB>(); // array of repo instances
   Ellipses = new Map<number, EllipseDB>(); // map of repo instances
   Ellipses_batch = new Map<number, EllipseDB>(); // same but only in last GET (for finding repo instances to delete)
+  Layers_array = new Array<LayerDB>(); // array of repo instances
+  Layers = new Map<number, LayerDB>(); // map of repo instances
+  Layers_batch = new Map<number, LayerDB>(); // same but only in last GET (for finding repo instances to delete)
   Lines_array = new Array<LineDB>(); // array of repo instances
   Lines = new Map<number, LineDB>(); // map of repo instances
   Lines_batch = new Map<number, LineDB>(); // same but only in last GET (for finding repo instances to delete)
@@ -132,6 +138,7 @@ export class FrontRepoService {
     private animateService: AnimateService,
     private circleService: CircleService,
     private ellipseService: EllipseService,
+    private layerService: LayerService,
     private lineService: LineService,
     private pathService: PathService,
     private polygoneService: PolygoneService,
@@ -172,6 +179,7 @@ export class FrontRepoService {
     Observable<AnimateDB[]>,
     Observable<CircleDB[]>,
     Observable<EllipseDB[]>,
+    Observable<LayerDB[]>,
     Observable<LineDB[]>,
     Observable<PathDB[]>,
     Observable<PolygoneDB[]>,
@@ -183,6 +191,7 @@ export class FrontRepoService {
       this.animateService.getAnimates(this.GONG__StackPath),
       this.circleService.getCircles(this.GONG__StackPath),
       this.ellipseService.getEllipses(this.GONG__StackPath),
+      this.layerService.getLayers(this.GONG__StackPath),
       this.lineService.getLines(this.GONG__StackPath),
       this.pathService.getPaths(this.GONG__StackPath),
       this.polygoneService.getPolygones(this.GONG__StackPath),
@@ -206,6 +215,7 @@ export class FrontRepoService {
       this.animateService.getAnimates(this.GONG__StackPath),
       this.circleService.getCircles(this.GONG__StackPath),
       this.ellipseService.getEllipses(this.GONG__StackPath),
+      this.layerService.getLayers(this.GONG__StackPath),
       this.lineService.getLines(this.GONG__StackPath),
       this.pathService.getPaths(this.GONG__StackPath),
       this.polygoneService.getPolygones(this.GONG__StackPath),
@@ -224,6 +234,7 @@ export class FrontRepoService {
             animates_,
             circles_,
             ellipses_,
+            layers_,
             lines_,
             paths_,
             polygones_,
@@ -240,6 +251,8 @@ export class FrontRepoService {
             circles = circles_ as CircleDB[]
             var ellipses: EllipseDB[]
             ellipses = ellipses_ as EllipseDB[]
+            var layers: LayerDB[]
+            layers = layers_ as LayerDB[]
             var lines: LineDB[]
             lines = lines_ as LineDB[]
             var paths: PathDB[]
@@ -348,6 +361,39 @@ export class FrontRepoService {
 
             // sort Ellipses_array array
             this.frontRepo.Ellipses_array.sort((t1, t2) => {
+              if (t1.Name > t2.Name) {
+                return 1;
+              }
+              if (t1.Name < t2.Name) {
+                return -1;
+              }
+              return 0;
+            });
+
+            // init the array
+            this.frontRepo.Layers_array = layers
+
+            // clear the map that counts Layer in the GET
+            this.frontRepo.Layers_batch.clear()
+
+            layers.forEach(
+              layer => {
+                this.frontRepo.Layers.set(layer.ID, layer)
+                this.frontRepo.Layers_batch.set(layer.ID, layer)
+              }
+            )
+
+            // clear layers that are absent from the batch
+            this.frontRepo.Layers.forEach(
+              layer => {
+                if (this.frontRepo.Layers_batch.get(layer.ID) == undefined) {
+                  this.frontRepo.Layers.delete(layer.ID)
+                }
+              }
+            )
+
+            // sort Layers_array array
+            this.frontRepo.Layers_array.sort((t1, t2) => {
               if (t1.Name > t2.Name) {
                 return 1;
               }
@@ -708,16 +754,16 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Circles redeeming
+                // insertion point for slice of pointer field Layer.Circles redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(circle.SVG_CirclesDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Circles == undefined) {
-                      _svg.Circles = new Array<CircleDB>()
+                  let _layer = this.frontRepo.Layers.get(circle.Layer_CirclesDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Circles == undefined) {
+                      _layer.Circles = new Array<CircleDB>()
                     }
-                    _svg.Circles.push(circle)
-                    if (circle.SVG_Circles_reverse == undefined) {
-                      circle.SVG_Circles_reverse = _svg
+                    _layer.Circles.push(circle)
+                    if (circle.Layer_Circles_reverse == undefined) {
+                      circle.Layer_Circles_reverse = _layer
                     }
                   }
                 }
@@ -728,16 +774,36 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Ellipses redeeming
+                // insertion point for slice of pointer field Layer.Ellipses redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(ellipse.SVG_EllipsesDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Ellipses == undefined) {
-                      _svg.Ellipses = new Array<EllipseDB>()
+                  let _layer = this.frontRepo.Layers.get(ellipse.Layer_EllipsesDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Ellipses == undefined) {
+                      _layer.Ellipses = new Array<EllipseDB>()
                     }
-                    _svg.Ellipses.push(ellipse)
-                    if (ellipse.SVG_Ellipses_reverse == undefined) {
-                      ellipse.SVG_Ellipses_reverse = _svg
+                    _layer.Ellipses.push(ellipse)
+                    if (ellipse.Layer_Ellipses_reverse == undefined) {
+                      ellipse.Layer_Ellipses_reverse = _layer
+                    }
+                  }
+                }
+              }
+            )
+            layers.forEach(
+              layer => {
+                // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
+
+                // insertion point for redeeming ONE-MANY associations
+                // insertion point for slice of pointer field SVG.Layers redeeming
+                {
+                  let _svg = this.frontRepo.SVGs.get(layer.SVG_LayersDBID.Int64)
+                  if (_svg) {
+                    if (_svg.Layers == undefined) {
+                      _svg.Layers = new Array<LayerDB>()
+                    }
+                    _svg.Layers.push(layer)
+                    if (layer.SVG_Layers_reverse == undefined) {
+                      layer.SVG_Layers_reverse = _svg
                     }
                   }
                 }
@@ -748,16 +814,16 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Lines redeeming
+                // insertion point for slice of pointer field Layer.Lines redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(line.SVG_LinesDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Lines == undefined) {
-                      _svg.Lines = new Array<LineDB>()
+                  let _layer = this.frontRepo.Layers.get(line.Layer_LinesDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Lines == undefined) {
+                      _layer.Lines = new Array<LineDB>()
                     }
-                    _svg.Lines.push(line)
-                    if (line.SVG_Lines_reverse == undefined) {
-                      line.SVG_Lines_reverse = _svg
+                    _layer.Lines.push(line)
+                    if (line.Layer_Lines_reverse == undefined) {
+                      line.Layer_Lines_reverse = _layer
                     }
                   }
                 }
@@ -768,16 +834,16 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Paths redeeming
+                // insertion point for slice of pointer field Layer.Paths redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(path.SVG_PathsDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Paths == undefined) {
-                      _svg.Paths = new Array<PathDB>()
+                  let _layer = this.frontRepo.Layers.get(path.Layer_PathsDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Paths == undefined) {
+                      _layer.Paths = new Array<PathDB>()
                     }
-                    _svg.Paths.push(path)
-                    if (path.SVG_Paths_reverse == undefined) {
-                      path.SVG_Paths_reverse = _svg
+                    _layer.Paths.push(path)
+                    if (path.Layer_Paths_reverse == undefined) {
+                      path.Layer_Paths_reverse = _layer
                     }
                   }
                 }
@@ -788,16 +854,16 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Polygones redeeming
+                // insertion point for slice of pointer field Layer.Polygones redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(polygone.SVG_PolygonesDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Polygones == undefined) {
-                      _svg.Polygones = new Array<PolygoneDB>()
+                  let _layer = this.frontRepo.Layers.get(polygone.Layer_PolygonesDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Polygones == undefined) {
+                      _layer.Polygones = new Array<PolygoneDB>()
                     }
-                    _svg.Polygones.push(polygone)
-                    if (polygone.SVG_Polygones_reverse == undefined) {
-                      polygone.SVG_Polygones_reverse = _svg
+                    _layer.Polygones.push(polygone)
+                    if (polygone.Layer_Polygones_reverse == undefined) {
+                      polygone.Layer_Polygones_reverse = _layer
                     }
                   }
                 }
@@ -808,16 +874,16 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Polylines redeeming
+                // insertion point for slice of pointer field Layer.Polylines redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(polyline.SVG_PolylinesDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Polylines == undefined) {
-                      _svg.Polylines = new Array<PolylineDB>()
+                  let _layer = this.frontRepo.Layers.get(polyline.Layer_PolylinesDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Polylines == undefined) {
+                      _layer.Polylines = new Array<PolylineDB>()
                     }
-                    _svg.Polylines.push(polyline)
-                    if (polyline.SVG_Polylines_reverse == undefined) {
-                      polyline.SVG_Polylines_reverse = _svg
+                    _layer.Polylines.push(polyline)
+                    if (polyline.Layer_Polylines_reverse == undefined) {
+                      polyline.Layer_Polylines_reverse = _layer
                     }
                   }
                 }
@@ -828,16 +894,16 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Rects redeeming
+                // insertion point for slice of pointer field Layer.Rects redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(rect.SVG_RectsDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Rects == undefined) {
-                      _svg.Rects = new Array<RectDB>()
+                  let _layer = this.frontRepo.Layers.get(rect.Layer_RectsDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Rects == undefined) {
+                      _layer.Rects = new Array<RectDB>()
                     }
-                    _svg.Rects.push(rect)
-                    if (rect.SVG_Rects_reverse == undefined) {
-                      rect.SVG_Rects_reverse = _svg
+                    _layer.Rects.push(rect)
+                    if (rect.Layer_Rects_reverse == undefined) {
+                      rect.Layer_Rects_reverse = _layer
                     }
                   }
                 }
@@ -855,16 +921,16 @@ export class FrontRepoService {
                 // insertion point sub sub template for ONE-/ZERO-ONE associations pointers redeeming
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Texts redeeming
+                // insertion point for slice of pointer field Layer.Texts redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(text.SVG_TextsDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Texts == undefined) {
-                      _svg.Texts = new Array<TextDB>()
+                  let _layer = this.frontRepo.Layers.get(text.Layer_TextsDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Texts == undefined) {
+                      _layer.Texts = new Array<TextDB>()
                     }
-                    _svg.Texts.push(text)
-                    if (text.SVG_Texts_reverse == undefined) {
-                      text.SVG_Texts_reverse = _svg
+                    _layer.Texts.push(text)
+                    if (text.Layer_Texts_reverse == undefined) {
+                      text.Layer_Texts_reverse = _layer
                     }
                   }
                 }
@@ -886,7 +952,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.animateService.getAnimates()
+          this.animateService.getAnimates(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             animates,
@@ -1041,7 +1107,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.circleService.getCircles()
+          this.circleService.getCircles(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             circles,
@@ -1063,16 +1129,16 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Circles redeeming
+                // insertion point for slice of pointer field Layer.Circles redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(circle.SVG_CirclesDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Circles == undefined) {
-                      _svg.Circles = new Array<CircleDB>()
+                  let _layer = this.frontRepo.Layers.get(circle.Layer_CirclesDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Circles == undefined) {
+                      _layer.Circles = new Array<CircleDB>()
                     }
-                    _svg.Circles.push(circle)
-                    if (circle.SVG_Circles_reverse == undefined) {
-                      circle.SVG_Circles_reverse = _svg
+                    _layer.Circles.push(circle)
+                    if (circle.Layer_Circles_reverse == undefined) {
+                      circle.Layer_Circles_reverse = _layer
                     }
                   }
                 }
@@ -1105,7 +1171,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.ellipseService.getEllipses()
+          this.ellipseService.getEllipses(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             ellipses,
@@ -1127,16 +1193,16 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Ellipses redeeming
+                // insertion point for slice of pointer field Layer.Ellipses redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(ellipse.SVG_EllipsesDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Ellipses == undefined) {
-                      _svg.Ellipses = new Array<EllipseDB>()
+                  let _layer = this.frontRepo.Layers.get(ellipse.Layer_EllipsesDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Ellipses == undefined) {
+                      _layer.Ellipses = new Array<EllipseDB>()
                     }
-                    _svg.Ellipses.push(ellipse)
-                    if (ellipse.SVG_Ellipses_reverse == undefined) {
-                      ellipse.SVG_Ellipses_reverse = _svg
+                    _layer.Ellipses.push(ellipse)
+                    if (ellipse.Layer_Ellipses_reverse == undefined) {
+                      ellipse.Layer_Ellipses_reverse = _layer
                     }
                   }
                 }
@@ -1164,12 +1230,76 @@ export class FrontRepoService {
     )
   }
 
+  // LayerPull performs a GET on Layer of the stack and redeem association pointers 
+  LayerPull(): Observable<FrontRepo> {
+    return new Observable<FrontRepo>(
+      (observer) => {
+        combineLatest([
+          this.layerService.getLayers(this.GONG__StackPath)
+        ]).subscribe(
+          ([ // insertion point sub template 
+            layers,
+          ]) => {
+            // init the array
+            this.frontRepo.Layers_array = layers
+
+            // clear the map that counts Layer in the GET
+            this.frontRepo.Layers_batch.clear()
+
+            // 
+            // First Step: init map of instances
+            // insertion point sub template 
+            layers.forEach(
+              layer => {
+                this.frontRepo.Layers.set(layer.ID, layer)
+                this.frontRepo.Layers_batch.set(layer.ID, layer)
+
+                // insertion point for redeeming ONE/ZERO-ONE associations
+
+                // insertion point for redeeming ONE-MANY associations
+                // insertion point for slice of pointer field SVG.Layers redeeming
+                {
+                  let _svg = this.frontRepo.SVGs.get(layer.SVG_LayersDBID.Int64)
+                  if (_svg) {
+                    if (_svg.Layers == undefined) {
+                      _svg.Layers = new Array<LayerDB>()
+                    }
+                    _svg.Layers.push(layer)
+                    if (layer.SVG_Layers_reverse == undefined) {
+                      layer.SVG_Layers_reverse = _svg
+                    }
+                  }
+                }
+              }
+            )
+
+            // clear layers that are absent from the GET
+            this.frontRepo.Layers.forEach(
+              layer => {
+                if (this.frontRepo.Layers_batch.get(layer.ID) == undefined) {
+                  this.frontRepo.Layers.delete(layer.ID)
+                }
+              }
+            )
+
+            // 
+            // Second Step: redeem pointers between instances (thanks to maps in the First Step)
+            // insertion point sub template 
+
+            // hand over control flow to observer
+            observer.next(this.frontRepo)
+          }
+        )
+      }
+    )
+  }
+
   // LinePull performs a GET on Line of the stack and redeem association pointers 
   LinePull(): Observable<FrontRepo> {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.lineService.getLines()
+          this.lineService.getLines(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             lines,
@@ -1191,16 +1321,16 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Lines redeeming
+                // insertion point for slice of pointer field Layer.Lines redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(line.SVG_LinesDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Lines == undefined) {
-                      _svg.Lines = new Array<LineDB>()
+                  let _layer = this.frontRepo.Layers.get(line.Layer_LinesDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Lines == undefined) {
+                      _layer.Lines = new Array<LineDB>()
                     }
-                    _svg.Lines.push(line)
-                    if (line.SVG_Lines_reverse == undefined) {
-                      line.SVG_Lines_reverse = _svg
+                    _layer.Lines.push(line)
+                    if (line.Layer_Lines_reverse == undefined) {
+                      line.Layer_Lines_reverse = _layer
                     }
                   }
                 }
@@ -1233,7 +1363,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.pathService.getPaths()
+          this.pathService.getPaths(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             paths,
@@ -1255,16 +1385,16 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Paths redeeming
+                // insertion point for slice of pointer field Layer.Paths redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(path.SVG_PathsDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Paths == undefined) {
-                      _svg.Paths = new Array<PathDB>()
+                  let _layer = this.frontRepo.Layers.get(path.Layer_PathsDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Paths == undefined) {
+                      _layer.Paths = new Array<PathDB>()
                     }
-                    _svg.Paths.push(path)
-                    if (path.SVG_Paths_reverse == undefined) {
-                      path.SVG_Paths_reverse = _svg
+                    _layer.Paths.push(path)
+                    if (path.Layer_Paths_reverse == undefined) {
+                      path.Layer_Paths_reverse = _layer
                     }
                   }
                 }
@@ -1297,7 +1427,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.polygoneService.getPolygones()
+          this.polygoneService.getPolygones(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             polygones,
@@ -1319,16 +1449,16 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Polygones redeeming
+                // insertion point for slice of pointer field Layer.Polygones redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(polygone.SVG_PolygonesDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Polygones == undefined) {
-                      _svg.Polygones = new Array<PolygoneDB>()
+                  let _layer = this.frontRepo.Layers.get(polygone.Layer_PolygonesDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Polygones == undefined) {
+                      _layer.Polygones = new Array<PolygoneDB>()
                     }
-                    _svg.Polygones.push(polygone)
-                    if (polygone.SVG_Polygones_reverse == undefined) {
-                      polygone.SVG_Polygones_reverse = _svg
+                    _layer.Polygones.push(polygone)
+                    if (polygone.Layer_Polygones_reverse == undefined) {
+                      polygone.Layer_Polygones_reverse = _layer
                     }
                   }
                 }
@@ -1361,7 +1491,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.polylineService.getPolylines()
+          this.polylineService.getPolylines(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             polylines,
@@ -1383,16 +1513,16 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Polylines redeeming
+                // insertion point for slice of pointer field Layer.Polylines redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(polyline.SVG_PolylinesDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Polylines == undefined) {
-                      _svg.Polylines = new Array<PolylineDB>()
+                  let _layer = this.frontRepo.Layers.get(polyline.Layer_PolylinesDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Polylines == undefined) {
+                      _layer.Polylines = new Array<PolylineDB>()
                     }
-                    _svg.Polylines.push(polyline)
-                    if (polyline.SVG_Polylines_reverse == undefined) {
-                      polyline.SVG_Polylines_reverse = _svg
+                    _layer.Polylines.push(polyline)
+                    if (polyline.Layer_Polylines_reverse == undefined) {
+                      polyline.Layer_Polylines_reverse = _layer
                     }
                   }
                 }
@@ -1425,7 +1555,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.rectService.getRects()
+          this.rectService.getRects(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             rects,
@@ -1447,16 +1577,16 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Rects redeeming
+                // insertion point for slice of pointer field Layer.Rects redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(rect.SVG_RectsDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Rects == undefined) {
-                      _svg.Rects = new Array<RectDB>()
+                  let _layer = this.frontRepo.Layers.get(rect.Layer_RectsDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Rects == undefined) {
+                      _layer.Rects = new Array<RectDB>()
                     }
-                    _svg.Rects.push(rect)
-                    if (rect.SVG_Rects_reverse == undefined) {
-                      rect.SVG_Rects_reverse = _svg
+                    _layer.Rects.push(rect)
+                    if (rect.Layer_Rects_reverse == undefined) {
+                      rect.Layer_Rects_reverse = _layer
                     }
                   }
                 }
@@ -1489,7 +1619,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.svgService.getSVGs()
+          this.svgService.getSVGs(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             svgs,
@@ -1540,7 +1670,7 @@ export class FrontRepoService {
     return new Observable<FrontRepo>(
       (observer) => {
         combineLatest([
-          this.textService.getTexts()
+          this.textService.getTexts(this.GONG__StackPath)
         ]).subscribe(
           ([ // insertion point sub template 
             texts,
@@ -1562,16 +1692,16 @@ export class FrontRepoService {
                 // insertion point for redeeming ONE/ZERO-ONE associations
 
                 // insertion point for redeeming ONE-MANY associations
-                // insertion point for slice of pointer field SVG.Texts redeeming
+                // insertion point for slice of pointer field Layer.Texts redeeming
                 {
-                  let _svg = this.frontRepo.SVGs.get(text.SVG_TextsDBID.Int64)
-                  if (_svg) {
-                    if (_svg.Texts == undefined) {
-                      _svg.Texts = new Array<TextDB>()
+                  let _layer = this.frontRepo.Layers.get(text.Layer_TextsDBID.Int64)
+                  if (_layer) {
+                    if (_layer.Texts == undefined) {
+                      _layer.Texts = new Array<TextDB>()
                     }
-                    _svg.Texts.push(text)
-                    if (text.SVG_Texts_reverse == undefined) {
-                      text.SVG_Texts_reverse = _svg
+                    _layer.Texts.push(text)
+                    if (text.Layer_Texts_reverse == undefined) {
+                      text.Layer_Texts_reverse = _layer
                     }
                   }
                 }
@@ -1610,24 +1740,27 @@ export function getCircleUniqueID(id: number): number {
 export function getEllipseUniqueID(id: number): number {
   return 41 * id
 }
-export function getLineUniqueID(id: number): number {
+export function getLayerUniqueID(id: number): number {
   return 43 * id
 }
-export function getPathUniqueID(id: number): number {
+export function getLineUniqueID(id: number): number {
   return 47 * id
 }
-export function getPolygoneUniqueID(id: number): number {
+export function getPathUniqueID(id: number): number {
   return 53 * id
 }
-export function getPolylineUniqueID(id: number): number {
+export function getPolygoneUniqueID(id: number): number {
   return 59 * id
 }
-export function getRectUniqueID(id: number): number {
+export function getPolylineUniqueID(id: number): number {
   return 61 * id
 }
-export function getSVGUniqueID(id: number): number {
+export function getRectUniqueID(id: number): number {
   return 67 * id
 }
-export function getTextUniqueID(id: number): number {
+export function getSVGUniqueID(id: number): number {
   return 71 * id
+}
+export function getTextUniqueID(id: number): number {
+  return 73 * id
 }

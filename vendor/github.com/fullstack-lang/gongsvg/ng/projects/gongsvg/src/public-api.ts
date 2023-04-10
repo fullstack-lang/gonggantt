@@ -34,6 +34,12 @@ export * from './lib/ellipses-table/ellipses-table.component'
 export * from './lib/ellipse-db'
 export * from './lib/ellipse.service'
 
+export * from './lib/layer-detail/layer-detail.component'
+export * from './lib/layer-sorting/layer-sorting.component'
+export * from './lib/layers-table/layers-table.component'
+export * from './lib/layer-db'
+export * from './lib/layer.service'
+
 export * from './lib/line-detail/line-detail.component'
 export * from './lib/line-sorting/line-sorting.component'
 export * from './lib/lines-table/lines-table.component'

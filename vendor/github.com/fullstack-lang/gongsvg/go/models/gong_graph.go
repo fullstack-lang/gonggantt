@@ -14,6 +14,9 @@ func IsStaged[Type Gongstruct](stage *StageStruct, instance *Type) (ok bool) {
 	case *Ellipse:
 		ok = stage.IsStagedEllipse(target)
 
+	case *Layer:
+		ok = stage.IsStagedLayer(target)
+
 	case *Line:
 		ok = stage.IsStagedLine(target)
 
@@ -59,6 +62,13 @@ func IsStaged[Type Gongstruct](stage *StageStruct, instance *Type) (ok bool) {
 	func (stage *StageStruct) IsStagedEllipse(ellipse *Ellipse) (ok bool) {
 
 		_, ok = stage.Ellipses[ellipse]
+	
+		return
+	}
+
+	func (stage *StageStruct) IsStagedLayer(layer *Layer) (ok bool) {
+
+		_, ok = stage.Layers[layer]
 	
 		return
 	}
@@ -129,6 +139,9 @@ func StageBranch[Type Gongstruct](stage *StageStruct, instance *Type) {
 
 	case *Ellipse:
 		stage.StageBranchEllipse(target)
+
+	case *Layer:
+		stage.StageBranchLayer(target)
 
 	case *Line:
 		stage.StageBranchLine(target)
@@ -204,6 +217,45 @@ func (stage *StageStruct) StageBranchEllipse(ellipse *Ellipse) {
 	//insertion point for the staging of instances referenced by slice of pointers
 	for _, _animate := range ellipse.Animates {
 		StageBranch(stage, _animate)
+	}
+
+}
+
+func (stage *StageStruct) StageBranchLayer(layer *Layer) {
+
+	// check if instance is already staged
+	if IsStaged(stage, layer) {
+		return
+	}
+
+	layer.Stage(stage)
+
+	//insertion point for the staging of instances referenced by pointers
+
+	//insertion point for the staging of instances referenced by slice of pointers
+	for _, _rect := range layer.Rects {
+		StageBranch(stage, _rect)
+	}
+	for _, _text := range layer.Texts {
+		StageBranch(stage, _text)
+	}
+	for _, _circle := range layer.Circles {
+		StageBranch(stage, _circle)
+	}
+	for _, _line := range layer.Lines {
+		StageBranch(stage, _line)
+	}
+	for _, _ellipse := range layer.Ellipses {
+		StageBranch(stage, _ellipse)
+	}
+	for _, _polyline := range layer.Polylines {
+		StageBranch(stage, _polyline)
+	}
+	for _, _polygone := range layer.Polygones {
+		StageBranch(stage, _polygone)
+	}
+	for _, _path := range layer.Paths {
+		StageBranch(stage, _path)
 	}
 
 }
@@ -310,29 +362,8 @@ func (stage *StageStruct) StageBranchSVG(svg *SVG) {
 	//insertion point for the staging of instances referenced by pointers
 
 	//insertion point for the staging of instances referenced by slice of pointers
-	for _, _rect := range svg.Rects {
-		StageBranch(stage, _rect)
-	}
-	for _, _text := range svg.Texts {
-		StageBranch(stage, _text)
-	}
-	for _, _circle := range svg.Circles {
-		StageBranch(stage, _circle)
-	}
-	for _, _line := range svg.Lines {
-		StageBranch(stage, _line)
-	}
-	for _, _ellipse := range svg.Ellipses {
-		StageBranch(stage, _ellipse)
-	}
-	for _, _polyline := range svg.Polylines {
-		StageBranch(stage, _polyline)
-	}
-	for _, _polygone := range svg.Polygones {
-		StageBranch(stage, _polygone)
-	}
-	for _, _path := range svg.Paths {
-		StageBranch(stage, _path)
+	for _, _layer := range svg.Layers {
+		StageBranch(stage, _layer)
 	}
 
 }
@@ -372,6 +403,9 @@ func UnstageBranch[Type Gongstruct](stage *StageStruct, instance *Type) {
 
 	case *Ellipse:
 		stage.UnstageBranchEllipse(target)
+
+	case *Layer:
+		stage.UnstageBranchLayer(target)
 
 	case *Line:
 		stage.UnstageBranchLine(target)
@@ -447,6 +481,45 @@ func (stage *StageStruct) UnstageBranchEllipse(ellipse *Ellipse) {
 	//insertion point for the staging of instances referenced by slice of pointers
 	for _, _animate := range ellipse.Animates {
 		UnstageBranch(stage, _animate)
+	}
+
+}
+
+func (stage *StageStruct) UnstageBranchLayer(layer *Layer) {
+
+	// check if instance is already staged
+	if ! IsStaged(stage, layer) {
+		return
+	}
+
+	layer.Unstage(stage)
+
+	//insertion point for the staging of instances referenced by pointers
+
+	//insertion point for the staging of instances referenced by slice of pointers
+	for _, _rect := range layer.Rects {
+		UnstageBranch(stage, _rect)
+	}
+	for _, _text := range layer.Texts {
+		UnstageBranch(stage, _text)
+	}
+	for _, _circle := range layer.Circles {
+		UnstageBranch(stage, _circle)
+	}
+	for _, _line := range layer.Lines {
+		UnstageBranch(stage, _line)
+	}
+	for _, _ellipse := range layer.Ellipses {
+		UnstageBranch(stage, _ellipse)
+	}
+	for _, _polyline := range layer.Polylines {
+		UnstageBranch(stage, _polyline)
+	}
+	for _, _polygone := range layer.Polygones {
+		UnstageBranch(stage, _polygone)
+	}
+	for _, _path := range layer.Paths {
+		UnstageBranch(stage, _path)
 	}
 
 }
@@ -553,29 +626,8 @@ func (stage *StageStruct) UnstageBranchSVG(svg *SVG) {
 	//insertion point for the staging of instances referenced by pointers
 
 	//insertion point for the staging of instances referenced by slice of pointers
-	for _, _rect := range svg.Rects {
-		UnstageBranch(stage, _rect)
-	}
-	for _, _text := range svg.Texts {
-		UnstageBranch(stage, _text)
-	}
-	for _, _circle := range svg.Circles {
-		UnstageBranch(stage, _circle)
-	}
-	for _, _line := range svg.Lines {
-		UnstageBranch(stage, _line)
-	}
-	for _, _ellipse := range svg.Ellipses {
-		UnstageBranch(stage, _ellipse)
-	}
-	for _, _polyline := range svg.Polylines {
-		UnstageBranch(stage, _polyline)
-	}
-	for _, _polygone := range svg.Polygones {
-		UnstageBranch(stage, _polygone)
-	}
-	for _, _path := range svg.Paths {
-		UnstageBranch(stage, _path)
+	for _, _layer := range svg.Layers {
+		UnstageBranch(stage, _layer)
 	}
 
 }

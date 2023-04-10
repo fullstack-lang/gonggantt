@@ -2,6 +2,15 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "03 - ng serve --host=127.0.0.1",
+			"type": "shell",
+			"options": {
+				"cwd": "ng"
+			},
+			"command": "ng serve --host=127.0.0.1",
+			"group": "build"
+		},
+		{
 			"label": "03 - ng serve",
 			"type": "shell",
 			"options": {
@@ -35,6 +44,21 @@
 				"main.go",
 				"-marshallOnCommit=gantt1",
 				"-unmarshallFromCode=gantt1.go",
+			],
+			"group": "build"
+		},
+		{
+			"label": "02 - go run main.go -unmarshallFromCode simple.go -marshallOnCommit simple",
+			"type": "shell",
+			"options": {
+				"cwd": "./go/cmd/gonggantt"
+			},
+			"command": "go",
+			"args": [
+				"run",
+				"main.go",
+				"-marshallOnCommit=simple",
+				"-unmarshallFromCode=simple.go",
 			],
 			"group": "build"
 		},

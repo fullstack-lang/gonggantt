@@ -11,6 +11,9 @@ import { CircleDetailComponent } from './circle-detail/circle-detail.component'
 import { EllipsesTableComponent } from './ellipses-table/ellipses-table.component'
 import { EllipseDetailComponent } from './ellipse-detail/ellipse-detail.component'
 
+import { LayersTableComponent } from './layers-table/layers-table.component'
+import { LayerDetailComponent } from './layer-detail/layer-detail.component'
+
 import { LinesTableComponent } from './lines-table/lines-table.component'
 import { LineDetailComponent } from './line-detail/line-detail.component'
 
@@ -159,6 +162,39 @@ export class RouteService {
     getEllipseDetailRoute(stackPath: string): Route {
         let route: Route =
             { path: this.getEllipseDetailPath(), component: EllipseDetailComponent, outlet: this.getEditorOutlet(stackPath) }
+        return route
+    }
+
+    getLayerTablePath(): string {
+        return this.getPathRoot() + '-layers/:GONG__StackPath'
+    }
+    getLayerTableRoute(stackPath: string): Route {
+        let route: Route =
+            { path: this.getLayerTablePath(), component: LayersTableComponent, outlet: this.getTableOutlet(stackPath) }
+        return route
+    }
+    getLayerAdderPath(): string {
+        return this.getPathRoot() + '-layer-adder/:GONG__StackPath'
+    }
+    getLayerAdderRoute(stackPath: string): Route {
+        let route: Route =
+            { path: this.getLayerAdderPath(), component: LayerDetailComponent, outlet: this.getEditorOutlet(stackPath) }
+        return route
+    }
+    getLayerAdderForUsePath(): string {
+        return this.getPathRoot() + '-layer-adder/:id/:originStruct/:originStructFieldName/:GONG__StackPath'
+    }
+    getLayerAdderForUseRoute(stackPath: string): Route {
+        let route: Route =
+            { path: this.getLayerAdderForUsePath(), component: LayerDetailComponent, outlet: this.getEditorOutlet(stackPath) }
+        return route
+    }
+    getLayerDetailPath(): string {
+        return this.getPathRoot() + '-layer-detail/:id/:GONG__StackPath'
+    }
+    getLayerDetailRoute(stackPath: string): Route {
+        let route: Route =
+            { path: this.getLayerDetailPath(), component: LayerDetailComponent, outlet: this.getEditorOutlet(stackPath) }
         return route
     }
 
@@ -413,6 +449,11 @@ export class RouteService {
             this.getEllipseAdderRoute(stackPath),
             this.getEllipseAdderForUseRoute(stackPath),
             this.getEllipseDetailRoute(stackPath),
+
+            this.getLayerTableRoute(stackPath),
+            this.getLayerAdderRoute(stackPath),
+            this.getLayerAdderForUseRoute(stackPath),
+            this.getLayerDetailRoute(stackPath),
 
             this.getLineTableRoute(stackPath),
             this.getLineAdderRoute(stackPath),

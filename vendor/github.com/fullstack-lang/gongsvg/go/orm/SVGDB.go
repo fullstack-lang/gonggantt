@@ -58,10 +58,6 @@ type SVGDB struct {
 
 	// insertion for basic fields declaration
 
-	// Declation for basic field svgDB.Display
-	// provide the sql storage for the boolan
-	Display_Data sql.NullBool
-
 	// Declation for basic field svgDB.Name
 	Name_Data sql.NullString
 	// encoding of pointers
@@ -85,16 +81,13 @@ type SVGWOP struct {
 
 	// insertion for WOP basic fields
 
-	Display bool `xlsx:"1"`
-
-	Name string `xlsx:"2"`
+	Name string `xlsx:"1"`
 	// insertion for WOP pointer fields
 }
 
 var SVG_Fields = []string{
 	// insertion for WOP basic fields
 	"ID",
-	"Display",
 	"Name",
 }
 
@@ -215,154 +208,21 @@ func (backRepoSVG *BackRepoSVGStruct) CommitPhaseTwoInstance(backRepo *BackRepoS
 		svgDB.CopyBasicFieldsFromSVG(svg)
 
 		// insertion point for translating pointers encodings into actual pointers
-		// This loop encodes the slice of pointers svg.Rects into the back repo.
+		// This loop encodes the slice of pointers svg.Layers into the back repo.
 		// Each back repo instance at the end of the association encode the ID of the association start
 		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, rectAssocEnd := range svg.Rects {
+		for idx, layerAssocEnd := range svg.Layers {
 
 			// get the back repo instance at the association end
-			rectAssocEnd_DB :=
-				backRepo.BackRepoRect.GetRectDBFromRectPtr(rectAssocEnd)
+			layerAssocEnd_DB :=
+				backRepo.BackRepoLayer.GetLayerDBFromLayerPtr(layerAssocEnd)
 
 			// encode reverse pointer in the association end back repo instance
-			rectAssocEnd_DB.SVG_RectsDBID.Int64 = int64(svgDB.ID)
-			rectAssocEnd_DB.SVG_RectsDBID.Valid = true
-			rectAssocEnd_DB.SVG_RectsDBID_Index.Int64 = int64(idx)
-			rectAssocEnd_DB.SVG_RectsDBID_Index.Valid = true
-			if q := backRepoSVG.db.Save(rectAssocEnd_DB); q.Error != nil {
-				return q.Error
-			}
-		}
-
-		// This loop encodes the slice of pointers svg.Texts into the back repo.
-		// Each back repo instance at the end of the association encode the ID of the association start
-		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, textAssocEnd := range svg.Texts {
-
-			// get the back repo instance at the association end
-			textAssocEnd_DB :=
-				backRepo.BackRepoText.GetTextDBFromTextPtr(textAssocEnd)
-
-			// encode reverse pointer in the association end back repo instance
-			textAssocEnd_DB.SVG_TextsDBID.Int64 = int64(svgDB.ID)
-			textAssocEnd_DB.SVG_TextsDBID.Valid = true
-			textAssocEnd_DB.SVG_TextsDBID_Index.Int64 = int64(idx)
-			textAssocEnd_DB.SVG_TextsDBID_Index.Valid = true
-			if q := backRepoSVG.db.Save(textAssocEnd_DB); q.Error != nil {
-				return q.Error
-			}
-		}
-
-		// This loop encodes the slice of pointers svg.Circles into the back repo.
-		// Each back repo instance at the end of the association encode the ID of the association start
-		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, circleAssocEnd := range svg.Circles {
-
-			// get the back repo instance at the association end
-			circleAssocEnd_DB :=
-				backRepo.BackRepoCircle.GetCircleDBFromCirclePtr(circleAssocEnd)
-
-			// encode reverse pointer in the association end back repo instance
-			circleAssocEnd_DB.SVG_CirclesDBID.Int64 = int64(svgDB.ID)
-			circleAssocEnd_DB.SVG_CirclesDBID.Valid = true
-			circleAssocEnd_DB.SVG_CirclesDBID_Index.Int64 = int64(idx)
-			circleAssocEnd_DB.SVG_CirclesDBID_Index.Valid = true
-			if q := backRepoSVG.db.Save(circleAssocEnd_DB); q.Error != nil {
-				return q.Error
-			}
-		}
-
-		// This loop encodes the slice of pointers svg.Lines into the back repo.
-		// Each back repo instance at the end of the association encode the ID of the association start
-		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, lineAssocEnd := range svg.Lines {
-
-			// get the back repo instance at the association end
-			lineAssocEnd_DB :=
-				backRepo.BackRepoLine.GetLineDBFromLinePtr(lineAssocEnd)
-
-			// encode reverse pointer in the association end back repo instance
-			lineAssocEnd_DB.SVG_LinesDBID.Int64 = int64(svgDB.ID)
-			lineAssocEnd_DB.SVG_LinesDBID.Valid = true
-			lineAssocEnd_DB.SVG_LinesDBID_Index.Int64 = int64(idx)
-			lineAssocEnd_DB.SVG_LinesDBID_Index.Valid = true
-			if q := backRepoSVG.db.Save(lineAssocEnd_DB); q.Error != nil {
-				return q.Error
-			}
-		}
-
-		// This loop encodes the slice of pointers svg.Ellipses into the back repo.
-		// Each back repo instance at the end of the association encode the ID of the association start
-		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, ellipseAssocEnd := range svg.Ellipses {
-
-			// get the back repo instance at the association end
-			ellipseAssocEnd_DB :=
-				backRepo.BackRepoEllipse.GetEllipseDBFromEllipsePtr(ellipseAssocEnd)
-
-			// encode reverse pointer in the association end back repo instance
-			ellipseAssocEnd_DB.SVG_EllipsesDBID.Int64 = int64(svgDB.ID)
-			ellipseAssocEnd_DB.SVG_EllipsesDBID.Valid = true
-			ellipseAssocEnd_DB.SVG_EllipsesDBID_Index.Int64 = int64(idx)
-			ellipseAssocEnd_DB.SVG_EllipsesDBID_Index.Valid = true
-			if q := backRepoSVG.db.Save(ellipseAssocEnd_DB); q.Error != nil {
-				return q.Error
-			}
-		}
-
-		// This loop encodes the slice of pointers svg.Polylines into the back repo.
-		// Each back repo instance at the end of the association encode the ID of the association start
-		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, polylineAssocEnd := range svg.Polylines {
-
-			// get the back repo instance at the association end
-			polylineAssocEnd_DB :=
-				backRepo.BackRepoPolyline.GetPolylineDBFromPolylinePtr(polylineAssocEnd)
-
-			// encode reverse pointer in the association end back repo instance
-			polylineAssocEnd_DB.SVG_PolylinesDBID.Int64 = int64(svgDB.ID)
-			polylineAssocEnd_DB.SVG_PolylinesDBID.Valid = true
-			polylineAssocEnd_DB.SVG_PolylinesDBID_Index.Int64 = int64(idx)
-			polylineAssocEnd_DB.SVG_PolylinesDBID_Index.Valid = true
-			if q := backRepoSVG.db.Save(polylineAssocEnd_DB); q.Error != nil {
-				return q.Error
-			}
-		}
-
-		// This loop encodes the slice of pointers svg.Polygones into the back repo.
-		// Each back repo instance at the end of the association encode the ID of the association start
-		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, polygoneAssocEnd := range svg.Polygones {
-
-			// get the back repo instance at the association end
-			polygoneAssocEnd_DB :=
-				backRepo.BackRepoPolygone.GetPolygoneDBFromPolygonePtr(polygoneAssocEnd)
-
-			// encode reverse pointer in the association end back repo instance
-			polygoneAssocEnd_DB.SVG_PolygonesDBID.Int64 = int64(svgDB.ID)
-			polygoneAssocEnd_DB.SVG_PolygonesDBID.Valid = true
-			polygoneAssocEnd_DB.SVG_PolygonesDBID_Index.Int64 = int64(idx)
-			polygoneAssocEnd_DB.SVG_PolygonesDBID_Index.Valid = true
-			if q := backRepoSVG.db.Save(polygoneAssocEnd_DB); q.Error != nil {
-				return q.Error
-			}
-		}
-
-		// This loop encodes the slice of pointers svg.Paths into the back repo.
-		// Each back repo instance at the end of the association encode the ID of the association start
-		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, pathAssocEnd := range svg.Paths {
-
-			// get the back repo instance at the association end
-			pathAssocEnd_DB :=
-				backRepo.BackRepoPath.GetPathDBFromPathPtr(pathAssocEnd)
-
-			// encode reverse pointer in the association end back repo instance
-			pathAssocEnd_DB.SVG_PathsDBID.Int64 = int64(svgDB.ID)
-			pathAssocEnd_DB.SVG_PathsDBID.Valid = true
-			pathAssocEnd_DB.SVG_PathsDBID_Index.Int64 = int64(idx)
-			pathAssocEnd_DB.SVG_PathsDBID_Index.Valid = true
-			if q := backRepoSVG.db.Save(pathAssocEnd_DB); q.Error != nil {
+			layerAssocEnd_DB.SVG_LayersDBID.Int64 = int64(svgDB.ID)
+			layerAssocEnd_DB.SVG_LayersDBID.Valid = true
+			layerAssocEnd_DB.SVG_LayersDBID_Index.Int64 = int64(idx)
+			layerAssocEnd_DB.SVG_LayersDBID_Index.Valid = true
+			if q := backRepoSVG.db.Save(layerAssocEnd_DB); q.Error != nil {
 				return q.Error
 			}
 		}
@@ -474,220 +334,31 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 	_ = svg // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
 
 	// insertion point for checkout of pointer encoding
-	// This loop redeem svg.Rects in the stage from the encode in the back repo
-	// It parses all RectDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// This loop redeem svg.Layers in the stage from the encode in the back repo
+	// It parses all LayerDB in the back repo and if the reverse pointer encoding matches the back repo ID
 	// it appends the stage instance
 	// 1. reset the slice
-	svg.Rects = svg.Rects[:0]
+	svg.Layers = svg.Layers[:0]
 	// 2. loop all instances in the type in the association end
-	for _, rectDB_AssocEnd := range backRepo.BackRepoRect.Map_RectDBID_RectDB {
+	for _, layerDB_AssocEnd := range backRepo.BackRepoLayer.Map_LayerDBID_LayerDB {
 		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if rectDB_AssocEnd.SVG_RectsDBID.Int64 == int64(svgDB.ID) {
+		if layerDB_AssocEnd.SVG_LayersDBID.Int64 == int64(svgDB.ID) {
 			// 4. fetch the associated instance in the stage
-			rect_AssocEnd := backRepo.BackRepoRect.Map_RectDBID_RectPtr[rectDB_AssocEnd.ID]
+			layer_AssocEnd := backRepo.BackRepoLayer.Map_LayerDBID_LayerPtr[layerDB_AssocEnd.ID]
 			// 5. append it the association slice
-			svg.Rects = append(svg.Rects, rect_AssocEnd)
+			svg.Layers = append(svg.Layers, layer_AssocEnd)
 		}
 	}
 
 	// sort the array according to the order
-	sort.Slice(svg.Rects, func(i, j int) bool {
-		rectDB_i_ID := backRepo.BackRepoRect.Map_RectPtr_RectDBID[svg.Rects[i]]
-		rectDB_j_ID := backRepo.BackRepoRect.Map_RectPtr_RectDBID[svg.Rects[j]]
+	sort.Slice(svg.Layers, func(i, j int) bool {
+		layerDB_i_ID := backRepo.BackRepoLayer.Map_LayerPtr_LayerDBID[svg.Layers[i]]
+		layerDB_j_ID := backRepo.BackRepoLayer.Map_LayerPtr_LayerDBID[svg.Layers[j]]
 
-		rectDB_i := backRepo.BackRepoRect.Map_RectDBID_RectDB[rectDB_i_ID]
-		rectDB_j := backRepo.BackRepoRect.Map_RectDBID_RectDB[rectDB_j_ID]
+		layerDB_i := backRepo.BackRepoLayer.Map_LayerDBID_LayerDB[layerDB_i_ID]
+		layerDB_j := backRepo.BackRepoLayer.Map_LayerDBID_LayerDB[layerDB_j_ID]
 
-		return rectDB_i.SVG_RectsDBID_Index.Int64 < rectDB_j.SVG_RectsDBID_Index.Int64
-	})
-
-	// This loop redeem svg.Texts in the stage from the encode in the back repo
-	// It parses all TextDB in the back repo and if the reverse pointer encoding matches the back repo ID
-	// it appends the stage instance
-	// 1. reset the slice
-	svg.Texts = svg.Texts[:0]
-	// 2. loop all instances in the type in the association end
-	for _, textDB_AssocEnd := range backRepo.BackRepoText.Map_TextDBID_TextDB {
-		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if textDB_AssocEnd.SVG_TextsDBID.Int64 == int64(svgDB.ID) {
-			// 4. fetch the associated instance in the stage
-			text_AssocEnd := backRepo.BackRepoText.Map_TextDBID_TextPtr[textDB_AssocEnd.ID]
-			// 5. append it the association slice
-			svg.Texts = append(svg.Texts, text_AssocEnd)
-		}
-	}
-
-	// sort the array according to the order
-	sort.Slice(svg.Texts, func(i, j int) bool {
-		textDB_i_ID := backRepo.BackRepoText.Map_TextPtr_TextDBID[svg.Texts[i]]
-		textDB_j_ID := backRepo.BackRepoText.Map_TextPtr_TextDBID[svg.Texts[j]]
-
-		textDB_i := backRepo.BackRepoText.Map_TextDBID_TextDB[textDB_i_ID]
-		textDB_j := backRepo.BackRepoText.Map_TextDBID_TextDB[textDB_j_ID]
-
-		return textDB_i.SVG_TextsDBID_Index.Int64 < textDB_j.SVG_TextsDBID_Index.Int64
-	})
-
-	// This loop redeem svg.Circles in the stage from the encode in the back repo
-	// It parses all CircleDB in the back repo and if the reverse pointer encoding matches the back repo ID
-	// it appends the stage instance
-	// 1. reset the slice
-	svg.Circles = svg.Circles[:0]
-	// 2. loop all instances in the type in the association end
-	for _, circleDB_AssocEnd := range backRepo.BackRepoCircle.Map_CircleDBID_CircleDB {
-		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if circleDB_AssocEnd.SVG_CirclesDBID.Int64 == int64(svgDB.ID) {
-			// 4. fetch the associated instance in the stage
-			circle_AssocEnd := backRepo.BackRepoCircle.Map_CircleDBID_CirclePtr[circleDB_AssocEnd.ID]
-			// 5. append it the association slice
-			svg.Circles = append(svg.Circles, circle_AssocEnd)
-		}
-	}
-
-	// sort the array according to the order
-	sort.Slice(svg.Circles, func(i, j int) bool {
-		circleDB_i_ID := backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID[svg.Circles[i]]
-		circleDB_j_ID := backRepo.BackRepoCircle.Map_CirclePtr_CircleDBID[svg.Circles[j]]
-
-		circleDB_i := backRepo.BackRepoCircle.Map_CircleDBID_CircleDB[circleDB_i_ID]
-		circleDB_j := backRepo.BackRepoCircle.Map_CircleDBID_CircleDB[circleDB_j_ID]
-
-		return circleDB_i.SVG_CirclesDBID_Index.Int64 < circleDB_j.SVG_CirclesDBID_Index.Int64
-	})
-
-	// This loop redeem svg.Lines in the stage from the encode in the back repo
-	// It parses all LineDB in the back repo and if the reverse pointer encoding matches the back repo ID
-	// it appends the stage instance
-	// 1. reset the slice
-	svg.Lines = svg.Lines[:0]
-	// 2. loop all instances in the type in the association end
-	for _, lineDB_AssocEnd := range backRepo.BackRepoLine.Map_LineDBID_LineDB {
-		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if lineDB_AssocEnd.SVG_LinesDBID.Int64 == int64(svgDB.ID) {
-			// 4. fetch the associated instance in the stage
-			line_AssocEnd := backRepo.BackRepoLine.Map_LineDBID_LinePtr[lineDB_AssocEnd.ID]
-			// 5. append it the association slice
-			svg.Lines = append(svg.Lines, line_AssocEnd)
-		}
-	}
-
-	// sort the array according to the order
-	sort.Slice(svg.Lines, func(i, j int) bool {
-		lineDB_i_ID := backRepo.BackRepoLine.Map_LinePtr_LineDBID[svg.Lines[i]]
-		lineDB_j_ID := backRepo.BackRepoLine.Map_LinePtr_LineDBID[svg.Lines[j]]
-
-		lineDB_i := backRepo.BackRepoLine.Map_LineDBID_LineDB[lineDB_i_ID]
-		lineDB_j := backRepo.BackRepoLine.Map_LineDBID_LineDB[lineDB_j_ID]
-
-		return lineDB_i.SVG_LinesDBID_Index.Int64 < lineDB_j.SVG_LinesDBID_Index.Int64
-	})
-
-	// This loop redeem svg.Ellipses in the stage from the encode in the back repo
-	// It parses all EllipseDB in the back repo and if the reverse pointer encoding matches the back repo ID
-	// it appends the stage instance
-	// 1. reset the slice
-	svg.Ellipses = svg.Ellipses[:0]
-	// 2. loop all instances in the type in the association end
-	for _, ellipseDB_AssocEnd := range backRepo.BackRepoEllipse.Map_EllipseDBID_EllipseDB {
-		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if ellipseDB_AssocEnd.SVG_EllipsesDBID.Int64 == int64(svgDB.ID) {
-			// 4. fetch the associated instance in the stage
-			ellipse_AssocEnd := backRepo.BackRepoEllipse.Map_EllipseDBID_EllipsePtr[ellipseDB_AssocEnd.ID]
-			// 5. append it the association slice
-			svg.Ellipses = append(svg.Ellipses, ellipse_AssocEnd)
-		}
-	}
-
-	// sort the array according to the order
-	sort.Slice(svg.Ellipses, func(i, j int) bool {
-		ellipseDB_i_ID := backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID[svg.Ellipses[i]]
-		ellipseDB_j_ID := backRepo.BackRepoEllipse.Map_EllipsePtr_EllipseDBID[svg.Ellipses[j]]
-
-		ellipseDB_i := backRepo.BackRepoEllipse.Map_EllipseDBID_EllipseDB[ellipseDB_i_ID]
-		ellipseDB_j := backRepo.BackRepoEllipse.Map_EllipseDBID_EllipseDB[ellipseDB_j_ID]
-
-		return ellipseDB_i.SVG_EllipsesDBID_Index.Int64 < ellipseDB_j.SVG_EllipsesDBID_Index.Int64
-	})
-
-	// This loop redeem svg.Polylines in the stage from the encode in the back repo
-	// It parses all PolylineDB in the back repo and if the reverse pointer encoding matches the back repo ID
-	// it appends the stage instance
-	// 1. reset the slice
-	svg.Polylines = svg.Polylines[:0]
-	// 2. loop all instances in the type in the association end
-	for _, polylineDB_AssocEnd := range backRepo.BackRepoPolyline.Map_PolylineDBID_PolylineDB {
-		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if polylineDB_AssocEnd.SVG_PolylinesDBID.Int64 == int64(svgDB.ID) {
-			// 4. fetch the associated instance in the stage
-			polyline_AssocEnd := backRepo.BackRepoPolyline.Map_PolylineDBID_PolylinePtr[polylineDB_AssocEnd.ID]
-			// 5. append it the association slice
-			svg.Polylines = append(svg.Polylines, polyline_AssocEnd)
-		}
-	}
-
-	// sort the array according to the order
-	sort.Slice(svg.Polylines, func(i, j int) bool {
-		polylineDB_i_ID := backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID[svg.Polylines[i]]
-		polylineDB_j_ID := backRepo.BackRepoPolyline.Map_PolylinePtr_PolylineDBID[svg.Polylines[j]]
-
-		polylineDB_i := backRepo.BackRepoPolyline.Map_PolylineDBID_PolylineDB[polylineDB_i_ID]
-		polylineDB_j := backRepo.BackRepoPolyline.Map_PolylineDBID_PolylineDB[polylineDB_j_ID]
-
-		return polylineDB_i.SVG_PolylinesDBID_Index.Int64 < polylineDB_j.SVG_PolylinesDBID_Index.Int64
-	})
-
-	// This loop redeem svg.Polygones in the stage from the encode in the back repo
-	// It parses all PolygoneDB in the back repo and if the reverse pointer encoding matches the back repo ID
-	// it appends the stage instance
-	// 1. reset the slice
-	svg.Polygones = svg.Polygones[:0]
-	// 2. loop all instances in the type in the association end
-	for _, polygoneDB_AssocEnd := range backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygoneDB {
-		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if polygoneDB_AssocEnd.SVG_PolygonesDBID.Int64 == int64(svgDB.ID) {
-			// 4. fetch the associated instance in the stage
-			polygone_AssocEnd := backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygonePtr[polygoneDB_AssocEnd.ID]
-			// 5. append it the association slice
-			svg.Polygones = append(svg.Polygones, polygone_AssocEnd)
-		}
-	}
-
-	// sort the array according to the order
-	sort.Slice(svg.Polygones, func(i, j int) bool {
-		polygoneDB_i_ID := backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID[svg.Polygones[i]]
-		polygoneDB_j_ID := backRepo.BackRepoPolygone.Map_PolygonePtr_PolygoneDBID[svg.Polygones[j]]
-
-		polygoneDB_i := backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygoneDB[polygoneDB_i_ID]
-		polygoneDB_j := backRepo.BackRepoPolygone.Map_PolygoneDBID_PolygoneDB[polygoneDB_j_ID]
-
-		return polygoneDB_i.SVG_PolygonesDBID_Index.Int64 < polygoneDB_j.SVG_PolygonesDBID_Index.Int64
-	})
-
-	// This loop redeem svg.Paths in the stage from the encode in the back repo
-	// It parses all PathDB in the back repo and if the reverse pointer encoding matches the back repo ID
-	// it appends the stage instance
-	// 1. reset the slice
-	svg.Paths = svg.Paths[:0]
-	// 2. loop all instances in the type in the association end
-	for _, pathDB_AssocEnd := range backRepo.BackRepoPath.Map_PathDBID_PathDB {
-		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if pathDB_AssocEnd.SVG_PathsDBID.Int64 == int64(svgDB.ID) {
-			// 4. fetch the associated instance in the stage
-			path_AssocEnd := backRepo.BackRepoPath.Map_PathDBID_PathPtr[pathDB_AssocEnd.ID]
-			// 5. append it the association slice
-			svg.Paths = append(svg.Paths, path_AssocEnd)
-		}
-	}
-
-	// sort the array according to the order
-	sort.Slice(svg.Paths, func(i, j int) bool {
-		pathDB_i_ID := backRepo.BackRepoPath.Map_PathPtr_PathDBID[svg.Paths[i]]
-		pathDB_j_ID := backRepo.BackRepoPath.Map_PathPtr_PathDBID[svg.Paths[j]]
-
-		pathDB_i := backRepo.BackRepoPath.Map_PathDBID_PathDB[pathDB_i_ID]
-		pathDB_j := backRepo.BackRepoPath.Map_PathDBID_PathDB[pathDB_j_ID]
-
-		return pathDB_i.SVG_PathsDBID_Index.Int64 < pathDB_j.SVG_PathsDBID_Index.Int64
+		return layerDB_i.SVG_LayersDBID_Index.Int64 < layerDB_j.SVG_LayersDBID_Index.Int64
 	})
 
 	return
@@ -724,9 +395,6 @@ func (backRepo *BackRepoStruct) CheckoutSVG(svg *models.SVG) {
 func (svgDB *SVGDB) CopyBasicFieldsFromSVG(svg *models.SVG) {
 	// insertion point for fields commit
 
-	svgDB.Display_Data.Bool = svg.Display
-	svgDB.Display_Data.Valid = true
-
 	svgDB.Name_Data.String = svg.Name
 	svgDB.Name_Data.Valid = true
 }
@@ -735,9 +403,6 @@ func (svgDB *SVGDB) CopyBasicFieldsFromSVG(svg *models.SVG) {
 func (svgDB *SVGDB) CopyBasicFieldsFromSVGWOP(svg *SVGWOP) {
 	// insertion point for fields commit
 
-	svgDB.Display_Data.Bool = svg.Display
-	svgDB.Display_Data.Valid = true
-
 	svgDB.Name_Data.String = svg.Name
 	svgDB.Name_Data.Valid = true
 }
@@ -745,7 +410,6 @@ func (svgDB *SVGDB) CopyBasicFieldsFromSVGWOP(svg *SVGWOP) {
 // CopyBasicFieldsToSVG
 func (svgDB *SVGDB) CopyBasicFieldsToSVG(svg *models.SVG) {
 	// insertion point for checkout of basic fields (back repo to stage)
-	svg.Display = svgDB.Display_Data.Bool
 	svg.Name = svgDB.Name_Data.String
 }
 
@@ -753,7 +417,6 @@ func (svgDB *SVGDB) CopyBasicFieldsToSVG(svg *models.SVG) {
 func (svgDB *SVGDB) CopyBasicFieldsToSVGWOP(svg *SVGWOP) {
 	svg.ID = int(svgDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
-	svg.Display = svgDB.Display_Data.Bool
 	svg.Name = svgDB.Name_Data.String
 }
 

@@ -42,7 +42,7 @@ export class SVGService {
   }
 
   /** GET svgs from the server */
-  getSVGs(GONG__StackPath: string = ""): Observable<SVGDB[]> {
+  getSVGs(GONG__StackPath: string): Observable<SVGDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -55,10 +55,13 @@ export class SVGService {
   }
 
   /** GET svg by id. Will 404 if id not found */
-  getSVG(id: number): Observable<SVGDB> {
+  getSVG(id: number, GONG__StackPath: string): Observable<SVGDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.svgsUrl}/${id}`;
-    return this.http.get<SVGDB>(url).pipe(
-      tap(_ => this.log(`fetched svg id=${id}`)),
+    return this.http.get<SVGDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched svg id=${id}`)),
       catchError(this.handleError<SVGDB>(`getSVG id=${id}`))
     );
   }
@@ -67,14 +70,7 @@ export class SVGService {
   postSVG(svgdb: SVGDB, GONG__StackPath: string): Observable<SVGDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    svgdb.Rects = []
-    svgdb.Texts = []
-    svgdb.Circles = []
-    svgdb.Lines = []
-    svgdb.Ellipses = []
-    svgdb.Polylines = []
-    svgdb.Polygones = []
-    svgdb.Paths = []
+    svgdb.Layers = []
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -85,7 +81,7 @@ export class SVGService {
     return this.http.post<SVGDB>(this.svgsUrl, svgdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        this.log(`posted svgdb id=${svgdb.ID}`)
+        // this.log(`posted svgdb id=${svgdb.ID}`)
       }),
       catchError(this.handleError<SVGDB>('postSVG'))
     );
@@ -114,14 +110,7 @@ export class SVGService {
     const url = `${this.svgsUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
-    svgdb.Rects = []
-    svgdb.Texts = []
-    svgdb.Circles = []
-    svgdb.Lines = []
-    svgdb.Ellipses = []
-    svgdb.Polylines = []
-    svgdb.Polygones = []
-    svgdb.Paths = []
+    svgdb.Layers = []
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {

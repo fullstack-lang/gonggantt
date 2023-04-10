@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -62,6 +61,13 @@ func registerControllers(r *gin.Engine) {
 		v1.PATCH("/v1/ellipses/:id", GetController().UpdateEllipse)
 		v1.PUT("/v1/ellipses/:id", GetController().UpdateEllipse)
 		v1.DELETE("/v1/ellipses/:id", GetController().DeleteEllipse)
+
+		v1.GET("/v1/layers", GetController().GetLayers)
+		v1.GET("/v1/layers/:id", GetController().GetLayer)
+		v1.POST("/v1/layers", GetController().PostLayer)
+		v1.PATCH("/v1/layers/:id", GetController().UpdateLayer)
+		v1.PUT("/v1/layers/:id", GetController().UpdateLayer)
+		v1.DELETE("/v1/layers/:id", GetController().DeleteLayer)
 
 		v1.GET("/v1/lines", GetController().GetLines)
 		v1.GET("/v1/lines/:id", GetController().GetLine)
@@ -125,7 +131,7 @@ func (controller *Controller) GetLastCommitFromBackNb(c *gin.Context) {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
-			log.Println("GetLastCommitFromBackNb", "GONG__StackPath", stackPath)
+			// log.Println("GetLastCommitFromBackNb", "GONG__StackPath", stackPath)
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
@@ -142,7 +148,7 @@ func (controller *Controller) GetLastPushFromFrontNb(c *gin.Context) {
 		value := values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
-			log.Println("GetLastPushFromFrontNb", "GONG__StackPath", stackPath)
+			// log.Println("GetLastPushFromFrontNb", "GONG__StackPath", stackPath)
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]

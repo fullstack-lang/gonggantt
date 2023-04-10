@@ -10,7 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
-import { SVGDB } from '../svg-db'
+import { LayerDB } from '../layer-db'
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -24,7 +24,7 @@ enum EllipseDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Ellipses_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Ellipses_SET,
 }
 
 @Component({
@@ -95,8 +95,8 @@ export class EllipseDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Ellipses":
-						// console.log("Ellipse" + " is instanciated with back pointer to instance " + this.id + " SVG association Ellipses")
-						this.state = EllipseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Ellipses_SET
+						// console.log("Ellipse" + " is instanciated with back pointer to instance " + this.id + " Layer association Ellipses")
+						this.state = EllipseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Ellipses_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -134,9 +134,9 @@ export class EllipseDetailComponent implements OnInit {
 						this.ellipse = ellipse!
 						break;
 					// insertion point for init of association field
-					case EllipseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Ellipses_SET:
+					case EllipseDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Ellipses_SET:
 						this.ellipse = new (EllipseDB)
-						this.ellipse.SVG_Ellipses_reverse = frontRepo.SVGs.get(this.id)!
+						this.ellipse.Layer_Ellipses_reverse = frontRepo.Layers.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -159,17 +159,17 @@ export class EllipseDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.ellipse.SVG_Ellipses_reverse != undefined) {
-			if (this.ellipse.SVG_EllipsesDBID == undefined) {
-				this.ellipse.SVG_EllipsesDBID = new NullInt64
+		if (this.ellipse.Layer_Ellipses_reverse != undefined) {
+			if (this.ellipse.Layer_EllipsesDBID == undefined) {
+				this.ellipse.Layer_EllipsesDBID = new NullInt64
 			}
-			this.ellipse.SVG_EllipsesDBID.Int64 = this.ellipse.SVG_Ellipses_reverse.ID
-			this.ellipse.SVG_EllipsesDBID.Valid = true
-			if (this.ellipse.SVG_EllipsesDBID_Index == undefined) {
-				this.ellipse.SVG_EllipsesDBID_Index = new NullInt64
+			this.ellipse.Layer_EllipsesDBID.Int64 = this.ellipse.Layer_Ellipses_reverse.ID
+			this.ellipse.Layer_EllipsesDBID.Valid = true
+			if (this.ellipse.Layer_EllipsesDBID_Index == undefined) {
+				this.ellipse.Layer_EllipsesDBID_Index = new NullInt64
 			}
-			this.ellipse.SVG_EllipsesDBID_Index.Valid = true
-			this.ellipse.SVG_Ellipses_reverse = new SVGDB // very important, otherwise, circular JSON
+			this.ellipse.Layer_EllipsesDBID_Index.Valid = true
+			this.ellipse.Layer_Ellipses_reverse = new LayerDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {

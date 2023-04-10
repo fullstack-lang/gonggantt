@@ -14,7 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { PathDB } from './path-db';
 
 // insertion point for imports
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +43,7 @@ export class PathService {
   }
 
   /** GET paths from the server */
-  getPaths(GONG__StackPath: string = ""): Observable<PathDB[]> {
+  getPaths(GONG__StackPath: string): Observable<PathDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -56,10 +56,13 @@ export class PathService {
   }
 
   /** GET path by id. Will 404 if id not found */
-  getPath(id: number): Observable<PathDB> {
+  getPath(id: number, GONG__StackPath: string): Observable<PathDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.pathsUrl}/${id}`;
-    return this.http.get<PathDB>(url).pipe(
-      tap(_ => this.log(`fetched path id=${id}`)),
+    return this.http.get<PathDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched path id=${id}`)),
       catchError(this.handleError<PathDB>(`getPath id=${id}`))
     );
   }
@@ -69,8 +72,8 @@ export class PathService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     pathdb.Animates = []
-    let _SVG_Paths_reverse = pathdb.SVG_Paths_reverse
-    pathdb.SVG_Paths_reverse = new SVGDB
+    let _Layer_Paths_reverse = pathdb.Layer_Paths_reverse
+    pathdb.Layer_Paths_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -81,8 +84,8 @@ export class PathService {
     return this.http.post<PathDB>(this.pathsUrl, pathdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        pathdb.SVG_Paths_reverse = _SVG_Paths_reverse
-        this.log(`posted pathdb id=${pathdb.ID}`)
+        pathdb.Layer_Paths_reverse = _Layer_Paths_reverse
+        // this.log(`posted pathdb id=${pathdb.ID}`)
       }),
       catchError(this.handleError<PathDB>('postPath'))
     );
@@ -112,8 +115,8 @@ export class PathService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     pathdb.Animates = []
-    let _SVG_Paths_reverse = pathdb.SVG_Paths_reverse
-    pathdb.SVG_Paths_reverse = new SVGDB
+    let _Layer_Paths_reverse = pathdb.Layer_Paths_reverse
+    pathdb.Layer_Paths_reverse = new LayerDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -124,7 +127,7 @@ export class PathService {
     return this.http.put<PathDB>(url, pathdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        pathdb.SVG_Paths_reverse = _SVG_Paths_reverse
+        pathdb.Layer_Paths_reverse = _Layer_Paths_reverse
         this.log(`updated pathdb id=${pathdb.ID}`)
       }),
       catchError(this.handleError<PathDB>('updatePath'))

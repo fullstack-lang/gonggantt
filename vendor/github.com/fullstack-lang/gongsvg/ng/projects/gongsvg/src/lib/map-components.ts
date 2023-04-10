@@ -5,6 +5,8 @@
   import { CircleSortingComponent } from './circle-sorting/circle-sorting.component'
   import { EllipsesTableComponent } from './ellipses-table/ellipses-table.component'
   import { EllipseSortingComponent } from './ellipse-sorting/ellipse-sorting.component'
+  import { LayersTableComponent } from './layers-table/layers-table.component'
+  import { LayerSortingComponent } from './layer-sorting/layer-sorting.component'
   import { LinesTableComponent } from './lines-table/lines-table.component'
   import { LineSortingComponent } from './line-sorting/line-sorting.component'
   import { PathsTableComponent } from './paths-table/paths-table.component'
@@ -27,6 +29,8 @@
   export const MapOfCircleSortingComponents: Map<string, any> = new Map([["CircleSortingComponent", CircleSortingComponent],])
   export const MapOfEllipsesComponents: Map<string, any> = new Map([["EllipsesTableComponent", EllipsesTableComponent],])
   export const MapOfEllipseSortingComponents: Map<string, any> = new Map([["EllipseSortingComponent", EllipseSortingComponent],])
+  export const MapOfLayersComponents: Map<string, any> = new Map([["LayersTableComponent", LayersTableComponent],])
+  export const MapOfLayerSortingComponents: Map<string, any> = new Map([["LayerSortingComponent", LayerSortingComponent],])
   export const MapOfLinesComponents: Map<string, any> = new Map([["LinesTableComponent", LinesTableComponent],])
   export const MapOfLineSortingComponents: Map<string, any> = new Map([["LineSortingComponent", LineSortingComponent],])
   export const MapOfPathsComponents: Map<string, any> = new Map([["PathsTableComponent", PathsTableComponent],])
@@ -50,6 +54,7 @@ export const MapOfComponents: Map<string, any> =
       ["Animate", MapOfAnimatesComponents],
       ["Circle", MapOfCirclesComponents],
       ["Ellipse", MapOfEllipsesComponents],
+      ["Layer", MapOfLayersComponents],
       ["Line", MapOfLinesComponents],
       ["Path", MapOfPathsComponents],
       ["Polygone", MapOfPolygonesComponents],
@@ -68,6 +73,7 @@ export const MapOfSortingComponents: Map<string, any> =
       ["Animate", MapOfAnimateSortingComponents],
       ["Circle", MapOfCircleSortingComponents],
       ["Ellipse", MapOfEllipseSortingComponents],
+      ["Layer", MapOfLayerSortingComponents],
       ["Line", MapOfLineSortingComponents],
       ["Path", MapOfPathSortingComponents],
       ["Polygone", MapOfPolygoneSortingComponents],

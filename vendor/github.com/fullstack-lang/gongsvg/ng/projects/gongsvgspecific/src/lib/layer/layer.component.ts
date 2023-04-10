@@ -4,17 +4,13 @@ import { Observable, Subscription, timer } from 'rxjs';
 import * as gongsvg from 'gongsvg'
 
 @Component({
-  selector: 'lib-svg',
-  templateUrl: './svg.component.html',
-  styleUrls: ['./svg.component.css']
+  selector: 'lib-layer',
+  templateUrl: './layer.component.html',
+  styleUrls: ['./layer.component.css']
 })
-export class SvgComponent implements OnInit {
-
-  SVG: string = ""
+export class LayerComponent implements OnInit {
 
   @Input() GONG__StackPath: string = ""
-
-  rect: number = 0
 
   public gongsvgFrontRepo?: gongsvg.FrontRepo
 
@@ -38,7 +34,9 @@ export class SvgComponent implements OnInit {
   lastPushFromFrontNb = -1
   currTime: number = 0
 
-  svgSingloton?: gongsvg.SVGDB
+  layer_?: gongsvg.LayerDB
+  layerArray = new Array<gongsvg.LayerDB>()
+  svg = new gongsvg.SVGDB
 
   constructor(
     private gongsvgFrontRepoService: gongsvg.FrontRepoService,
@@ -48,7 +46,7 @@ export class SvgComponent implements OnInit {
 
   ngOnInit(): void {
 
-    console.log("Svg component->ngOnInit : GONG__StackPath, " + this.GONG__StackPath )
+    console.log("Svg component->ngOnInit : GONG__StackPath, " + this.GONG__StackPath)
 
     // see above for the explanation
     this.gongsvgNbFromBackService.getCommitNbFromBack(500, this.GONG__StackPath).subscribe(
@@ -69,8 +67,35 @@ export class SvgComponent implements OnInit {
       gongsvgsFrontRepo => {
         this.gongsvgFrontRepo = gongsvgsFrontRepo
 
-        this.svgSingloton = this.gongsvgFrontRepo.SVGs_array[0]
-        console.log("svgSingloton " + this.svgSingloton?.Name)
+        if (this.gongsvgFrontRepo.SVGs_array.length == 1) {
+          this.svg = this.gongsvgFrontRepo.SVGs_array[0]
+        } else {
+          return
+        }
+
+        if (this.svg.Layers == undefined) {
+          return
+        }
+
+        this.svg.Layers.sort((t1, t2) => {
+          let t1_revPointerID_Index = t1.SVG_LayersDBID_Index
+          let t2_revPointerID_Index = t2.SVG_LayersDBID_Index
+
+          if (t1_revPointerID_Index && t2_revPointerID_Index) {
+            if (t1_revPointerID_Index.Int64 > t2_revPointerID_Index.Int64) {
+              return 1;
+            }
+            if (t1_revPointerID_Index.Int64 < t2_revPointerID_Index.Int64) {
+              return -1;
+            }
+          }
+          return 0;
+        });
+
+        this.layerArray = this.svg.Layers
+
+        this.layer_ = this.gongsvgFrontRepo.Layers_array[0]
+        console.log("svgSingloton " + this.layer_?.Name)
 
       }
 

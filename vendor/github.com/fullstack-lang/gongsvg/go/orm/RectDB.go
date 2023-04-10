@@ -46,11 +46,11 @@ type RectAPI struct {
 type RectPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
 
-	// Implementation of a reverse ID for field SVG{}.Rects []*Rect
-	SVG_RectsDBID sql.NullInt64
+	// Implementation of a reverse ID for field Layer{}.Rects []*Rect
+	Layer_RectsDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
-	SVG_RectsDBID_Index sql.NullInt64
+	Layer_RectsDBID_Index sql.NullInt64
 }
 
 // RectDB describes a rect in the database
@@ -99,6 +99,14 @@ type RectDB struct {
 
 	// Declation for basic field rectDB.Transform
 	Transform_Data sql.NullString
+
+	// Declation for basic field rectDB.IsSelectable
+	// provide the sql storage for the boolan
+	IsSelectable_Data sql.NullBool
+
+	// Declation for basic field rectDB.IsSelected
+	// provide the sql storage for the boolan
+	IsSelected_Data sql.NullBool
 	// encoding of pointers
 	RectPointersEnconding
 }
@@ -143,6 +151,10 @@ type RectWOP struct {
 	StrokeDashArray string `xlsx:"11"`
 
 	Transform string `xlsx:"12"`
+
+	IsSelectable bool `xlsx:"13"`
+
+	IsSelected bool `xlsx:"14"`
 	// insertion for WOP pointer fields
 }
 
@@ -161,6 +173,8 @@ var Rect_Fields = []string{
 	"StrokeWidth",
 	"StrokeDashArray",
 	"Transform",
+	"IsSelectable",
+	"IsSelected",
 }
 
 type BackRepoRectStruct struct {
@@ -502,6 +516,12 @@ func (rectDB *RectDB) CopyBasicFieldsFromRect(rect *models.Rect) {
 
 	rectDB.Transform_Data.String = rect.Transform
 	rectDB.Transform_Data.Valid = true
+
+	rectDB.IsSelectable_Data.Bool = rect.IsSelectable
+	rectDB.IsSelectable_Data.Valid = true
+
+	rectDB.IsSelected_Data.Bool = rect.IsSelected
+	rectDB.IsSelected_Data.Valid = true
 }
 
 // CopyBasicFieldsFromRectWOP
@@ -543,6 +563,12 @@ func (rectDB *RectDB) CopyBasicFieldsFromRectWOP(rect *RectWOP) {
 
 	rectDB.Transform_Data.String = rect.Transform
 	rectDB.Transform_Data.Valid = true
+
+	rectDB.IsSelectable_Data.Bool = rect.IsSelectable
+	rectDB.IsSelectable_Data.Valid = true
+
+	rectDB.IsSelected_Data.Bool = rect.IsSelected
+	rectDB.IsSelected_Data.Valid = true
 }
 
 // CopyBasicFieldsToRect
@@ -560,6 +586,8 @@ func (rectDB *RectDB) CopyBasicFieldsToRect(rect *models.Rect) {
 	rect.StrokeWidth = rectDB.StrokeWidth_Data.Float64
 	rect.StrokeDashArray = rectDB.StrokeDashArray_Data.String
 	rect.Transform = rectDB.Transform_Data.String
+	rect.IsSelectable = rectDB.IsSelectable_Data.Bool
+	rect.IsSelected = rectDB.IsSelected_Data.Bool
 }
 
 // CopyBasicFieldsToRectWOP
@@ -578,6 +606,8 @@ func (rectDB *RectDB) CopyBasicFieldsToRectWOP(rect *RectWOP) {
 	rect.StrokeWidth = rectDB.StrokeWidth_Data.Float64
 	rect.StrokeDashArray = rectDB.StrokeDashArray_Data.String
 	rect.Transform = rectDB.Transform_Data.String
+	rect.IsSelectable = rectDB.IsSelectable_Data.Bool
+	rect.IsSelected = rectDB.IsSelected_Data.Bool
 }
 
 // Backup generates a json file from a slice of all RectDB instances in the backrepo
@@ -736,9 +766,9 @@ func (backRepoRect *BackRepoRectStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// This reindex rect.Rects
-		if rectDB.SVG_RectsDBID.Int64 != 0 {
-			rectDB.SVG_RectsDBID.Int64 =
-				int64(BackRepoSVGid_atBckpTime_newID[uint(rectDB.SVG_RectsDBID.Int64)])
+		if rectDB.Layer_RectsDBID.Int64 != 0 {
+			rectDB.Layer_RectsDBID.Int64 =
+				int64(BackRepoLayerid_atBckpTime_newID[uint(rectDB.Layer_RectsDBID.Int64)])
 		}
 
 		// update databse with new index encoding

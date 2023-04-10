@@ -1,6 +1,6 @@
 // insertion point for imports
 import { AnimateDB } from './animate-db'
-import { SVGDB } from './svg-db'
+import { LayerDB } from './layer-db'
 
 // usefull for managing pointer ID values that can be nullable
 import { NullInt64 } from './null-int64'
@@ -25,8 +25,8 @@ export class EllipseDB {
 
 	// insertion point for other declarations
 	Animates?: Array<AnimateDB>
-	SVG_EllipsesDBID: NullInt64 = new NullInt64
-	SVG_EllipsesDBID_Index: NullInt64  = new NullInt64 // store the index of the ellipse instance in SVG.Ellipses
-	SVG_Ellipses_reverse?: SVGDB 
+	Layer_EllipsesDBID: NullInt64 = new NullInt64
+	Layer_EllipsesDBID_Index: NullInt64  = new NullInt64 // store the index of the ellipse instance in Layer.Ellipses
+	Layer_Ellipses_reverse?: LayerDB 
 
 }

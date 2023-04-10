@@ -151,11 +151,11 @@
         </mat-grid-tile>
     </mat-grid-list>
     <mat-form-field class="detail-full-width">
-        <mat-label>(SVG) Ellipses</mat-label>
-        <mat-select [compareWith]="compareObjects" [(ngModel)]="ellipse.SVG_Ellipses_reverse" [ngModelOptions]="{standalone: true}">
+        <mat-label>(Layer) Ellipses</mat-label>
+        <mat-select [compareWith]="compareObjects" [(ngModel)]="ellipse.Layer_Ellipses_reverse" [ngModelOptions]="{standalone: true}">
             <mat-option>None</mat-option>
-            <mat-option *ngFor="let svg of frontRepo.SVGs_array" [value]="svg">
-                {{svg.Name}}
+            <mat-option *ngFor="let layer of frontRepo.Layers_array" [value]="layer">
+                {{layer.Name}}
             </mat-option>
         </mat-select>
     </mat-form-field>

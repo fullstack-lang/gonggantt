@@ -10,7 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
-import { SVGDB } from '../svg-db'
+import { LayerDB } from '../layer-db'
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -24,7 +24,7 @@ enum RectDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Rects_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Rects_SET,
 }
 
 @Component({
@@ -35,6 +35,8 @@ enum RectDetailComponentState {
 export class RectDetailComponent implements OnInit {
 
 	// insertion point for declarations
+	IsSelectableFormControl: UntypedFormControl = new UntypedFormControl(false);
+	IsSelectedFormControl: UntypedFormControl = new UntypedFormControl(false);
 
 	// the RectDB of interest
 	rect: RectDB = new RectDB
@@ -95,8 +97,8 @@ export class RectDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Rects":
-						// console.log("Rect" + " is instanciated with back pointer to instance " + this.id + " SVG association Rects")
-						this.state = RectDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Rects_SET
+						// console.log("Rect" + " is instanciated with back pointer to instance " + this.id + " Layer association Rects")
+						this.state = RectDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Rects_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -134,15 +136,17 @@ export class RectDetailComponent implements OnInit {
 						this.rect = rect!
 						break;
 					// insertion point for init of association field
-					case RectDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Rects_SET:
+					case RectDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Rects_SET:
 						this.rect = new (RectDB)
-						this.rect.SVG_Rects_reverse = frontRepo.SVGs.get(this.id)!
+						this.rect.Layer_Rects_reverse = frontRepo.Layers.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
 				}
 
 				// insertion point for recovery of form controls value for bool fields
+				this.IsSelectableFormControl.setValue(this.rect.IsSelectable)
+				this.IsSelectedFormControl.setValue(this.rect.IsSelected)
 			}
 		)
 
@@ -155,21 +159,23 @@ export class RectDetailComponent implements OnInit {
 		// pointers fields, after the translation, are nulled in order to perform serialization
 
 		// insertion point for translation/nullation of each field
+		this.rect.IsSelectable = this.IsSelectableFormControl.value
+		this.rect.IsSelected = this.IsSelectedFormControl.value
 
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.rect.SVG_Rects_reverse != undefined) {
-			if (this.rect.SVG_RectsDBID == undefined) {
-				this.rect.SVG_RectsDBID = new NullInt64
+		if (this.rect.Layer_Rects_reverse != undefined) {
+			if (this.rect.Layer_RectsDBID == undefined) {
+				this.rect.Layer_RectsDBID = new NullInt64
 			}
-			this.rect.SVG_RectsDBID.Int64 = this.rect.SVG_Rects_reverse.ID
-			this.rect.SVG_RectsDBID.Valid = true
-			if (this.rect.SVG_RectsDBID_Index == undefined) {
-				this.rect.SVG_RectsDBID_Index = new NullInt64
+			this.rect.Layer_RectsDBID.Int64 = this.rect.Layer_Rects_reverse.ID
+			this.rect.Layer_RectsDBID.Valid = true
+			if (this.rect.Layer_RectsDBID_Index == undefined) {
+				this.rect.Layer_RectsDBID_Index = new NullInt64
 			}
-			this.rect.SVG_RectsDBID_Index.Valid = true
-			this.rect.SVG_Rects_reverse = new SVGDB // very important, otherwise, circular JSON
+			this.rect.Layer_RectsDBID_Index.Valid = true
+			this.rect.Layer_Rects_reverse = new LayerDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {

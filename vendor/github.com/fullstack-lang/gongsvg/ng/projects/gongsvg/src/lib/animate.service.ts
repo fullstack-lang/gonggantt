@@ -50,7 +50,7 @@ export class AnimateService {
   }
 
   /** GET animates from the server */
-  getAnimates(GONG__StackPath: string = ""): Observable<AnimateDB[]> {
+  getAnimates(GONG__StackPath: string): Observable<AnimateDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -63,10 +63,13 @@ export class AnimateService {
   }
 
   /** GET animate by id. Will 404 if id not found */
-  getAnimate(id: number): Observable<AnimateDB> {
+  getAnimate(id: number, GONG__StackPath: string): Observable<AnimateDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.animatesUrl}/${id}`;
-    return this.http.get<AnimateDB>(url).pipe(
-      tap(_ => this.log(`fetched animate id=${id}`)),
+    return this.http.get<AnimateDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched animate id=${id}`)),
       catchError(this.handleError<AnimateDB>(`getAnimate id=${id}`))
     );
   }
@@ -109,7 +112,7 @@ export class AnimateService {
         animatedb.Polyline_Animates_reverse = _Polyline_Animates_reverse
         animatedb.Rect_Animations_reverse = _Rect_Animations_reverse
         animatedb.Text_Animates_reverse = _Text_Animates_reverse
-        this.log(`posted animatedb id=${animatedb.ID}`)
+        // this.log(`posted animatedb id=${animatedb.ID}`)
       }),
       catchError(this.handleError<AnimateDB>('postAnimate'))
     );

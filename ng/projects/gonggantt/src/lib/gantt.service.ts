@@ -42,7 +42,7 @@ export class GanttService {
   }
 
   /** GET gantts from the server */
-  getGantts(GONG__StackPath: string = ""): Observable<GanttDB[]> {
+  getGantts(GONG__StackPath: string): Observable<GanttDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -55,10 +55,13 @@ export class GanttService {
   }
 
   /** GET gantt by id. Will 404 if id not found */
-  getGantt(id: number): Observable<GanttDB> {
+  getGantt(id: number, GONG__StackPath: string): Observable<GanttDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.ganttsUrl}/${id}`;
-    return this.http.get<GanttDB>(url).pipe(
-      tap(_ => this.log(`fetched gantt id=${id}`)),
+    return this.http.get<GanttDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched gantt id=${id}`)),
       catchError(this.handleError<GanttDB>(`getGantt id=${id}`))
     );
   }
@@ -81,7 +84,7 @@ export class GanttService {
     return this.http.post<GanttDB>(this.ganttsUrl, ganttdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        this.log(`posted ganttdb id=${ganttdb.ID}`)
+        // this.log(`posted ganttdb id=${ganttdb.ID}`)
       }),
       catchError(this.handleError<GanttDB>('postGantt'))
     );

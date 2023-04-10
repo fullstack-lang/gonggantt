@@ -46,11 +46,11 @@ type EllipseAPI struct {
 type EllipsePointersEnconding struct {
 	// insertion for pointer fields encoding declaration
 
-	// Implementation of a reverse ID for field SVG{}.Ellipses []*Ellipse
-	SVG_EllipsesDBID sql.NullInt64
+	// Implementation of a reverse ID for field Layer{}.Ellipses []*Ellipse
+	Layer_EllipsesDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
-	SVG_EllipsesDBID_Index sql.NullInt64
+	Layer_EllipsesDBID_Index sql.NullInt64
 }
 
 // EllipseDB describes a ellipse in the database
@@ -722,9 +722,9 @@ func (backRepoEllipse *BackRepoEllipseStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// This reindex ellipse.Ellipses
-		if ellipseDB.SVG_EllipsesDBID.Int64 != 0 {
-			ellipseDB.SVG_EllipsesDBID.Int64 =
-				int64(BackRepoSVGid_atBckpTime_newID[uint(ellipseDB.SVG_EllipsesDBID.Int64)])
+		if ellipseDB.Layer_EllipsesDBID.Int64 != 0 {
+			ellipseDB.Layer_EllipsesDBID.Int64 =
+				int64(BackRepoLayerid_atBckpTime_newID[uint(ellipseDB.Layer_EllipsesDBID.Int64)])
 		}
 
 		// update databse with new index encoding

@@ -44,7 +44,7 @@ export class ArrowService {
   }
 
   /** GET arrows from the server */
-  getArrows(GONG__StackPath: string = ""): Observable<ArrowDB[]> {
+  getArrows(GONG__StackPath: string): Observable<ArrowDB[]> {
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
 
@@ -57,10 +57,13 @@ export class ArrowService {
   }
 
   /** GET arrow by id. Will 404 if id not found */
-  getArrow(id: number): Observable<ArrowDB> {
+  getArrow(id: number, GONG__StackPath: string): Observable<ArrowDB> {
+
+    let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
+
     const url = `${this.arrowsUrl}/${id}`;
-    return this.http.get<ArrowDB>(url).pipe(
-      tap(_ => this.log(`fetched arrow id=${id}`)),
+    return this.http.get<ArrowDB>(url, { params: params }).pipe(
+      // tap(_ => this.log(`fetched arrow id=${id}`)),
       catchError(this.handleError<ArrowDB>(`getArrow id=${id}`))
     );
   }
@@ -84,7 +87,7 @@ export class ArrowService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         arrowdb.Gantt_Arrows_reverse = _Gantt_Arrows_reverse
-        this.log(`posted arrowdb id=${arrowdb.ID}`)
+        // this.log(`posted arrowdb id=${arrowdb.ID}`)
       }),
       catchError(this.handleError<ArrowDB>('postArrow'))
     );

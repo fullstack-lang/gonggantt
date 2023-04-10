@@ -46,11 +46,11 @@ type PolygoneAPI struct {
 type PolygonePointersEnconding struct {
 	// insertion for pointer fields encoding declaration
 
-	// Implementation of a reverse ID for field SVG{}.Polygones []*Polygone
-	SVG_PolygonesDBID sql.NullInt64
+	// Implementation of a reverse ID for field Layer{}.Polygones []*Polygone
+	Layer_PolygonesDBID sql.NullInt64
 
 	// implementation of the index of the withing the slice
-	SVG_PolygonesDBID_Index sql.NullInt64
+	Layer_PolygonesDBID_Index sql.NullInt64
 }
 
 // PolygoneDB describes a polygone in the database
@@ -680,9 +680,9 @@ func (backRepoPolygone *BackRepoPolygoneStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// This reindex polygone.Polygones
-		if polygoneDB.SVG_PolygonesDBID.Int64 != 0 {
-			polygoneDB.SVG_PolygonesDBID.Int64 =
-				int64(BackRepoSVGid_atBckpTime_newID[uint(polygoneDB.SVG_PolygonesDBID.Int64)])
+		if polygoneDB.Layer_PolygonesDBID.Int64 != 0 {
+			polygoneDB.Layer_PolygonesDBID.Int64 =
+				int64(BackRepoLayerid_atBckpTime_newID[uint(polygoneDB.Layer_PolygonesDBID.Int64)])
 		}
 
 		// update databse with new index encoding

@@ -9,7 +9,7 @@ import (
 // appends 5 lines to the SVG
 func generate_arrow(
 	gongsvgStage *gongsvg_models.StageStruct,
-	svg *gongsvg_models.SVG, X1, X2, Y1, Y2, horyzontalLenght,
+	svg *gongsvg_models.Layer, X1, X2, Y1, Y2, horyzontalLenght,
 	arrowTipLength float64,
 	optionnalColor,
 	optionnalStroke,

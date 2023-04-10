@@ -96,9 +96,9 @@ export class PathsTableComponent implements OnInit {
         case 'Transform':
           return pathDB.Transform;
 
-        case 'SVG_Paths':
-          if (this.frontRepo.SVGs.get(pathDB.SVG_PathsDBID.Int64) != undefined) {
-            return this.frontRepo.SVGs.get(pathDB.SVG_PathsDBID.Int64)!.Name
+        case 'Layer_Paths':
+          if (this.frontRepo.Layers.get(pathDB.Layer_PathsDBID.Int64) != undefined) {
+            return this.frontRepo.Layers.get(pathDB.Layer_PathsDBID.Int64)!.Name
           } else {
             return ""
           }
@@ -125,8 +125,8 @@ export class PathsTableComponent implements OnInit {
       mergedContent += pathDB.StrokeWidth.toString()
       mergedContent += pathDB.StrokeDashArray.toLowerCase()
       mergedContent += pathDB.Transform.toLowerCase()
-      if (pathDB.SVG_PathsDBID.Int64 != 0) {
-        mergedContent += this.frontRepo.SVGs.get(pathDB.SVG_PathsDBID.Int64)!.Name.toLowerCase()
+      if (pathDB.Layer_PathsDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.Layers.get(pathDB.Layer_PathsDBID.Int64)!.Name.toLowerCase()
       }
 
 
@@ -191,7 +191,7 @@ export class PathsTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Paths",
+        "Layer_Paths",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
@@ -203,7 +203,7 @@ export class PathsTableComponent implements OnInit {
         "StrokeWidth",
         "StrokeDashArray",
         "Transform",
-        "SVG_Paths",
+        "Layer_Paths",
       ]
       this.selection = new SelectionModel<PathDB>(allowMultiSelect, this.initialSelection);
     }

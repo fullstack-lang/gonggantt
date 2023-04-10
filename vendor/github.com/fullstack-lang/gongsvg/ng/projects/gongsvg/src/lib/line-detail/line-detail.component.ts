@@ -10,7 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
-import { SVGDB } from '../svg-db'
+import { LayerDB } from '../layer-db'
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -24,7 +24,7 @@ enum LineDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
-	CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Lines_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Lines_SET,
 }
 
 @Component({
@@ -95,8 +95,8 @@ export class LineDetailComponent implements OnInit {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
 					case "Lines":
-						// console.log("Line" + " is instanciated with back pointer to instance " + this.id + " SVG association Lines")
-						this.state = LineDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Lines_SET
+						// console.log("Line" + " is instanciated with back pointer to instance " + this.id + " Layer association Lines")
+						this.state = LineDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Lines_SET
 						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
@@ -134,9 +134,9 @@ export class LineDetailComponent implements OnInit {
 						this.line = line!
 						break;
 					// insertion point for init of association field
-					case LineDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_SVG_Lines_SET:
+					case LineDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Layer_Lines_SET:
 						this.line = new (LineDB)
-						this.line.SVG_Lines_reverse = frontRepo.SVGs.get(this.id)!
+						this.line.Layer_Lines_reverse = frontRepo.Layers.get(this.id)!
 						break;
 					default:
 						console.log(this.state + " is unkown state")
@@ -159,17 +159,17 @@ export class LineDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
-		if (this.line.SVG_Lines_reverse != undefined) {
-			if (this.line.SVG_LinesDBID == undefined) {
-				this.line.SVG_LinesDBID = new NullInt64
+		if (this.line.Layer_Lines_reverse != undefined) {
+			if (this.line.Layer_LinesDBID == undefined) {
+				this.line.Layer_LinesDBID = new NullInt64
 			}
-			this.line.SVG_LinesDBID.Int64 = this.line.SVG_Lines_reverse.ID
-			this.line.SVG_LinesDBID.Valid = true
-			if (this.line.SVG_LinesDBID_Index == undefined) {
-				this.line.SVG_LinesDBID_Index = new NullInt64
+			this.line.Layer_LinesDBID.Int64 = this.line.Layer_Lines_reverse.ID
+			this.line.Layer_LinesDBID.Valid = true
+			if (this.line.Layer_LinesDBID_Index == undefined) {
+				this.line.Layer_LinesDBID_Index = new NullInt64
 			}
-			this.line.SVG_LinesDBID_Index.Valid = true
-			this.line.SVG_Lines_reverse = new SVGDB // very important, otherwise, circular JSON
+			this.line.Layer_LinesDBID_Index.Valid = true
+			this.line.Layer_Lines_reverse = new LayerDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {

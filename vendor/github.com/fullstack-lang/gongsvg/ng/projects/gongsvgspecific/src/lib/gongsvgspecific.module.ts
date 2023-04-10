@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { GongsvgspecificComponent } from './gongsvgspecific.component';
-import { SvgComponent } from './svg/svg.component';
+import { LayerComponent } from './layer/layer.component';
 import { RectComponent } from './rect/rect.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { TextComponent } from './text/text.component';
@@ -27,7 +27,7 @@ import { GongsvgModule } from 'gongsvg';
 @NgModule({
   declarations: [
     GongsvgspecificComponent,
-    SvgComponent,
+    LayerComponent,
     RectComponent,
     TextComponent,
     CircleComponent,
@@ -53,7 +53,7 @@ import { GongsvgModule } from 'gongsvg';
   ],
   exports: [
     GongsvgspecificComponent,
-    SvgComponent,
+    LayerComponent,
     DataModelPanelComponent
   ]
 })

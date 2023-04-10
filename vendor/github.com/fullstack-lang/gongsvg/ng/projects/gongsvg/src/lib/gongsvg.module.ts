@@ -51,6 +51,10 @@ import { EllipsesTableComponent } from './ellipses-table/ellipses-table.componen
 import { EllipseSortingComponent } from './ellipse-sorting/ellipse-sorting.component'
 import { EllipseDetailComponent } from './ellipse-detail/ellipse-detail.component'
 
+import { LayersTableComponent } from './layers-table/layers-table.component'
+import { LayerSortingComponent } from './layer-sorting/layer-sorting.component'
+import { LayerDetailComponent } from './layer-detail/layer-detail.component'
+
 import { LinesTableComponent } from './lines-table/lines-table.component'
 import { LineSortingComponent } from './line-sorting/line-sorting.component'
 import { LineDetailComponent } from './line-detail/line-detail.component'
@@ -94,6 +98,10 @@ import { TextDetailComponent } from './text-detail/text-detail.component'
 		EllipsesTableComponent,
 		EllipseSortingComponent,
 		EllipseDetailComponent,
+
+		LayersTableComponent,
+		LayerSortingComponent,
+		LayerDetailComponent,
 
 		LinesTableComponent,
 		LineSortingComponent,
@@ -173,6 +181,10 @@ import { TextDetailComponent } from './text-detail/text-detail.component'
 		EllipsesTableComponent,
 		EllipseSortingComponent,
 		EllipseDetailComponent,
+
+		LayersTableComponent,
+		LayerSortingComponent,
+		LayerDetailComponent,
 
 		LinesTableComponent,
 		LineSortingComponent,
