@@ -35,7 +35,7 @@ var (
 )
 
 // hook marhalling to stage
-type BeforeCommitFromFrontOnGanttStage struct {
+type CommitFromFrontOnGanttStage struct {
 	gongsvgStage   *gongsvg_models.StageStruct
 	ganttSVGMapper *gantt2svg.GanttSVGMapper
 }
@@ -44,7 +44,7 @@ type BeforeCommitFromFrontOnGanttStage struct {
 // It performs 2 tasks
 // 1 - update the SVG stack
 // 2 - persists the data to the gantt file
-func (beforeCommitFromFrontOnGanttStage *BeforeCommitFromFrontOnGanttStage) BeforeCommit(
+func (beforeCommitFromFrontOnGanttStage *CommitFromFrontOnGanttStage) BeforeCommit(
 	gongganttStage *gonggantt_models.StageStruct) {
 	file, err := os.Create(fmt.Sprintf("./%s.go", *marshallOnCommit))
 	if err != nil {
@@ -112,13 +112,14 @@ func main() {
 	if *marshallOnCommit != "" {
 
 		ganttSVGMapper := new(gantt2svg.GanttSVGMapper)
+		ganttSVGMapper.GanttOuputFile = *marshallOnCommit
 
-		beforeCommitOnGanttStage := new(BeforeCommitFromFrontOnGanttStage)
-		beforeCommitOnGanttStage.gongsvgStage = gongsvgStage
-		beforeCommitOnGanttStage.ganttSVGMapper = ganttSVGMapper
+		commitOnGanttStage := new(CommitFromFrontOnGanttStage)
+		commitOnGanttStage.gongsvgStage = gongsvgStage
+		commitOnGanttStage.ganttSVGMapper = ganttSVGMapper
 
 		// hook on the commit from front
-		gongganttStage.OnInitCommitFromFrontCallback = beforeCommitOnGanttStage
+		gongganttStage.OnInitCommitFromFrontCallback = commitOnGanttStage
 
 		onAfterRectUpdate := new(OnAfterRectUpdate)
 		onAfterRectUpdate.gongganttStage = gongganttStage

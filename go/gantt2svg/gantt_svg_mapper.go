@@ -13,4 +13,7 @@ type GanttSVGMapper struct {
 	mapRect4Bar_Bar map[*gongsvg_models.Rect]*gonggantt_models.Bar
 
 	ganttToRender *gonggantt_models.Gantt
+
+	// to overwrite the gantt definition file
+	GanttOuputFile string
 }

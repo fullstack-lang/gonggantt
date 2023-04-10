@@ -3,6 +3,7 @@ package gantt2svg
 import (
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
@@ -16,16 +17,9 @@ func (ganttSVGMapper *GanttSVGMapper) UpdateGantt(
 
 	log.Println("GanttToSVGMapper: UpdateGantt")
 
-	var dateChange bool
+	var coordChange bool
 
 	bar := ganttSVGMapper.mapRect4Bar_Bar[oldRect]
-
-	// we start from the rect SVG X and Width and update the bar Start and End
-	startDateIn := bar.Start
-	endDateIn := bar.End
-
-	// Print the formatted time
-	fmt.Println("Start time: before", startDateIn.Format("2006-01-02 15:04:05"))
 
 	bar.Start = XtoDate(
 		ganttSVGMapper.ganttToRender.XLeftLanes,
@@ -34,15 +28,10 @@ func (ganttSVGMapper *GanttSVGMapper) UpdateGantt(
 		ganttSVGMapper.ganttToRender.ComputedStart,
 		ganttSVGMapper.ganttToRender.ComputedEnd)
 
-	// Print the formatted time
-	fmt.Println("Start time:", bar.Start.Format("2006-01-02 15:04:05"))
-
-	if bar.Start != startDateIn {
-		dateChange = true
+	if newRect.X != oldRect.X {
+		fmt.Println("X change: ", oldRect.X-newRect.X)
+		coordChange = true
 	}
-
-	// Print the formatted time
-	fmt.Println("End time before:", endDateIn.Format("2006-01-02 15:04:05"))
 
 	bar.End = XtoDate(
 		ganttSVGMapper.ganttToRender.XLeftLanes,
@@ -54,12 +43,21 @@ func (ganttSVGMapper *GanttSVGMapper) UpdateGantt(
 	// Print the formatted time
 	fmt.Println("End time:", bar.End.Format("2006-01-02 15:04:05"))
 
-	if bar.End != endDateIn {
-		dateChange = true
+	if newRect.X+newRect.Width != oldRect.X+oldRect.Width {
+		fmt.Println("X right change:", (newRect.X+newRect.Width)-(oldRect.X+oldRect.Width))
+		coordChange = true
 	}
 
-	if dateChange {
-		gongganttStage.Commit()
+	if coordChange {
+		bar.Commit(gongganttStage)
+
+		file, err := os.Create(fmt.Sprintf("./%s.go", ganttSVGMapper.GanttOuputFile))
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		defer file.Close()
+
+		gongganttStage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
 	}
 }
 
