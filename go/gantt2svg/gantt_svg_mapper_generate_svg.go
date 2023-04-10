@@ -11,7 +11,7 @@ import (
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
 
-func (ganttToSVGMapper *GanttToSVGMapper) GenerateSvg(
+func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 	gongganttStage *gonggantt_models.StageStruct,
 	gongsvgStage *gongsvg_models.StageStruct) {
 
@@ -139,7 +139,7 @@ func (ganttToSVGMapper *GanttToSVGMapper) GenerateSvg(
 	laneIndex := 0
 
 	// prepare a map of bar to barSVG
-	ganttToSVGMapper.mapBar_BarSVG = make(map[*gonggantt_models.Bar]*gongsvg_models.Rect)
+	ganttSVGMapper.mapBar_BarSVG = make(map[*gonggantt_models.Bar]*gongsvg_models.Rect)
 	for _, lane := range ganttToRender.Lanes {
 
 		laneSVG := new(gongsvg_models.Rect).Stage(gongsvgStage)
@@ -176,7 +176,7 @@ func (ganttToSVGMapper *GanttToSVGMapper) GenerateSvg(
 		//
 		for _, bar := range lane.Bars {
 			barSVG := new(gongsvg_models.Rect).Stage(gongsvgStage)
-			ganttToSVGMapper.mapBar_BarSVG[bar] = barSVG
+			ganttSVGMapper.mapBar_BarSVG[bar] = barSVG
 			layerBars.Rects = append(layerBars.Rects, barSVG)
 			barSVG.Name = bar.Name
 			barSVG.IsSelectable = true
@@ -316,8 +316,8 @@ func (ganttToSVGMapper *GanttToSVGMapper) GenerateSvg(
 	//
 	for _, arrow := range ganttToRender.Arrows {
 
-		startBar := ganttToSVGMapper.mapBar_BarSVG[arrow.From]
-		endBar := ganttToSVGMapper.mapBar_BarSVG[arrow.To]
+		startBar := ganttSVGMapper.mapBar_BarSVG[arrow.From]
+		endBar := ganttSVGMapper.mapBar_BarSVG[arrow.To]
 
 		generate_arrow(
 			gongsvgStage,

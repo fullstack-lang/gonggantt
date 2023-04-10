@@ -36,11 +36,15 @@ var (
 
 // hook marhalling to stage
 type BeforeCommitOnGanttStage struct {
-	gongsvgStage *gongsvg_models.StageStruct
+	gongsvgStage   *gongsvg_models.StageStruct
+	ganttSVGMapper *gantt2svg.GanttSVGMapper
 }
 
 // BeforeCommit meets the interface for the commit on the gantt stage
-func (impl *BeforeCommitOnGanttStage) BeforeCommit(
+// It performs 2 tasks
+// 1 - update the SVG stack
+// 2 - persists the data to the gantt file
+func (beforeCommitOnGanttStage *BeforeCommitOnGanttStage) BeforeCommit(
 	gongganttStage *gonggantt_models.StageStruct) {
 	file, err := os.Create(fmt.Sprintf("./%s.go", *marshallOnCommit))
 	if err != nil {
@@ -48,17 +52,21 @@ func (impl *BeforeCommitOnGanttStage) BeforeCommit(
 	}
 	defer file.Close()
 
+	// update the gantt stage with the back repo data that was updated from the front
 	gongganttStage.Checkout()
+
+	// marshall to the file
 	gongganttStage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
-	gantt2svg.GanttToSVGMapperSingloton.GenerateSvg(gongganttStage, impl.gongsvgStage)
+	beforeCommitOnGanttStage.ganttSVGMapper.GenerateSvg(gongganttStage, beforeCommitOnGanttStage.gongsvgStage)
 }
 
 type BeforeCommitOnSVGStage struct {
-	gongganttStage *gonggantt_models.StageStruct
+	gongganttStage   *gonggantt_models.StageStruct
+	ganttToSVGMapper *gantt2svg.GanttSVGMapper
 }
 
 // BeforeCommit meets the interface for the commit on the gantt stage
-func (impl *BeforeCommitOnSVGStage) BeforeCommit(
+func (beforeCommitOnSVGStage *BeforeCommitOnSVGStage) BeforeCommit(
 	gongsvgStage *gongsvg_models.StageStruct) {
 	file, err := os.Create(fmt.Sprintf("./%s.go", *marshallOnCommit))
 	if err != nil {
@@ -66,7 +74,10 @@ func (impl *BeforeCommitOnSVGStage) BeforeCommit(
 	}
 	defer file.Close()
 
-	gantt2svg.GanttToSVGMapperSingloton.UpdateGantt(gongsvgStage, impl.gongganttStage)
+	beforeCommitOnSVGStage.ganttToSVGMapper.UpdateGantt(gongsvgStage, beforeCommitOnSVGStage.gongganttStage)
+
+	// update the updated gantt definition
+	beforeCommitOnSVGStage.gongganttStage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
 }
 
 func main() {
@@ -104,13 +115,21 @@ func main() {
 
 	// hook automatic marshall to go code at every commit
 	if *marshallOnCommit != "" {
+
+		ganttSVGMapper := new(gantt2svg.GanttSVGMapper)
+
 		beforeCommitOnGanttStage := new(BeforeCommitOnGanttStage)
 		beforeCommitOnGanttStage.gongsvgStage = gongsvgStage
+		beforeCommitOnGanttStage.ganttSVGMapper = ganttSVGMapper
 		gongganttStage.OnInitCommitFromFrontCallback = beforeCommitOnGanttStage
 
 		beforeCommitOnSVGStage := new(BeforeCommitOnSVGStage)
 		beforeCommitOnSVGStage.gongganttStage = gongganttStage
+		beforeCommitOnSVGStage.ganttToSVGMapper = ganttSVGMapper
 		gongsvgStage.OnInitCommitFromFrontCallback = beforeCommitOnSVGStage
+
+		// initial publication
+		ganttSVGMapper.GenerateSvg(gongganttStage, gongsvgStage)
 	}
 
 	gongdoc_load.Load(
@@ -130,9 +149,6 @@ func main() {
 		r,
 		true,
 		&gongganttStage.Map_GongStructName_InstancesNb)
-
-	// initial publication
-	gantt2svg.GanttToSVGMapperSingloton.GenerateSvg(gongganttStage, gongsvgStage)
 
 	log.Printf("Server ready serve on localhost:8080")
 	r.Run()

@@ -7,7 +7,7 @@ import (
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
 
-func (ganttToSVGMapper *GanttToSVGMapper) UpdateGantt(
+func (ganttToSVGMapper *GanttSVGMapper) UpdateGantt(
 	gongsvgStage *gongsvg_models.StageStruct,
 	gongganttStage *gonggantt_models.StageStruct) {
 
