@@ -10,4 +10,6 @@ import (
 // the svg
 type GanttSVGMapper struct {
 	mapBar_BarSVG map[*gonggantt_models.Bar]*gongsvg_models.Rect
+
+	ganttToRender *gonggantt_models.Gantt
 }
