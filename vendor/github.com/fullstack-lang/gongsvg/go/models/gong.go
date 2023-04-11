@@ -1541,7 +1541,7 @@ func GetFields[Type Gongstruct]() (res []string) {
 	case Polyline:
 		res = []string{"Name", "Points", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animates"}
 	case Rect:
-		res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations", "IsSelectable", "IsSelected", "CanHaveHorizontalHandles", "HasHorizontalHandles"}
+		res = []string{"Name", "X", "Y", "Width", "Height", "RX", "Color", "FillOpacity", "Stroke", "StrokeWidth", "StrokeDashArray", "Transform", "Animations", "IsSelectable", "IsSelected", "CanHaveHorizontalHandles", "HasHorizontalHandles", "CanMoveHorizontaly", "CanMoveVerticaly"}
 	case SVG:
 		res = []string{"Name", "Layers"}
 	case Text:
@@ -1853,6 +1853,10 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 			res = fmt.Sprintf("%t", any(instance).(Rect).CanHaveHorizontalHandles)
 		case "HasHorizontalHandles":
 			res = fmt.Sprintf("%t", any(instance).(Rect).HasHorizontalHandles)
+		case "CanMoveHorizontaly":
+			res = fmt.Sprintf("%t", any(instance).(Rect).CanMoveHorizontaly)
+		case "CanMoveVerticaly":
+			res = fmt.Sprintf("%t", any(instance).(Rect).CanMoveVerticaly)
 		}
 	case SVG:
 		switch fieldName {

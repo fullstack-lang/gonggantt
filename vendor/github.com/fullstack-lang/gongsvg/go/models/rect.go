@@ -16,6 +16,9 @@ type Rect struct {
 	CanHaveHorizontalHandles bool // allows HasHorizontalHandles
 	HasHorizontalHandles     bool // is true when selected
 
+	CanMoveHorizontaly bool
+	CanMoveVerticaly   bool
+
 	Impl RectImplInterface
 }
 

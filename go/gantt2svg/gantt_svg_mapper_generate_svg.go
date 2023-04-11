@@ -183,6 +183,7 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 			rect4Bar.Name = bar.Name
 			rect4Bar.IsSelectable = true
 			rect4Bar.CanHaveHorizontalHandles = true
+			rect4Bar.CanMoveHorizontaly = true
 
 			// connects the call on rect to the bar
 			barImpl := new(BarImpl)

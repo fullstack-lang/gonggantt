@@ -81,8 +81,8 @@ func gantt1Injection(stage *models.StageStruct) {
 
 	// Bar values setup
 	__Bar__000001_Bar_2.Name = `Bar 2`
-	__Bar__000001_Bar_2.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-06-02 03:23:48.923076912 +0000 +0000")
-	__Bar__000001_Bar_2.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-01-01 00:00:00.000000016 +0000 +0000")
+	__Bar__000001_Bar_2.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-05-08 14:08:29.538461536 +0000 +0000")
+	__Bar__000001_Bar_2.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-12-06 10:44:40.615384672 +0000 +0000")
 	__Bar__000001_Bar_2.OptionnalColor = `green`
 	__Bar__000001_Bar_2.OptionnalStroke = ``
 	__Bar__000001_Bar_2.FillOpacity = 0.000000
@@ -91,8 +91,8 @@ func gantt1Injection(stage *models.StageStruct) {
 
 	// Bar values setup
 	__Bar__000002_Bar_3.Name = `Bar 3`
-	__Bar__000002_Bar_3.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-09-15 14:12:55.384615384 +0000 +0000")
-	__Bar__000002_Bar_3.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2025-06-11 18:05:32.30769232 +0000 +0000")
+	__Bar__000002_Bar_3.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-05-27 08:33:58.153846152 +0000 +0000")
+	__Bar__000002_Bar_3.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2025-02-20 12:26:35.076923072 +0000 +0000")
 	__Bar__000002_Bar_3.OptionnalColor = ``
 	__Bar__000002_Bar_3.OptionnalStroke = ``
 	__Bar__000002_Bar_3.FillOpacity = 0.000000
@@ -101,8 +101,8 @@ func gantt1Injection(stage *models.StageStruct) {
 
 	// Bar values setup
 	__Bar__000003_Bar_4.Name = `Bar-4`
-	__Bar__000003_Bar_4.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-08-31 23:00:00 +0000 +0000")
-	__Bar__000003_Bar_4.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-01-01 00:00:00 +0000 +0000")
+	__Bar__000003_Bar_4.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-07-29 10:40:14.769230768 +0000 +0000")
+	__Bar__000003_Bar_4.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-11-16 17:21:13.846153856 +0000 +0000")
 	__Bar__000003_Bar_4.OptionnalColor = ``
 	__Bar__000003_Bar_4.OptionnalStroke = ``
 	__Bar__000003_Bar_4.FillOpacity = 0.000000

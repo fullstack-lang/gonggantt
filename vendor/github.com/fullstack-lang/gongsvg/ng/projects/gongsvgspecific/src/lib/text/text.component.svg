@@ -1,6 +1,6 @@
 <svg class="child">
     <g>
-        <text class="overlay" [attr.x]="Text?.X" [attr.y]="Text?.Y" [attr.fill]="Text?.Color" [attr.fill]="Text?.Color" [attr.fill-opacity]="Text?.FillOpacity"
+        <text [attr.x]="Text?.X" [attr.y]="Text?.Y" [attr.fill]="Text?.Color" [attr.fill]="Text?.Color" [attr.fill-opacity]="Text?.FillOpacity"
             [attr.stroke]="Text?.Stroke" [attr.stroke-width]="Text?.StrokeWidth" [attr.stroke-dasharray]="Text?.StrokeDashArray"
             [attr.transform]="Text?.Transform">{{Text?.Content}}</text>
 

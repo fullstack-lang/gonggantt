@@ -131,6 +131,20 @@
             </td>
         </ng-container>
         <!-- -->
+        <ng-container matColumnDef="CanMoveHorizontaly">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> CanMoveHorizontaly </th>
+            <td mat-cell *matCellDef="let Rect">
+                <mat-checkbox [checked]="Rect.CanMoveHorizontaly" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="CanMoveVerticaly">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> CanMoveVerticaly </th>
+            <td mat-cell *matCellDef="let Rect">
+                <mat-checkbox [checked]="Rect.CanMoveVerticaly" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
         <ng-container matColumnDef="Layer_Rects">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (Layer) Rects </th>
             <td mat-cell *matCellDef="let rect">

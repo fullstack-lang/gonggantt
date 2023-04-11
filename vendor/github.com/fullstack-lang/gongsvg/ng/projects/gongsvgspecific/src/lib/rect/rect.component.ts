@@ -33,21 +33,25 @@ export class RectComponent implements OnInit {
     }
   }
 
-  dragging: boolean = false;
+  anchorDragging: boolean = false;
   activeAnchor: 'left' | 'right' | null = null;
+
+  rectDragging: boolean = false;
+  offsetX = 0;
+  offsetY = 0;
 
   startDrag(event: MouseEvent, anchor: 'left' | 'right'): void {
     event.preventDefault();
     event.stopPropagation(); // Prevent the event from bubbling up to the SVG element
 
-    this.dragging = true;
+    this.anchorDragging = true;
     this.activeAnchor = anchor;
   }
 
   drag(event: MouseEvent, anchor: 'left' | 'right'): void {
     event.stopPropagation(); // Prevent the event from bubbling up to the SVG element
 
-    if (!this.dragging) {
+    if (!this.anchorDragging) {
       return;
     }
 
@@ -64,8 +68,39 @@ export class RectComponent implements OnInit {
   }
 
   endDrag(): void {
-    this.dragging = false;
+    this.anchorDragging = false;
     this.activeAnchor = null;
+    this.rectService.updateRect(this.Rect!, this.GONG__StackPath).subscribe()
+
+  }
+
+  startRectDrag(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation(); // Prevent the event from bubbling up to the SVG element
+
+    this.rectDragging = true;
+
+    this.offsetX = event.clientX - this.Rect!.X
+    this.offsetY = event.clientY - this.Rect!.Y
+  }
+
+  dragRect(event: MouseEvent): void {
+    event.stopPropagation(); // Prevent the event from bubbling up to the SVG element
+
+    if (!this.rectDragging) {
+      return;
+    }
+
+    if (this.Rect?.CanMoveHorizontaly) {
+      this.Rect!.X = event.clientX - this.offsetX;
+    }
+    if (this.Rect?.CanMoveVerticaly) {
+      this.Rect!.Y = event.clientY - this.offsetY;
+    }
+  }
+
+  endRectDrag(): void {
+    this.rectDragging = false;
     this.rectService.updateRect(this.Rect!, this.GONG__StackPath).subscribe()
 
   }

@@ -27,6 +27,8 @@ export class RectDB {
 	IsSelected: boolean = false
 	CanHaveHorizontalHandles: boolean = false
 	HasHorizontalHandles: boolean = false
+	CanMoveHorizontaly: boolean = false
+	CanMoveVerticaly: boolean = false
 
 	// insertion point for other declarations
 	Animations?: Array<AnimateDB>

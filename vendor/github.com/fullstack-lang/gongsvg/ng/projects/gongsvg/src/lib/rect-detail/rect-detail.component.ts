@@ -39,6 +39,8 @@ export class RectDetailComponent implements OnInit {
 	IsSelectedFormControl: UntypedFormControl = new UntypedFormControl(false);
 	CanHaveHorizontalHandlesFormControl: UntypedFormControl = new UntypedFormControl(false);
 	HasHorizontalHandlesFormControl: UntypedFormControl = new UntypedFormControl(false);
+	CanMoveHorizontalyFormControl: UntypedFormControl = new UntypedFormControl(false);
+	CanMoveVerticalyFormControl: UntypedFormControl = new UntypedFormControl(false);
 
 	// the RectDB of interest
 	rect: RectDB = new RectDB
@@ -151,6 +153,8 @@ export class RectDetailComponent implements OnInit {
 				this.IsSelectedFormControl.setValue(this.rect.IsSelected)
 				this.CanHaveHorizontalHandlesFormControl.setValue(this.rect.CanHaveHorizontalHandles)
 				this.HasHorizontalHandlesFormControl.setValue(this.rect.HasHorizontalHandles)
+				this.CanMoveHorizontalyFormControl.setValue(this.rect.CanMoveHorizontaly)
+				this.CanMoveVerticalyFormControl.setValue(this.rect.CanMoveVerticaly)
 			}
 		)
 
@@ -167,6 +171,8 @@ export class RectDetailComponent implements OnInit {
 		this.rect.IsSelected = this.IsSelectedFormControl.value
 		this.rect.CanHaveHorizontalHandles = this.CanHaveHorizontalHandlesFormControl.value
 		this.rect.HasHorizontalHandles = this.HasHorizontalHandlesFormControl.value
+		this.rect.CanMoveHorizontaly = this.CanMoveHorizontalyFormControl.value
+		this.rect.CanMoveVerticaly = this.CanMoveVerticalyFormControl.value
 
 		// save from the front pointer space to the non pointer space for serialization
 

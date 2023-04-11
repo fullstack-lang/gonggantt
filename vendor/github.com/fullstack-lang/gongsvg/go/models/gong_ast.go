@@ -1387,6 +1387,20 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 						log.Fatalln(err)
 					}
 					__gong__map_Rect[identifier].HasHorizontalHandles = fielValue
+				case "CanMoveHorizontaly":
+					// convert string to boolean
+					fielValue, err := strconv.ParseBool(ident.Name)
+					if err != nil {
+						log.Fatalln(err)
+					}
+					__gong__map_Rect[identifier].CanMoveHorizontaly = fielValue
+				case "CanMoveVerticaly":
+					// convert string to boolean
+					fielValue, err := strconv.ParseBool(ident.Name)
+					if err != nil {
+						log.Fatalln(err)
+					}
+					__gong__map_Rect[identifier].CanMoveVerticaly = fielValue
 				}
 			case "SVG":
 				switch fieldName {
