@@ -184,6 +184,14 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 			rect4Bar.IsSelectable = true
 			rect4Bar.CanHaveHorizontalHandles = true
 
+			// connects the call on rect to the bar
+			barImpl := new(BarImpl)
+			barImpl.bar = bar
+			barImpl.ganttToRender = ganttSVGMapper.ganttToRender
+			barImpl.gongganttStage = gongganttStage
+			barImpl.ganttOuputFile = ganttSVGMapper.GanttOuputFile
+			rect4Bar.Impl = barImpl
+
 			var barToDisplay gonggantt_models.Bar
 			barToDisplay = *bar
 

@@ -65,16 +65,6 @@ type OnAfterRectUpdate struct {
 	ganttToSVGMapper *gantt2svg.GanttSVGMapper
 }
 
-func (onAfterRectUpdate *OnAfterRectUpdate) OnAfterUpdate(
-	gongsvgStage *gongsvg_models.StageStruct,
-	oldRect, newRect *gongsvg_models.Rect) {
-
-	onAfterRectUpdate.ganttToSVGMapper.UpdateGantt(
-		gongsvgStage,
-		onAfterRectUpdate.gongganttStage,
-		oldRect, newRect)
-}
-
 func main() {
 
 	log.SetPrefix("gonggantt: ")
