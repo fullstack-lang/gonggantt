@@ -59,8 +59,8 @@ func simpleInjection(stage *models.StageStruct) {
 
 	// Bar values setup
 	__Bar__000000_One_Task.Name = `One Task`
-	__Bar__000000_One_Task.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-12-01 17:07:13 +0000 UTC")
-	__Bar__000000_One_Task.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-12-26 12:19:56.307692304 +0000 UTC")
+	__Bar__000000_One_Task.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-12-01 17:07:13 +0000 +0000")
+	__Bar__000000_One_Task.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-10-26 11:19:56 +0000 +0000")
 	__Bar__000000_One_Task.OptionnalColor = `lightsteelblue`
 	__Bar__000000_One_Task.OptionnalStroke = ``
 	__Bar__000000_One_Task.FillOpacity = 100.000000
@@ -69,8 +69,8 @@ func simpleInjection(stage *models.StageStruct) {
 
 	// Gantt values setup
 	__Gantt__000000_Test.Name = `Test`
-	__Gantt__000000_Test.ComputedStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-01-01 00:00:00 +0000 UTC")
-	__Gantt__000000_Test.ComputedEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-12-31 00:00:00 +0000 UTC")
+	__Gantt__000000_Test.ComputedStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-01-01 00:00:00 +0000 +0000")
+	__Gantt__000000_Test.ComputedEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-12-31 00:00:00 +0000 +0000")
 	__Gantt__000000_Test.UseManualStartAndEndDates = false
 	__Gantt__000000_Test.ManualStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2017-02-12 00:00:00 +0000 +0000")
 	__Gantt__000000_Test.ManualEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-02-12 00:00:00 +0000 +0000")

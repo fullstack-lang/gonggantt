@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/fullstack-lang/gongdoc v0.0.0-20230408211623-ee63075db0fc
-	github.com/fullstack-lang/gongsvg v0.0.0-20230409152102-a7086a95e11c
+	github.com/fullstack-lang/gongsvg v0.0.0-20230411154426-0fe7e33597a9
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.8.1

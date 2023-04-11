@@ -134,6 +134,12 @@
 			"command": "go get -d github.com/fullstack-lang/gongsvg@HEAD"
 		},
 		{
+			"label": "00 - go get -d github.com/fullstack-lang/gongsvg@thomaspeugeot_issue39",
+			"type": "shell",
+			"group": "build",
+			"command": "go get -d github.com/fullstack-lang/gongsvg@thomaspeugeot_issue39"
+		},
+		{
 			"label": "00 - go get -d github.com/fullstack-lang/gongdoc@HEAD",
 			"type": "shell",
 			"group": "build",

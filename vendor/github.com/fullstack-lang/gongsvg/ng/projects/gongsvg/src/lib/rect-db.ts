@@ -25,6 +25,8 @@ export class RectDB {
 	Transform: string = ""
 	IsSelectable: boolean = false
 	IsSelected: boolean = false
+	CanHaveHorizontalHandles: boolean = false
+	HasHorizontalHandles: boolean = false
 
 	// insertion point for other declarations
 	Animations?: Array<AnimateDB>

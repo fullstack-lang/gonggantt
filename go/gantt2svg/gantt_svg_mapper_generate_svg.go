@@ -182,6 +182,7 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 			layerBars.Rects = append(layerBars.Rects, rect4Bar)
 			rect4Bar.Name = bar.Name
 			rect4Bar.IsSelectable = true
+			rect4Bar.CanHaveHorizontalHandles = true
 
 			var barToDisplay gonggantt_models.Bar
 			barToDisplay = *bar

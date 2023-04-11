@@ -37,6 +37,8 @@ export class RectDetailComponent implements OnInit {
 	// insertion point for declarations
 	IsSelectableFormControl: UntypedFormControl = new UntypedFormControl(false);
 	IsSelectedFormControl: UntypedFormControl = new UntypedFormControl(false);
+	CanHaveHorizontalHandlesFormControl: UntypedFormControl = new UntypedFormControl(false);
+	HasHorizontalHandlesFormControl: UntypedFormControl = new UntypedFormControl(false);
 
 	// the RectDB of interest
 	rect: RectDB = new RectDB
@@ -147,6 +149,8 @@ export class RectDetailComponent implements OnInit {
 				// insertion point for recovery of form controls value for bool fields
 				this.IsSelectableFormControl.setValue(this.rect.IsSelectable)
 				this.IsSelectedFormControl.setValue(this.rect.IsSelected)
+				this.CanHaveHorizontalHandlesFormControl.setValue(this.rect.CanHaveHorizontalHandles)
+				this.HasHorizontalHandlesFormControl.setValue(this.rect.HasHorizontalHandles)
 			}
 		)
 
@@ -161,6 +165,8 @@ export class RectDetailComponent implements OnInit {
 		// insertion point for translation/nullation of each field
 		this.rect.IsSelectable = this.IsSelectableFormControl.value
 		this.rect.IsSelected = this.IsSelectedFormControl.value
+		this.rect.CanHaveHorizontalHandles = this.CanHaveHorizontalHandlesFormControl.value
+		this.rect.HasHorizontalHandles = this.HasHorizontalHandlesFormControl.value
 
 		// save from the front pointer space to the non pointer space for serialization
 

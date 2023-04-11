@@ -118,15 +118,19 @@ func main() {
 		commitOnGanttStage.gongsvgStage = gongsvgStage
 		commitOnGanttStage.ganttSVGMapper = ganttSVGMapper
 
+		orchestrator := new(gongsvg_models.Orchestrator)
+
+		gongsvgStage.OnAfterRectUpdateCallback = orchestrator
+
 		// hook on the commit from front
 		gongganttStage.OnInitCommitFromFrontCallback = commitOnGanttStage
 
-		onAfterRectUpdate := new(OnAfterRectUpdate)
-		onAfterRectUpdate.gongganttStage = gongganttStage
-		onAfterRectUpdate.ganttToSVGMapper = ganttSVGMapper
+		// onAfterRectUpdate := new(OnAfterRectUpdate)
+		// onAfterRectUpdate.gongganttStage = gongganttStage
+		// onAfterRectUpdate.ganttToSVGMapper = ganttSVGMapper
 
-		// hook on the commit from front
-		gongsvgStage.OnAfterRectUpdateCallback = onAfterRectUpdate
+		// // hook on the commit from front
+		// gongsvgStage.OnAfterRectUpdateCallback = onAfterRectUpdate
 
 		// initial publication
 		ganttSVGMapper.GenerateSvg(gongganttStage, gongsvgStage)

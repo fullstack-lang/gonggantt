@@ -114,6 +114,12 @@ export class RectsTableComponent implements OnInit {
         case 'IsSelected':
           return rectDB.IsSelected ? "true" : "false";
 
+        case 'CanHaveHorizontalHandles':
+          return rectDB.CanHaveHorizontalHandles ? "true" : "false";
+
+        case 'HasHorizontalHandles':
+          return rectDB.HasHorizontalHandles ? "true" : "false";
+
         case 'Layer_Rects':
           if (this.frontRepo.Layers.get(rectDB.Layer_RectsDBID.Int64) != undefined) {
             return this.frontRepo.Layers.get(rectDB.Layer_RectsDBID.Int64)!.Name
@@ -219,6 +225,8 @@ export class RectsTableComponent implements OnInit {
         "Transform",
         "IsSelectable",
         "IsSelected",
+        "CanHaveHorizontalHandles",
+        "HasHorizontalHandles",
         "Layer_Rects",
       ]
     } else {
@@ -237,6 +245,8 @@ export class RectsTableComponent implements OnInit {
         "Transform",
         "IsSelectable",
         "IsSelected",
+        "CanHaveHorizontalHandles",
+        "HasHorizontalHandles",
         "Layer_Rects",
       ]
       this.selection = new SelectionModel<RectDB>(allowMultiSelect, this.initialSelection);
