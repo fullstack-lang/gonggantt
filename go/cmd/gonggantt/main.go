@@ -114,6 +114,7 @@ func main() {
 
 		// hook on the commit from front
 		gongganttStage.OnInitCommitFromFrontCallback = commitOnGanttStage
+		gongganttStage.OnInitCommitFromBackCallback = commitOnGanttStage
 
 		// onAfterRectUpdate := new(OnAfterRectUpdate)
 		// onAfterRectUpdate.gongganttStage = gongganttStage

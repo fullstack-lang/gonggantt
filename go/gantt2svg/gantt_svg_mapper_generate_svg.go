@@ -189,7 +189,6 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 			barImpl.bar = bar
 			barImpl.ganttToRender = ganttSVGMapper.ganttToRender
 			barImpl.gongganttStage = gongganttStage
-			barImpl.ganttOuputFile = ganttSVGMapper.GanttOuputFile
 			rect4Bar.Impl = barImpl
 
 			var barToDisplay gonggantt_models.Bar

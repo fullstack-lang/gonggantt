@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
+
 	// injection point for ident package import declaration{{ImportPackageDeclaration}}
 )
 
@@ -80,8 +81,8 @@ func gantt1Injection(stage *models.StageStruct) {
 
 	// Bar values setup
 	__Bar__000001_Bar_2.Name = `Bar 2`
-	__Bar__000001_Bar_2.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-01-01 00:00:00 +0000 +0000")
-	__Bar__000001_Bar_2.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-01-01 00:00:00 +0000 +0000")
+	__Bar__000001_Bar_2.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-06-02 03:23:48.923076912 +0000 +0000")
+	__Bar__000001_Bar_2.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-01-01 00:00:00.000000016 +0000 +0000")
 	__Bar__000001_Bar_2.OptionnalColor = `green`
 	__Bar__000001_Bar_2.OptionnalStroke = ``
 	__Bar__000001_Bar_2.FillOpacity = 0.000000
@@ -90,8 +91,8 @@ func gantt1Injection(stage *models.StageStruct) {
 
 	// Bar values setup
 	__Bar__000002_Bar_3.Name = `Bar 3`
-	__Bar__000002_Bar_3.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-01-01 00:00:00 +0000 +0000")
-	__Bar__000002_Bar_3.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2025-01-01 00:00:00 +0000 +0000")
+	__Bar__000002_Bar_3.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-09-15 14:12:55.384615384 +0000 +0000")
+	__Bar__000002_Bar_3.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2025-06-11 18:05:32.30769232 +0000 +0000")
 	__Bar__000002_Bar_3.OptionnalColor = ``
 	__Bar__000002_Bar_3.OptionnalStroke = ``
 	__Bar__000002_Bar_3.FillOpacity = 0.000000
@@ -163,3 +164,5 @@ func gantt1Injection(stage *models.StageStruct) {
 	__Lane__000001_Lane_2.Bars = append(__Lane__000001_Lane_2.Bars, __Bar__000002_Bar_3)
 	__Lane__000002_Lane_3.Bars = append(__Lane__000002_Lane_3.Bars, __Bar__000003_Bar_4)
 }
+
+
