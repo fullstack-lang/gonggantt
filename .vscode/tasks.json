@@ -167,5 +167,35 @@
 			"group": "build",
 			"command": "go mod vendor"
 		},
+		{
+			"label": "00 - go work edit -use gonggantt",
+			"type": "shell",
+			"options": {
+				"cwd": "./"
+			},
+			"command": "go",
+			"args": [
+				"work",
+				"edit",
+				"-use",
+				"gonggantt"
+			],
+			"group": "build"
+		},
+		{
+			"label": "00 - go work edit -dropuse gonggantt",
+			"type": "shell",
+			"options": {
+				"cwd": "./"
+			},
+			"command": "go",
+			"args": [
+				"work",
+				"edit",
+				"-dropuse",
+				"gongsvg"
+			],
+			"group": "build"
+		},
 	]
 }

@@ -72,7 +72,7 @@ func gantt1Injection(stage *models.StageStruct) {
 	// Bar values setup
 	__Bar__000000_Bar_1.Name = `Bar 1`
 	__Bar__000000_Bar_1.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2020-04-01 00:00:00 +0000 +0000")
-	__Bar__000000_Bar_1.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-04-01 00:00:00 +0000 +0000")
+	__Bar__000000_Bar_1.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-04-01 00:00:00 +0000 +0000")
 	__Bar__000000_Bar_1.OptionnalColor = `red`
 	__Bar__000000_Bar_1.OptionnalStroke = `red`
 	__Bar__000000_Bar_1.FillOpacity = 0.000000
