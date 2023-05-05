@@ -10,6 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
+import { DrawingStateSelect, DrawingStateList } from '../DrawingState'
 
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -33,6 +34,7 @@ enum SVGDetailComponentState {
 export class SVGDetailComponent implements OnInit {
 
 	// insertion point for declarations
+	DrawingStateList: DrawingStateSelect[] = []
 
 	// the SVGDB of interest
 	svg: SVGDB = new SVGDB
@@ -110,6 +112,7 @@ export class SVGDetailComponent implements OnInit {
 		)
 
 		// insertion point for initialisation of enums list
+		this.DrawingStateList = DrawingStateList
 	}
 
 	getSVG(): void {
@@ -145,6 +148,26 @@ export class SVGDetailComponent implements OnInit {
 		// pointers fields, after the translation, are nulled in order to perform serialization
 
 		// insertion point for translation/nullation of each field
+		if (this.svg.StartRectID == undefined) {
+			this.svg.StartRectID = new NullInt64
+		}
+		if (this.svg.StartRect != undefined) {
+			this.svg.StartRectID.Int64 = this.svg.StartRect.ID
+			this.svg.StartRectID.Valid = true
+		} else {
+			this.svg.StartRectID.Int64 = 0
+			this.svg.StartRectID.Valid = true
+		}
+		if (this.svg.EndRectID == undefined) {
+			this.svg.EndRectID = new NullInt64
+		}
+		if (this.svg.EndRect != undefined) {
+			this.svg.EndRectID.Int64 = this.svg.EndRect.ID
+			this.svg.EndRectID.Valid = true
+		} else {
+			this.svg.EndRectID.Int64 = 0
+			this.svg.EndRectID.Valid = true
+		}
 
 		// save from the front pointer space to the non pointer space for serialization
 

@@ -128,7 +128,7 @@ export class PathService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         pathdb.Layer_Paths_reverse = _Layer_Paths_reverse
-        this.log(`updated pathdb id=${pathdb.ID}`)
+        // this.log(`updated pathdb id=${pathdb.ID}`)
       }),
       catchError(this.handleError<PathDB>('updatePath'))
     );

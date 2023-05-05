@@ -6,6 +6,9 @@ import { GanttDB } from './gantt-db'
 import { NullInt64 } from './null-int64'
 
 export class ArrowDB {
+
+	static GONGSTRUCT_NAME = "Arrow"
+
 	CreatedAt?: string
 	DeletedAt?: string
 	ID: number = 0

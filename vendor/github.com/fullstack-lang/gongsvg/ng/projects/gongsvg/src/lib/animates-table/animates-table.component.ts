@@ -87,6 +87,13 @@ export class AnimatesTableComponent implements OnInit {
         case 'RepeatCount':
           return animateDB.RepeatCount;
 
+        case 'AnchoredText_Animates':
+          if (this.frontRepo.AnchoredTexts.get(animateDB.AnchoredText_AnimatesDBID.Int64) != undefined) {
+            return this.frontRepo.AnchoredTexts.get(animateDB.AnchoredText_AnimatesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
+
         case 'Circle_Animations':
           if (this.frontRepo.Circles.get(animateDB.Circle_AnimationsDBID.Int64) != undefined) {
             return this.frontRepo.Circles.get(animateDB.Circle_AnimationsDBID.Int64)!.Name
@@ -162,6 +169,10 @@ export class AnimatesTableComponent implements OnInit {
       mergedContent += animateDB.Values.toLowerCase()
       mergedContent += animateDB.Dur.toLowerCase()
       mergedContent += animateDB.RepeatCount.toLowerCase()
+      if (animateDB.AnchoredText_AnimatesDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.AnchoredTexts.get(animateDB.AnchoredText_AnimatesDBID.Int64)!.Name.toLowerCase()
+      }
+
       if (animateDB.Circle_AnimationsDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Circles.get(animateDB.Circle_AnimationsDBID.Int64)!.Name.toLowerCase()
       }
@@ -253,6 +264,7 @@ export class AnimatesTableComponent implements OnInit {
         "Values",
         "Dur",
         "RepeatCount",
+        "AnchoredText_Animates",
         "Circle_Animations",
         "Ellipse_Animates",
         "Line_Animates",
@@ -269,6 +281,7 @@ export class AnimatesTableComponent implements OnInit {
         "Values",
         "Dur",
         "RepeatCount",
+        "AnchoredText_Animates",
         "Circle_Animations",
         "Ellipse_Animates",
         "Line_Animates",

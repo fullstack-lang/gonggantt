@@ -14,6 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { AnimateDB } from './animate-db';
 
 // insertion point for imports
+import { AnchoredTextDB } from './anchoredtext-db'
 import { CircleDB } from './circle-db'
 import { EllipseDB } from './ellipse-db'
 import { LineDB } from './line-db'
@@ -78,6 +79,8 @@ export class AnimateService {
   postAnimate(animatedb: AnimateDB, GONG__StackPath: string): Observable<AnimateDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let _AnchoredText_Animates_reverse = animatedb.AnchoredText_Animates_reverse
+    animatedb.AnchoredText_Animates_reverse = new AnchoredTextDB
     let _Circle_Animations_reverse = animatedb.Circle_Animations_reverse
     animatedb.Circle_Animations_reverse = new CircleDB
     let _Ellipse_Animates_reverse = animatedb.Ellipse_Animates_reverse
@@ -104,6 +107,7 @@ export class AnimateService {
     return this.http.post<AnimateDB>(this.animatesUrl, animatedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+        animatedb.AnchoredText_Animates_reverse = _AnchoredText_Animates_reverse
         animatedb.Circle_Animations_reverse = _Circle_Animations_reverse
         animatedb.Ellipse_Animates_reverse = _Ellipse_Animates_reverse
         animatedb.Line_Animates_reverse = _Line_Animates_reverse
@@ -141,6 +145,8 @@ export class AnimateService {
     const url = `${this.animatesUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let _AnchoredText_Animates_reverse = animatedb.AnchoredText_Animates_reverse
+    animatedb.AnchoredText_Animates_reverse = new AnchoredTextDB
     let _Circle_Animations_reverse = animatedb.Circle_Animations_reverse
     animatedb.Circle_Animations_reverse = new CircleDB
     let _Ellipse_Animates_reverse = animatedb.Ellipse_Animates_reverse
@@ -167,6 +173,7 @@ export class AnimateService {
     return this.http.put<AnimateDB>(url, animatedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+        animatedb.AnchoredText_Animates_reverse = _AnchoredText_Animates_reverse
         animatedb.Circle_Animations_reverse = _Circle_Animations_reverse
         animatedb.Ellipse_Animates_reverse = _Ellipse_Animates_reverse
         animatedb.Line_Animates_reverse = _Line_Animates_reverse
@@ -175,7 +182,7 @@ export class AnimateService {
         animatedb.Polyline_Animates_reverse = _Polyline_Animates_reverse
         animatedb.Rect_Animations_reverse = _Rect_Animations_reverse
         animatedb.Text_Animates_reverse = _Text_Animates_reverse
-        this.log(`updated animatedb id=${animatedb.ID}`)
+        // this.log(`updated animatedb id=${animatedb.ID}`)
       }),
       catchError(this.handleError<AnimateDB>('updateAnimate'))
     );

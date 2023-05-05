@@ -6,6 +6,9 @@ import { LayerDB } from './layer-db'
 import { NullInt64 } from './null-int64'
 
 export class LineDB {
+
+	static GONGSTRUCT_NAME = "Line"
+
 	CreatedAt?: string
 	DeletedAt?: string
 	ID: number = 0
@@ -21,7 +24,10 @@ export class LineDB {
 	Stroke: string = ""
 	StrokeWidth: number = 0
 	StrokeDashArray: string = ""
+	StrokeDashArrayWhenSelected: string = ""
 	Transform: string = ""
+	MouseClickX: number = 0
+	MouseClickY: number = 0
 
 	// insertion point for other declarations
 	Animates?: Array<AnimateDB>

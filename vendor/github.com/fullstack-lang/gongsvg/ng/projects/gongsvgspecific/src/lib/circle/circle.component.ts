@@ -16,4 +16,8 @@ export class CircleComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  onClick(event: MouseEvent) {
+    console.log("Circle: ", this.Circle?.Name, " clicked")
+    // event.stopPropagation(); // Prevent the event from bubbling up to the SVG element
+  }
 }

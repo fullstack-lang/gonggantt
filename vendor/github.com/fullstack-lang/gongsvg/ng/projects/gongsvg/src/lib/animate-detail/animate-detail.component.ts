@@ -10,6 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
+import { AnchoredTextDB } from '../anchoredtext-db'
 import { CircleDB } from '../circle-db'
 import { EllipseDB } from '../ellipse-db'
 import { LineDB } from '../line-db'
@@ -31,6 +32,7 @@ enum AnimateDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
+	CREATE_INSTANCE_WITH_ASSOCIATION_AnchoredText_Animates_SET,
 	CREATE_INSTANCE_WITH_ASSOCIATION_Circle_Animations_SET,
 	CREATE_INSTANCE_WITH_ASSOCIATION_Ellipse_Animates_SET,
 	CREATE_INSTANCE_WITH_ASSOCIATION_Line_Animates_SET,
@@ -108,6 +110,10 @@ export class AnimateDetailComponent implements OnInit {
 			} else {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
+					case "Animates":
+						// console.log("Animate" + " is instanciated with back pointer to instance " + this.id + " AnchoredText association Animates")
+						this.state = AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_AnchoredText_Animates_SET
+						break;
 					case "Animations":
 						// console.log("Animate" + " is instanciated with back pointer to instance " + this.id + " Circle association Animations")
 						this.state = AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Circle_Animations_SET
@@ -176,6 +182,10 @@ export class AnimateDetailComponent implements OnInit {
 						this.animate = animate!
 						break;
 					// insertion point for init of association field
+					case AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_AnchoredText_Animates_SET:
+						this.animate = new (AnimateDB)
+						this.animate.AnchoredText_Animates_reverse = frontRepo.AnchoredTexts.get(this.id)!
+						break;
 					case AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Circle_Animations_SET:
 						this.animate = new (AnimateDB)
 						this.animate.Circle_Animations_reverse = frontRepo.Circles.get(this.id)!
@@ -229,6 +239,18 @@ export class AnimateDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
+		if (this.animate.AnchoredText_Animates_reverse != undefined) {
+			if (this.animate.AnchoredText_AnimatesDBID == undefined) {
+				this.animate.AnchoredText_AnimatesDBID = new NullInt64
+			}
+			this.animate.AnchoredText_AnimatesDBID.Int64 = this.animate.AnchoredText_Animates_reverse.ID
+			this.animate.AnchoredText_AnimatesDBID.Valid = true
+			if (this.animate.AnchoredText_AnimatesDBID_Index == undefined) {
+				this.animate.AnchoredText_AnimatesDBID_Index = new NullInt64
+			}
+			this.animate.AnchoredText_AnimatesDBID_Index.Valid = true
+			this.animate.AnchoredText_Animates_reverse = new AnchoredTextDB // very important, otherwise, circular JSON
+		}
 		if (this.animate.Circle_Animations_reverse != undefined) {
 			if (this.animate.Circle_AnimationsDBID == undefined) {
 				this.animate.Circle_AnimationsDBID = new NullInt64

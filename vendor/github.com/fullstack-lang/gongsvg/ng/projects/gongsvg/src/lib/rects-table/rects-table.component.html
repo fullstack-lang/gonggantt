@@ -96,6 +96,13 @@
             </td>
         </ng-container>
         <!-- -->
+        <ng-container matColumnDef="StrokeDashArrayWhenSelected">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> StrokeDashArrayWhenSelected </th>
+            <td mat-cell *matCellDef="let Rect">
+                {{Rect.StrokeDashArrayWhenSelected}}
+            </td>
+        </ng-container>
+        <!-- -->
         <ng-container matColumnDef="Transform">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Transform </th>
             <td mat-cell *matCellDef="let Rect">
@@ -117,17 +124,59 @@
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="CanHaveHorizontalHandles">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> CanHaveHorizontalHandles </th>
+        <ng-container matColumnDef="CanHaveLeftHandle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> CanHaveLeftHandle </th>
             <td mat-cell *matCellDef="let Rect">
-                <mat-checkbox [checked]="Rect.CanHaveHorizontalHandles" disabled=true></mat-checkbox>
+                <mat-checkbox [checked]="Rect.CanHaveLeftHandle" disabled=true></mat-checkbox>
             </td>
         </ng-container>
         <!-- -->
-        <ng-container matColumnDef="HasHorizontalHandles">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> HasHorizontalHandles </th>
+        <ng-container matColumnDef="HasLeftHandle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> HasLeftHandle </th>
             <td mat-cell *matCellDef="let Rect">
-                <mat-checkbox [checked]="Rect.HasHorizontalHandles" disabled=true></mat-checkbox>
+                <mat-checkbox [checked]="Rect.HasLeftHandle" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="CanHaveRightHandle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> CanHaveRightHandle </th>
+            <td mat-cell *matCellDef="let Rect">
+                <mat-checkbox [checked]="Rect.CanHaveRightHandle" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="HasRightHandle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> HasRightHandle </th>
+            <td mat-cell *matCellDef="let Rect">
+                <mat-checkbox [checked]="Rect.HasRightHandle" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="CanHaveTopHandle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> CanHaveTopHandle </th>
+            <td mat-cell *matCellDef="let Rect">
+                <mat-checkbox [checked]="Rect.CanHaveTopHandle" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="HasTopHandle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> HasTopHandle </th>
+            <td mat-cell *matCellDef="let Rect">
+                <mat-checkbox [checked]="Rect.HasTopHandle" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="CanHaveBottomHandle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> CanHaveBottomHandle </th>
+            <td mat-cell *matCellDef="let Rect">
+                <mat-checkbox [checked]="Rect.CanHaveBottomHandle" disabled=true></mat-checkbox>
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="HasBottomHandle">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> HasBottomHandle </th>
+            <td mat-cell *matCellDef="let Rect">
+                <mat-checkbox [checked]="Rect.HasBottomHandle" disabled=true></mat-checkbox>
             </td>
         </ng-container>
         <!-- -->

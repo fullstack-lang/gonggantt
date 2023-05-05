@@ -182,8 +182,9 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 			layerBars.Rects = append(layerBars.Rects, rect4Bar)
 			rect4Bar.Name = bar.Name
 			rect4Bar.IsSelectable = true
-			rect4Bar.CanHaveHorizontalHandles = true
-			rect4Bar.CanMoveHorizontaly = true
+			rect4Bar.CanHaveRightHandle = true
+			rect4Bar.CanHaveLeftHandle = true
+			rect4Bar.CanMoveHorizontaly = false
 
 			// connects the call on rect to the bar
 			barImpl := new(BarImpl)

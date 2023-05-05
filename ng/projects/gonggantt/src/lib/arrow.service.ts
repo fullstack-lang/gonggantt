@@ -131,7 +131,7 @@ export class ArrowService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         arrowdb.Gantt_Arrows_reverse = _Gantt_Arrows_reverse
-        this.log(`updated arrowdb id=${arrowdb.ID}`)
+        // this.log(`updated arrowdb id=${arrowdb.ID}`)
       }),
       catchError(this.handleError<ArrowDB>('updateArrow'))
     );

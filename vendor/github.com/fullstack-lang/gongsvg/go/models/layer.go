@@ -13,4 +13,5 @@ type Layer struct {
 	Polylines []*Polyline
 	Polygones []*Polygone
 	Paths     []*Path
+	Links     []*Link
 }

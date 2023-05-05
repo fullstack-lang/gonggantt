@@ -99,6 +99,9 @@ export class CirclesTableComponent implements OnInit {
         case 'StrokeDashArray':
           return circleDB.StrokeDashArray;
 
+        case 'StrokeDashArrayWhenSelected':
+          return circleDB.StrokeDashArrayWhenSelected;
+
         case 'Transform':
           return circleDB.Transform;
 
@@ -132,6 +135,7 @@ export class CirclesTableComponent implements OnInit {
       mergedContent += circleDB.Stroke.toLowerCase()
       mergedContent += circleDB.StrokeWidth.toString()
       mergedContent += circleDB.StrokeDashArray.toLowerCase()
+      mergedContent += circleDB.StrokeDashArrayWhenSelected.toLowerCase()
       mergedContent += circleDB.Transform.toLowerCase()
       if (circleDB.Layer_CirclesDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Layers.get(circleDB.Layer_CirclesDBID.Int64)!.Name.toLowerCase()
@@ -200,6 +204,7 @@ export class CirclesTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Circles",
       ]
@@ -214,6 +219,7 @@ export class CirclesTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Circles",
       ]

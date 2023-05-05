@@ -123,6 +123,26 @@
         <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="rect.StrokeDashArray"></textarea>
     </mat-form-field>
 
+    <mat-grid-list *ngIf='!isATextArea("StrokeDashArrayWhenSelected")' cols="5" rowHeight="1:1">
+        <mat-grid-tile [colspan]="3">
+            <mat-form-field mat-form-field class="detail-full-width">
+                <mat-label>StrokeDashArrayWhenSelected</mat-label>
+                <input name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="rect.StrokeDashArrayWhenSelected">
+            </mat-form-field>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <button mat-raised-button (click)="toggleTextArea('StrokeDashArrayWhenSelected')">
+                <mat-icon>
+                    expand_more
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
+    <mat-form-field *ngIf='isATextArea("StrokeDashArrayWhenSelected")' mat-form-field class="detail-full-width">
+        <mat-label>StrokeDashArrayWhenSelected</mat-label>
+        <textarea name="" [ngModelOptions]="{standalone: true}" matInput [(ngModel)]="rect.StrokeDashArrayWhenSelected"></textarea>
+    </mat-form-field>
+
     <mat-grid-list *ngIf='!isATextArea("Transform")' cols="5" rowHeight="1:1">
         <mat-grid-tile [colspan]="3">
             <mat-form-field mat-form-field class="detail-full-width">
@@ -163,10 +183,28 @@
     <mat-checkbox [formControl]="IsSelectedFormControl">IsSelected</mat-checkbox>
 
     <!-- -->
-    <mat-checkbox [formControl]="CanHaveHorizontalHandlesFormControl">CanHaveHorizontalHandles</mat-checkbox>
+    <mat-checkbox [formControl]="CanHaveLeftHandleFormControl">CanHaveLeftHandle</mat-checkbox>
 
     <!-- -->
-    <mat-checkbox [formControl]="HasHorizontalHandlesFormControl">HasHorizontalHandles</mat-checkbox>
+    <mat-checkbox [formControl]="HasLeftHandleFormControl">HasLeftHandle</mat-checkbox>
+
+    <!-- -->
+    <mat-checkbox [formControl]="CanHaveRightHandleFormControl">CanHaveRightHandle</mat-checkbox>
+
+    <!-- -->
+    <mat-checkbox [formControl]="HasRightHandleFormControl">HasRightHandle</mat-checkbox>
+
+    <!-- -->
+    <mat-checkbox [formControl]="CanHaveTopHandleFormControl">CanHaveTopHandle</mat-checkbox>
+
+    <!-- -->
+    <mat-checkbox [formControl]="HasTopHandleFormControl">HasTopHandle</mat-checkbox>
+
+    <!-- -->
+    <mat-checkbox [formControl]="CanHaveBottomHandleFormControl">CanHaveBottomHandle</mat-checkbox>
+
+    <!-- -->
+    <mat-checkbox [formControl]="HasBottomHandleFormControl">HasBottomHandle</mat-checkbox>
 
     <!-- -->
     <mat-checkbox [formControl]="CanMoveHorizontalyFormControl">CanMoveHorizontaly</mat-checkbox>

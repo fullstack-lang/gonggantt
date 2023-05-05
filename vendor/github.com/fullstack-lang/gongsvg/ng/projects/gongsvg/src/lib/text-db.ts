@@ -6,6 +6,9 @@ import { LayerDB } from './layer-db'
 import { NullInt64 } from './null-int64'
 
 export class TextDB {
+
+	static GONGSTRUCT_NAME = "Text"
+
 	CreatedAt?: string
 	DeletedAt?: string
 	ID: number = 0
@@ -20,6 +23,7 @@ export class TextDB {
 	Stroke: string = ""
 	StrokeWidth: number = 0
 	StrokeDashArray: string = ""
+	StrokeDashArrayWhenSelected: string = ""
 	Transform: string = ""
 
 	// insertion point for other declarations

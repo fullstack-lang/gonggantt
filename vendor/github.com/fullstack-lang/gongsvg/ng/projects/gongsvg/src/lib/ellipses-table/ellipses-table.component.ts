@@ -102,6 +102,9 @@ export class EllipsesTableComponent implements OnInit {
         case 'StrokeDashArray':
           return ellipseDB.StrokeDashArray;
 
+        case 'StrokeDashArrayWhenSelected':
+          return ellipseDB.StrokeDashArrayWhenSelected;
+
         case 'Transform':
           return ellipseDB.Transform;
 
@@ -136,6 +139,7 @@ export class EllipsesTableComponent implements OnInit {
       mergedContent += ellipseDB.Stroke.toLowerCase()
       mergedContent += ellipseDB.StrokeWidth.toString()
       mergedContent += ellipseDB.StrokeDashArray.toLowerCase()
+      mergedContent += ellipseDB.StrokeDashArrayWhenSelected.toLowerCase()
       mergedContent += ellipseDB.Transform.toLowerCase()
       if (ellipseDB.Layer_EllipsesDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Layers.get(ellipseDB.Layer_EllipsesDBID.Int64)!.Name.toLowerCase()
@@ -205,6 +209,7 @@ export class EllipsesTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Ellipses",
       ]
@@ -220,6 +225,7 @@ export class EllipsesTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Ellipses",
       ]

@@ -82,6 +82,13 @@
             </td>
         </ng-container>
         <!-- -->
+        <ng-container matColumnDef="StrokeDashArrayWhenSelected">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> StrokeDashArrayWhenSelected </th>
+            <td mat-cell *matCellDef="let Text">
+                {{Text.StrokeDashArrayWhenSelected}}
+            </td>
+        </ng-container>
+        <!-- -->
         <ng-container matColumnDef="Transform">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Transform </th>
             <td mat-cell *matCellDef="let Text">

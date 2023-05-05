@@ -13,8 +13,17 @@ type Rect struct {
 	IsSelectable bool // alllow selected
 	IsSelected   bool
 
-	CanHaveHorizontalHandles bool // allows HasHorizontalHandles
-	HasHorizontalHandles     bool // is true when selected
+	CanHaveLeftHandle bool
+	HasLeftHandle     bool
+
+	CanHaveRightHandle bool
+	HasRightHandle     bool
+
+	CanHaveTopHandle bool
+	HasTopHandle     bool
+
+	CanHaveBottomHandle bool
+	HasBottomHandle     bool
 
 	CanMoveHorizontaly bool
 	CanMoveVerticaly   bool
@@ -30,10 +39,25 @@ func (rect *Rect) OnAfterUpdate(stage *StageStruct, _, frontRect *Rect) {
 	// behavior logic
 	if frontRect.IsSelected != rect.IsSelected {
 		rect.IsSelected = frontRect.IsSelected
-		if frontRect.IsSelected && frontRect.CanHaveHorizontalHandles {
-			rect.HasHorizontalHandles = true
+		if frontRect.IsSelected && frontRect.CanHaveLeftHandle {
+			rect.HasLeftHandle = true
 		} else {
-			rect.HasHorizontalHandles = false
+			rect.HasLeftHandle = false
+		}
+		if frontRect.IsSelected && frontRect.CanHaveRightHandle {
+			rect.HasRightHandle = true
+		} else {
+			rect.HasRightHandle = false
+		}
+		if frontRect.IsSelected && frontRect.CanHaveTopHandle {
+			rect.HasTopHandle = true
+		} else {
+			rect.HasTopHandle = false
+		}
+		if frontRect.IsSelected && frontRect.CanHaveBottomHandle {
+			rect.HasBottomHandle = true
+		} else {
+			rect.HasBottomHandle = false
 		}
 		rect.Commit(stage)
 	}

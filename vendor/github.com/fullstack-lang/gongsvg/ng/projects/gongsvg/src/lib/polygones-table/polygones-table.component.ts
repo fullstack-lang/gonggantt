@@ -93,6 +93,9 @@ export class PolygonesTableComponent implements OnInit {
         case 'StrokeDashArray':
           return polygoneDB.StrokeDashArray;
 
+        case 'StrokeDashArrayWhenSelected':
+          return polygoneDB.StrokeDashArrayWhenSelected;
+
         case 'Transform':
           return polygoneDB.Transform;
 
@@ -124,6 +127,7 @@ export class PolygonesTableComponent implements OnInit {
       mergedContent += polygoneDB.Stroke.toLowerCase()
       mergedContent += polygoneDB.StrokeWidth.toString()
       mergedContent += polygoneDB.StrokeDashArray.toLowerCase()
+      mergedContent += polygoneDB.StrokeDashArrayWhenSelected.toLowerCase()
       mergedContent += polygoneDB.Transform.toLowerCase()
       if (polygoneDB.Layer_PolygonesDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Layers.get(polygoneDB.Layer_PolygonesDBID.Int64)!.Name.toLowerCase()
@@ -190,6 +194,7 @@ export class PolygonesTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Polygones",
       ]
@@ -202,6 +207,7 @@ export class PolygonesTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Polygones",
       ]

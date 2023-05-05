@@ -128,7 +128,7 @@ export class GroupService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         groupdb.Gantt_Groups_reverse = _Gantt_Groups_reverse
-        this.log(`updated groupdb id=${groupdb.ID}`)
+        // this.log(`updated groupdb id=${groupdb.ID}`)
       }),
       catchError(this.handleError<GroupDB>('updateGroup'))
     );

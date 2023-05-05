@@ -128,7 +128,7 @@ export class TextService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         textdb.Layer_Texts_reverse = _Layer_Texts_reverse
-        this.log(`updated textdb id=${textdb.ID}`)
+        // this.log(`updated textdb id=${textdb.ID}`)
       }),
       catchError(this.handleError<TextDB>('updateText'))
     );

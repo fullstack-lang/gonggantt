@@ -27,7 +27,49 @@ var ___dummy__ref_models_NewDiagram ref_models.StageStruct
 var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 	// injection point for docLink to identifiers
 
+	"ref_models.Aliceblue": ref_models.Aliceblue,
+
 	"ref_models.Animate": &(ref_models.Animate{}),
+
+	"ref_models.Animate.AttributeName": (ref_models.Animate{}).AttributeName,
+
+	"ref_models.Animate.Dur": (ref_models.Animate{}).Dur,
+
+	"ref_models.Animate.Name": (ref_models.Animate{}).Name,
+
+	"ref_models.Animate.RepeatCount": (ref_models.Animate{}).RepeatCount,
+
+	"ref_models.Animate.Values": (ref_models.Animate{}).Values,
+
+	"ref_models.Antiquewhite": ref_models.Antiquewhite,
+
+	"ref_models.Aqua": ref_models.Aqua,
+
+	"ref_models.Aquamarine": ref_models.Aquamarine,
+
+	"ref_models.Azure": ref_models.Azure,
+
+	"ref_models.Beige": ref_models.Beige,
+
+	"ref_models.Bisque": ref_models.Bisque,
+
+	"ref_models.Black": ref_models.Black,
+
+	"ref_models.Blanchedalmond": ref_models.Blanchedalmond,
+
+	"ref_models.Blue": ref_models.Blue,
+
+	"ref_models.Blueviolet": ref_models.Blueviolet,
+
+	"ref_models.Brown": ref_models.Brown,
+
+	"ref_models.Burlywood": ref_models.Burlywood,
+
+	"ref_models.Cadetblue": ref_models.Cadetblue,
+
+	"ref_models.Chartreuse": ref_models.Chartreuse,
+
+	"ref_models.Chocolate": ref_models.Chocolate,
 
 	"ref_models.Circle": &(ref_models.Circle{}),
 
@@ -37,11 +79,153 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 
 	"ref_models.Circle.CY": (ref_models.Circle{}).CY,
 
+	"ref_models.Circle.Color": (ref_models.Circle{}).Color,
+
+	"ref_models.Circle.FillOpacity": (ref_models.Circle{}).FillOpacity,
+
 	"ref_models.Circle.Name": (ref_models.Circle{}).Name,
 
 	"ref_models.Circle.Radius": (ref_models.Circle{}).Radius,
 
+	"ref_models.Circle.Stroke": (ref_models.Circle{}).Stroke,
+
+	"ref_models.Circle.StrokeDashArray": (ref_models.Circle{}).StrokeDashArray,
+
+	"ref_models.Circle.StrokeWidth": (ref_models.Circle{}).StrokeWidth,
+
+	"ref_models.Circle.Transform": (ref_models.Circle{}).Transform,
+
+	"ref_models.ColorType": ref_models.ColorType(""),
+
+	"ref_models.Coral": ref_models.Coral,
+
+	"ref_models.Cornflowerblue": ref_models.Cornflowerblue,
+
+	"ref_models.Cornsilk": ref_models.Cornsilk,
+
+	"ref_models.Crimson": ref_models.Crimson,
+
+	"ref_models.Cyan": ref_models.Cyan,
+
+	"ref_models.DRAWING_LINE": ref_models.DRAWING_LINE,
+
+	"ref_models.Darkblue": ref_models.Darkblue,
+
+	"ref_models.Darkcyan": ref_models.Darkcyan,
+
+	"ref_models.Darkgoldenrod": ref_models.Darkgoldenrod,
+
+	"ref_models.Darkgray": ref_models.Darkgray,
+
+	"ref_models.Darkgreen": ref_models.Darkgreen,
+
+	"ref_models.Darkgrey": ref_models.Darkgrey,
+
+	"ref_models.Darkkhaki": ref_models.Darkkhaki,
+
+	"ref_models.Darkmagenta": ref_models.Darkmagenta,
+
+	"ref_models.Darkolivegreen": ref_models.Darkolivegreen,
+
+	"ref_models.Darkorange": ref_models.Darkorange,
+
+	"ref_models.Darkorchid": ref_models.Darkorchid,
+
+	"ref_models.Darkred": ref_models.Darkred,
+
+	"ref_models.Darksalmon": ref_models.Darksalmon,
+
+	"ref_models.Darkseagreen": ref_models.Darkseagreen,
+
+	"ref_models.Darkslateblue": ref_models.Darkslateblue,
+
+	"ref_models.Darkslategray": ref_models.Darkslategray,
+
+	"ref_models.Darkslategrey": ref_models.Darkslategrey,
+
+	"ref_models.Darkturquoise": ref_models.Darkturquoise,
+
+	"ref_models.Darkviolet": ref_models.Darkviolet,
+
+	"ref_models.Deeppink": ref_models.Deeppink,
+
+	"ref_models.Deepskyblue": ref_models.Deepskyblue,
+
+	"ref_models.Dimgray": ref_models.Dimgray,
+
+	"ref_models.Dimgrey": ref_models.Dimgrey,
+
+	"ref_models.Dodgerblue": ref_models.Dodgerblue,
+
+	"ref_models.DrawingState": ref_models.DrawingState(""),
+
 	"ref_models.Ellipse": &(ref_models.Ellipse{}),
+
+	"ref_models.Ellipse.Animates": (ref_models.Ellipse{}).Animates,
+
+	"ref_models.Ellipse.CX": (ref_models.Ellipse{}).CX,
+
+	"ref_models.Ellipse.CY": (ref_models.Ellipse{}).CY,
+
+	"ref_models.Ellipse.Color": (ref_models.Ellipse{}).Color,
+
+	"ref_models.Ellipse.FillOpacity": (ref_models.Ellipse{}).FillOpacity,
+
+	"ref_models.Ellipse.Name": (ref_models.Ellipse{}).Name,
+
+	"ref_models.Ellipse.RX": (ref_models.Ellipse{}).RX,
+
+	"ref_models.Ellipse.RY": (ref_models.Ellipse{}).RY,
+
+	"ref_models.Ellipse.Stroke": (ref_models.Ellipse{}).Stroke,
+
+	"ref_models.Ellipse.StrokeDashArray": (ref_models.Ellipse{}).StrokeDashArray,
+
+	"ref_models.Ellipse.StrokeWidth": (ref_models.Ellipse{}).StrokeWidth,
+
+	"ref_models.Ellipse.Transform": (ref_models.Ellipse{}).Transform,
+
+	"ref_models.Firebrick": ref_models.Firebrick,
+
+	"ref_models.Floralwhite": ref_models.Floralwhite,
+
+	"ref_models.Forestgreen": ref_models.Forestgreen,
+
+	"ref_models.Fuchsia": ref_models.Fuchsia,
+
+	"ref_models.Gainsboro": ref_models.Gainsboro,
+
+	"ref_models.Ghostwhite": ref_models.Ghostwhite,
+
+	"ref_models.Gold": ref_models.Gold,
+
+	"ref_models.Goldenrod": ref_models.Goldenrod,
+
+	"ref_models.Gray": ref_models.Gray,
+
+	"ref_models.Green": ref_models.Green,
+
+	"ref_models.Greenyellow": ref_models.Greenyellow,
+
+	"ref_models.Grey": ref_models.Grey,
+
+	"ref_models.Honeydew": ref_models.Honeydew,
+
+	"ref_models.Hotpink": ref_models.Hotpink,
+
+	"ref_models.Indianred": ref_models.Indianred,
+
+	"ref_models.Indigo": ref_models.Indigo,
+
+	"ref_models.Ivory": ref_models.Ivory,
+
+	"ref_models.Khaki": ref_models.Khaki,
+
+	"ref_models.Lavender": ref_models.Lavender,
+
+	"ref_models.Lavenderblush": ref_models.Lavenderblush,
+
+	"ref_models.Lawngreen": ref_models.Lawngreen,
 
 	"ref_models.Layer": &(ref_models.Layer{}),
 
@@ -65,23 +249,335 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 
 	"ref_models.Layer.Texts": (ref_models.Layer{}).Texts,
 
+	"ref_models.Lemonchiffon": ref_models.Lemonchiffon,
+
+	"ref_models.Lightblue": ref_models.Lightblue,
+
+	"ref_models.Lightcoral": ref_models.Lightcoral,
+
+	"ref_models.Lightcyan": ref_models.Lightcyan,
+
+	"ref_models.Lightgoldenrodyellow": ref_models.Lightgoldenrodyellow,
+
+	"ref_models.Lightgray": ref_models.Lightgray,
+
+	"ref_models.Lightgreen": ref_models.Lightgreen,
+
+	"ref_models.Lightgrey": ref_models.Lightgrey,
+
+	"ref_models.Lightpink": ref_models.Lightpink,
+
+	"ref_models.Lightsalmon": ref_models.Lightsalmon,
+
+	"ref_models.Lightseagreen": ref_models.Lightseagreen,
+
+	"ref_models.Lightskyblue": ref_models.Lightskyblue,
+
+	"ref_models.Lightslategray": ref_models.Lightslategray,
+
+	"ref_models.Lightslategrey": ref_models.Lightslategrey,
+
+	"ref_models.Lightsteelblue": ref_models.Lightsteelblue,
+
+	"ref_models.Lightyellow": ref_models.Lightyellow,
+
+	"ref_models.Lime": ref_models.Lime,
+
+	"ref_models.Limegreen": ref_models.Limegreen,
+
 	"ref_models.Line": &(ref_models.Line{}),
+
+	"ref_models.Line.Animates": (ref_models.Line{}).Animates,
+
+	"ref_models.Line.Color": (ref_models.Line{}).Color,
+
+	"ref_models.Line.FillOpacity": (ref_models.Line{}).FillOpacity,
+
+	"ref_models.Line.MouseClickX": (ref_models.Line{}).MouseClickX,
+
+	"ref_models.Line.MouseClickY": (ref_models.Line{}).MouseClickY,
+
+	"ref_models.Line.Name": (ref_models.Line{}).Name,
+
+	"ref_models.Line.Stroke": (ref_models.Line{}).Stroke,
+
+	"ref_models.Line.StrokeDashArray": (ref_models.Line{}).StrokeDashArray,
+
+	"ref_models.Line.StrokeWidth": (ref_models.Line{}).StrokeWidth,
+
+	"ref_models.Line.Transform": (ref_models.Line{}).Transform,
+
+	"ref_models.Line.X1": (ref_models.Line{}).X1,
+
+	"ref_models.Line.X2": (ref_models.Line{}).X2,
+
+	"ref_models.Line.Y1": (ref_models.Line{}).Y1,
+
+	"ref_models.Line.Y2": (ref_models.Line{}).Y2,
+
+	"ref_models.Linen": ref_models.Linen,
+
+	"ref_models.Magenta": ref_models.Magenta,
+
+	"ref_models.Maroon": ref_models.Maroon,
+
+	"ref_models.Mediumaquamarine": ref_models.Mediumaquamarine,
+
+	"ref_models.Mediumblue": ref_models.Mediumblue,
+
+	"ref_models.Mediumorchid": ref_models.Mediumorchid,
+
+	"ref_models.Mediumpurple": ref_models.Mediumpurple,
+
+	"ref_models.Mediumseagreen": ref_models.Mediumseagreen,
+
+	"ref_models.Mediumslateblue": ref_models.Mediumslateblue,
+
+	"ref_models.Mediumspringgreen": ref_models.Mediumspringgreen,
+
+	"ref_models.Mediumturquoise": ref_models.Mediumturquoise,
+
+	"ref_models.Mediumvioletred": ref_models.Mediumvioletred,
+
+	"ref_models.Midnightblue": ref_models.Midnightblue,
+
+	"ref_models.Mintcream": ref_models.Mintcream,
+
+	"ref_models.Mistyrose": ref_models.Mistyrose,
+
+	"ref_models.Moccasin": ref_models.Moccasin,
+
+	"ref_models.NOT_DRAWING_LINE": ref_models.NOT_DRAWING_LINE,
+
+	"ref_models.Navajowhite": ref_models.Navajowhite,
+
+	"ref_models.Navy": ref_models.Navy,
+
+	"ref_models.Oldlace": ref_models.Oldlace,
+
+	"ref_models.Olive": ref_models.Olive,
+
+	"ref_models.Olivedrab": ref_models.Olivedrab,
+
+	"ref_models.Orange": ref_models.Orange,
+
+	"ref_models.Orangered": ref_models.Orangered,
+
+	"ref_models.Orchid": ref_models.Orchid,
+
+	"ref_models.Palegoldenrod": ref_models.Palegoldenrod,
+
+	"ref_models.Palegreen": ref_models.Palegreen,
+
+	"ref_models.Paleturquoise": ref_models.Paleturquoise,
+
+	"ref_models.Palevioletred": ref_models.Palevioletred,
+
+	"ref_models.Papayawhip": ref_models.Papayawhip,
 
 	"ref_models.Path": &(ref_models.Path{}),
 
+	"ref_models.Path.Animates": (ref_models.Path{}).Animates,
+
+	"ref_models.Path.Color": (ref_models.Path{}).Color,
+
+	"ref_models.Path.Definition": (ref_models.Path{}).Definition,
+
+	"ref_models.Path.FillOpacity": (ref_models.Path{}).FillOpacity,
+
+	"ref_models.Path.Name": (ref_models.Path{}).Name,
+
+	"ref_models.Path.Stroke": (ref_models.Path{}).Stroke,
+
+	"ref_models.Path.StrokeDashArray": (ref_models.Path{}).StrokeDashArray,
+
+	"ref_models.Path.StrokeWidth": (ref_models.Path{}).StrokeWidth,
+
+	"ref_models.Path.Transform": (ref_models.Path{}).Transform,
+
+	"ref_models.Peachpuff": ref_models.Peachpuff,
+
+	"ref_models.Peru": ref_models.Peru,
+
+	"ref_models.Pink": ref_models.Pink,
+
+	"ref_models.Plum": ref_models.Plum,
+
 	"ref_models.Polygone": &(ref_models.Polygone{}),
+
+	"ref_models.Polygone.Animates": (ref_models.Polygone{}).Animates,
+
+	"ref_models.Polygone.Color": (ref_models.Polygone{}).Color,
+
+	"ref_models.Polygone.FillOpacity": (ref_models.Polygone{}).FillOpacity,
+
+	"ref_models.Polygone.Name": (ref_models.Polygone{}).Name,
+
+	"ref_models.Polygone.Points": (ref_models.Polygone{}).Points,
+
+	"ref_models.Polygone.Stroke": (ref_models.Polygone{}).Stroke,
+
+	"ref_models.Polygone.StrokeDashArray": (ref_models.Polygone{}).StrokeDashArray,
+
+	"ref_models.Polygone.StrokeWidth": (ref_models.Polygone{}).StrokeWidth,
+
+	"ref_models.Polygone.Transform": (ref_models.Polygone{}).Transform,
 
 	"ref_models.Polyline": &(ref_models.Polyline{}),
 
+	"ref_models.Polyline.Animates": (ref_models.Polyline{}).Animates,
+
+	"ref_models.Polyline.Color": (ref_models.Polyline{}).Color,
+
+	"ref_models.Polyline.FillOpacity": (ref_models.Polyline{}).FillOpacity,
+
+	"ref_models.Polyline.Name": (ref_models.Polyline{}).Name,
+
+	"ref_models.Polyline.Points": (ref_models.Polyline{}).Points,
+
+	"ref_models.Polyline.Stroke": (ref_models.Polyline{}).Stroke,
+
+	"ref_models.Polyline.StrokeDashArray": (ref_models.Polyline{}).StrokeDashArray,
+
+	"ref_models.Polyline.StrokeWidth": (ref_models.Polyline{}).StrokeWidth,
+
+	"ref_models.Polyline.Transform": (ref_models.Polyline{}).Transform,
+
+	"ref_models.Powderblue": ref_models.Powderblue,
+
+	"ref_models.Purple": ref_models.Purple,
+
 	"ref_models.Rect": &(ref_models.Rect{}),
 
+	"ref_models.Rect.Animations": (ref_models.Rect{}).Animations,
+
+	"ref_models.Rect.CanHaveHorizontalHandles": (ref_models.Rect{}).CanHaveLeftHandle,
+
+	"ref_models.Rect.CanMoveHorizontaly": (ref_models.Rect{}).CanMoveHorizontaly,
+
+	"ref_models.Rect.CanMoveVerticaly": (ref_models.Rect{}).CanMoveVerticaly,
+
+	"ref_models.Rect.Color": (ref_models.Rect{}).Color,
+
+	"ref_models.Rect.FillOpacity": (ref_models.Rect{}).FillOpacity,
+
+	"ref_models.Rect.HasHorizontalHandles": (ref_models.Rect{}).HasLeftHandle,
+
+	"ref_models.Rect.Height": (ref_models.Rect{}).Height,
+
+	"ref_models.Rect.IsSelectable": (ref_models.Rect{}).IsSelectable,
+
+	"ref_models.Rect.IsSelected": (ref_models.Rect{}).IsSelected,
+
+	"ref_models.Rect.Name": (ref_models.Rect{}).Name,
+
+	"ref_models.Rect.RX": (ref_models.Rect{}).RX,
+
+	"ref_models.Rect.Stroke": (ref_models.Rect{}).Stroke,
+
+	"ref_models.Rect.StrokeDashArray": (ref_models.Rect{}).StrokeDashArray,
+
+	"ref_models.Rect.StrokeWidth": (ref_models.Rect{}).StrokeWidth,
+
+	"ref_models.Rect.Transform": (ref_models.Rect{}).Transform,
+
+	"ref_models.Rect.Width": (ref_models.Rect{}).Width,
+
+	"ref_models.Rect.X": (ref_models.Rect{}).X,
+
+	"ref_models.Rect.Y": (ref_models.Rect{}).Y,
+
+	"ref_models.Red": ref_models.Red,
+
+	"ref_models.Rosybrown": ref_models.Rosybrown,
+
+	"ref_models.Royalblue": ref_models.Royalblue,
+
 	"ref_models.SVG": &(ref_models.SVG{}),
+
+	"ref_models.SVG.DrawingState": (ref_models.SVG{}).DrawingState,
+
+	"ref_models.SVG.EndRect": (ref_models.SVG{}).EndRect,
 
 	"ref_models.SVG.Layers": (ref_models.SVG{}).Layers,
 
 	"ref_models.SVG.Name": (ref_models.SVG{}).Name,
 
+	"ref_models.SVG.StartRect": (ref_models.SVG{}).StartRect,
+
+	"ref_models.Saddlebrown": ref_models.Saddlebrown,
+
+	"ref_models.Salmon": ref_models.Salmon,
+
+	"ref_models.Sandybrown": ref_models.Sandybrown,
+
+	"ref_models.Seagreen": ref_models.Seagreen,
+
+	"ref_models.Seashell": ref_models.Seashell,
+
+	"ref_models.Sienna": ref_models.Sienna,
+
+	"ref_models.Silver": ref_models.Silver,
+
+	"ref_models.Skyblue": ref_models.Skyblue,
+
+	"ref_models.Slateblue": ref_models.Slateblue,
+
+	"ref_models.Slategray": ref_models.Slategray,
+
+	"ref_models.Slategrey": ref_models.Slategrey,
+
+	"ref_models.Snow": ref_models.Snow,
+
+	"ref_models.Springgreen": ref_models.Springgreen,
+
+	"ref_models.Steelblue": ref_models.Steelblue,
+
+	"ref_models.Tan": ref_models.Tan,
+
+	"ref_models.Teal": ref_models.Teal,
+
 	"ref_models.Text": &(ref_models.Text{}),
+
+	"ref_models.Text.Animates": (ref_models.Text{}).Animates,
+
+	"ref_models.Text.Color": (ref_models.Text{}).Color,
+
+	"ref_models.Text.Content": (ref_models.Text{}).Content,
+
+	"ref_models.Text.FillOpacity": (ref_models.Text{}).FillOpacity,
+
+	"ref_models.Text.Name": (ref_models.Text{}).Name,
+
+	"ref_models.Text.Stroke": (ref_models.Text{}).Stroke,
+
+	"ref_models.Text.StrokeDashArray": (ref_models.Text{}).StrokeDashArray,
+
+	"ref_models.Text.StrokeWidth": (ref_models.Text{}).StrokeWidth,
+
+	"ref_models.Text.Transform": (ref_models.Text{}).Transform,
+
+	"ref_models.Text.X": (ref_models.Text{}).X,
+
+	"ref_models.Text.Y": (ref_models.Text{}).Y,
+
+	"ref_models.Thistle": ref_models.Thistle,
+
+	"ref_models.Tomato": ref_models.Tomato,
+
+	"ref_models.Turquoise": ref_models.Turquoise,
+
+	"ref_models.Violet": ref_models.Violet,
+
+	"ref_models.Wheat": ref_models.Wheat,
+
+	"ref_models.White": ref_models.White,
+
+	"ref_models.Whitesmoke": ref_models.Whitesmoke,
+
+	"ref_models.Yellow": ref_models.Yellow,
+
+	"ref_models.Yellowgreen": ref_models.Yellowgreen,
 }
 
 // init might be handy if one want to have the data embedded in the binary
@@ -105,10 +601,17 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Field__000000_CX := (&models.Field{Name: `CX`}).Stage(stage)
 	__Field__000001_CY := (&models.Field{Name: `CY`}).Stage(stage)
 	__Field__000002_Display := (&models.Field{Name: `Display`}).Stage(stage)
-	__Field__000003_Name := (&models.Field{Name: `Name`}).Stage(stage)
-	__Field__000004_Name := (&models.Field{Name: `Name`}).Stage(stage)
+	__Field__000003_MouseClickX := (&models.Field{Name: `MouseClickX`}).Stage(stage)
+	__Field__000004_MouseClickY := (&models.Field{Name: `MouseClickY`}).Stage(stage)
 	__Field__000005_Name := (&models.Field{Name: `Name`}).Stage(stage)
-	__Field__000006_Radius := (&models.Field{Name: `Radius`}).Stage(stage)
+	__Field__000006_Name := (&models.Field{Name: `Name`}).Stage(stage)
+	__Field__000007_Name := (&models.Field{Name: `Name`}).Stage(stage)
+	__Field__000008_Radius := (&models.Field{Name: `Radius`}).Stage(stage)
+	__Field__000009_StrokeWidth := (&models.Field{Name: `StrokeWidth`}).Stage(stage)
+	__Field__000010_X1 := (&models.Field{Name: `X1`}).Stage(stage)
+	__Field__000011_X2 := (&models.Field{Name: `X2`}).Stage(stage)
+	__Field__000012_Y1 := (&models.Field{Name: `Y1`}).Stage(stage)
+	__Field__000013_Y2 := (&models.Field{Name: `Y2`}).Stage(stage)
 
 	// Declarations of staged instances of GongEnumShape
 
@@ -216,26 +719,26 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Field__000002_Display.Fieldtypename = `bool`
 
 	// Field values setup
-	__Field__000003_Name.Name = `Name`
+	__Field__000003_MouseClickX.Name = `MouseClickX`
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.SVG.Name]
-	__Field__000003_Name.Identifier = `ref_models.SVG.Name`
-	__Field__000003_Name.FieldTypeAsString = ``
-	__Field__000003_Name.Structname = `SVG`
-	__Field__000003_Name.Fieldtypename = `string`
+	//gong:ident [ref_models.Line.MouseClickX]
+	__Field__000003_MouseClickX.Identifier = `ref_models.Line.MouseClickX`
+	__Field__000003_MouseClickX.FieldTypeAsString = ``
+	__Field__000003_MouseClickX.Structname = `Line`
+	__Field__000003_MouseClickX.Fieldtypename = `float64`
 
 	// Field values setup
-	__Field__000004_Name.Name = `Name`
+	__Field__000004_MouseClickY.Name = `MouseClickY`
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.Layer.Name]
-	__Field__000004_Name.Identifier = `ref_models.Layer.Name`
-	__Field__000004_Name.FieldTypeAsString = ``
-	__Field__000004_Name.Structname = `SVG`
-	__Field__000004_Name.Fieldtypename = `string`
+	//gong:ident [ref_models.Line.MouseClickY]
+	__Field__000004_MouseClickY.Identifier = `ref_models.Line.MouseClickY`
+	__Field__000004_MouseClickY.FieldTypeAsString = ``
+	__Field__000004_MouseClickY.Structname = `Line`
+	__Field__000004_MouseClickY.Fieldtypename = `float64`
 
 	// Field values setup
 	__Field__000005_Name.Name = `Name`
@@ -249,15 +752,92 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Field__000005_Name.Fieldtypename = `string`
 
 	// Field values setup
-	__Field__000006_Radius.Name = `Radius`
+	__Field__000006_Name.Name = `Name`
+
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.SVG.Name]
+	__Field__000006_Name.Identifier = `ref_models.SVG.Name`
+	__Field__000006_Name.FieldTypeAsString = ``
+	__Field__000006_Name.Structname = `SVG`
+	__Field__000006_Name.Fieldtypename = `string`
+
+	// Field values setup
+	__Field__000007_Name.Name = `Name`
+
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Layer.Name]
+	__Field__000007_Name.Identifier = `ref_models.Layer.Name`
+	__Field__000007_Name.FieldTypeAsString = ``
+	__Field__000007_Name.Structname = `SVG`
+	__Field__000007_Name.Fieldtypename = `string`
+
+	// Field values setup
+	__Field__000008_Radius.Name = `Radius`
 
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Circle.Radius]
-	__Field__000006_Radius.Identifier = `ref_models.Circle.Radius`
-	__Field__000006_Radius.FieldTypeAsString = ``
-	__Field__000006_Radius.Structname = `Circle`
-	__Field__000006_Radius.Fieldtypename = `float64`
+	__Field__000008_Radius.Identifier = `ref_models.Circle.Radius`
+	__Field__000008_Radius.FieldTypeAsString = ``
+	__Field__000008_Radius.Structname = `Circle`
+	__Field__000008_Radius.Fieldtypename = `float64`
+
+	// Field values setup
+	__Field__000009_StrokeWidth.Name = `StrokeWidth`
+
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Line.StrokeWidth]
+	__Field__000009_StrokeWidth.Identifier = `ref_models.Line.StrokeWidth`
+	__Field__000009_StrokeWidth.FieldTypeAsString = ``
+	__Field__000009_StrokeWidth.Structname = `Line`
+	__Field__000009_StrokeWidth.Fieldtypename = `float64`
+
+	// Field values setup
+	__Field__000010_X1.Name = `X1`
+
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Line.X1]
+	__Field__000010_X1.Identifier = `ref_models.Line.X1`
+	__Field__000010_X1.FieldTypeAsString = ``
+	__Field__000010_X1.Structname = `Line`
+	__Field__000010_X1.Fieldtypename = `float64`
+
+	// Field values setup
+	__Field__000011_X2.Name = `X2`
+
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Line.X2]
+	__Field__000011_X2.Identifier = `ref_models.Line.X2`
+	__Field__000011_X2.FieldTypeAsString = ``
+	__Field__000011_X2.Structname = `Line`
+	__Field__000011_X2.Fieldtypename = `float64`
+
+	// Field values setup
+	__Field__000012_Y1.Name = `Y1`
+
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Line.Y1]
+	__Field__000012_Y1.Identifier = `ref_models.Line.Y1`
+	__Field__000012_Y1.FieldTypeAsString = ``
+	__Field__000012_Y1.Structname = `Line`
+	__Field__000012_Y1.Fieldtypename = `float64`
+
+	// Field values setup
+	__Field__000013_Y2.Name = `Y2`
+
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Line.Y2]
+	__Field__000013_Y2.Identifier = `ref_models.Line.Y2`
+	__Field__000013_Y2.FieldTypeAsString = ``
+	__Field__000013_Y2.Structname = `Line`
+	__Field__000013_Y2.Fieldtypename = `float64`
 
 	// GongStructShape values setup
 	__GongStructShape__000000_NewDiagram_Animate.Name = `NewDiagram-Animate`
@@ -280,7 +860,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	//gong:ident [ref_models.Circle]
 	__GongStructShape__000001_NewDiagram_Circle.Identifier = `ref_models.Circle`
 	__GongStructShape__000001_NewDiagram_Circle.ShowNbInstances = true
-	__GongStructShape__000001_NewDiagram_Circle.NbInstances = 0
+	__GongStructShape__000001_NewDiagram_Circle.NbInstances = 1
 	__GongStructShape__000001_NewDiagram_Circle.Width = 240.000000
 	__GongStructShape__000001_NewDiagram_Circle.Heigth = 123.000000
 	__GongStructShape__000001_NewDiagram_Circle.IsSelected = false
@@ -306,9 +886,9 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	//gong:ident [ref_models.Line]
 	__GongStructShape__000003_NewDiagram_Line.Identifier = `ref_models.Line`
 	__GongStructShape__000003_NewDiagram_Line.ShowNbInstances = true
-	__GongStructShape__000003_NewDiagram_Line.NbInstances = 0
+	__GongStructShape__000003_NewDiagram_Line.NbInstances = 1
 	__GongStructShape__000003_NewDiagram_Line.Width = 240.000000
-	__GongStructShape__000003_NewDiagram_Line.Heigth = 63.000000
+	__GongStructShape__000003_NewDiagram_Line.Heigth = 168.000000
 	__GongStructShape__000003_NewDiagram_Line.IsSelected = false
 
 	// GongStructShape values setup
@@ -358,7 +938,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	//gong:ident [ref_models.Rect]
 	__GongStructShape__000007_NewDiagram_Rect.Identifier = `ref_models.Rect`
 	__GongStructShape__000007_NewDiagram_Rect.ShowNbInstances = true
-	__GongStructShape__000007_NewDiagram_Rect.NbInstances = 147
+	__GongStructShape__000007_NewDiagram_Rect.NbInstances = 2
 	__GongStructShape__000007_NewDiagram_Rect.Width = 240.000000
 	__GongStructShape__000007_NewDiagram_Rect.Heigth = 63.000000
 	__GongStructShape__000007_NewDiagram_Rect.IsSelected = false
@@ -368,12 +948,12 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.SVG]
-	__GongStructShape__000008_NewDiagram_SVG.Identifier = `ref_models.SVG`
-	__GongStructShape__000008_NewDiagram_SVG.ShowNbInstances = false
-	__GongStructShape__000008_NewDiagram_SVG.NbInstances = 0
+	//gong:ident [ref_models.Layer]
+	__GongStructShape__000008_NewDiagram_SVG.Identifier = `ref_models.Layer`
+	__GongStructShape__000008_NewDiagram_SVG.ShowNbInstances = true
+	__GongStructShape__000008_NewDiagram_SVG.NbInstances = 4
 	__GongStructShape__000008_NewDiagram_SVG.Width = 240.000000
-	__GongStructShape__000008_NewDiagram_SVG.Heigth = 78.000000
+	__GongStructShape__000008_NewDiagram_SVG.Heigth = 93.000000
 	__GongStructShape__000008_NewDiagram_SVG.IsSelected = false
 
 	// GongStructShape values setup
@@ -381,12 +961,12 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.Layer]
-	__GongStructShape__000009_NewDiagram_SVG.Identifier = `ref_models.Layer`
+	//gong:ident [ref_models.SVG]
+	__GongStructShape__000009_NewDiagram_SVG.Identifier = `ref_models.SVG`
 	__GongStructShape__000009_NewDiagram_SVG.ShowNbInstances = true
-	__GongStructShape__000009_NewDiagram_SVG.NbInstances = 2
+	__GongStructShape__000009_NewDiagram_SVG.NbInstances = 1
 	__GongStructShape__000009_NewDiagram_SVG.Width = 240.000000
-	__GongStructShape__000009_NewDiagram_SVG.Heigth = 93.000000
+	__GongStructShape__000009_NewDiagram_SVG.Heigth = 78.000000
 	__GongStructShape__000009_NewDiagram_SVG.IsSelected = false
 
 	// GongStructShape values setup
@@ -397,7 +977,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	//gong:ident [ref_models.Text]
 	__GongStructShape__000010_NewDiagram_Text.Identifier = `ref_models.Text`
 	__GongStructShape__000010_NewDiagram_Text.ShowNbInstances = true
-	__GongStructShape__000010_NewDiagram_Text.NbInstances = 147
+	__GongStructShape__000010_NewDiagram_Text.NbInstances = 1
 	__GongStructShape__000010_NewDiagram_Text.Width = 240.000000
 	__GongStructShape__000010_NewDiagram_Text.Heigth = 63.000000
 	__GongStructShape__000010_NewDiagram_Text.IsSelected = false
@@ -559,7 +1139,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	// Position values setup
 	__Position__000001_Pos_NewDiagram_Circle.X = 780.000000
-	__Position__000001_Pos_NewDiagram_Circle.Y = 680.000000
+	__Position__000001_Pos_NewDiagram_Circle.Y = 770.000000
 	__Position__000001_Pos_NewDiagram_Circle.Name = `Pos-NewDiagram-Circle`
 
 	// Position values setup
@@ -664,38 +1244,45 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000004_NewDiagram_Path)
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000005_NewDiagram_Polygone)
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000007_NewDiagram_Rect)
-	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000009_NewDiagram_SVG)
+	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000008_NewDiagram_SVG)
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000010_NewDiagram_Text)
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000006_NewDiagram_Polyline)
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000001_NewDiagram_Circle)
-	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000008_NewDiagram_SVG)
+	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000009_NewDiagram_SVG)
 	__GongStructShape__000000_NewDiagram_Animate.Position = __Position__000000_Pos_NewDiagram_Animate
 	__GongStructShape__000001_NewDiagram_Circle.Position = __Position__000001_Pos_NewDiagram_Circle
 	__GongStructShape__000001_NewDiagram_Circle.Fields = append(__GongStructShape__000001_NewDiagram_Circle.Fields, __Field__000005_Name)
 	__GongStructShape__000001_NewDiagram_Circle.Fields = append(__GongStructShape__000001_NewDiagram_Circle.Fields, __Field__000000_CX)
 	__GongStructShape__000001_NewDiagram_Circle.Fields = append(__GongStructShape__000001_NewDiagram_Circle.Fields, __Field__000001_CY)
-	__GongStructShape__000001_NewDiagram_Circle.Fields = append(__GongStructShape__000001_NewDiagram_Circle.Fields, __Field__000006_Radius)
+	__GongStructShape__000001_NewDiagram_Circle.Fields = append(__GongStructShape__000001_NewDiagram_Circle.Fields, __Field__000008_Radius)
 	__GongStructShape__000001_NewDiagram_Circle.Links = append(__GongStructShape__000001_NewDiagram_Circle.Links, __Link__000000_Animations)
 	__GongStructShape__000002_NewDiagram_Ellipse.Position = __Position__000002_Pos_NewDiagram_Ellipse
 	__GongStructShape__000003_NewDiagram_Line.Position = __Position__000003_Pos_NewDiagram_Line
+	__GongStructShape__000003_NewDiagram_Line.Fields = append(__GongStructShape__000003_NewDiagram_Line.Fields, __Field__000010_X1)
+	__GongStructShape__000003_NewDiagram_Line.Fields = append(__GongStructShape__000003_NewDiagram_Line.Fields, __Field__000012_Y1)
+	__GongStructShape__000003_NewDiagram_Line.Fields = append(__GongStructShape__000003_NewDiagram_Line.Fields, __Field__000011_X2)
+	__GongStructShape__000003_NewDiagram_Line.Fields = append(__GongStructShape__000003_NewDiagram_Line.Fields, __Field__000013_Y2)
+	__GongStructShape__000003_NewDiagram_Line.Fields = append(__GongStructShape__000003_NewDiagram_Line.Fields, __Field__000009_StrokeWidth)
+	__GongStructShape__000003_NewDiagram_Line.Fields = append(__GongStructShape__000003_NewDiagram_Line.Fields, __Field__000003_MouseClickX)
+	__GongStructShape__000003_NewDiagram_Line.Fields = append(__GongStructShape__000003_NewDiagram_Line.Fields, __Field__000004_MouseClickY)
 	__GongStructShape__000004_NewDiagram_Path.Position = __Position__000004_Pos_NewDiagram_Path
 	__GongStructShape__000005_NewDiagram_Polygone.Position = __Position__000005_Pos_NewDiagram_Polygone
 	__GongStructShape__000006_NewDiagram_Polyline.Position = __Position__000006_Pos_NewDiagram_Polyline
 	__GongStructShape__000007_NewDiagram_Rect.Position = __Position__000007_Pos_NewDiagram_Rect
-	__GongStructShape__000008_NewDiagram_SVG.Position = __Position__000009_Pos_NewDiagram_SVG
-	__GongStructShape__000008_NewDiagram_SVG.Fields = append(__GongStructShape__000008_NewDiagram_SVG.Fields, __Field__000003_Name)
-	__GongStructShape__000008_NewDiagram_SVG.Links = append(__GongStructShape__000008_NewDiagram_SVG.Links, __Link__000003_Layers)
-	__GongStructShape__000009_NewDiagram_SVG.Position = __Position__000008_Pos_NewDiagram_SVG
-	__GongStructShape__000009_NewDiagram_SVG.Fields = append(__GongStructShape__000009_NewDiagram_SVG.Fields, __Field__000002_Display)
-	__GongStructShape__000009_NewDiagram_SVG.Fields = append(__GongStructShape__000009_NewDiagram_SVG.Fields, __Field__000004_Name)
-	__GongStructShape__000009_NewDiagram_SVG.Links = append(__GongStructShape__000009_NewDiagram_SVG.Links, __Link__000001_Circles)
-	__GongStructShape__000009_NewDiagram_SVG.Links = append(__GongStructShape__000009_NewDiagram_SVG.Links, __Link__000002_Ellipses)
-	__GongStructShape__000009_NewDiagram_SVG.Links = append(__GongStructShape__000009_NewDiagram_SVG.Links, __Link__000004_Lines)
-	__GongStructShape__000009_NewDiagram_SVG.Links = append(__GongStructShape__000009_NewDiagram_SVG.Links, __Link__000005_Paths)
-	__GongStructShape__000009_NewDiagram_SVG.Links = append(__GongStructShape__000009_NewDiagram_SVG.Links, __Link__000006_Polygones)
-	__GongStructShape__000009_NewDiagram_SVG.Links = append(__GongStructShape__000009_NewDiagram_SVG.Links, __Link__000007_Polylines)
-	__GongStructShape__000009_NewDiagram_SVG.Links = append(__GongStructShape__000009_NewDiagram_SVG.Links, __Link__000008_Rects)
-	__GongStructShape__000009_NewDiagram_SVG.Links = append(__GongStructShape__000009_NewDiagram_SVG.Links, __Link__000009_Texts)
+	__GongStructShape__000008_NewDiagram_SVG.Position = __Position__000008_Pos_NewDiagram_SVG
+	__GongStructShape__000008_NewDiagram_SVG.Fields = append(__GongStructShape__000008_NewDiagram_SVG.Fields, __Field__000002_Display)
+	__GongStructShape__000008_NewDiagram_SVG.Fields = append(__GongStructShape__000008_NewDiagram_SVG.Fields, __Field__000007_Name)
+	__GongStructShape__000008_NewDiagram_SVG.Links = append(__GongStructShape__000008_NewDiagram_SVG.Links, __Link__000001_Circles)
+	__GongStructShape__000008_NewDiagram_SVG.Links = append(__GongStructShape__000008_NewDiagram_SVG.Links, __Link__000002_Ellipses)
+	__GongStructShape__000008_NewDiagram_SVG.Links = append(__GongStructShape__000008_NewDiagram_SVG.Links, __Link__000004_Lines)
+	__GongStructShape__000008_NewDiagram_SVG.Links = append(__GongStructShape__000008_NewDiagram_SVG.Links, __Link__000005_Paths)
+	__GongStructShape__000008_NewDiagram_SVG.Links = append(__GongStructShape__000008_NewDiagram_SVG.Links, __Link__000006_Polygones)
+	__GongStructShape__000008_NewDiagram_SVG.Links = append(__GongStructShape__000008_NewDiagram_SVG.Links, __Link__000007_Polylines)
+	__GongStructShape__000008_NewDiagram_SVG.Links = append(__GongStructShape__000008_NewDiagram_SVG.Links, __Link__000008_Rects)
+	__GongStructShape__000008_NewDiagram_SVG.Links = append(__GongStructShape__000008_NewDiagram_SVG.Links, __Link__000009_Texts)
+	__GongStructShape__000009_NewDiagram_SVG.Position = __Position__000009_Pos_NewDiagram_SVG
+	__GongStructShape__000009_NewDiagram_SVG.Fields = append(__GongStructShape__000009_NewDiagram_SVG.Fields, __Field__000006_Name)
+	__GongStructShape__000009_NewDiagram_SVG.Links = append(__GongStructShape__000009_NewDiagram_SVG.Links, __Link__000003_Layers)
 	__GongStructShape__000010_NewDiagram_Text.Position = __Position__000010_Pos_NewDiagram_Text
 	__Link__000000_Animations.Middlevertice = __Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Circle_and_NewDiagram_Animate
 	__Link__000001_Circles.Middlevertice = __Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_SVG_and_NewDiagram_Circle
@@ -708,5 +1295,3 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Link__000008_Rects.Middlevertice = __Vertice__000007_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_SVG_and_NewDiagram_Rect
 	__Link__000009_Texts.Middlevertice = __Vertice__000009_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_SVG_and_NewDiagram_Text
 }
-
-

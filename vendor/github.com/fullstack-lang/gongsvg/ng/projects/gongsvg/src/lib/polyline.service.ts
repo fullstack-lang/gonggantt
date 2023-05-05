@@ -128,7 +128,7 @@ export class PolylineService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         polylinedb.Layer_Polylines_reverse = _Layer_Polylines_reverse
-        this.log(`updated polylinedb id=${polylinedb.ID}`)
+        // this.log(`updated polylinedb id=${polylinedb.ID}`)
       }),
       catchError(this.handleError<PolylineDB>('updatePolyline'))
     );

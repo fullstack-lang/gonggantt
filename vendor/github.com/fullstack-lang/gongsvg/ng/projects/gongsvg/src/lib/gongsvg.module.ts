@@ -39,6 +39,10 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { GongstructSelectionService } from './gongstruct-selection.service'
 
 // insertion point for imports 
+import { AnchoredTextsTableComponent } from './anchoredtexts-table/anchoredtexts-table.component'
+import { AnchoredTextSortingComponent } from './anchoredtext-sorting/anchoredtext-sorting.component'
+import { AnchoredTextDetailComponent } from './anchoredtext-detail/anchoredtext-detail.component'
+
 import { AnimatesTableComponent } from './animates-table/animates-table.component'
 import { AnimateSortingComponent } from './animate-sorting/animate-sorting.component'
 import { AnimateDetailComponent } from './animate-detail/animate-detail.component'
@@ -59,9 +63,17 @@ import { LinesTableComponent } from './lines-table/lines-table.component'
 import { LineSortingComponent } from './line-sorting/line-sorting.component'
 import { LineDetailComponent } from './line-detail/line-detail.component'
 
+import { LinksTableComponent } from './links-table/links-table.component'
+import { LinkSortingComponent } from './link-sorting/link-sorting.component'
+import { LinkDetailComponent } from './link-detail/link-detail.component'
+
 import { PathsTableComponent } from './paths-table/paths-table.component'
 import { PathSortingComponent } from './path-sorting/path-sorting.component'
 import { PathDetailComponent } from './path-detail/path-detail.component'
+
+import { PointsTableComponent } from './points-table/points-table.component'
+import { PointSortingComponent } from './point-sorting/point-sorting.component'
+import { PointDetailComponent } from './point-detail/point-detail.component'
 
 import { PolygonesTableComponent } from './polygones-table/polygones-table.component'
 import { PolygoneSortingComponent } from './polygone-sorting/polygone-sorting.component'
@@ -87,6 +99,10 @@ import { TextDetailComponent } from './text-detail/text-detail.component'
 @NgModule({
 	declarations: [
 		// insertion point for declarations 
+		AnchoredTextsTableComponent,
+		AnchoredTextSortingComponent,
+		AnchoredTextDetailComponent,
+
 		AnimatesTableComponent,
 		AnimateSortingComponent,
 		AnimateDetailComponent,
@@ -107,9 +123,17 @@ import { TextDetailComponent } from './text-detail/text-detail.component'
 		LineSortingComponent,
 		LineDetailComponent,
 
+		LinksTableComponent,
+		LinkSortingComponent,
+		LinkDetailComponent,
+
 		PathsTableComponent,
 		PathSortingComponent,
 		PathDetailComponent,
+
+		PointsTableComponent,
+		PointSortingComponent,
+		PointDetailComponent,
 
 		PolygonesTableComponent,
 		PolygoneSortingComponent,
@@ -170,6 +194,10 @@ import { TextDetailComponent } from './text-detail/text-detail.component'
 	],
 	exports: [
 		// insertion point for declarations 
+		AnchoredTextsTableComponent,
+		AnchoredTextSortingComponent,
+		AnchoredTextDetailComponent,
+
 		AnimatesTableComponent,
 		AnimateSortingComponent,
 		AnimateDetailComponent,
@@ -190,9 +218,17 @@ import { TextDetailComponent } from './text-detail/text-detail.component'
 		LineSortingComponent,
 		LineDetailComponent,
 
+		LinksTableComponent,
+		LinkSortingComponent,
+		LinkDetailComponent,
+
 		PathsTableComponent,
 		PathSortingComponent,
 		PathDetailComponent,
+
+		PointsTableComponent,
+		PointSortingComponent,
+		PointDetailComponent,
 
 		PolygonesTableComponent,
 		PolygoneSortingComponent,

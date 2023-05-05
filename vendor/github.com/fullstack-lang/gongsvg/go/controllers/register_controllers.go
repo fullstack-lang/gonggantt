@@ -41,6 +41,13 @@ type ValidationError struct {
 func registerControllers(r *gin.Engine) {
 	v1 := r.Group("/api/github.com/fullstack-lang/gongsvg/go")
 	{ // insertion point for registrations
+		v1.GET("/v1/anchoredtexts", GetController().GetAnchoredTexts)
+		v1.GET("/v1/anchoredtexts/:id", GetController().GetAnchoredText)
+		v1.POST("/v1/anchoredtexts", GetController().PostAnchoredText)
+		v1.PATCH("/v1/anchoredtexts/:id", GetController().UpdateAnchoredText)
+		v1.PUT("/v1/anchoredtexts/:id", GetController().UpdateAnchoredText)
+		v1.DELETE("/v1/anchoredtexts/:id", GetController().DeleteAnchoredText)
+
 		v1.GET("/v1/animates", GetController().GetAnimates)
 		v1.GET("/v1/animates/:id", GetController().GetAnimate)
 		v1.POST("/v1/animates", GetController().PostAnimate)
@@ -76,12 +83,26 @@ func registerControllers(r *gin.Engine) {
 		v1.PUT("/v1/lines/:id", GetController().UpdateLine)
 		v1.DELETE("/v1/lines/:id", GetController().DeleteLine)
 
+		v1.GET("/v1/links", GetController().GetLinks)
+		v1.GET("/v1/links/:id", GetController().GetLink)
+		v1.POST("/v1/links", GetController().PostLink)
+		v1.PATCH("/v1/links/:id", GetController().UpdateLink)
+		v1.PUT("/v1/links/:id", GetController().UpdateLink)
+		v1.DELETE("/v1/links/:id", GetController().DeleteLink)
+
 		v1.GET("/v1/paths", GetController().GetPaths)
 		v1.GET("/v1/paths/:id", GetController().GetPath)
 		v1.POST("/v1/paths", GetController().PostPath)
 		v1.PATCH("/v1/paths/:id", GetController().UpdatePath)
 		v1.PUT("/v1/paths/:id", GetController().UpdatePath)
 		v1.DELETE("/v1/paths/:id", GetController().DeletePath)
+
+		v1.GET("/v1/points", GetController().GetPoints)
+		v1.GET("/v1/points/:id", GetController().GetPoint)
+		v1.POST("/v1/points", GetController().PostPoint)
+		v1.PATCH("/v1/points/:id", GetController().UpdatePoint)
+		v1.PUT("/v1/points/:id", GetController().UpdatePoint)
+		v1.DELETE("/v1/points/:id", GetController().DeletePoint)
 
 		v1.GET("/v1/polygones", GetController().GetPolygones)
 		v1.GET("/v1/polygones/:id", GetController().GetPolygone)

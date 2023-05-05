@@ -16,6 +16,12 @@ export * from './lib/push_from_front_nb.service'
 export * from './lib/route-service'
 
 
+export * from './lib/anchoredtext-detail/anchoredtext-detail.component'
+export * from './lib/anchoredtext-sorting/anchoredtext-sorting.component'
+export * from './lib/anchoredtexts-table/anchoredtexts-table.component'
+export * from './lib/anchoredtext-db'
+export * from './lib/anchoredtext.service'
+
 export * from './lib/animate-detail/animate-detail.component'
 export * from './lib/animate-sorting/animate-sorting.component'
 export * from './lib/animates-table/animates-table.component'
@@ -46,11 +52,23 @@ export * from './lib/lines-table/lines-table.component'
 export * from './lib/line-db'
 export * from './lib/line.service'
 
+export * from './lib/link-detail/link-detail.component'
+export * from './lib/link-sorting/link-sorting.component'
+export * from './lib/links-table/links-table.component'
+export * from './lib/link-db'
+export * from './lib/link.service'
+
 export * from './lib/path-detail/path-detail.component'
 export * from './lib/path-sorting/path-sorting.component'
 export * from './lib/paths-table/paths-table.component'
 export * from './lib/path-db'
 export * from './lib/path.service'
+
+export * from './lib/point-detail/point-detail.component'
+export * from './lib/point-sorting/point-sorting.component'
+export * from './lib/points-table/points-table.component'
+export * from './lib/point-db'
+export * from './lib/point.service'
 
 export * from './lib/polygone-detail/polygone-detail.component'
 export * from './lib/polygone-sorting/polygone-sorting.component'
@@ -83,4 +101,9 @@ export * from './lib/text-db'
 export * from './lib/text.service'
 
 
+export * from './lib/AnchorType'
 export * from './lib/ColorType'
+export * from './lib/DrawingState'
+export * from './lib/LinkType'
+export * from './lib/OrientationType'
+export * from './lib/SideType'

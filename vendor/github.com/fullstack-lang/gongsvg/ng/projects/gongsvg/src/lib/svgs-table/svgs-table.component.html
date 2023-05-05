@@ -25,6 +25,27 @@
                 {{SVG.Name}}
             </td>
         </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="DrawingState">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> DrawingState </th>
+            <td mat-cell *matCellDef="let SVG">
+                {{SVG.DrawingState}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="StartRect">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> StartRect </th>
+            <td mat-cell *matCellDef="let SVG">
+                {{ SVG.StartRect ? SVG.StartRect.Name : ''}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="EndRect">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> EndRect </th>
+            <td mat-cell *matCellDef="let SVG">
+                {{ SVG.EndRect ? SVG.EndRect.Name : ''}}
+            </td>
+        </ng-container>
 
         <ng-container matColumnDef="ID" sticky>
             <th mat-header-cell *matHeaderCellDef mat-sort-header> ID. </th>

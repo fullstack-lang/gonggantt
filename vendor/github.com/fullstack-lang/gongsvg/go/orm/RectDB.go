@@ -97,6 +97,9 @@ type RectDB struct {
 	// Declation for basic field rectDB.StrokeDashArray
 	StrokeDashArray_Data sql.NullString
 
+	// Declation for basic field rectDB.StrokeDashArrayWhenSelected
+	StrokeDashArrayWhenSelected_Data sql.NullString
+
 	// Declation for basic field rectDB.Transform
 	Transform_Data sql.NullString
 
@@ -108,13 +111,37 @@ type RectDB struct {
 	// provide the sql storage for the boolan
 	IsSelected_Data sql.NullBool
 
-	// Declation for basic field rectDB.CanHaveHorizontalHandles
+	// Declation for basic field rectDB.CanHaveLeftHandle
 	// provide the sql storage for the boolan
-	CanHaveHorizontalHandles_Data sql.NullBool
+	CanHaveLeftHandle_Data sql.NullBool
 
-	// Declation for basic field rectDB.HasHorizontalHandles
+	// Declation for basic field rectDB.HasLeftHandle
 	// provide the sql storage for the boolan
-	HasHorizontalHandles_Data sql.NullBool
+	HasLeftHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.CanHaveRightHandle
+	// provide the sql storage for the boolan
+	CanHaveRightHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.HasRightHandle
+	// provide the sql storage for the boolan
+	HasRightHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.CanHaveTopHandle
+	// provide the sql storage for the boolan
+	CanHaveTopHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.HasTopHandle
+	// provide the sql storage for the boolan
+	HasTopHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.CanHaveBottomHandle
+	// provide the sql storage for the boolan
+	CanHaveBottomHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.HasBottomHandle
+	// provide the sql storage for the boolan
+	HasBottomHandle_Data sql.NullBool
 
 	// Declation for basic field rectDB.CanMoveHorizontaly
 	// provide the sql storage for the boolan
@@ -166,19 +193,33 @@ type RectWOP struct {
 
 	StrokeDashArray string `xlsx:"11"`
 
-	Transform string `xlsx:"12"`
+	StrokeDashArrayWhenSelected string `xlsx:"12"`
 
-	IsSelectable bool `xlsx:"13"`
+	Transform string `xlsx:"13"`
 
-	IsSelected bool `xlsx:"14"`
+	IsSelectable bool `xlsx:"14"`
 
-	CanHaveHorizontalHandles bool `xlsx:"15"`
+	IsSelected bool `xlsx:"15"`
 
-	HasHorizontalHandles bool `xlsx:"16"`
+	CanHaveLeftHandle bool `xlsx:"16"`
 
-	CanMoveHorizontaly bool `xlsx:"17"`
+	HasLeftHandle bool `xlsx:"17"`
 
-	CanMoveVerticaly bool `xlsx:"18"`
+	CanHaveRightHandle bool `xlsx:"18"`
+
+	HasRightHandle bool `xlsx:"19"`
+
+	CanHaveTopHandle bool `xlsx:"20"`
+
+	HasTopHandle bool `xlsx:"21"`
+
+	CanHaveBottomHandle bool `xlsx:"22"`
+
+	HasBottomHandle bool `xlsx:"23"`
+
+	CanMoveHorizontaly bool `xlsx:"24"`
+
+	CanMoveVerticaly bool `xlsx:"25"`
 	// insertion for WOP pointer fields
 }
 
@@ -196,11 +237,18 @@ var Rect_Fields = []string{
 	"Stroke",
 	"StrokeWidth",
 	"StrokeDashArray",
+	"StrokeDashArrayWhenSelected",
 	"Transform",
 	"IsSelectable",
 	"IsSelected",
-	"CanHaveHorizontalHandles",
-	"HasHorizontalHandles",
+	"CanHaveLeftHandle",
+	"HasLeftHandle",
+	"CanHaveRightHandle",
+	"HasRightHandle",
+	"CanHaveTopHandle",
+	"HasTopHandle",
+	"CanHaveBottomHandle",
+	"HasBottomHandle",
 	"CanMoveHorizontaly",
 	"CanMoveVerticaly",
 }
@@ -542,6 +590,9 @@ func (rectDB *RectDB) CopyBasicFieldsFromRect(rect *models.Rect) {
 	rectDB.StrokeDashArray_Data.String = rect.StrokeDashArray
 	rectDB.StrokeDashArray_Data.Valid = true
 
+	rectDB.StrokeDashArrayWhenSelected_Data.String = rect.StrokeDashArrayWhenSelected
+	rectDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	rectDB.Transform_Data.String = rect.Transform
 	rectDB.Transform_Data.Valid = true
 
@@ -551,11 +602,29 @@ func (rectDB *RectDB) CopyBasicFieldsFromRect(rect *models.Rect) {
 	rectDB.IsSelected_Data.Bool = rect.IsSelected
 	rectDB.IsSelected_Data.Valid = true
 
-	rectDB.CanHaveHorizontalHandles_Data.Bool = rect.CanHaveHorizontalHandles
-	rectDB.CanHaveHorizontalHandles_Data.Valid = true
+	rectDB.CanHaveLeftHandle_Data.Bool = rect.CanHaveLeftHandle
+	rectDB.CanHaveLeftHandle_Data.Valid = true
 
-	rectDB.HasHorizontalHandles_Data.Bool = rect.HasHorizontalHandles
-	rectDB.HasHorizontalHandles_Data.Valid = true
+	rectDB.HasLeftHandle_Data.Bool = rect.HasLeftHandle
+	rectDB.HasLeftHandle_Data.Valid = true
+
+	rectDB.CanHaveRightHandle_Data.Bool = rect.CanHaveRightHandle
+	rectDB.CanHaveRightHandle_Data.Valid = true
+
+	rectDB.HasRightHandle_Data.Bool = rect.HasRightHandle
+	rectDB.HasRightHandle_Data.Valid = true
+
+	rectDB.CanHaveTopHandle_Data.Bool = rect.CanHaveTopHandle
+	rectDB.CanHaveTopHandle_Data.Valid = true
+
+	rectDB.HasTopHandle_Data.Bool = rect.HasTopHandle
+	rectDB.HasTopHandle_Data.Valid = true
+
+	rectDB.CanHaveBottomHandle_Data.Bool = rect.CanHaveBottomHandle
+	rectDB.CanHaveBottomHandle_Data.Valid = true
+
+	rectDB.HasBottomHandle_Data.Bool = rect.HasBottomHandle
+	rectDB.HasBottomHandle_Data.Valid = true
 
 	rectDB.CanMoveHorizontaly_Data.Bool = rect.CanMoveHorizontaly
 	rectDB.CanMoveHorizontaly_Data.Valid = true
@@ -601,6 +670,9 @@ func (rectDB *RectDB) CopyBasicFieldsFromRectWOP(rect *RectWOP) {
 	rectDB.StrokeDashArray_Data.String = rect.StrokeDashArray
 	rectDB.StrokeDashArray_Data.Valid = true
 
+	rectDB.StrokeDashArrayWhenSelected_Data.String = rect.StrokeDashArrayWhenSelected
+	rectDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	rectDB.Transform_Data.String = rect.Transform
 	rectDB.Transform_Data.Valid = true
 
@@ -610,11 +682,29 @@ func (rectDB *RectDB) CopyBasicFieldsFromRectWOP(rect *RectWOP) {
 	rectDB.IsSelected_Data.Bool = rect.IsSelected
 	rectDB.IsSelected_Data.Valid = true
 
-	rectDB.CanHaveHorizontalHandles_Data.Bool = rect.CanHaveHorizontalHandles
-	rectDB.CanHaveHorizontalHandles_Data.Valid = true
+	rectDB.CanHaveLeftHandle_Data.Bool = rect.CanHaveLeftHandle
+	rectDB.CanHaveLeftHandle_Data.Valid = true
 
-	rectDB.HasHorizontalHandles_Data.Bool = rect.HasHorizontalHandles
-	rectDB.HasHorizontalHandles_Data.Valid = true
+	rectDB.HasLeftHandle_Data.Bool = rect.HasLeftHandle
+	rectDB.HasLeftHandle_Data.Valid = true
+
+	rectDB.CanHaveRightHandle_Data.Bool = rect.CanHaveRightHandle
+	rectDB.CanHaveRightHandle_Data.Valid = true
+
+	rectDB.HasRightHandle_Data.Bool = rect.HasRightHandle
+	rectDB.HasRightHandle_Data.Valid = true
+
+	rectDB.CanHaveTopHandle_Data.Bool = rect.CanHaveTopHandle
+	rectDB.CanHaveTopHandle_Data.Valid = true
+
+	rectDB.HasTopHandle_Data.Bool = rect.HasTopHandle
+	rectDB.HasTopHandle_Data.Valid = true
+
+	rectDB.CanHaveBottomHandle_Data.Bool = rect.CanHaveBottomHandle
+	rectDB.CanHaveBottomHandle_Data.Valid = true
+
+	rectDB.HasBottomHandle_Data.Bool = rect.HasBottomHandle
+	rectDB.HasBottomHandle_Data.Valid = true
 
 	rectDB.CanMoveHorizontaly_Data.Bool = rect.CanMoveHorizontaly
 	rectDB.CanMoveHorizontaly_Data.Valid = true
@@ -637,11 +727,18 @@ func (rectDB *RectDB) CopyBasicFieldsToRect(rect *models.Rect) {
 	rect.Stroke = rectDB.Stroke_Data.String
 	rect.StrokeWidth = rectDB.StrokeWidth_Data.Float64
 	rect.StrokeDashArray = rectDB.StrokeDashArray_Data.String
+	rect.StrokeDashArrayWhenSelected = rectDB.StrokeDashArrayWhenSelected_Data.String
 	rect.Transform = rectDB.Transform_Data.String
 	rect.IsSelectable = rectDB.IsSelectable_Data.Bool
 	rect.IsSelected = rectDB.IsSelected_Data.Bool
-	rect.CanHaveHorizontalHandles = rectDB.CanHaveHorizontalHandles_Data.Bool
-	rect.HasHorizontalHandles = rectDB.HasHorizontalHandles_Data.Bool
+	rect.CanHaveLeftHandle = rectDB.CanHaveLeftHandle_Data.Bool
+	rect.HasLeftHandle = rectDB.HasLeftHandle_Data.Bool
+	rect.CanHaveRightHandle = rectDB.CanHaveRightHandle_Data.Bool
+	rect.HasRightHandle = rectDB.HasRightHandle_Data.Bool
+	rect.CanHaveTopHandle = rectDB.CanHaveTopHandle_Data.Bool
+	rect.HasTopHandle = rectDB.HasTopHandle_Data.Bool
+	rect.CanHaveBottomHandle = rectDB.CanHaveBottomHandle_Data.Bool
+	rect.HasBottomHandle = rectDB.HasBottomHandle_Data.Bool
 	rect.CanMoveHorizontaly = rectDB.CanMoveHorizontaly_Data.Bool
 	rect.CanMoveVerticaly = rectDB.CanMoveVerticaly_Data.Bool
 }
@@ -661,11 +758,18 @@ func (rectDB *RectDB) CopyBasicFieldsToRectWOP(rect *RectWOP) {
 	rect.Stroke = rectDB.Stroke_Data.String
 	rect.StrokeWidth = rectDB.StrokeWidth_Data.Float64
 	rect.StrokeDashArray = rectDB.StrokeDashArray_Data.String
+	rect.StrokeDashArrayWhenSelected = rectDB.StrokeDashArrayWhenSelected_Data.String
 	rect.Transform = rectDB.Transform_Data.String
 	rect.IsSelectable = rectDB.IsSelectable_Data.Bool
 	rect.IsSelected = rectDB.IsSelected_Data.Bool
-	rect.CanHaveHorizontalHandles = rectDB.CanHaveHorizontalHandles_Data.Bool
-	rect.HasHorizontalHandles = rectDB.HasHorizontalHandles_Data.Bool
+	rect.CanHaveLeftHandle = rectDB.CanHaveLeftHandle_Data.Bool
+	rect.HasLeftHandle = rectDB.HasLeftHandle_Data.Bool
+	rect.CanHaveRightHandle = rectDB.CanHaveRightHandle_Data.Bool
+	rect.HasRightHandle = rectDB.HasRightHandle_Data.Bool
+	rect.CanHaveTopHandle = rectDB.CanHaveTopHandle_Data.Bool
+	rect.HasTopHandle = rectDB.HasTopHandle_Data.Bool
+	rect.CanHaveBottomHandle = rectDB.CanHaveBottomHandle_Data.Bool
+	rect.HasBottomHandle = rectDB.HasBottomHandle_Data.Bool
 	rect.CanMoveHorizontaly = rectDB.CanMoveHorizontaly_Data.Bool
 	rect.CanMoveVerticaly = rectDB.CanMoveVerticaly_Data.Bool
 }

@@ -128,6 +128,19 @@
             </button>
         </mat-grid-tile>
     </mat-grid-list>
+    <mat-grid-list cols="5" rowHeight="2:1">
+        <mat-grid-tile [colspan]="3">
+            <button mat-raised-button (click)="openReverseSelection('Link', 'Layer_LinksDBID', 'ONE_MANY_ASSOCIATION_MODE', '', '', '')">Links</button>
+        </mat-grid-tile>
+        <!-- insertion point for the button of the MANY_MANY association-->
+        <mat-grid-tile>
+            <button mat-raised-button (click)="openDragAndDropOrdering('Link', 'Layer_LinksDBID')">
+                <mat-icon>
+                    shuffle
+                </mat-icon>
+            </button>
+        </mat-grid-tile>
+    </mat-grid-list>
     <mat-form-field class="detail-full-width">
         <mat-label>(SVG) Layers</mat-label>
         <mat-select [compareWith]="compareObjects" [(ngModel)]="layer.SVG_Layers_reverse" [ngModelOptions]="{standalone: true}">

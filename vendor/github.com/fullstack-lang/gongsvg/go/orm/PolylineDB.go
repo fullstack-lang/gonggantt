@@ -85,6 +85,9 @@ type PolylineDB struct {
 	// Declation for basic field polylineDB.StrokeDashArray
 	StrokeDashArray_Data sql.NullString
 
+	// Declation for basic field polylineDB.StrokeDashArrayWhenSelected
+	StrokeDashArrayWhenSelected_Data sql.NullString
+
 	// Declation for basic field polylineDB.Transform
 	Transform_Data sql.NullString
 	// encoding of pointers
@@ -122,7 +125,9 @@ type PolylineWOP struct {
 
 	StrokeDashArray string `xlsx:"7"`
 
-	Transform string `xlsx:"8"`
+	StrokeDashArrayWhenSelected string `xlsx:"8"`
+
+	Transform string `xlsx:"9"`
 	// insertion for WOP pointer fields
 }
 
@@ -136,6 +141,7 @@ var Polyline_Fields = []string{
 	"Stroke",
 	"StrokeWidth",
 	"StrokeDashArray",
+	"StrokeDashArrayWhenSelected",
 	"Transform",
 }
 
@@ -464,6 +470,9 @@ func (polylineDB *PolylineDB) CopyBasicFieldsFromPolyline(polyline *models.Polyl
 	polylineDB.StrokeDashArray_Data.String = polyline.StrokeDashArray
 	polylineDB.StrokeDashArray_Data.Valid = true
 
+	polylineDB.StrokeDashArrayWhenSelected_Data.String = polyline.StrokeDashArrayWhenSelected
+	polylineDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	polylineDB.Transform_Data.String = polyline.Transform
 	polylineDB.Transform_Data.Valid = true
 }
@@ -493,6 +502,9 @@ func (polylineDB *PolylineDB) CopyBasicFieldsFromPolylineWOP(polyline *PolylineW
 	polylineDB.StrokeDashArray_Data.String = polyline.StrokeDashArray
 	polylineDB.StrokeDashArray_Data.Valid = true
 
+	polylineDB.StrokeDashArrayWhenSelected_Data.String = polyline.StrokeDashArrayWhenSelected
+	polylineDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	polylineDB.Transform_Data.String = polyline.Transform
 	polylineDB.Transform_Data.Valid = true
 }
@@ -507,6 +519,7 @@ func (polylineDB *PolylineDB) CopyBasicFieldsToPolyline(polyline *models.Polylin
 	polyline.Stroke = polylineDB.Stroke_Data.String
 	polyline.StrokeWidth = polylineDB.StrokeWidth_Data.Float64
 	polyline.StrokeDashArray = polylineDB.StrokeDashArray_Data.String
+	polyline.StrokeDashArrayWhenSelected = polylineDB.StrokeDashArrayWhenSelected_Data.String
 	polyline.Transform = polylineDB.Transform_Data.String
 }
 
@@ -521,6 +534,7 @@ func (polylineDB *PolylineDB) CopyBasicFieldsToPolylineWOP(polyline *PolylineWOP
 	polyline.Stroke = polylineDB.Stroke_Data.String
 	polyline.StrokeWidth = polylineDB.StrokeWidth_Data.Float64
 	polyline.StrokeDashArray = polylineDB.StrokeDashArray_Data.String
+	polyline.StrokeDashArrayWhenSelected = polylineDB.StrokeDashArrayWhenSelected_Data.String
 	polyline.Transform = polylineDB.Transform_Data.String
 }
 

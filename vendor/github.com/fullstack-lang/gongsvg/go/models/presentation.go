@@ -1,11 +1,12 @@
 package models
 
 type Presentation struct {
-	Color           string
-	FillOpacity     float64
-	Stroke          string
-	StrokeWidth     float64
-	StrokeDashArray string
+	Color                       string
+	FillOpacity                 float64
+	Stroke                      string
+	StrokeWidth                 float64
+	StrokeDashArray             string
+	StrokeDashArrayWhenSelected string
 
 	// Transform is a string componding SVG transform
 	//

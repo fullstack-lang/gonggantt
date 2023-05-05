@@ -93,6 +93,9 @@ export class PathsTableComponent implements OnInit {
         case 'StrokeDashArray':
           return pathDB.StrokeDashArray;
 
+        case 'StrokeDashArrayWhenSelected':
+          return pathDB.StrokeDashArrayWhenSelected;
+
         case 'Transform':
           return pathDB.Transform;
 
@@ -124,6 +127,7 @@ export class PathsTableComponent implements OnInit {
       mergedContent += pathDB.Stroke.toLowerCase()
       mergedContent += pathDB.StrokeWidth.toString()
       mergedContent += pathDB.StrokeDashArray.toLowerCase()
+      mergedContent += pathDB.StrokeDashArrayWhenSelected.toLowerCase()
       mergedContent += pathDB.Transform.toLowerCase()
       if (pathDB.Layer_PathsDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Layers.get(pathDB.Layer_PathsDBID.Int64)!.Name.toLowerCase()
@@ -190,6 +194,7 @@ export class PathsTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Paths",
       ]
@@ -202,6 +207,7 @@ export class PathsTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Paths",
       ]

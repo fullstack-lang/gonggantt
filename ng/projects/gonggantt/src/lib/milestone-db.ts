@@ -6,6 +6,9 @@ import { GanttDB } from './gantt-db'
 import { NullInt64 } from './null-int64'
 
 export class MilestoneDB {
+
+	static GONGSTRUCT_NAME = "Milestone"
+
 	CreatedAt?: string
 	DeletedAt?: string
 	ID: number = 0

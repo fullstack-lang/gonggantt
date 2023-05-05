@@ -128,7 +128,7 @@ export class RectService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         rectdb.Layer_Rects_reverse = _Layer_Rects_reverse
-        this.log(`updated rectdb id=${rectdb.ID}`)
+        // this.log(`updated rectdb id=${rectdb.ID}`)
       }),
       catchError(this.handleError<RectDB>('updateRect'))
     );

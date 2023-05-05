@@ -193,7 +193,7 @@
 				"work",
 				"edit",
 				"-dropuse",
-				"gongsvg"
+				"gonggantt"
 			],
 			"group": "build"
 		},

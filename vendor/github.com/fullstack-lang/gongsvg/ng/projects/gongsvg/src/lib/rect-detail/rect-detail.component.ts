@@ -37,8 +37,14 @@ export class RectDetailComponent implements OnInit {
 	// insertion point for declarations
 	IsSelectableFormControl: UntypedFormControl = new UntypedFormControl(false);
 	IsSelectedFormControl: UntypedFormControl = new UntypedFormControl(false);
-	CanHaveHorizontalHandlesFormControl: UntypedFormControl = new UntypedFormControl(false);
-	HasHorizontalHandlesFormControl: UntypedFormControl = new UntypedFormControl(false);
+	CanHaveLeftHandleFormControl: UntypedFormControl = new UntypedFormControl(false);
+	HasLeftHandleFormControl: UntypedFormControl = new UntypedFormControl(false);
+	CanHaveRightHandleFormControl: UntypedFormControl = new UntypedFormControl(false);
+	HasRightHandleFormControl: UntypedFormControl = new UntypedFormControl(false);
+	CanHaveTopHandleFormControl: UntypedFormControl = new UntypedFormControl(false);
+	HasTopHandleFormControl: UntypedFormControl = new UntypedFormControl(false);
+	CanHaveBottomHandleFormControl: UntypedFormControl = new UntypedFormControl(false);
+	HasBottomHandleFormControl: UntypedFormControl = new UntypedFormControl(false);
 	CanMoveHorizontalyFormControl: UntypedFormControl = new UntypedFormControl(false);
 	CanMoveVerticalyFormControl: UntypedFormControl = new UntypedFormControl(false);
 
@@ -151,8 +157,14 @@ export class RectDetailComponent implements OnInit {
 				// insertion point for recovery of form controls value for bool fields
 				this.IsSelectableFormControl.setValue(this.rect.IsSelectable)
 				this.IsSelectedFormControl.setValue(this.rect.IsSelected)
-				this.CanHaveHorizontalHandlesFormControl.setValue(this.rect.CanHaveHorizontalHandles)
-				this.HasHorizontalHandlesFormControl.setValue(this.rect.HasHorizontalHandles)
+				this.CanHaveLeftHandleFormControl.setValue(this.rect.CanHaveLeftHandle)
+				this.HasLeftHandleFormControl.setValue(this.rect.HasLeftHandle)
+				this.CanHaveRightHandleFormControl.setValue(this.rect.CanHaveRightHandle)
+				this.HasRightHandleFormControl.setValue(this.rect.HasRightHandle)
+				this.CanHaveTopHandleFormControl.setValue(this.rect.CanHaveTopHandle)
+				this.HasTopHandleFormControl.setValue(this.rect.HasTopHandle)
+				this.CanHaveBottomHandleFormControl.setValue(this.rect.CanHaveBottomHandle)
+				this.HasBottomHandleFormControl.setValue(this.rect.HasBottomHandle)
 				this.CanMoveHorizontalyFormControl.setValue(this.rect.CanMoveHorizontaly)
 				this.CanMoveVerticalyFormControl.setValue(this.rect.CanMoveVerticaly)
 			}
@@ -169,8 +181,14 @@ export class RectDetailComponent implements OnInit {
 		// insertion point for translation/nullation of each field
 		this.rect.IsSelectable = this.IsSelectableFormControl.value
 		this.rect.IsSelected = this.IsSelectedFormControl.value
-		this.rect.CanHaveHorizontalHandles = this.CanHaveHorizontalHandlesFormControl.value
-		this.rect.HasHorizontalHandles = this.HasHorizontalHandlesFormControl.value
+		this.rect.CanHaveLeftHandle = this.CanHaveLeftHandleFormControl.value
+		this.rect.HasLeftHandle = this.HasLeftHandleFormControl.value
+		this.rect.CanHaveRightHandle = this.CanHaveRightHandleFormControl.value
+		this.rect.HasRightHandle = this.HasRightHandleFormControl.value
+		this.rect.CanHaveTopHandle = this.CanHaveTopHandleFormControl.value
+		this.rect.HasTopHandle = this.HasTopHandleFormControl.value
+		this.rect.CanHaveBottomHandle = this.CanHaveBottomHandleFormControl.value
+		this.rect.HasBottomHandle = this.HasBottomHandleFormControl.value
 		this.rect.CanMoveHorizontaly = this.CanMoveHorizontalyFormControl.value
 		this.rect.CanMoveVerticaly = this.CanMoveVerticalyFormControl.value
 
