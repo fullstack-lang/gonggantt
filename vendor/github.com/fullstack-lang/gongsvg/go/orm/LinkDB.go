@@ -368,6 +368,25 @@ func (backRepoLink *BackRepoLinkStruct) CommitPhaseTwoInstance(backRepo *BackRep
 			}
 		}
 
+		// This loop encodes the slice of pointers link.TextAtArrowStart into the back repo.
+		// Each back repo instance at the end of the association encode the ID of the association start
+		// into a dedicated field for coding the association. The back repo instance is then saved to the db
+		for idx, anchoredtextAssocEnd := range link.TextAtArrowStart {
+
+			// get the back repo instance at the association end
+			anchoredtextAssocEnd_DB :=
+				backRepo.BackRepoAnchoredText.GetAnchoredTextDBFromAnchoredTextPtr(anchoredtextAssocEnd)
+
+			// encode reverse pointer in the association end back repo instance
+			anchoredtextAssocEnd_DB.Link_TextAtArrowStartDBID.Int64 = int64(linkDB.ID)
+			anchoredtextAssocEnd_DB.Link_TextAtArrowStartDBID.Valid = true
+			anchoredtextAssocEnd_DB.Link_TextAtArrowStartDBID_Index.Int64 = int64(idx)
+			anchoredtextAssocEnd_DB.Link_TextAtArrowStartDBID_Index.Valid = true
+			if q := backRepoLink.db.Save(anchoredtextAssocEnd_DB); q.Error != nil {
+				return q.Error
+			}
+		}
+
 		// This loop encodes the slice of pointers link.ControlPoints into the back repo.
 		// Each back repo instance at the end of the association encode the ID of the association start
 		// into a dedicated field for coding the association. The back repo instance is then saved to the db
@@ -527,6 +546,33 @@ func (backRepoLink *BackRepoLinkStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 		anchoredtextDB_j := backRepo.BackRepoAnchoredText.Map_AnchoredTextDBID_AnchoredTextDB[anchoredtextDB_j_ID]
 
 		return anchoredtextDB_i.Link_TextAtArrowEndDBID_Index.Int64 < anchoredtextDB_j.Link_TextAtArrowEndDBID_Index.Int64
+	})
+
+	// This loop redeem link.TextAtArrowStart in the stage from the encode in the back repo
+	// It parses all AnchoredTextDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// it appends the stage instance
+	// 1. reset the slice
+	link.TextAtArrowStart = link.TextAtArrowStart[:0]
+	// 2. loop all instances in the type in the association end
+	for _, anchoredtextDB_AssocEnd := range backRepo.BackRepoAnchoredText.Map_AnchoredTextDBID_AnchoredTextDB {
+		// 3. Does the ID encoding at the end and the ID at the start matches ?
+		if anchoredtextDB_AssocEnd.Link_TextAtArrowStartDBID.Int64 == int64(linkDB.ID) {
+			// 4. fetch the associated instance in the stage
+			anchoredtext_AssocEnd := backRepo.BackRepoAnchoredText.Map_AnchoredTextDBID_AnchoredTextPtr[anchoredtextDB_AssocEnd.ID]
+			// 5. append it the association slice
+			link.TextAtArrowStart = append(link.TextAtArrowStart, anchoredtext_AssocEnd)
+		}
+	}
+
+	// sort the array according to the order
+	sort.Slice(link.TextAtArrowStart, func(i, j int) bool {
+		anchoredtextDB_i_ID := backRepo.BackRepoAnchoredText.Map_AnchoredTextPtr_AnchoredTextDBID[link.TextAtArrowStart[i]]
+		anchoredtextDB_j_ID := backRepo.BackRepoAnchoredText.Map_AnchoredTextPtr_AnchoredTextDBID[link.TextAtArrowStart[j]]
+
+		anchoredtextDB_i := backRepo.BackRepoAnchoredText.Map_AnchoredTextDBID_AnchoredTextDB[anchoredtextDB_i_ID]
+		anchoredtextDB_j := backRepo.BackRepoAnchoredText.Map_AnchoredTextDBID_AnchoredTextDB[anchoredtextDB_j_ID]
+
+		return anchoredtextDB_i.Link_TextAtArrowStartDBID_Index.Int64 < anchoredtextDB_j.Link_TextAtArrowStartDBID_Index.Int64
 	})
 
 	// This loop redeem link.ControlPoints in the stage from the encode in the back repo

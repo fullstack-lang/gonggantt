@@ -1,10 +1,10 @@
 <svg *ngIf="nbControlPoints == 0 && this.Link && (!isFloatingOrthogonal)" class="svg">
     <g>
         <line class="overlay" 
-            [attr.x1]="getPosition(Link.Start, Link.StartAnchorType)[0]" 
-            [attr.y1]="getPosition(Link.Start, Link.StartAnchorType)[1]" 
-            [attr.x2]="getPosition(Link.End, Link.EndAnchorType)[0]" 
-            [attr.y2]="getPosition(Link.End, Link.EndAnchorType)[1]"
+            [attr.x1]="getPosition(Link.Start, Link.StartAnchorType, Link.End)[0]" 
+            [attr.y1]="getPosition(Link.Start, Link.StartAnchorType, Link.End)[1]" 
+            [attr.x2]="getPosition(Link.End, Link.EndAnchorType, Link.Start)[0]" 
+            [attr.y2]="getPosition(Link.End, Link.EndAnchorType, Link.Start)[1]"
             [attr.fill]="Link.Color"
             [attr.fill-opacity]="Link.FillOpacity" 
             [attr.stroke]="Link.Stroke" 
@@ -116,32 +116,53 @@
                     [attr.stroke-width]="Link.StrokeWidth"
                     [attr.stroke-dasharray]="Link.StrokeDashArray" 
                 />
+            </ng-container>
+            <ng-container *ngIf="(i == (segments.length - 1))">
                 <ng-container *ngFor='let text of this.Link.TextAtArrowEnd!; let i = index'>
-                     <rect class="movable-text"
-                        [attr.x]="segment.EndPoint.X + text.X_Offset"
-                        [attr.y]="segment.EndPoint.Y + text.Y_Offset - textHeight"
-                        [attr.width]="textWidth"
-                        [attr.height]="textHeight"
-                        fill="transparant"
-                        fill-opacity="0"
-                        style="cursor: move"
-                        >
-                    </rect>
-
-                     <text class="movable-text"
-                        [attr.x]="segment.EndPoint.X + text.X_Offset" 
-                        [attr.y]="segment.EndPoint.Y + text.Y_Offset" 
-                        [attr.fill]="text.Color"    
-                        [attr.fill-opacity]="text.FillOpacity"
-                        [attr.stroke]="text.Stroke"
-                        [attr.stroke-width]="text.StrokeWidth"
-                        [attr.stroke-dasharray]="text.StrokeDashArray"
-                        [attr.transform]="text.Transform"
-                        
-                        (mousedown)="textAnchoredMouseDown($event, i)" 
-                        (mousemove)="textAnchoredMouseMove($event)" 
-                        (mouseup)="textAnchoredMouseUp($event)"
-                        >{{text.Content}}</text>
+                    <ng-container *ngIf='splitTextIntoLines(text.Content) as lines'>
+                        <text class="movable-text"
+                            [attr.x]="segment.EndPoint.X + text.X_Offset" 
+                            [attr.y]="segment.EndPoint.Y + text.Y_Offset" 
+                            [attr.fill]="text.Color"    
+                            [attr.fill-opacity]="text.FillOpacity"
+                            [attr.stroke]="text.Stroke"
+                            [attr.stroke-width]="text.StrokeWidth"
+                            [attr.stroke-dasharray]="text.StrokeDashArray"
+                            [attr.transform]="text.Transform"
+                            
+                            (mousedown)="textAnchoredMouseDown($event, i, 'POSITION_ON_ARROW_END')" 
+                            (mousemove)="textAnchoredMouseMove($event)" 
+                            (mouseup)="textAnchoredMouseUp($event)"
+                            >
+                            <tspan *ngFor='let line of lines; let j = index' 
+                                [attr.x]="segment.StartPoint.X + text.X_Offset"
+                                [attr.dy]="j > 0 ? '1em' : '0'">{{line}}</tspan>  
+                            </text>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngIf="i == 0">
+                <ng-container *ngFor='let text of this.Link.TextAtArrowStart!; let i = index'>
+                     <ng-container *ngIf='splitTextIntoLines(text.Content) as lines'>
+                        <text class="movable-text"
+                            [attr.x]="segment.StartPoint.X + text.X_Offset" 
+                            [attr.y]="segment.StartPoint.Y + text.Y_Offset" 
+                            [attr.fill]="text.Color"    
+                            [attr.fill-opacity]="text.FillOpacity"
+                            [attr.stroke]="text.Stroke"
+                            [attr.stroke-width]="text.StrokeWidth"
+                            [attr.stroke-dasharray]="text.StrokeDashArray"
+                            [attr.transform]="text.Transform"
+                            
+                            (mousedown)="textAnchoredMouseDown($event, i, 'POSITION_ON_ARROW_START')" 
+                            (mousemove)="textAnchoredMouseMove($event)" 
+                            (mouseup)="textAnchoredMouseUp($event)"
+                            >
+                            <tspan *ngFor='let line of lines; let j = index' 
+                                [attr.x]="segment.StartPoint.X + text.X_Offset"
+                                [attr.dy]="j > 0 ? '1em' : '0'">{{line}}</tspan>                        
+                        </text>
+                    </ng-container>
                 </ng-container>
             </ng-container>
         </ng-container>

@@ -75,6 +75,7 @@ export class LinkService {
     linkdb.Start = new RectDB
     linkdb.End = new RectDB
     linkdb.TextAtArrowEnd = []
+    linkdb.TextAtArrowStart = []
     linkdb.ControlPoints = []
     let _Layer_Links_reverse = linkdb.Layer_Links_reverse
     linkdb.Layer_Links_reverse = new LayerDB
@@ -121,6 +122,7 @@ export class LinkService {
     linkdb.Start = new RectDB
     linkdb.End = new RectDB
     linkdb.TextAtArrowEnd = []
+    linkdb.TextAtArrowStart = []
     linkdb.ControlPoints = []
     let _Layer_Links_reverse = linkdb.Layer_Links_reverse
     linkdb.Layer_Links_reverse = new LayerDB

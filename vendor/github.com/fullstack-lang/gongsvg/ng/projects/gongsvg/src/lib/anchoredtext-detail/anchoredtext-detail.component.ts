@@ -25,6 +25,7 @@ enum AnchoredTextDetailComponentState {
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
 	CREATE_INSTANCE_WITH_ASSOCIATION_Link_TextAtArrowEnd_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_Link_TextAtArrowStart_SET,
 }
 
 @Component({
@@ -98,6 +99,10 @@ export class AnchoredTextDetailComponent implements OnInit {
 						// console.log("AnchoredText" + " is instanciated with back pointer to instance " + this.id + " Link association TextAtArrowEnd")
 						this.state = AnchoredTextDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Link_TextAtArrowEnd_SET
 						break;
+					case "TextAtArrowStart":
+						// console.log("AnchoredText" + " is instanciated with back pointer to instance " + this.id + " Link association TextAtArrowStart")
+						this.state = AnchoredTextDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Link_TextAtArrowStart_SET
+						break;
 					default:
 						console.log(this.originStructFieldName + " is unkown association")
 				}
@@ -138,6 +143,10 @@ export class AnchoredTextDetailComponent implements OnInit {
 						this.anchoredtext = new (AnchoredTextDB)
 						this.anchoredtext.Link_TextAtArrowEnd_reverse = frontRepo.Links.get(this.id)!
 						break;
+					case AnchoredTextDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Link_TextAtArrowStart_SET:
+						this.anchoredtext = new (AnchoredTextDB)
+						this.anchoredtext.Link_TextAtArrowStart_reverse = frontRepo.Links.get(this.id)!
+						break;
 					default:
 						console.log(this.state + " is unkown state")
 				}
@@ -170,6 +179,18 @@ export class AnchoredTextDetailComponent implements OnInit {
 			}
 			this.anchoredtext.Link_TextAtArrowEndDBID_Index.Valid = true
 			this.anchoredtext.Link_TextAtArrowEnd_reverse = new LinkDB // very important, otherwise, circular JSON
+		}
+		if (this.anchoredtext.Link_TextAtArrowStart_reverse != undefined) {
+			if (this.anchoredtext.Link_TextAtArrowStartDBID == undefined) {
+				this.anchoredtext.Link_TextAtArrowStartDBID = new NullInt64
+			}
+			this.anchoredtext.Link_TextAtArrowStartDBID.Int64 = this.anchoredtext.Link_TextAtArrowStart_reverse.ID
+			this.anchoredtext.Link_TextAtArrowStartDBID.Valid = true
+			if (this.anchoredtext.Link_TextAtArrowStartDBID_Index == undefined) {
+				this.anchoredtext.Link_TextAtArrowStartDBID_Index = new NullInt64
+			}
+			this.anchoredtext.Link_TextAtArrowStartDBID_Index.Valid = true
+			this.anchoredtext.Link_TextAtArrowStart_reverse = new LinkDB // very important, otherwise, circular JSON
 		}
 
 		switch (this.state) {

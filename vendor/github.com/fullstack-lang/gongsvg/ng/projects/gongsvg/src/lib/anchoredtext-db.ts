@@ -18,6 +18,7 @@ export class AnchoredTextDB {
 	Content: string = ""
 	X_Offset: number = 0
 	Y_Offset: number = 0
+	FontWeight: string = ""
 	Color: string = ""
 	FillOpacity: number = 0
 	Stroke: string = ""
@@ -31,5 +32,9 @@ export class AnchoredTextDB {
 	Link_TextAtArrowEndDBID: NullInt64 = new NullInt64
 	Link_TextAtArrowEndDBID_Index: NullInt64  = new NullInt64 // store the index of the anchoredtext instance in Link.TextAtArrowEnd
 	Link_TextAtArrowEnd_reverse?: LinkDB 
+
+	Link_TextAtArrowStartDBID: NullInt64 = new NullInt64
+	Link_TextAtArrowStartDBID_Index: NullInt64  = new NullInt64 // store the index of the anchoredtext instance in Link.TextAtArrowStart
+	Link_TextAtArrowStart_reverse?: LinkDB 
 
 }

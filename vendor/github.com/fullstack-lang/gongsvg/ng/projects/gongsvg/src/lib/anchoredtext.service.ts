@@ -74,6 +74,8 @@ export class AnchoredTextService {
     anchoredtextdb.Animates = []
     let _Link_TextAtArrowEnd_reverse = anchoredtextdb.Link_TextAtArrowEnd_reverse
     anchoredtextdb.Link_TextAtArrowEnd_reverse = new LinkDB
+    let _Link_TextAtArrowStart_reverse = anchoredtextdb.Link_TextAtArrowStart_reverse
+    anchoredtextdb.Link_TextAtArrowStart_reverse = new LinkDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -85,6 +87,7 @@ export class AnchoredTextService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         anchoredtextdb.Link_TextAtArrowEnd_reverse = _Link_TextAtArrowEnd_reverse
+        anchoredtextdb.Link_TextAtArrowStart_reverse = _Link_TextAtArrowStart_reverse
         // this.log(`posted anchoredtextdb id=${anchoredtextdb.ID}`)
       }),
       catchError(this.handleError<AnchoredTextDB>('postAnchoredText'))
@@ -117,6 +120,8 @@ export class AnchoredTextService {
     anchoredtextdb.Animates = []
     let _Link_TextAtArrowEnd_reverse = anchoredtextdb.Link_TextAtArrowEnd_reverse
     anchoredtextdb.Link_TextAtArrowEnd_reverse = new LinkDB
+    let _Link_TextAtArrowStart_reverse = anchoredtextdb.Link_TextAtArrowStart_reverse
+    anchoredtextdb.Link_TextAtArrowStart_reverse = new LinkDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -128,6 +133,7 @@ export class AnchoredTextService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         anchoredtextdb.Link_TextAtArrowEnd_reverse = _Link_TextAtArrowEnd_reverse
+        anchoredtextdb.Link_TextAtArrowStart_reverse = _Link_TextAtArrowStart_reverse
         // this.log(`updated anchoredtextdb id=${anchoredtextdb.ID}`)
       }),
       catchError(this.handleError<AnchoredTextDB>('updateAnchoredText'))

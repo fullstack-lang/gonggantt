@@ -1,23 +1,29 @@
-import { AfterViewInit, Component, ElementRef, Input, DoCheck, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, DoCheck, OnInit, SimpleChanges, ViewChild, AfterViewChecked, OnChanges } from '@angular/core';
 import * as gongsvg from 'gongsvg'
 import { Coordinate } from '../rectangle-event.service';
 import { SegmentsParams, Segment, createPoint, drawSegments, Offset } from './draw.segments';
-import { LinkEventService } from '../link-event.service';
 import { Subscription } from 'rxjs';
 import { ShapeMouseEvent } from '../shape.mouse.event';
 import { MouseEventService } from '../mouse-event.service';
+import { compareRectGeometries } from '../compare.rect.geometries'
+
+import { SplitComponent } from 'angular-split'
+import { AngularDragEndEventService } from '../angular-drag-end-event.service';
+import { mouseCoordInComponentRef } from '../mouse.coord.in.component.ref';
+import { drawLineFromRectToB } from '../draw.line.from.rect.to.point';
+import { IsEditableService } from '../is-editable.service';
 
 @Component({
   selector: 'lib-link',
   templateUrl: './link.component.svg',
   styleUrls: ['./link.component.css']
 })
-export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
+export class LinkComponent implements OnInit, AfterViewInit, DoCheck, AfterViewChecked, OnChanges {
 
   @Input() Link?: gongsvg.LinkDB
   @Input() GONG__StackPath: string = ""
 
-  @ViewChild('textElement', { static: false }) textElement: ElementRef | undefined
+  // @ViewChild('textElement', { static: false }) textElement: ElementRef | undefined
   textWidth: number = 0
   textHeight: number = 0
 
@@ -27,14 +33,13 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
   // to compute wether it was a select / dragging event
   dragging = false
   draggedSegment = 0
+  draggedSegmentPositionOnArrow: gongsvg.PositionOnArrowType = gongsvg.PositionOnArrowType.POSITION_ON_ARROW_START
 
   // dragged anchored text
   textDragging = false
   draggedTextIndex = 0
 
   // offset between the cursor at the start and the top left corner
-  offsetX = 0;
-  offsetY = 0;
   distanceMoved = 0
 
   private dragThreshold = 5;
@@ -50,6 +55,15 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
   private subscriptions: Subscription[] = []
 
   // for change detection, we need to store start and end rect
+  previousStart: gongsvg.RectDB | undefined
+  previousEnd: gongsvg.RectDB | undefined
+
+  //
+  // indicate wether the link is being updated
+  // no drawing must happen then
+  linkUpdating: boolean = false
+
+
   previousStartX = 0
   previousStartY = 0
   previousEndX = 0
@@ -58,28 +72,47 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
   constructor(
     private linkService: gongsvg.LinkService,
     private anchoredTextService: gongsvg.AnchoredTextService,
-    private linkEventService: LinkEventService,
+    private angularDragEndEventService: AngularDragEndEventService,
     private mouseEventService: MouseEventService,
     private elementRef: ElementRef,
+    private isEditableService: IsEditableService,
   ) {
 
     this.subscriptions.push(
-      linkEventService.mouseMouseDownEvent$.subscribe(
+      mouseEventService.mouseMouseDownEvent$.subscribe(
         (shapeMouseEvent: ShapeMouseEvent) => {
           this.PointAtMouseDown = structuredClone(shapeMouseEvent.Point)
           this.LinkAtMouseDown = structuredClone(this.Link!)
 
-          if (this.Link!.TextAtArrowEnd && this.Link!.TextAtArrowEnd[0]) {
-            this.AnchoredTextAtMouseDown = structuredClone(this.Link!.TextAtArrowEnd[0])
+          if (this.draggedSegmentPositionOnArrow == gongsvg.PositionOnArrowType.POSITION_ON_ARROW_END) {
+            if (this.Link!.TextAtArrowEnd && this.Link!.TextAtArrowEnd[this.draggedTextIndex]) {
+              this.AnchoredTextAtMouseDown = structuredClone(this.Link!.TextAtArrowEnd[this.draggedTextIndex])
+            }
           }
+          if (this.draggedSegmentPositionOnArrow == gongsvg.PositionOnArrowType.POSITION_ON_ARROW_START) {
+            if (this.Link!.TextAtArrowStart && this.Link!.TextAtArrowStart[this.draggedTextIndex]) {
+              this.AnchoredTextAtMouseDown = structuredClone(this.Link!.TextAtArrowStart[this.draggedTextIndex])
+            }
+          }
+
         })
     )
 
     this.subscriptions.push(
-      linkEventService.mouseMouseMoveEvent$.subscribe(
+      mouseEventService.mouseMouseMoveEvent$.subscribe(
         (shapeMouseEvent: ShapeMouseEvent) => {
 
+          if (!this.isEditableService.getIsEditable()) {
+            return
+          }
+
+          // offSetForNewMidlleSegment denotes the standard distance between
+          // a rect and the middle segment that is created when going from a
+          // two segment link to a three segment link
           const offSetForNewMidlleSegment = 100
+
+          // in order to have middle segment always visible
+          const offsetFromBorderForNewMidlleSegment = 50
 
           if (this.dragging) {
             let segment = this.segments![this.draggedSegment]
@@ -89,71 +122,78 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
               // set up the cursor style
               document.body.style.cursor = 'ns-resize'
 
-              let deltaY = shapeMouseEvent.Point.Y - segment.StartPoint.Y
+              let deltaY = shapeMouseEvent.Point.Y - this.PointAtMouseDown!.Y
               if (this.draggedSegment == 0 && deltaY != 0) {
-                let newRatio = (shapeMouseEvent.Point.Y - this.Link!.Start!.Y) / this.Link!.Start!.Height
-                // console.log("shapeMouseEvent.Point.Y\t\t", shapeMouseEvent.Point.Y)
-                // console.log("this.Link!.Start!.Y\t\t", this.Link!.Start!.Y)
-                // console.log("this.Link!.Start!.Height\t", this.Link!.Start!.Height)
-                // console.log("deltaY\t\t\t\t", deltaY)
-                // console.log("Old ratio\t\t\t", this.Link!.StartRatio)
-                // console.log("New ratio\t\t\t", newRatio)
 
-                if (newRatio < 0 || newRatio > 1) {
-                  let newOrientationRatio = (shapeMouseEvent.Point.X - this.Link!.Start!.X) / this.Link!.Start!.Width
+                let newStartRatio = (shapeMouseEvent.Point.Y - this.previousStart!.Y) / this.previousStart!.Height
+                this.Link!.StartRatio = newStartRatio
 
-                  if (newOrientationRatio >= 0 && newOrientationRatio <= 1) {
-                    if (newRatio < 0) {
+                if (newStartRatio < 0 || newStartRatio > 1) {
+
+                  let nextStartRatio = (shapeMouseEvent.Point.X - this.Link!.Start!.X) / this.Link!.Start!.Width
+
+                  // we swap first segment from horizontal to vertical only if the new ratio
+                  // is within 0 and 1 
+                  if (nextStartRatio >= 0 && nextStartRatio <= 1) {
+
+                    // the cursor is at the left of the start rectangle
+                    if (newStartRatio < 0) {
+
                       // we compute the CornerOffsetRatio in order to have the vertical middle segment
                       // at the left of the End Rect
-                      let targetY_ForVerticalMiddleSegment = this.Link!.Start!.Y - offSetForNewMidlleSegment
+                      let targetY_ForVerticalMiddleSegment = shapeMouseEvent.Point.Y
+                      // Math.max(this.Link!.Start!.Y - offSetForNewMidlleSegment, offsetFromBorderForNewMidlleSegment)
+
                       this.Link!.CornerOffsetRatio = (targetY_ForVerticalMiddleSegment - this.Link!.Start!.Y) / this.Link!.Start!.Height
                     }
-                    if (newRatio > 1) {
-                      let targetY_ForVerticalMiddleSegment = this.Link!.Start!.Y + this.Link!.Start!.Height + offSetForNewMidlleSegment
+
+                    // 
+                    if (newStartRatio > 1) {
+                      let targetY_ForVerticalMiddleSegment = shapeMouseEvent.Point.Y
+
                       this.Link!.CornerOffsetRatio = (targetY_ForVerticalMiddleSegment - this.Link!.Start!.Y) / this.Link!.Start!.Height
+
+                      console.log("this.Link!.CornerOffsetRatio", this.Link!.CornerOffsetRatio)
                     }
                     // switch dragged element to next segment
                     this.draggedSegment = 1
 
-                    newRatio = newOrientationRatio
+                    newStartRatio = nextStartRatio
                     this.Link!.StartOrientation = gongsvg.OrientationType.ORIENTATION_VERTICAL
-                    this.Link!.StartRatio = newRatio
+                    this.Link!.StartRatio = newStartRatio
                     this.drawSegments()
                   } else {
                     document.body.style.cursor = 'not-allowed'
-                    if (newRatio < 0) { newRatio = 0 }
-                    if (newRatio > 1) { newRatio = 1 }
+                    if (newStartRatio < 0) { newStartRatio = 0 }
+                    if (newStartRatio > 1) { newStartRatio = 1 }
                   }
                 }
-
-                this.Link!.StartRatio = newRatio
               }
 
               // last segment
               if (this.draggedSegment == this.segments!.length - 1 && deltaY != 0) {
 
-                let newRatio = (shapeMouseEvent.Point.Y - this.Link!.End!.Y) / this.Link!.End!.Height
+                let newRatio = (shapeMouseEvent.Point.Y - this.previousEnd!.Y) / this.previousEnd!.Height
 
                 if (newRatio < 0 || newRatio > 1) {
-                  let newOrientationRatio = (shapeMouseEvent.Point.X - this.Link!.End!.X) / this.Link!.End!.Width
+                  let nextStartRatio = (shapeMouseEvent.Point.X - this.Link!.End!.X) / this.Link!.End!.Width
 
-                  if (newOrientationRatio >= 0 && newOrientationRatio <= 1) {
+                  if (nextStartRatio >= 0 && nextStartRatio <= 1) {
 
                     if (newRatio < 0) {
                       // we compute the CornerOffsetRatio in order to have the vertical middle segment
                       // at the left of the End Rect
-                      let targetY_ForVerticalMiddleSegment = this.Link!.End!.Y - offSetForNewMidlleSegment
-                      this.Link!.CornerOffsetRatio = (targetY_ForVerticalMiddleSegment - this.Link!.End!.Y) / this.Link!.End!.Height
+                      let targetY_ForVerticalMiddleSegment = shapeMouseEvent.Point.Y
+                      this.Link!.CornerOffsetRatio = (targetY_ForVerticalMiddleSegment - this.Link!.Start!.Y) / this.Link!.Start!.Height
                     }
                     if (newRatio > 1) {
-                      let targetY_ForVerticalMiddleSegment = this.Link!.End!.Y + this.Link!.End!.Height + offSetForNewMidlleSegment
-                      this.Link!.CornerOffsetRatio = (targetY_ForVerticalMiddleSegment - this.Link!.End!.Y) / this.Link!.End!.Height
+                      let targetY_ForVerticalMiddleSegment = shapeMouseEvent.Point.Y
+                      this.Link!.CornerOffsetRatio = (targetY_ForVerticalMiddleSegment - this.Link!.Start!.Y) / this.Link!.Start!.Height
                     }
                     // switch dragged element to previous segment
-                    this.draggedSegment = this.segments!.length - 2
+                    this.draggedSegment = this.segments!.length - 1
 
-                    newRatio = newOrientationRatio
+                    newRatio = nextStartRatio
                     this.Link!.EndOrientation = gongsvg.OrientationType.ORIENTATION_VERTICAL
                     this.Link!.EndRatio = newRatio
                     this.drawSegments()
@@ -168,8 +208,11 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
 
               // middle segment
               if (this.segments!.length == 3 && this.draggedSegment == 1 && deltaY != 0) {
-                let newRatio = (shapeMouseEvent.Point.Y - this.Link!.Start!.Y) / this.Link!.Start!.Height
-                this.Link!.CornerOffsetRatio = newRatio
+
+                let newCornerOffsetRatio =
+                  (shapeMouseEvent.Point.Y - this.Link!.Start!.Y) / this.Link!.Start!.Height
+
+                this.Link!.CornerOffsetRatio = newCornerOffsetRatio
               }
             }
             if (segment.Orientation == gongsvg.OrientationType.ORIENTATION_VERTICAL) {
@@ -177,77 +220,92 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
               // set up the cursor style
               document.body.style.cursor = 'ew-resize'
 
-              let deltaX = shapeMouseEvent.Point.X - segment.StartPoint.X
+              let deltaX = (shapeMouseEvent.Point.X - this.PointAtMouseDown!.X)
+
+              // first segment
               if (this.draggedSegment == 0 && deltaX != 0) {
-                let newRatio = (shapeMouseEvent.Point.X - this.Link!.Start!.X) / this.Link!.Start!.Width
 
-                if (newRatio < 0 || newRatio > 1) {
-                  let newOrientationRatio = (shapeMouseEvent.Point.Y - this.Link!.Start!.Y) / this.Link!.Start!.Height
+                let newStartRatio = (shapeMouseEvent.Point.X - this.previousStart!.X) / this.previousStart!.Width
 
-                  if (newOrientationRatio >= 0 && newOrientationRatio <= 1) {
-                    if (newRatio < 0) {
+                this.Link!.StartRatio = newStartRatio
+
+                // special case where we need to change orientation
+                if (newStartRatio < 0 || newStartRatio > 1) {
+
+                  // we change orientation (horizontal to vertical), therefore we compute the new start ratio
+                  let newStartVerticalRatio = (shapeMouseEvent.Point.Y - this.Link!.Start!.Y) / this.Link!.Start!.Height
+
+                  if (newStartVerticalRatio >= 0 && newStartVerticalRatio <= 1) {
+                    if (newStartRatio < 0) {
                       // we compute the CornerOffsetRatio in order to have the vertical middle segment
                       // at the left of the End Rect
-                      let targetX_ForVerticalMiddleSegment = this.Link!.Start!.X - offSetForNewMidlleSegment
+                      let targetX_ForVerticalMiddleSegment = shapeMouseEvent.Point.X
+
                       this.Link!.CornerOffsetRatio = (targetX_ForVerticalMiddleSegment - this.Link!.Start!.X) / this.Link!.Start!.Width
                     }
-                    if (newRatio > 1) {
-                      let targetX_ForVerticalMiddleSegment = this.Link!.Start!.X + this.Link!.Start!.Width + offSetForNewMidlleSegment
+                    if (newStartRatio > 1) {
+                      let targetX_ForVerticalMiddleSegment = shapeMouseEvent.Point.X
                       this.Link!.CornerOffsetRatio = (targetX_ForVerticalMiddleSegment - this.Link!.Start!.X) / this.Link!.Start!.Width
                     }
 
-                    newRatio = newOrientationRatio
+                    newStartRatio = newStartVerticalRatio
                     this.Link!.StartOrientation = gongsvg.OrientationType.ORIENTATION_HORIZONTAL
-                    this.Link!.StartRatio = newRatio
-                    this.drawSegments()
+                    this.Link!.StartRatio = newStartVerticalRatio
                   } else {
                     document.body.style.cursor = 'not-allowed'
-                    if (newRatio < 0) { newRatio = 0 }
-                    if (newRatio > 1) { newRatio = 1 }
+                    if (newStartRatio < 0) { newStartRatio = 0 }
+                    if (newStartRatio > 1) { newStartRatio = 1 }
                   }
                 }
-                this.Link!.StartRatio = newRatio
+
+                // in all case, we are finished here
+                this.drawSegments()
+                return
               }
 
               // last segment
               if (this.draggedSegment == this.segments!.length - 1 && deltaX != 0) {
 
-                let newRatio = (shapeMouseEvent.Point.X - this.Link!.End!.X) / this.Link!.End!.Width
+                let newEndRatio = (shapeMouseEvent.Point.X - this.previousEnd!.X) / this.previousEnd!.Width
 
-                if (newRatio < 0 || newRatio > 1) {
+                if (newEndRatio < 0 || newEndRatio > 1) {
                   let newOrientationRatio = (shapeMouseEvent.Point.Y - this.Link!.End!.Y) / this.Link!.End!.Height
 
                   if (newOrientationRatio >= 0 && newOrientationRatio <= 1) {
-                    if (newRatio < 0) {
+                    if (newEndRatio < 0) {
                       // we compute the CornerOffsetRatio in order to have the vertical middle segment
                       // at the left of the End Rect
-                      let targetX_ForVerticalMiddleSegment = this.Link!.End!.X - offSetForNewMidlleSegment
+                      let targetX_ForVerticalMiddleSegment =
+                        Math.max(this.Link!.End!.X - offSetForNewMidlleSegment, offsetFromBorderForNewMidlleSegment)
                       this.Link!.CornerOffsetRatio = (targetX_ForVerticalMiddleSegment - this.Link!.Start!.X) / this.Link!.Start!.Width
                     }
-                    if (newRatio > 1) {
-                      let targetX_ForVerticalMiddleSegment = this.Link!.End!.X + this.Link!.End!.Width + offSetForNewMidlleSegment
+                    if (newEndRatio > 1) {
+                      let targetX_ForVerticalMiddleSegment =
+                        Math.max(this.Link!.End!.X + this.Link!.End!.Width + offSetForNewMidlleSegment, offsetFromBorderForNewMidlleSegment)
                       this.Link!.CornerOffsetRatio = (targetX_ForVerticalMiddleSegment - this.Link!.Start!.X) / this.Link!.Start!.Width
                     }
 
-                    newRatio = newOrientationRatio
+                    newEndRatio = newOrientationRatio
                     this.Link!.EndOrientation = gongsvg.OrientationType.ORIENTATION_HORIZONTAL
-                    this.Link!.EndRatio = newRatio
+                    this.Link!.EndRatio = newEndRatio
                     this.drawSegments()
                     // switch dragged element to previous segment
                     this.draggedSegment = this.segments!.length - 1
                   } else {
                     document.body.style.cursor = 'not-allowed'
-                    if (newRatio < 0) { newRatio = 0 }
-                    if (newRatio > 1) { newRatio = 1 }
+                    if (newEndRatio < 0) { newEndRatio = 0 }
+                    if (newEndRatio > 1) { newEndRatio = 1 }
                   }
                 }
-                this.Link!.EndRatio = newRatio
+                this.Link!.EndRatio = newEndRatio
               }
 
               // middle segment
               if (this.segments!.length == 3 && this.draggedSegment == 1 && deltaX != 0) {
-                let newRatio = (shapeMouseEvent.Point.X - this.Link!.Start!.X) / this.Link!.Start!.Width
-                this.Link!.CornerOffsetRatio = newRatio
+
+                let newCornerOffsetRatio = (shapeMouseEvent.Point.X - this.previousStart!.X) / this.previousStart!.Width
+
+                this.Link!.CornerOffsetRatio = newCornerOffsetRatio
               }
             }
             this.drawSegments()
@@ -258,34 +316,26 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
 
             // console.log("Text dragging, deltaX", deltaX, "deltaY", deltaY)
 
-            let text = this.Link!.TextAtArrowEnd![0]
-            text.X_Offset = this.AnchoredTextAtMouseDown!.X_Offset + deltaX
-            text.Y_Offset = this.AnchoredTextAtMouseDown!.Y_Offset + deltaY
+            if (this.draggedSegmentPositionOnArrow == gongsvg.PositionOnArrowType.POSITION_ON_ARROW_END) {
+              let text = this.Link!.TextAtArrowEnd![this.draggedTextIndex]
+              text.X_Offset = this.AnchoredTextAtMouseDown!.X_Offset + deltaX
+              text.Y_Offset = this.AnchoredTextAtMouseDown!.Y_Offset + deltaY
+            }
+            if (this.draggedSegmentPositionOnArrow == gongsvg.PositionOnArrowType.POSITION_ON_ARROW_START) {
+              let text = this.Link!.TextAtArrowStart![this.draggedTextIndex]
+              text.X_Offset = this.AnchoredTextAtMouseDown!.X_Offset + deltaX
+              text.Y_Offset = this.AnchoredTextAtMouseDown!.Y_Offset + deltaY
+            }
+
           }
         })
     )
 
-    // getting event from the background (when the mouse moves faster than the link)
-    this.subscriptions.push(
-      mouseEventService.mouseMouseMoveEvent$.subscribe(
-        (shapeMouseEvent: ShapeMouseEvent) => {
-          this.linkEventService.emitMouseMoveEvent(shapeMouseEvent)
-        }
-      )
-    )
     this.subscriptions.push(
       mouseEventService.mouseMouseUpEvent$.subscribe(
         (shapeMouseEvent: ShapeMouseEvent) => {
-          this.linkEventService.emitMouseUpEvent(shapeMouseEvent)
-        }
-      )
-    )
 
-    this.subscriptions.push(
-      linkEventService.mouseMouseUpEvent$.subscribe(
-        (shapeMouseEvent: ShapeMouseEvent) => {
-
-          if (this.dragging) {
+          if (this.dragging && this.isEditableService.getIsEditable()) {
             document.body.style.cursor = ''
 
             let deltaX = shapeMouseEvent.Point.X - this.PointAtMouseDown!.X
@@ -295,17 +345,26 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
             if (this.distanceMoved < this.dragThreshold) {
               console.log("Link, link selected selected: ", this.Link?.Name)
             } else {
+              this.linkUpdating = true
               this.linkService.updateLink(this.Link!, this.GONG__StackPath).subscribe(
                 link => {
+                  // this.Link = link
+                  this.linkUpdating = false
                   // console.log("Updated", link.ID)
                 }
               )
             }
           }
 
-          if (this.textDragging) {
-            let text = this.Link!.TextAtArrowEnd![0]
-            this.anchoredTextService.updateAnchoredText(text, this.GONG__StackPath).subscribe()
+          if (this.textDragging && this.isEditableService.getIsEditable()) {
+            if (this.draggedSegmentPositionOnArrow == gongsvg.PositionOnArrowType.POSITION_ON_ARROW_END) {
+              let text = this.Link!.TextAtArrowEnd![this.draggedTextIndex]
+              this.anchoredTextService.updateAnchoredText(text, this.GONG__StackPath).subscribe()
+            }
+            if (this.draggedSegmentPositionOnArrow == gongsvg.PositionOnArrowType.POSITION_ON_ARROW_START) {
+              let text = this.Link!.TextAtArrowStart![this.draggedTextIndex]
+              this.anchoredTextService.updateAnchoredText(text, this.GONG__StackPath).subscribe()
+            }
           }
           this.dragging = false
           this.textDragging = false
@@ -332,60 +391,81 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
 
   ngDoCheck(): void {
 
-    if (
-      this.previousStartX != this.Link!.Start!.X ||
-      this.previousStartY != this.Link!.Start!.Y ||
-      this.previousEndX != this.Link!.End!.X ||
-      this.previousEndY != this.Link!.End!.Y) {
+    let hasStartChanged = !compareRectGeometries(this.previousStart!, this.Link!.Start!)
+    let hasEndChanged = !compareRectGeometries(this.previousEnd!, this.Link!.End!)
+    if (hasStartChanged || hasEndChanged) {
       this.drawSegments()
       this.resetPreviousState()
     }
   }
 
+  ngAfterViewChecked() {
+    console.log('Change detection run on MySvgComponent');
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['Link']) {
+      // console.log('Previous value: ', changes['Link'].previousValue);
+      // console.log('Current value: ', changes['Link'].currentValue);
+    }
+  }
+
   resetPreviousState() {
+    this.previousStart = structuredClone(this.Link!.Start!)
+    this.previousEnd = structuredClone(this.Link!.End!)
+
     this.previousStartX = this.Link!.Start!.X
     this.previousStartY = this.Link!.Start!.Y
     this.previousEndX = this.Link!.End!.X
     this.previousEndY = this.Link!.End!.Y
   }
 
-  public getPosition(rect: gongsvg.RectDB | undefined, position: string | undefined): Coordinate {
+  public getPosition(
+    startRect: gongsvg.RectDB | undefined,
+    position: string | undefined,
+    endRect?: gongsvg.RectDB | undefined
+  ): Coordinate {
 
     let coordinate: Coordinate = [0, 0]
 
-    if (rect == undefined || position == undefined) {
+    if (startRect == undefined || position == undefined) {
       return coordinate
     }
 
     switch (position) {
       case gongsvg.AnchorType.ANCHOR_BOTTOM:
-        coordinate = [rect.X + rect.Width / 2, rect.Y + rect.Height]
+        coordinate = [startRect.X + startRect.Width / 2, startRect.Y + startRect.Height]
         break;
       case gongsvg.AnchorType.ANCHOR_TOP:
-        coordinate = [rect.X + rect.Width / 2, rect.Y]
+        coordinate = [startRect.X + startRect.Width / 2, startRect.Y]
         break;
       case gongsvg.AnchorType.ANCHOR_LEFT:
-        coordinate = [rect.X, rect.Y + rect.Height / 2]
+        coordinate = [startRect.X, startRect.Y + startRect.Height / 2]
         break;
       case gongsvg.AnchorType.ANCHOR_RIGHT:
-        coordinate = [rect.X + rect.Width, rect.Y + rect.Height / 2]
+        coordinate = [startRect.X + startRect.Width, startRect.Y + startRect.Height / 2]
         break;
       case gongsvg.AnchorType.ANCHOR_CENTER:
-        coordinate = [rect.X + rect.Width / 2, rect.Y + rect.Height / 2]
+        if (endRect == undefined) {
+          coordinate = [startRect.X + startRect.Width / 2, startRect.Y + startRect.Height / 2]
+        } else {
+          let endRectCenter = createPoint(endRect.X + endRect.Width / 2, endRect.Y + endRect.Height / 2)
+          let borderPoint = drawLineFromRectToB(startRect, endRectCenter)
+          coordinate = [borderPoint.X, borderPoint.Y]
+        }
         break;
     }
 
     return coordinate
   }
 
-  linkMouseDown(event: MouseEvent, segmentNumber: number): void {
+  linkMouseDown(
+    event: MouseEvent,
+    segmentNumber: number): void {
 
     if (!event.altKey && !event.shiftKey) {
       event.preventDefault();
       event.stopPropagation(); // Prevent the event from bubbling up to the SVG element
-
-      let x = event.clientX - this.pageX
-      let y = event.clientY - this.pageY
 
       // this link shit to dragging state
       this.dragging = true
@@ -394,24 +474,22 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
       let shapeMouseEvent: ShapeMouseEvent = {
         ShapeID: this.Link!.ID,
         ShapeType: gongsvg.LinkDB.GONGSTRUCT_NAME,
-        Point: createPoint(x, y),
+        Point: mouseCoordInComponentRef(event),
       }
-      this.linkEventService.emitMouseDownEvent(shapeMouseEvent)
+      this.mouseEventService.emitMouseDownEvent(shapeMouseEvent)
     }
   }
 
   linkMouseMove(event: MouseEvent): void {
 
     if (!event.altKey && !event.shiftKey) {
-      let x = event.clientX - this.pageX
-      let y = event.clientY - this.pageY
 
       let shapeMouseEvent: ShapeMouseEvent = {
         ShapeID: this.Link!.ID,
         ShapeType: gongsvg.LinkDB.GONGSTRUCT_NAME,
-        Point: createPoint(x, y),
+        Point: mouseCoordInComponentRef(event),
       }
-      this.linkEventService.emitMouseMoveEvent(shapeMouseEvent)
+      this.mouseEventService.emitMouseMoveEvent(shapeMouseEvent)
     }
   }
 
@@ -419,15 +497,13 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
 
     // console.log("Link : linkMouseUp", this.Link?.Name)
     if (!event.altKey && !event.shiftKey) {
-      let x = event.clientX - this.pageX
-      let y = event.clientY - this.pageY
 
       let shapeMouseEvent: ShapeMouseEvent = {
         ShapeID: this.Link!.ID,
         ShapeType: gongsvg.LinkDB.GONGSTRUCT_NAME,
-        Point: createPoint(x, y),
+        Point: mouseCoordInComponentRef(event),
       }
-      this.linkEventService.emitMouseUpEvent(shapeMouseEvent)
+      this.mouseEventService.emitMouseUpEvent(shapeMouseEvent)
     }
   }
 
@@ -435,6 +511,10 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
   segments: Segment[] | undefined
 
   drawSegments(): boolean {
+
+    if (this.linkUpdating) {
+      return true
+    }
 
     let link = this.Link!
 
@@ -542,24 +622,24 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
     let secondTipY = segment.EndPoint.Y
 
     {
-      let { x, y } = this.rotateToSegentDirection(segment, - this.Link!.EndArrowSize, - this.Link!.EndArrowSize)
+      let { x, y } = this.rotateToSegmentDirection(segment, - this.Link!.EndArrowSize, - this.Link!.EndArrowSize)
 
       firstTipX += x
       firstTipY += y
     }
     {
-      let { x, y } = this.rotateToSegentDirection(segment, this.Link!.StrokeWidth * ratio, this.Link!.StrokeWidth * ratio)
+      let { x, y } = this.rotateToSegmentDirection(segment, this.Link!.StrokeWidth * ratio, this.Link!.StrokeWidth * ratio)
       firstStartX += x
       firstStartY += y
     }
     {
-      let { x, y } = this.rotateToSegentDirection(segment, - this.Link!.EndArrowSize, this.Link!.EndArrowSize)
+      let { x, y } = this.rotateToSegmentDirection(segment, - this.Link!.EndArrowSize, this.Link!.EndArrowSize)
 
       secondTipX += x
       secondTipY += y
     }
     {
-      let { x, y } = this.rotateToSegentDirection(segment, this.Link!.StrokeWidth * ratio, - this.Link!.StrokeWidth * ratio)
+      let { x, y } = this.rotateToSegmentDirection(segment, this.Link!.StrokeWidth * ratio, - this.Link!.StrokeWidth * ratio)
 
       secondStartX += x
       secondStartY += y
@@ -570,7 +650,7 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
     return path
   }
 
-  rotateToSegentDirection(segment: Segment, x: number, y: number): { x: number, y: number } {
+  rotateToSegmentDirection(segment: Segment, x: number, y: number): { x: number, y: number } {
     let x_res = 0
     let y_res = 0
 
@@ -596,7 +676,7 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
     return { x: x_res, y: y_res }
   }
 
-  adjustToSegentDirection(segment: Segment, x: number, y: number): { x: number, y: number } {
+  adjustToSegmentDirection(segment: Segment, x: number, y: number): { x: number, y: number } {
     let x_res = 0
     let y_res = 0
 
@@ -622,40 +702,39 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
     return { x: x_res, y: y_res }
   }
 
-  textAnchoredMouseDown(event: MouseEvent, anchoredTextIndex: number): void {
+  textAnchoredMouseDown(
+    event: MouseEvent,
+    anchoredTextIndex: number,
+    draggedSegmentPositionOnArrow: string): void {
 
     if (!event.altKey && !event.shiftKey) {
       event.preventDefault();
       event.stopPropagation(); // Prevent the event from bubbling up to the SVG element
 
-      let x = event.clientX - this.pageX
-      let y = event.clientY - this.pageY
-
       // this text shift to dragging state
       this.textDragging = true
       this.draggedTextIndex = anchoredTextIndex
+      this.draggedSegmentPositionOnArrow = draggedSegmentPositionOnArrow as gongsvg.PositionOnArrowType
 
       let shapeMouseEvent: ShapeMouseEvent = {
         ShapeID: this.Link!.ID,
         ShapeType: gongsvg.LinkDB.GONGSTRUCT_NAME,
-        Point: createPoint(x, y),
+        Point: mouseCoordInComponentRef(event),
       }
-      this.linkEventService.emitMouseDownEvent(shapeMouseEvent)
+      this.mouseEventService.emitMouseDownEvent(shapeMouseEvent)
     }
   }
 
   textAnchoredMouseMove(event: MouseEvent): void {
 
     if (!event.altKey && !event.shiftKey) {
-      let x = event.clientX - this.pageX
-      let y = event.clientY - this.pageY
 
       let shapeMouseEvent: ShapeMouseEvent = {
         ShapeID: this.Link!.ID,
         ShapeType: gongsvg.LinkDB.GONGSTRUCT_NAME,
-        Point: createPoint(x, y),
+        Point: mouseCoordInComponentRef(event),
       }
-      this.linkEventService.emitMouseMoveEvent(shapeMouseEvent)
+      this.mouseEventService.emitMouseMoveEvent(shapeMouseEvent)
     }
   }
 
@@ -663,39 +742,26 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck {
 
     // console.log("Link : linkMouseUp", this.Link?.Name)
     if (!event.altKey && !event.shiftKey) {
-      let x = event.clientX - this.pageX
-      let y = event.clientY - this.pageY
-
       let shapeMouseEvent: ShapeMouseEvent = {
         ShapeID: this.Link!.ID,
         ShapeType: gongsvg.LinkDB.GONGSTRUCT_NAME,
-        Point: createPoint(x, y),
+        Point: mouseCoordInComponentRef(event),
       }
-      this.linkEventService.emitMouseUpEvent(shapeMouseEvent)
+      this.mouseEventService.emitMouseUpEvent(shapeMouseEvent)
     }
-  }
-
-  pageX: number = 0
-  pageY: number = 0
-  getSvgTopLeftCoordinates() {
-    const svgElement = this.elementRef.nativeElement.querySelector('svg')
-
-    const svgRect = svgElement?.getBoundingClientRect()
-    this.pageX = svgRect?.left + window.pageXOffset
-    this.pageY = svgRect?.top + window.pageYOffset
-
-    // console.log('SVG Top-Left Corner:', this.pageX, this.pageY);
   }
 
   ngAfterViewInit() {
-    this.getSvgTopLeftCoordinates();
 
-    const bbox = this.textElement?.nativeElement.getBBox()
+    // const bbox = this.textElement?.nativeElement.getBBox()
 
-    if (bbox != undefined) {
-      this.textWidth = bbox.width;
-      this.textHeight = bbox.height;
-    }
+    // if (bbox != undefined) {
+    //   this.textWidth = bbox.width;
+    //   this.textHeight = bbox.height;
+    // }
+  }
 
+  splitTextIntoLines(text: string): string[] {
+    return text.split('\n')
   }
 }

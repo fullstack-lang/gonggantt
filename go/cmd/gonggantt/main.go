@@ -65,6 +65,15 @@ type OnAfterRectUpdate struct {
 	ganttToSVGMapper *gantt2svg.GanttSVGMapper
 }
 
+func (OnAfterRectUpdate *OnAfterRectUpdate) OnAfterUpdate(
+	gongsvgStage *gongsvg_models.StageStruct,
+	old *gongsvg_models.Rect,
+	new *gongsvg_models.Rect) {
+
+	log.Println("OnAfterRectUpdate, OnAfterUpdate", old.Name)
+
+}
+
 func main() {
 
 	log.SetPrefix("gonggantt: ")
@@ -78,7 +87,7 @@ func main() {
 
 	// setup stack
 	gongganttStage := gonggantt_fullstack.NewStackInstance(r, "github.com/fullstack-lang/gonggantt/go/models")
-	gongsvgStage := gongsvg_fullstack.NewStackInstance(r, "github.com/fullstack-lang/gongsvg/go/models")
+	gongsvgStage := gongsvg_fullstack.NewStackInstance(r, "gonggantt+github.com/fullstack-lang/gongsvg/go/models")
 
 	if *unmarshallFromCode != "" {
 		gongganttStage.Checkout()
@@ -118,6 +127,9 @@ func main() {
 
 		// // hook on the commit from front
 		// gongsvgStage.OnAfterRectUpdateCallback = onAfterRectUpdate
+
+		// put the SVG Rect logic on it ()
+		gongsvg_models.SetOrchestratorOnAfterUpdate[gongsvg_models.Rect](gongsvgStage)
 
 		// initial publication
 		ganttSVGMapper.GenerateSvg(gongganttStage, gongsvgStage)

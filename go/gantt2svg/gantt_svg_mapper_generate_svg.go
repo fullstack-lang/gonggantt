@@ -35,6 +35,7 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 	//
 	svg := new(gongsvg_models.SVG).Stage(gongsvgStage)
 	svg.Name = "SVG"
+	svg.IsEditable = true
 
 	layerLanes := new(gongsvg_models.Layer).Stage(gongsvgStage)
 	layerLanes.Name = "Lanes layer"

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { LinkEventService } from './link-event.service';
+import { IsEditableService } from './is-editable.service';
 
-describe('LinkEventService', () => {
-  let service: LinkEventService;
+describe('IsEditableService', () => {
+  let service: IsEditableService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(LinkEventService);
+    service = TestBed.inject(IsEditableService);
   });
 
   it('should be created', () => {
