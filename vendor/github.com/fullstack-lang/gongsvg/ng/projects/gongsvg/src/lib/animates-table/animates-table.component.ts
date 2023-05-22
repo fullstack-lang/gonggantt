@@ -87,6 +87,13 @@ export class AnimatesTableComponent implements OnInit {
         case 'RepeatCount':
           return animateDB.RepeatCount;
 
+        case 'AnchoredText_Animates':
+          if (this.frontRepo.AnchoredTexts.get(animateDB.AnchoredText_AnimatesDBID.Int64) != undefined) {
+            return this.frontRepo.AnchoredTexts.get(animateDB.AnchoredText_AnimatesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
+
         case 'Circle_Animations':
           if (this.frontRepo.Circles.get(animateDB.Circle_AnimationsDBID.Int64) != undefined) {
             return this.frontRepo.Circles.get(animateDB.Circle_AnimationsDBID.Int64)!.Name
@@ -136,6 +143,13 @@ export class AnimatesTableComponent implements OnInit {
             return ""
           }
 
+        case 'RectAnchoredText_Animates':
+          if (this.frontRepo.RectAnchoredTexts.get(animateDB.RectAnchoredText_AnimatesDBID.Int64) != undefined) {
+            return this.frontRepo.RectAnchoredTexts.get(animateDB.RectAnchoredText_AnimatesDBID.Int64)!.Name
+          } else {
+            return ""
+          }
+
         case 'Text_Animates':
           if (this.frontRepo.Texts.get(animateDB.Text_AnimatesDBID.Int64) != undefined) {
             return this.frontRepo.Texts.get(animateDB.Text_AnimatesDBID.Int64)!.Name
@@ -162,6 +176,10 @@ export class AnimatesTableComponent implements OnInit {
       mergedContent += animateDB.Values.toLowerCase()
       mergedContent += animateDB.Dur.toLowerCase()
       mergedContent += animateDB.RepeatCount.toLowerCase()
+      if (animateDB.AnchoredText_AnimatesDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.AnchoredTexts.get(animateDB.AnchoredText_AnimatesDBID.Int64)!.Name.toLowerCase()
+      }
+
       if (animateDB.Circle_AnimationsDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Circles.get(animateDB.Circle_AnimationsDBID.Int64)!.Name.toLowerCase()
       }
@@ -188,6 +206,10 @@ export class AnimatesTableComponent implements OnInit {
 
       if (animateDB.Rect_AnimationsDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Rects.get(animateDB.Rect_AnimationsDBID.Int64)!.Name.toLowerCase()
+      }
+
+      if (animateDB.RectAnchoredText_AnimatesDBID.Int64 != 0) {
+        mergedContent += this.frontRepo.RectAnchoredTexts.get(animateDB.RectAnchoredText_AnimatesDBID.Int64)!.Name.toLowerCase()
       }
 
       if (animateDB.Text_AnimatesDBID.Int64 != 0) {
@@ -253,6 +275,7 @@ export class AnimatesTableComponent implements OnInit {
         "Values",
         "Dur",
         "RepeatCount",
+        "AnchoredText_Animates",
         "Circle_Animations",
         "Ellipse_Animates",
         "Line_Animates",
@@ -260,6 +283,7 @@ export class AnimatesTableComponent implements OnInit {
         "Polygone_Animates",
         "Polyline_Animates",
         "Rect_Animations",
+        "RectAnchoredText_Animates",
         "Text_Animates",
       ]
     } else {
@@ -269,6 +293,7 @@ export class AnimatesTableComponent implements OnInit {
         "Values",
         "Dur",
         "RepeatCount",
+        "AnchoredText_Animates",
         "Circle_Animations",
         "Ellipse_Animates",
         "Line_Animates",
@@ -276,6 +301,7 @@ export class AnimatesTableComponent implements OnInit {
         "Polygone_Animates",
         "Polyline_Animates",
         "Rect_Animations",
+        "RectAnchoredText_Animates",
         "Text_Animates",
       ]
       this.selection = new SelectionModel<AnimateDB>(allowMultiSelect, this.initialSelection);

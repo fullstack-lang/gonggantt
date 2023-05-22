@@ -1,6 +1,6 @@
 package models
 
-// Connect every staged shape to a behavior models
-func Connect(stage *StageStruct) {
+// DoNotKnowWhatThisFunctionIsFor every staged shape to a behavior models
+func DoNotKnowWhatThisFunctionIsFor(stage *StageStruct) {
 
 }

@@ -75,6 +75,18 @@ export class SVGsTableComponent implements OnInit {
         case 'Name':
           return svgDB.Name;
 
+        case 'DrawingState':
+          return svgDB.DrawingState;
+
+        case 'StartRect':
+          return (svgDB.StartRect ? svgDB.StartRect.Name : '');
+
+        case 'EndRect':
+          return (svgDB.EndRect ? svgDB.EndRect.Name : '');
+
+        case 'IsEditable':
+          return svgDB.IsEditable ? "true" : "false";
+
         default:
           console.assert(false, "Unknown field")
           return "";
@@ -90,6 +102,13 @@ export class SVGsTableComponent implements OnInit {
 
       // insertion point for merging of fields
       mergedContent += svgDB.Name.toLowerCase()
+      mergedContent += svgDB.DrawingState.toLowerCase()
+      if (svgDB.StartRect) {
+        mergedContent += svgDB.StartRect.Name.toLowerCase()
+      }
+      if (svgDB.EndRect) {
+        mergedContent += svgDB.EndRect.Name.toLowerCase()
+      }
 
       let isSelected = mergedContent.includes(filter.toLowerCase())
       return isSelected
@@ -145,10 +164,18 @@ export class SVGsTableComponent implements OnInit {
     if (this.mode == TableComponentMode.DISPLAY_MODE) {
       this.displayedColumns = ['ID', 'Delete', // insertion point for columns to display
         "Name",
+        "DrawingState",
+        "StartRect",
+        "EndRect",
+        "IsEditable",
       ]
     } else {
       this.displayedColumns = ['select', 'ID', // insertion point for columns to display
         "Name",
+        "DrawingState",
+        "StartRect",
+        "EndRect",
+        "IsEditable",
       ]
       this.selection = new SelectionModel<SVGDB>(allowMultiSelect, this.initialSelection);
     }

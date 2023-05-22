@@ -105,6 +105,9 @@ export class RectsTableComponent implements OnInit {
         case 'StrokeDashArray':
           return rectDB.StrokeDashArray;
 
+        case 'StrokeDashArrayWhenSelected':
+          return rectDB.StrokeDashArrayWhenSelected;
+
         case 'Transform':
           return rectDB.Transform;
 
@@ -114,11 +117,29 @@ export class RectsTableComponent implements OnInit {
         case 'IsSelected':
           return rectDB.IsSelected ? "true" : "false";
 
-        case 'CanHaveHorizontalHandles':
-          return rectDB.CanHaveHorizontalHandles ? "true" : "false";
+        case 'CanHaveLeftHandle':
+          return rectDB.CanHaveLeftHandle ? "true" : "false";
 
-        case 'HasHorizontalHandles':
-          return rectDB.HasHorizontalHandles ? "true" : "false";
+        case 'HasLeftHandle':
+          return rectDB.HasLeftHandle ? "true" : "false";
+
+        case 'CanHaveRightHandle':
+          return rectDB.CanHaveRightHandle ? "true" : "false";
+
+        case 'HasRightHandle':
+          return rectDB.HasRightHandle ? "true" : "false";
+
+        case 'CanHaveTopHandle':
+          return rectDB.CanHaveTopHandle ? "true" : "false";
+
+        case 'HasTopHandle':
+          return rectDB.HasTopHandle ? "true" : "false";
+
+        case 'CanHaveBottomHandle':
+          return rectDB.CanHaveBottomHandle ? "true" : "false";
+
+        case 'HasBottomHandle':
+          return rectDB.HasBottomHandle ? "true" : "false";
 
         case 'CanMoveHorizontaly':
           return rectDB.CanMoveHorizontaly ? "true" : "false";
@@ -158,6 +179,7 @@ export class RectsTableComponent implements OnInit {
       mergedContent += rectDB.Stroke.toLowerCase()
       mergedContent += rectDB.StrokeWidth.toString()
       mergedContent += rectDB.StrokeDashArray.toLowerCase()
+      mergedContent += rectDB.StrokeDashArrayWhenSelected.toLowerCase()
       mergedContent += rectDB.Transform.toLowerCase()
       if (rectDB.Layer_RectsDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Layers.get(rectDB.Layer_RectsDBID.Int64)!.Name.toLowerCase()
@@ -228,11 +250,18 @@ export class RectsTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "IsSelectable",
         "IsSelected",
-        "CanHaveHorizontalHandles",
-        "HasHorizontalHandles",
+        "CanHaveLeftHandle",
+        "HasLeftHandle",
+        "CanHaveRightHandle",
+        "HasRightHandle",
+        "CanHaveTopHandle",
+        "HasTopHandle",
+        "CanHaveBottomHandle",
+        "HasBottomHandle",
         "CanMoveHorizontaly",
         "CanMoveVerticaly",
         "Layer_Rects",
@@ -250,11 +279,18 @@ export class RectsTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "IsSelectable",
         "IsSelected",
-        "CanHaveHorizontalHandles",
-        "HasHorizontalHandles",
+        "CanHaveLeftHandle",
+        "HasLeftHandle",
+        "CanHaveRightHandle",
+        "HasRightHandle",
+        "CanHaveTopHandle",
+        "HasTopHandle",
+        "CanHaveBottomHandle",
+        "HasBottomHandle",
         "CanMoveHorizontaly",
         "CanMoveVerticaly",
         "Layer_Rects",

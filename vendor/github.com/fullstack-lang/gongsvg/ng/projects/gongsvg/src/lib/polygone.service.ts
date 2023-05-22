@@ -128,7 +128,7 @@ export class PolygoneService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         polygonedb.Layer_Polygones_reverse = _Layer_Polygones_reverse
-        this.log(`updated polygonedb id=${polygonedb.ID}`)
+        // this.log(`updated polygonedb id=${polygonedb.ID}`)
       }),
       catchError(this.handleError<PolygoneDB>('updatePolygone'))
     );

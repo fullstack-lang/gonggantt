@@ -1,6 +1,8 @@
 <svg class="child">
     <g>
-        <line [attr.x1]="Line?.X1" [attr.y1]="Line?.Y1" [attr.x2]="Line?.X2" [attr.y2]="Line?.Y2" [attr.fill]="Line?.Color"
+        <line class="overlay" 
+            (click)="onClick($event)" 
+            [attr.x1]="Line?.X1" [attr.y1]="Line?.Y1" [attr.x2]="Line?.X2" [attr.y2]="Line?.Y2" [attr.fill]="Line?.Color"
             [attr.fill-opacity]="Line?.FillOpacity" [attr.stroke]="Line?.Stroke" [attr.stroke-width]="Line?.StrokeWidth"
             [attr.stroke-dasharray]="Line?.StrokeDashArray" [attr.transform]="Line?.Transform" />
 

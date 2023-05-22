@@ -128,7 +128,7 @@ export class CircleService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         circledb.Layer_Circles_reverse = _Layer_Circles_reverse
-        this.log(`updated circledb id=${circledb.ID}`)
+        // this.log(`updated circledb id=${circledb.ID}`)
       }),
       catchError(this.handleError<CircleDB>('updateCircle'))
     );

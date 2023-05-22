@@ -46,6 +46,12 @@ type AnimateAPI struct {
 type AnimatePointersEnconding struct {
 	// insertion for pointer fields encoding declaration
 
+	// Implementation of a reverse ID for field AnchoredText{}.Animates []*Animate
+	AnchoredText_AnimatesDBID sql.NullInt64
+
+	// implementation of the index of the withing the slice
+	AnchoredText_AnimatesDBID_Index sql.NullInt64
+
 	// Implementation of a reverse ID for field Circle{}.Animations []*Animate
 	Circle_AnimationsDBID sql.NullInt64
 
@@ -87,6 +93,12 @@ type AnimatePointersEnconding struct {
 
 	// implementation of the index of the withing the slice
 	Rect_AnimationsDBID_Index sql.NullInt64
+
+	// Implementation of a reverse ID for field RectAnchoredText{}.Animates []*Animate
+	RectAnchoredText_AnimatesDBID sql.NullInt64
+
+	// implementation of the index of the withing the slice
+	RectAnchoredText_AnimatesDBID_Index sql.NullInt64
 
 	// Implementation of a reverse ID for field Text{}.Animates []*Animate
 	Text_AnimatesDBID sql.NullInt64
@@ -633,6 +645,12 @@ func (backRepoAnimate *BackRepoAnimateStruct) RestorePhaseTwo() {
 		_ = animateDB
 
 		// insertion point for reindexing pointers encoding
+		// This reindex animate.Animates
+		if animateDB.AnchoredText_AnimatesDBID.Int64 != 0 {
+			animateDB.AnchoredText_AnimatesDBID.Int64 =
+				int64(BackRepoAnchoredTextid_atBckpTime_newID[uint(animateDB.AnchoredText_AnimatesDBID.Int64)])
+		}
+
 		// This reindex animate.Animations
 		if animateDB.Circle_AnimationsDBID.Int64 != 0 {
 			animateDB.Circle_AnimationsDBID.Int64 =
@@ -673,6 +691,12 @@ func (backRepoAnimate *BackRepoAnimateStruct) RestorePhaseTwo() {
 		if animateDB.Rect_AnimationsDBID.Int64 != 0 {
 			animateDB.Rect_AnimationsDBID.Int64 =
 				int64(BackRepoRectid_atBckpTime_newID[uint(animateDB.Rect_AnimationsDBID.Int64)])
+		}
+
+		// This reindex animate.Animates
+		if animateDB.RectAnchoredText_AnimatesDBID.Int64 != 0 {
+			animateDB.RectAnchoredText_AnimatesDBID.Int64 =
+				int64(BackRepoRectAnchoredTextid_atBckpTime_newID[uint(animateDB.RectAnchoredText_AnimatesDBID.Int64)])
 		}
 
 		// This reindex animate.Animates

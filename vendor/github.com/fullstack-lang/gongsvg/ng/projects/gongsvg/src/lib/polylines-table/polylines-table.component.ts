@@ -93,6 +93,9 @@ export class PolylinesTableComponent implements OnInit {
         case 'StrokeDashArray':
           return polylineDB.StrokeDashArray;
 
+        case 'StrokeDashArrayWhenSelected':
+          return polylineDB.StrokeDashArrayWhenSelected;
+
         case 'Transform':
           return polylineDB.Transform;
 
@@ -124,6 +127,7 @@ export class PolylinesTableComponent implements OnInit {
       mergedContent += polylineDB.Stroke.toLowerCase()
       mergedContent += polylineDB.StrokeWidth.toString()
       mergedContent += polylineDB.StrokeDashArray.toLowerCase()
+      mergedContent += polylineDB.StrokeDashArrayWhenSelected.toLowerCase()
       mergedContent += polylineDB.Transform.toLowerCase()
       if (polylineDB.Layer_PolylinesDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Layers.get(polylineDB.Layer_PolylinesDBID.Int64)!.Name.toLowerCase()
@@ -190,6 +194,7 @@ export class PolylinesTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Polylines",
       ]
@@ -202,6 +207,7 @@ export class PolylinesTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Polylines",
       ]

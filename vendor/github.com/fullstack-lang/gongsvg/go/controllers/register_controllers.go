@@ -41,6 +41,13 @@ type ValidationError struct {
 func registerControllers(r *gin.Engine) {
 	v1 := r.Group("/api/github.com/fullstack-lang/gongsvg/go")
 	{ // insertion point for registrations
+		v1.GET("/v1/anchoredtexts", GetController().GetAnchoredTexts)
+		v1.GET("/v1/anchoredtexts/:id", GetController().GetAnchoredText)
+		v1.POST("/v1/anchoredtexts", GetController().PostAnchoredText)
+		v1.PATCH("/v1/anchoredtexts/:id", GetController().UpdateAnchoredText)
+		v1.PUT("/v1/anchoredtexts/:id", GetController().UpdateAnchoredText)
+		v1.DELETE("/v1/anchoredtexts/:id", GetController().DeleteAnchoredText)
+
 		v1.GET("/v1/animates", GetController().GetAnimates)
 		v1.GET("/v1/animates/:id", GetController().GetAnimate)
 		v1.POST("/v1/animates", GetController().PostAnimate)
@@ -76,12 +83,26 @@ func registerControllers(r *gin.Engine) {
 		v1.PUT("/v1/lines/:id", GetController().UpdateLine)
 		v1.DELETE("/v1/lines/:id", GetController().DeleteLine)
 
+		v1.GET("/v1/links", GetController().GetLinks)
+		v1.GET("/v1/links/:id", GetController().GetLink)
+		v1.POST("/v1/links", GetController().PostLink)
+		v1.PATCH("/v1/links/:id", GetController().UpdateLink)
+		v1.PUT("/v1/links/:id", GetController().UpdateLink)
+		v1.DELETE("/v1/links/:id", GetController().DeleteLink)
+
 		v1.GET("/v1/paths", GetController().GetPaths)
 		v1.GET("/v1/paths/:id", GetController().GetPath)
 		v1.POST("/v1/paths", GetController().PostPath)
 		v1.PATCH("/v1/paths/:id", GetController().UpdatePath)
 		v1.PUT("/v1/paths/:id", GetController().UpdatePath)
 		v1.DELETE("/v1/paths/:id", GetController().DeletePath)
+
+		v1.GET("/v1/points", GetController().GetPoints)
+		v1.GET("/v1/points/:id", GetController().GetPoint)
+		v1.POST("/v1/points", GetController().PostPoint)
+		v1.PATCH("/v1/points/:id", GetController().UpdatePoint)
+		v1.PUT("/v1/points/:id", GetController().UpdatePoint)
+		v1.DELETE("/v1/points/:id", GetController().DeletePoint)
 
 		v1.GET("/v1/polygones", GetController().GetPolygones)
 		v1.GET("/v1/polygones/:id", GetController().GetPolygone)
@@ -103,6 +124,27 @@ func registerControllers(r *gin.Engine) {
 		v1.PATCH("/v1/rects/:id", GetController().UpdateRect)
 		v1.PUT("/v1/rects/:id", GetController().UpdateRect)
 		v1.DELETE("/v1/rects/:id", GetController().DeleteRect)
+
+		v1.GET("/v1/rectanchoredrects", GetController().GetRectAnchoredRects)
+		v1.GET("/v1/rectanchoredrects/:id", GetController().GetRectAnchoredRect)
+		v1.POST("/v1/rectanchoredrects", GetController().PostRectAnchoredRect)
+		v1.PATCH("/v1/rectanchoredrects/:id", GetController().UpdateRectAnchoredRect)
+		v1.PUT("/v1/rectanchoredrects/:id", GetController().UpdateRectAnchoredRect)
+		v1.DELETE("/v1/rectanchoredrects/:id", GetController().DeleteRectAnchoredRect)
+
+		v1.GET("/v1/rectanchoredtexts", GetController().GetRectAnchoredTexts)
+		v1.GET("/v1/rectanchoredtexts/:id", GetController().GetRectAnchoredText)
+		v1.POST("/v1/rectanchoredtexts", GetController().PostRectAnchoredText)
+		v1.PATCH("/v1/rectanchoredtexts/:id", GetController().UpdateRectAnchoredText)
+		v1.PUT("/v1/rectanchoredtexts/:id", GetController().UpdateRectAnchoredText)
+		v1.DELETE("/v1/rectanchoredtexts/:id", GetController().DeleteRectAnchoredText)
+
+		v1.GET("/v1/rectlinklinks", GetController().GetRectLinkLinks)
+		v1.GET("/v1/rectlinklinks/:id", GetController().GetRectLinkLink)
+		v1.POST("/v1/rectlinklinks", GetController().PostRectLinkLink)
+		v1.PATCH("/v1/rectlinklinks/:id", GetController().UpdateRectLinkLink)
+		v1.PUT("/v1/rectlinklinks/:id", GetController().UpdateRectLinkLink)
+		v1.DELETE("/v1/rectlinklinks/:id", GetController().DeleteRectLinkLink)
 
 		v1.GET("/v1/svgs", GetController().GetSVGs)
 		v1.GET("/v1/svgs/:id", GetController().GetSVG)

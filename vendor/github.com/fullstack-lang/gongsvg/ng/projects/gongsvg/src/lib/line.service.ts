@@ -128,7 +128,7 @@ export class LineService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         linedb.Layer_Lines_reverse = _Layer_Lines_reverse
-        this.log(`updated linedb id=${linedb.ID}`)
+        // this.log(`updated linedb id=${linedb.ID}`)
       }),
       catchError(this.handleError<LineDB>('updateLine'))
     );

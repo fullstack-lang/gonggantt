@@ -78,6 +78,9 @@
       ],
       "gongsvgspecific": [
         "../vendor/github.com/fullstack-lang/gongsvg/ng/projects/gongsvgspecific/src/public-api.ts"
+      ],
+      "gongsvgdatamodel": [
+        "../vendor/github.com/fullstack-lang/gongsvg/ng/projects/gongsvgdatamodel/src/public-api.ts"
       ]
     },
     "noPropertyAccessFromIndexSignature": true,

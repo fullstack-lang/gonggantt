@@ -7,6 +7,9 @@ import { GroupDB } from './group-db'
 import { NullInt64 } from './null-int64'
 
 export class LaneDB {
+
+	static GONGSTRUCT_NAME = "Lane"
+
 	CreatedAt?: string
 	DeletedAt?: string
 	ID: number = 0

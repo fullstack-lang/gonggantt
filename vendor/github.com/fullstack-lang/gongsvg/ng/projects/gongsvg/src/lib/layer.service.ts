@@ -79,6 +79,8 @@ export class LayerService {
     layerdb.Polylines = []
     layerdb.Polygones = []
     layerdb.Paths = []
+    layerdb.Links = []
+    layerdb.RectLinkLinks = []
     let _SVG_Layers_reverse = layerdb.SVG_Layers_reverse
     layerdb.SVG_Layers_reverse = new SVGDB
 
@@ -129,6 +131,8 @@ export class LayerService {
     layerdb.Polylines = []
     layerdb.Polygones = []
     layerdb.Paths = []
+    layerdb.Links = []
+    layerdb.RectLinkLinks = []
     let _SVG_Layers_reverse = layerdb.SVG_Layers_reverse
     layerdb.SVG_Layers_reverse = new SVGDB
 
@@ -142,7 +146,7 @@ export class LayerService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         layerdb.SVG_Layers_reverse = _SVG_Layers_reverse
-        this.log(`updated layerdb id=${layerdb.ID}`)
+        // this.log(`updated layerdb id=${layerdb.ID}`)
       }),
       catchError(this.handleError<LayerDB>('updateLayer'))
     );

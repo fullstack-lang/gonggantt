@@ -128,7 +128,7 @@ export class MilestoneService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         milestonedb.Gantt_Milestones_reverse = _Gantt_Milestones_reverse
-        this.log(`updated milestonedb id=${milestonedb.ID}`)
+        // this.log(`updated milestonedb id=${milestonedb.ID}`)
       }),
       catchError(this.handleError<MilestoneDB>('updateMilestone'))
     );

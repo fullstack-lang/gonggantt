@@ -135,7 +135,7 @@ export class LaneService {
         // insertion point for restoration of reverse pointers
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
         lanedb.Group_GroupLanes_reverse = _Group_GroupLanes_reverse
-        this.log(`updated lanedb id=${lanedb.ID}`)
+        // this.log(`updated lanedb id=${lanedb.ID}`)
       }),
       catchError(this.handleError<LaneDB>('updateLane'))
     );

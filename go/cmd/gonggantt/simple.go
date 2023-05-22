@@ -60,7 +60,7 @@ func simpleInjection(stage *models.StageStruct) {
 	// Bar values setup
 	__Bar__000000_One_Task.Name = `One Task`
 	__Bar__000000_One_Task.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-04-17 03:08:18.46153846 +0000 +0000")
-	__Bar__000000_One_Task.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-04-17 18:56:29.53846152 +0000 +0000")
+	__Bar__000000_One_Task.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2024-04-14 04:12:33.230769216 +0000 +0000")
 	__Bar__000000_One_Task.OptionnalColor = `lightsteelblue`
 	__Bar__000000_One_Task.OptionnalStroke = ``
 	__Bar__000000_One_Task.FillOpacity = 100.000000

@@ -97,6 +97,9 @@ type RectDB struct {
 	// Declation for basic field rectDB.StrokeDashArray
 	StrokeDashArray_Data sql.NullString
 
+	// Declation for basic field rectDB.StrokeDashArrayWhenSelected
+	StrokeDashArrayWhenSelected_Data sql.NullString
+
 	// Declation for basic field rectDB.Transform
 	Transform_Data sql.NullString
 
@@ -108,13 +111,37 @@ type RectDB struct {
 	// provide the sql storage for the boolan
 	IsSelected_Data sql.NullBool
 
-	// Declation for basic field rectDB.CanHaveHorizontalHandles
+	// Declation for basic field rectDB.CanHaveLeftHandle
 	// provide the sql storage for the boolan
-	CanHaveHorizontalHandles_Data sql.NullBool
+	CanHaveLeftHandle_Data sql.NullBool
 
-	// Declation for basic field rectDB.HasHorizontalHandles
+	// Declation for basic field rectDB.HasLeftHandle
 	// provide the sql storage for the boolan
-	HasHorizontalHandles_Data sql.NullBool
+	HasLeftHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.CanHaveRightHandle
+	// provide the sql storage for the boolan
+	CanHaveRightHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.HasRightHandle
+	// provide the sql storage for the boolan
+	HasRightHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.CanHaveTopHandle
+	// provide the sql storage for the boolan
+	CanHaveTopHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.HasTopHandle
+	// provide the sql storage for the boolan
+	HasTopHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.CanHaveBottomHandle
+	// provide the sql storage for the boolan
+	CanHaveBottomHandle_Data sql.NullBool
+
+	// Declation for basic field rectDB.HasBottomHandle
+	// provide the sql storage for the boolan
+	HasBottomHandle_Data sql.NullBool
 
 	// Declation for basic field rectDB.CanMoveHorizontaly
 	// provide the sql storage for the boolan
@@ -166,19 +193,33 @@ type RectWOP struct {
 
 	StrokeDashArray string `xlsx:"11"`
 
-	Transform string `xlsx:"12"`
+	StrokeDashArrayWhenSelected string `xlsx:"12"`
 
-	IsSelectable bool `xlsx:"13"`
+	Transform string `xlsx:"13"`
 
-	IsSelected bool `xlsx:"14"`
+	IsSelectable bool `xlsx:"14"`
 
-	CanHaveHorizontalHandles bool `xlsx:"15"`
+	IsSelected bool `xlsx:"15"`
 
-	HasHorizontalHandles bool `xlsx:"16"`
+	CanHaveLeftHandle bool `xlsx:"16"`
 
-	CanMoveHorizontaly bool `xlsx:"17"`
+	HasLeftHandle bool `xlsx:"17"`
 
-	CanMoveVerticaly bool `xlsx:"18"`
+	CanHaveRightHandle bool `xlsx:"18"`
+
+	HasRightHandle bool `xlsx:"19"`
+
+	CanHaveTopHandle bool `xlsx:"20"`
+
+	HasTopHandle bool `xlsx:"21"`
+
+	CanHaveBottomHandle bool `xlsx:"22"`
+
+	HasBottomHandle bool `xlsx:"23"`
+
+	CanMoveHorizontaly bool `xlsx:"24"`
+
+	CanMoveVerticaly bool `xlsx:"25"`
 	// insertion for WOP pointer fields
 }
 
@@ -196,11 +237,18 @@ var Rect_Fields = []string{
 	"Stroke",
 	"StrokeWidth",
 	"StrokeDashArray",
+	"StrokeDashArrayWhenSelected",
 	"Transform",
 	"IsSelectable",
 	"IsSelected",
-	"CanHaveHorizontalHandles",
-	"HasHorizontalHandles",
+	"CanHaveLeftHandle",
+	"HasLeftHandle",
+	"CanHaveRightHandle",
+	"HasRightHandle",
+	"CanHaveTopHandle",
+	"HasTopHandle",
+	"CanHaveBottomHandle",
+	"HasBottomHandle",
 	"CanMoveHorizontaly",
 	"CanMoveVerticaly",
 }
@@ -341,6 +389,44 @@ func (backRepoRect *BackRepoRectStruct) CommitPhaseTwoInstance(backRepo *BackRep
 			}
 		}
 
+		// This loop encodes the slice of pointers rect.RectAnchoredTexts into the back repo.
+		// Each back repo instance at the end of the association encode the ID of the association start
+		// into a dedicated field for coding the association. The back repo instance is then saved to the db
+		for idx, rectanchoredtextAssocEnd := range rect.RectAnchoredTexts {
+
+			// get the back repo instance at the association end
+			rectanchoredtextAssocEnd_DB :=
+				backRepo.BackRepoRectAnchoredText.GetRectAnchoredTextDBFromRectAnchoredTextPtr(rectanchoredtextAssocEnd)
+
+			// encode reverse pointer in the association end back repo instance
+			rectanchoredtextAssocEnd_DB.Rect_RectAnchoredTextsDBID.Int64 = int64(rectDB.ID)
+			rectanchoredtextAssocEnd_DB.Rect_RectAnchoredTextsDBID.Valid = true
+			rectanchoredtextAssocEnd_DB.Rect_RectAnchoredTextsDBID_Index.Int64 = int64(idx)
+			rectanchoredtextAssocEnd_DB.Rect_RectAnchoredTextsDBID_Index.Valid = true
+			if q := backRepoRect.db.Save(rectanchoredtextAssocEnd_DB); q.Error != nil {
+				return q.Error
+			}
+		}
+
+		// This loop encodes the slice of pointers rect.RectAnchoredRects into the back repo.
+		// Each back repo instance at the end of the association encode the ID of the association start
+		// into a dedicated field for coding the association. The back repo instance is then saved to the db
+		for idx, rectanchoredrectAssocEnd := range rect.RectAnchoredRects {
+
+			// get the back repo instance at the association end
+			rectanchoredrectAssocEnd_DB :=
+				backRepo.BackRepoRectAnchoredRect.GetRectAnchoredRectDBFromRectAnchoredRectPtr(rectanchoredrectAssocEnd)
+
+			// encode reverse pointer in the association end back repo instance
+			rectanchoredrectAssocEnd_DB.Rect_RectAnchoredRectsDBID.Int64 = int64(rectDB.ID)
+			rectanchoredrectAssocEnd_DB.Rect_RectAnchoredRectsDBID.Valid = true
+			rectanchoredrectAssocEnd_DB.Rect_RectAnchoredRectsDBID_Index.Int64 = int64(idx)
+			rectanchoredrectAssocEnd_DB.Rect_RectAnchoredRectsDBID_Index.Valid = true
+			if q := backRepoRect.db.Save(rectanchoredrectAssocEnd_DB); q.Error != nil {
+				return q.Error
+			}
+		}
+
 		query := backRepoRect.db.Save(&rectDB)
 		if query.Error != nil {
 			return query.Error
@@ -475,6 +561,60 @@ func (backRepoRect *BackRepoRectStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 		return animateDB_i.Rect_AnimationsDBID_Index.Int64 < animateDB_j.Rect_AnimationsDBID_Index.Int64
 	})
 
+	// This loop redeem rect.RectAnchoredTexts in the stage from the encode in the back repo
+	// It parses all RectAnchoredTextDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// it appends the stage instance
+	// 1. reset the slice
+	rect.RectAnchoredTexts = rect.RectAnchoredTexts[:0]
+	// 2. loop all instances in the type in the association end
+	for _, rectanchoredtextDB_AssocEnd := range backRepo.BackRepoRectAnchoredText.Map_RectAnchoredTextDBID_RectAnchoredTextDB {
+		// 3. Does the ID encoding at the end and the ID at the start matches ?
+		if rectanchoredtextDB_AssocEnd.Rect_RectAnchoredTextsDBID.Int64 == int64(rectDB.ID) {
+			// 4. fetch the associated instance in the stage
+			rectanchoredtext_AssocEnd := backRepo.BackRepoRectAnchoredText.Map_RectAnchoredTextDBID_RectAnchoredTextPtr[rectanchoredtextDB_AssocEnd.ID]
+			// 5. append it the association slice
+			rect.RectAnchoredTexts = append(rect.RectAnchoredTexts, rectanchoredtext_AssocEnd)
+		}
+	}
+
+	// sort the array according to the order
+	sort.Slice(rect.RectAnchoredTexts, func(i, j int) bool {
+		rectanchoredtextDB_i_ID := backRepo.BackRepoRectAnchoredText.Map_RectAnchoredTextPtr_RectAnchoredTextDBID[rect.RectAnchoredTexts[i]]
+		rectanchoredtextDB_j_ID := backRepo.BackRepoRectAnchoredText.Map_RectAnchoredTextPtr_RectAnchoredTextDBID[rect.RectAnchoredTexts[j]]
+
+		rectanchoredtextDB_i := backRepo.BackRepoRectAnchoredText.Map_RectAnchoredTextDBID_RectAnchoredTextDB[rectanchoredtextDB_i_ID]
+		rectanchoredtextDB_j := backRepo.BackRepoRectAnchoredText.Map_RectAnchoredTextDBID_RectAnchoredTextDB[rectanchoredtextDB_j_ID]
+
+		return rectanchoredtextDB_i.Rect_RectAnchoredTextsDBID_Index.Int64 < rectanchoredtextDB_j.Rect_RectAnchoredTextsDBID_Index.Int64
+	})
+
+	// This loop redeem rect.RectAnchoredRects in the stage from the encode in the back repo
+	// It parses all RectAnchoredRectDB in the back repo and if the reverse pointer encoding matches the back repo ID
+	// it appends the stage instance
+	// 1. reset the slice
+	rect.RectAnchoredRects = rect.RectAnchoredRects[:0]
+	// 2. loop all instances in the type in the association end
+	for _, rectanchoredrectDB_AssocEnd := range backRepo.BackRepoRectAnchoredRect.Map_RectAnchoredRectDBID_RectAnchoredRectDB {
+		// 3. Does the ID encoding at the end and the ID at the start matches ?
+		if rectanchoredrectDB_AssocEnd.Rect_RectAnchoredRectsDBID.Int64 == int64(rectDB.ID) {
+			// 4. fetch the associated instance in the stage
+			rectanchoredrect_AssocEnd := backRepo.BackRepoRectAnchoredRect.Map_RectAnchoredRectDBID_RectAnchoredRectPtr[rectanchoredrectDB_AssocEnd.ID]
+			// 5. append it the association slice
+			rect.RectAnchoredRects = append(rect.RectAnchoredRects, rectanchoredrect_AssocEnd)
+		}
+	}
+
+	// sort the array according to the order
+	sort.Slice(rect.RectAnchoredRects, func(i, j int) bool {
+		rectanchoredrectDB_i_ID := backRepo.BackRepoRectAnchoredRect.Map_RectAnchoredRectPtr_RectAnchoredRectDBID[rect.RectAnchoredRects[i]]
+		rectanchoredrectDB_j_ID := backRepo.BackRepoRectAnchoredRect.Map_RectAnchoredRectPtr_RectAnchoredRectDBID[rect.RectAnchoredRects[j]]
+
+		rectanchoredrectDB_i := backRepo.BackRepoRectAnchoredRect.Map_RectAnchoredRectDBID_RectAnchoredRectDB[rectanchoredrectDB_i_ID]
+		rectanchoredrectDB_j := backRepo.BackRepoRectAnchoredRect.Map_RectAnchoredRectDBID_RectAnchoredRectDB[rectanchoredrectDB_j_ID]
+
+		return rectanchoredrectDB_i.Rect_RectAnchoredRectsDBID_Index.Int64 < rectanchoredrectDB_j.Rect_RectAnchoredRectsDBID_Index.Int64
+	})
+
 	return
 }
 
@@ -542,6 +682,9 @@ func (rectDB *RectDB) CopyBasicFieldsFromRect(rect *models.Rect) {
 	rectDB.StrokeDashArray_Data.String = rect.StrokeDashArray
 	rectDB.StrokeDashArray_Data.Valid = true
 
+	rectDB.StrokeDashArrayWhenSelected_Data.String = rect.StrokeDashArrayWhenSelected
+	rectDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	rectDB.Transform_Data.String = rect.Transform
 	rectDB.Transform_Data.Valid = true
 
@@ -551,11 +694,29 @@ func (rectDB *RectDB) CopyBasicFieldsFromRect(rect *models.Rect) {
 	rectDB.IsSelected_Data.Bool = rect.IsSelected
 	rectDB.IsSelected_Data.Valid = true
 
-	rectDB.CanHaveHorizontalHandles_Data.Bool = rect.CanHaveHorizontalHandles
-	rectDB.CanHaveHorizontalHandles_Data.Valid = true
+	rectDB.CanHaveLeftHandle_Data.Bool = rect.CanHaveLeftHandle
+	rectDB.CanHaveLeftHandle_Data.Valid = true
 
-	rectDB.HasHorizontalHandles_Data.Bool = rect.HasHorizontalHandles
-	rectDB.HasHorizontalHandles_Data.Valid = true
+	rectDB.HasLeftHandle_Data.Bool = rect.HasLeftHandle
+	rectDB.HasLeftHandle_Data.Valid = true
+
+	rectDB.CanHaveRightHandle_Data.Bool = rect.CanHaveRightHandle
+	rectDB.CanHaveRightHandle_Data.Valid = true
+
+	rectDB.HasRightHandle_Data.Bool = rect.HasRightHandle
+	rectDB.HasRightHandle_Data.Valid = true
+
+	rectDB.CanHaveTopHandle_Data.Bool = rect.CanHaveTopHandle
+	rectDB.CanHaveTopHandle_Data.Valid = true
+
+	rectDB.HasTopHandle_Data.Bool = rect.HasTopHandle
+	rectDB.HasTopHandle_Data.Valid = true
+
+	rectDB.CanHaveBottomHandle_Data.Bool = rect.CanHaveBottomHandle
+	rectDB.CanHaveBottomHandle_Data.Valid = true
+
+	rectDB.HasBottomHandle_Data.Bool = rect.HasBottomHandle
+	rectDB.HasBottomHandle_Data.Valid = true
 
 	rectDB.CanMoveHorizontaly_Data.Bool = rect.CanMoveHorizontaly
 	rectDB.CanMoveHorizontaly_Data.Valid = true
@@ -601,6 +762,9 @@ func (rectDB *RectDB) CopyBasicFieldsFromRectWOP(rect *RectWOP) {
 	rectDB.StrokeDashArray_Data.String = rect.StrokeDashArray
 	rectDB.StrokeDashArray_Data.Valid = true
 
+	rectDB.StrokeDashArrayWhenSelected_Data.String = rect.StrokeDashArrayWhenSelected
+	rectDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	rectDB.Transform_Data.String = rect.Transform
 	rectDB.Transform_Data.Valid = true
 
@@ -610,11 +774,29 @@ func (rectDB *RectDB) CopyBasicFieldsFromRectWOP(rect *RectWOP) {
 	rectDB.IsSelected_Data.Bool = rect.IsSelected
 	rectDB.IsSelected_Data.Valid = true
 
-	rectDB.CanHaveHorizontalHandles_Data.Bool = rect.CanHaveHorizontalHandles
-	rectDB.CanHaveHorizontalHandles_Data.Valid = true
+	rectDB.CanHaveLeftHandle_Data.Bool = rect.CanHaveLeftHandle
+	rectDB.CanHaveLeftHandle_Data.Valid = true
 
-	rectDB.HasHorizontalHandles_Data.Bool = rect.HasHorizontalHandles
-	rectDB.HasHorizontalHandles_Data.Valid = true
+	rectDB.HasLeftHandle_Data.Bool = rect.HasLeftHandle
+	rectDB.HasLeftHandle_Data.Valid = true
+
+	rectDB.CanHaveRightHandle_Data.Bool = rect.CanHaveRightHandle
+	rectDB.CanHaveRightHandle_Data.Valid = true
+
+	rectDB.HasRightHandle_Data.Bool = rect.HasRightHandle
+	rectDB.HasRightHandle_Data.Valid = true
+
+	rectDB.CanHaveTopHandle_Data.Bool = rect.CanHaveTopHandle
+	rectDB.CanHaveTopHandle_Data.Valid = true
+
+	rectDB.HasTopHandle_Data.Bool = rect.HasTopHandle
+	rectDB.HasTopHandle_Data.Valid = true
+
+	rectDB.CanHaveBottomHandle_Data.Bool = rect.CanHaveBottomHandle
+	rectDB.CanHaveBottomHandle_Data.Valid = true
+
+	rectDB.HasBottomHandle_Data.Bool = rect.HasBottomHandle
+	rectDB.HasBottomHandle_Data.Valid = true
 
 	rectDB.CanMoveHorizontaly_Data.Bool = rect.CanMoveHorizontaly
 	rectDB.CanMoveHorizontaly_Data.Valid = true
@@ -637,11 +819,18 @@ func (rectDB *RectDB) CopyBasicFieldsToRect(rect *models.Rect) {
 	rect.Stroke = rectDB.Stroke_Data.String
 	rect.StrokeWidth = rectDB.StrokeWidth_Data.Float64
 	rect.StrokeDashArray = rectDB.StrokeDashArray_Data.String
+	rect.StrokeDashArrayWhenSelected = rectDB.StrokeDashArrayWhenSelected_Data.String
 	rect.Transform = rectDB.Transform_Data.String
 	rect.IsSelectable = rectDB.IsSelectable_Data.Bool
 	rect.IsSelected = rectDB.IsSelected_Data.Bool
-	rect.CanHaveHorizontalHandles = rectDB.CanHaveHorizontalHandles_Data.Bool
-	rect.HasHorizontalHandles = rectDB.HasHorizontalHandles_Data.Bool
+	rect.CanHaveLeftHandle = rectDB.CanHaveLeftHandle_Data.Bool
+	rect.HasLeftHandle = rectDB.HasLeftHandle_Data.Bool
+	rect.CanHaveRightHandle = rectDB.CanHaveRightHandle_Data.Bool
+	rect.HasRightHandle = rectDB.HasRightHandle_Data.Bool
+	rect.CanHaveTopHandle = rectDB.CanHaveTopHandle_Data.Bool
+	rect.HasTopHandle = rectDB.HasTopHandle_Data.Bool
+	rect.CanHaveBottomHandle = rectDB.CanHaveBottomHandle_Data.Bool
+	rect.HasBottomHandle = rectDB.HasBottomHandle_Data.Bool
 	rect.CanMoveHorizontaly = rectDB.CanMoveHorizontaly_Data.Bool
 	rect.CanMoveVerticaly = rectDB.CanMoveVerticaly_Data.Bool
 }
@@ -661,11 +850,18 @@ func (rectDB *RectDB) CopyBasicFieldsToRectWOP(rect *RectWOP) {
 	rect.Stroke = rectDB.Stroke_Data.String
 	rect.StrokeWidth = rectDB.StrokeWidth_Data.Float64
 	rect.StrokeDashArray = rectDB.StrokeDashArray_Data.String
+	rect.StrokeDashArrayWhenSelected = rectDB.StrokeDashArrayWhenSelected_Data.String
 	rect.Transform = rectDB.Transform_Data.String
 	rect.IsSelectable = rectDB.IsSelectable_Data.Bool
 	rect.IsSelected = rectDB.IsSelected_Data.Bool
-	rect.CanHaveHorizontalHandles = rectDB.CanHaveHorizontalHandles_Data.Bool
-	rect.HasHorizontalHandles = rectDB.HasHorizontalHandles_Data.Bool
+	rect.CanHaveLeftHandle = rectDB.CanHaveLeftHandle_Data.Bool
+	rect.HasLeftHandle = rectDB.HasLeftHandle_Data.Bool
+	rect.CanHaveRightHandle = rectDB.CanHaveRightHandle_Data.Bool
+	rect.HasRightHandle = rectDB.HasRightHandle_Data.Bool
+	rect.CanHaveTopHandle = rectDB.CanHaveTopHandle_Data.Bool
+	rect.HasTopHandle = rectDB.HasTopHandle_Data.Bool
+	rect.CanHaveBottomHandle = rectDB.CanHaveBottomHandle_Data.Bool
+	rect.HasBottomHandle = rectDB.HasBottomHandle_Data.Bool
 	rect.CanMoveHorizontaly = rectDB.CanMoveHorizontaly_Data.Bool
 	rect.CanMoveVerticaly = rectDB.CanMoveVerticaly_Data.Bool
 }

@@ -14,6 +14,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { SVGDB } from './svg-db';
 
 // insertion point for imports
+import { RectDB } from './rect-db'
 
 @Injectable({
   providedIn: 'root'
@@ -71,6 +72,8 @@ export class SVGService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     svgdb.Layers = []
+    svgdb.StartRect = new RectDB
+    svgdb.EndRect = new RectDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -111,6 +114,8 @@ export class SVGService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     svgdb.Layers = []
+    svgdb.StartRect = new RectDB
+    svgdb.EndRect = new RectDB
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
     let httpOptions = {
@@ -121,7 +126,7 @@ export class SVGService {
     return this.http.put<SVGDB>(url, svgdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        this.log(`updated svgdb id=${svgdb.ID}`)
+        // this.log(`updated svgdb id=${svgdb.ID}`)
       }),
       catchError(this.handleError<SVGDB>('updateSVG'))
     );

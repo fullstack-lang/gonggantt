@@ -94,6 +94,9 @@ type EllipseDB struct {
 	// Declation for basic field ellipseDB.StrokeDashArray
 	StrokeDashArray_Data sql.NullString
 
+	// Declation for basic field ellipseDB.StrokeDashArrayWhenSelected
+	StrokeDashArrayWhenSelected_Data sql.NullString
+
 	// Declation for basic field ellipseDB.Transform
 	Transform_Data sql.NullString
 	// encoding of pointers
@@ -137,7 +140,9 @@ type EllipseWOP struct {
 
 	StrokeDashArray string `xlsx:"10"`
 
-	Transform string `xlsx:"11"`
+	StrokeDashArrayWhenSelected string `xlsx:"11"`
+
+	Transform string `xlsx:"12"`
 	// insertion for WOP pointer fields
 }
 
@@ -154,6 +159,7 @@ var Ellipse_Fields = []string{
 	"Stroke",
 	"StrokeWidth",
 	"StrokeDashArray",
+	"StrokeDashArrayWhenSelected",
 	"Transform",
 }
 
@@ -491,6 +497,9 @@ func (ellipseDB *EllipseDB) CopyBasicFieldsFromEllipse(ellipse *models.Ellipse) 
 	ellipseDB.StrokeDashArray_Data.String = ellipse.StrokeDashArray
 	ellipseDB.StrokeDashArray_Data.Valid = true
 
+	ellipseDB.StrokeDashArrayWhenSelected_Data.String = ellipse.StrokeDashArrayWhenSelected
+	ellipseDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	ellipseDB.Transform_Data.String = ellipse.Transform
 	ellipseDB.Transform_Data.Valid = true
 }
@@ -529,6 +538,9 @@ func (ellipseDB *EllipseDB) CopyBasicFieldsFromEllipseWOP(ellipse *EllipseWOP) {
 	ellipseDB.StrokeDashArray_Data.String = ellipse.StrokeDashArray
 	ellipseDB.StrokeDashArray_Data.Valid = true
 
+	ellipseDB.StrokeDashArrayWhenSelected_Data.String = ellipse.StrokeDashArrayWhenSelected
+	ellipseDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	ellipseDB.Transform_Data.String = ellipse.Transform
 	ellipseDB.Transform_Data.Valid = true
 }
@@ -546,6 +558,7 @@ func (ellipseDB *EllipseDB) CopyBasicFieldsToEllipse(ellipse *models.Ellipse) {
 	ellipse.Stroke = ellipseDB.Stroke_Data.String
 	ellipse.StrokeWidth = ellipseDB.StrokeWidth_Data.Float64
 	ellipse.StrokeDashArray = ellipseDB.StrokeDashArray_Data.String
+	ellipse.StrokeDashArrayWhenSelected = ellipseDB.StrokeDashArrayWhenSelected_Data.String
 	ellipse.Transform = ellipseDB.Transform_Data.String
 }
 
@@ -563,6 +576,7 @@ func (ellipseDB *EllipseDB) CopyBasicFieldsToEllipseWOP(ellipse *EllipseWOP) {
 	ellipse.Stroke = ellipseDB.Stroke_Data.String
 	ellipse.StrokeWidth = ellipseDB.StrokeWidth_Data.Float64
 	ellipse.StrokeDashArray = ellipseDB.StrokeDashArray_Data.String
+	ellipse.StrokeDashArrayWhenSelected = ellipseDB.StrokeDashArrayWhenSelected_Data.String
 	ellipse.Transform = ellipseDB.Transform_Data.String
 }
 

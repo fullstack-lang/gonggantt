@@ -91,6 +91,9 @@ type TextDB struct {
 	// Declation for basic field textDB.StrokeDashArray
 	StrokeDashArray_Data sql.NullString
 
+	// Declation for basic field textDB.StrokeDashArrayWhenSelected
+	StrokeDashArrayWhenSelected_Data sql.NullString
+
 	// Declation for basic field textDB.Transform
 	Transform_Data sql.NullString
 	// encoding of pointers
@@ -132,7 +135,9 @@ type TextWOP struct {
 
 	StrokeDashArray string `xlsx:"9"`
 
-	Transform string `xlsx:"10"`
+	StrokeDashArrayWhenSelected string `xlsx:"10"`
+
+	Transform string `xlsx:"11"`
 	// insertion for WOP pointer fields
 }
 
@@ -148,6 +153,7 @@ var Text_Fields = []string{
 	"Stroke",
 	"StrokeWidth",
 	"StrokeDashArray",
+	"StrokeDashArrayWhenSelected",
 	"Transform",
 }
 
@@ -482,6 +488,9 @@ func (textDB *TextDB) CopyBasicFieldsFromText(text *models.Text) {
 	textDB.StrokeDashArray_Data.String = text.StrokeDashArray
 	textDB.StrokeDashArray_Data.Valid = true
 
+	textDB.StrokeDashArrayWhenSelected_Data.String = text.StrokeDashArrayWhenSelected
+	textDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	textDB.Transform_Data.String = text.Transform
 	textDB.Transform_Data.Valid = true
 }
@@ -517,6 +526,9 @@ func (textDB *TextDB) CopyBasicFieldsFromTextWOP(text *TextWOP) {
 	textDB.StrokeDashArray_Data.String = text.StrokeDashArray
 	textDB.StrokeDashArray_Data.Valid = true
 
+	textDB.StrokeDashArrayWhenSelected_Data.String = text.StrokeDashArrayWhenSelected
+	textDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	textDB.Transform_Data.String = text.Transform
 	textDB.Transform_Data.Valid = true
 }
@@ -533,6 +545,7 @@ func (textDB *TextDB) CopyBasicFieldsToText(text *models.Text) {
 	text.Stroke = textDB.Stroke_Data.String
 	text.StrokeWidth = textDB.StrokeWidth_Data.Float64
 	text.StrokeDashArray = textDB.StrokeDashArray_Data.String
+	text.StrokeDashArrayWhenSelected = textDB.StrokeDashArrayWhenSelected_Data.String
 	text.Transform = textDB.Transform_Data.String
 }
 
@@ -549,6 +562,7 @@ func (textDB *TextDB) CopyBasicFieldsToTextWOP(text *TextWOP) {
 	text.Stroke = textDB.Stroke_Data.String
 	text.StrokeWidth = textDB.StrokeWidth_Data.Float64
 	text.StrokeDashArray = textDB.StrokeDashArray_Data.String
+	text.StrokeDashArrayWhenSelected = textDB.StrokeDashArrayWhenSelected_Data.String
 	text.Transform = textDB.Transform_Data.String
 }
 

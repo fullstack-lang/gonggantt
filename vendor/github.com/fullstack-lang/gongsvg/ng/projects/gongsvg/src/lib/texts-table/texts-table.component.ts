@@ -99,6 +99,9 @@ export class TextsTableComponent implements OnInit {
         case 'StrokeDashArray':
           return textDB.StrokeDashArray;
 
+        case 'StrokeDashArrayWhenSelected':
+          return textDB.StrokeDashArrayWhenSelected;
+
         case 'Transform':
           return textDB.Transform;
 
@@ -132,6 +135,7 @@ export class TextsTableComponent implements OnInit {
       mergedContent += textDB.Stroke.toLowerCase()
       mergedContent += textDB.StrokeWidth.toString()
       mergedContent += textDB.StrokeDashArray.toLowerCase()
+      mergedContent += textDB.StrokeDashArrayWhenSelected.toLowerCase()
       mergedContent += textDB.Transform.toLowerCase()
       if (textDB.Layer_TextsDBID.Int64 != 0) {
         mergedContent += this.frontRepo.Layers.get(textDB.Layer_TextsDBID.Int64)!.Name.toLowerCase()
@@ -200,6 +204,7 @@ export class TextsTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Texts",
       ]
@@ -214,6 +219,7 @@ export class TextsTableComponent implements OnInit {
         "Stroke",
         "StrokeWidth",
         "StrokeDashArray",
+        "StrokeDashArrayWhenSelected",
         "Transform",
         "Layer_Texts",
       ]

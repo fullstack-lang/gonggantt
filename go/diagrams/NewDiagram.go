@@ -267,8 +267,8 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	//gong:ident [ref_models.Bar]
 	__GongStructShape__000000_NewDiagram_Bar.Identifier = `ref_models.Bar`
 	__GongStructShape__000000_NewDiagram_Bar.ShowNbInstances = true
-	__GongStructShape__000000_NewDiagram_Bar.NbInstances = 4
-	__GongStructShape__000000_NewDiagram_Bar.Width = 240.000000
+	__GongStructShape__000000_NewDiagram_Bar.NbInstances = 1
+	__GongStructShape__000000_NewDiagram_Bar.Width = 178.000000
 	__GongStructShape__000000_NewDiagram_Bar.Heigth = 108.000000
 	__GongStructShape__000000_NewDiagram_Bar.IsSelected = false
 
@@ -281,7 +281,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000001_NewDiagram_Gantt.Identifier = `ref_models.Gantt`
 	__GongStructShape__000001_NewDiagram_Gantt.ShowNbInstances = true
 	__GongStructShape__000001_NewDiagram_Gantt.NbInstances = 1
-	__GongStructShape__000001_NewDiagram_Gantt.Width = 240.000000
+	__GongStructShape__000001_NewDiagram_Gantt.Width = 162.000000
 	__GongStructShape__000001_NewDiagram_Gantt.Heigth = 63.000000
 	__GongStructShape__000001_NewDiagram_Gantt.IsSelected = false
 
@@ -293,8 +293,8 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	//gong:ident [ref_models.Lane]
 	__GongStructShape__000002_NewDiagram_Lane.Identifier = `ref_models.Lane`
 	__GongStructShape__000002_NewDiagram_Lane.ShowNbInstances = true
-	__GongStructShape__000002_NewDiagram_Lane.NbInstances = 4
-	__GongStructShape__000002_NewDiagram_Lane.Width = 240.000000
+	__GongStructShape__000002_NewDiagram_Lane.NbInstances = 1
+	__GongStructShape__000002_NewDiagram_Lane.Width = 151.000000
 	__GongStructShape__000002_NewDiagram_Lane.Heigth = 78.000000
 	__GongStructShape__000002_NewDiagram_Lane.IsSelected = false
 
@@ -305,9 +305,24 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Lane.Bars]
 	__Link__000000_Bars.Identifier = `ref_models.Lane.Bars`
-	__Link__000000_Bars.Fieldtypename = `Bar`
+
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Bar]
+	__Link__000000_Bars.Fieldtypename = `ref_models.Bar`
+	__Link__000000_Bars.FieldOffsetX = 83.000000
+	__Link__000000_Bars.FieldOffsetY = 25.000000
 	__Link__000000_Bars.TargetMultiplicity = models.MANY
+	__Link__000000_Bars.TargetMultiplicityOffsetX = 109.000000
+	__Link__000000_Bars.TargetMultiplicityOffsetY = -7.000000
 	__Link__000000_Bars.SourceMultiplicity = models.ZERO_ONE
+	__Link__000000_Bars.SourceMultiplicityOffsetX = 11.000000
+	__Link__000000_Bars.SourceMultiplicityOffsetY = -13.000000
+	__Link__000000_Bars.StartOrientation = models.ORIENTATION_HORIZONTAL
+	__Link__000000_Bars.StartRatio = 0.448718
+	__Link__000000_Bars.EndOrientation = models.ORIENTATION_HORIZONTAL
+	__Link__000000_Bars.EndRatio = 0.324074
+	__Link__000000_Bars.CornerOffsetRatio = 1.304636
 
 	// Link values setup
 	__Link__000001_Lanes.Name = `Lanes`
@@ -316,9 +331,24 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Gantt.Lanes]
 	__Link__000001_Lanes.Identifier = `ref_models.Gantt.Lanes`
-	__Link__000001_Lanes.Fieldtypename = `Lane`
+
+	// comment added to overcome the problem with the comment map association
+
+	//gong:ident [ref_models.Lane]
+	__Link__000001_Lanes.Fieldtypename = `ref_models.Lane`
+	__Link__000001_Lanes.FieldOffsetX = 50.000000
+	__Link__000001_Lanes.FieldOffsetY = 23.000000
 	__Link__000001_Lanes.TargetMultiplicity = models.MANY
+	__Link__000001_Lanes.TargetMultiplicityOffsetX = 80.000000
+	__Link__000001_Lanes.TargetMultiplicityOffsetY = -9.000000
 	__Link__000001_Lanes.SourceMultiplicity = models.ZERO_ONE
+	__Link__000001_Lanes.SourceMultiplicityOffsetX = 7.000000
+	__Link__000001_Lanes.SourceMultiplicityOffsetY = -9.000000
+	__Link__000001_Lanes.StartOrientation = models.ORIENTATION_HORIZONTAL
+	__Link__000001_Lanes.StartRatio = 0.523810
+	__Link__000001_Lanes.EndOrientation = models.ORIENTATION_HORIZONTAL
+	__Link__000001_Lanes.EndRatio = 0.525641
+	__Link__000001_Lanes.CornerOffsetRatio = 1.358025
 
 	// NoteShape values setup
 	__NoteShape__000000_NoteOnTheModel.Name = `NoteOnTheModel`
@@ -337,10 +367,18 @@ Each has a slice of tasks
 A task is displayed as a bar ([models.Bar]) with a start and end date
 [models.Bar.StartDate] and [models.Bar.EndDate]).
 `
-	__NoteShape__000000_NoteOnTheModel.X = 250.000000
-	__NoteShape__000000_NoteOnTheModel.Y = 290.000000
-	__NoteShape__000000_NoteOnTheModel.Width = 240.000000
-	__NoteShape__000000_NoteOnTheModel.Heigth = 63.000000
+	__NoteShape__000000_NoteOnTheModel.BodyHTML = `<p>A Gantt Diagram
+is an instance of <a href="/models#Gantt">models.Gantt</a> that has
+a slice of lanes (<a href="/models#Lane">models.Lane</a>).
+<p>Each lane vertical position is defined by it order field <a href="/models#Lane.Order">models.Lane.Order</a>.
+Each has a slice of tasks
+<p>A task is displayed as a bar (<a href="/models#Bar">models.Bar</a>) with a start and end date
+<a href="/models#Bar.StartDate">models.Bar.StartDate</a> and <a href="/models#Bar.EndDate">models.Bar.EndDate</a>).
+`
+	__NoteShape__000000_NoteOnTheModel.X = 155.000000
+	__NoteShape__000000_NoteOnTheModel.Y = 269.000000
+	__NoteShape__000000_NoteOnTheModel.Width = 633.000000
+	__NoteShape__000000_NoteOnTheModel.Heigth = 171.000000
 	__NoteShape__000000_NoteOnTheModel.Matched = false
 
 	// NoteShapeLink values setup
@@ -415,3 +453,5 @@ A task is displayed as a bar ([models.Bar]) with a start and end date
 	__NoteShape__000000_NoteOnTheModel.NoteShapeLinks = append(__NoteShape__000000_NoteOnTheModel.NoteShapeLinks, __NoteShapeLink__000001_Gantt)
 	__NoteShape__000000_NoteOnTheModel.NoteShapeLinks = append(__NoteShape__000000_NoteOnTheModel.NoteShapeLinks, __NoteShapeLink__000002_Lane)
 }
+
+

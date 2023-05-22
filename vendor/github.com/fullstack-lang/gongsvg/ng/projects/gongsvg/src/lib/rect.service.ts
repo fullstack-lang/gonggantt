@@ -72,6 +72,8 @@ export class RectService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     rectdb.Animations = []
+    rectdb.RectAnchoredTexts = []
+    rectdb.RectAnchoredRects = []
     let _Layer_Rects_reverse = rectdb.Layer_Rects_reverse
     rectdb.Layer_Rects_reverse = new LayerDB
 
@@ -115,6 +117,8 @@ export class RectService {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
     rectdb.Animations = []
+    rectdb.RectAnchoredTexts = []
+    rectdb.RectAnchoredRects = []
     let _Layer_Rects_reverse = rectdb.Layer_Rects_reverse
     rectdb.Layer_Rects_reverse = new LayerDB
 
@@ -128,7 +132,7 @@ export class RectService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         rectdb.Layer_Rects_reverse = _Layer_Rects_reverse
-        this.log(`updated rectdb id=${rectdb.ID}`)
+        // this.log(`updated rectdb id=${rectdb.ID}`)
       }),
       catchError(this.handleError<RectDB>('updateRect'))
     );

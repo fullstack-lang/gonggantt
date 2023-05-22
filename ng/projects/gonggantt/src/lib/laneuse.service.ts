@@ -129,7 +129,7 @@ export class LaneUseService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = _Milestone_LanesToDisplayMilestoneUse_reverse
-        this.log(`updated laneusedb id=${laneusedb.ID}`)
+        // this.log(`updated laneusedb id=${laneusedb.ID}`)
       }),
       catchError(this.handleError<LaneUseDB>('updateLaneUse'))
     );

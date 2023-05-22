@@ -54,6 +54,13 @@
             </td>
         </ng-container>
         <!-- -->
+        <ng-container matColumnDef="AnchoredText_Animates">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (AnchoredText) Animates </th>
+            <td mat-cell *matCellDef="let animate">
+                {{frontRepo.AnchoredTexts.get(animate.AnchoredText_AnimatesDBID.Int64)?.Name}}
+            </td>
+        </ng-container>
+        <!-- -->
         <ng-container matColumnDef="Circle_Animations">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (Circle) Animations </th>
             <td mat-cell *matCellDef="let animate">
@@ -100,6 +107,13 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (Rect) Animations </th>
             <td mat-cell *matCellDef="let animate">
                 {{frontRepo.Rects.get(animate.Rect_AnimationsDBID.Int64)?.Name}}
+            </td>
+        </ng-container>
+        <!-- -->
+        <ng-container matColumnDef="RectAnchoredText_Animates">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> <-- (RectAnchoredText) Animates </th>
+            <td mat-cell *matCellDef="let animate">
+                {{frontRepo.RectAnchoredTexts.get(animate.RectAnchoredText_AnimatesDBID.Int64)?.Name}}
             </td>
         </ng-container>
         <!-- -->

@@ -2,6 +2,86 @@
 package models
 
 // insertion point of enum utility functions
+// Utility function for AnchorType
+// if enum values are string, it is stored with the value
+// if enum values are int, they are stored with the code of the value
+func (anchortype AnchorType) ToString() (res string) {
+
+	// migration of former implementation of enum
+	switch anchortype {
+	// insertion code per enum code
+	case ANCHOR_TOP:
+		res = "ANCHOR_TOP"
+	case ANCHOR_BOTTOM:
+		res = "ANCHOR_BOTTOM"
+	case ANCHOR_LEFT:
+		res = "ANCHOR_LEFT"
+	case ANCHOR_RIGHT:
+		res = "ANCHOR_RIGHT"
+	case ANCHOR_CENTER:
+		res = "ANCHOR_CENTER"
+	}
+	return
+}
+
+func (anchortype *AnchorType) FromString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "ANCHOR_TOP":
+		*anchortype = ANCHOR_TOP
+	case "ANCHOR_BOTTOM":
+		*anchortype = ANCHOR_BOTTOM
+	case "ANCHOR_LEFT":
+		*anchortype = ANCHOR_LEFT
+	case "ANCHOR_RIGHT":
+		*anchortype = ANCHOR_RIGHT
+	case "ANCHOR_CENTER":
+		*anchortype = ANCHOR_CENTER
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (anchortype *AnchorType) FromCodeString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "ANCHOR_TOP":
+		*anchortype = ANCHOR_TOP
+	case "ANCHOR_BOTTOM":
+		*anchortype = ANCHOR_BOTTOM
+	case "ANCHOR_LEFT":
+		*anchortype = ANCHOR_LEFT
+	case "ANCHOR_RIGHT":
+		*anchortype = ANCHOR_RIGHT
+	case "ANCHOR_CENTER":
+		*anchortype = ANCHOR_CENTER
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (anchortype *AnchorType) ToCodeString() (res string) {
+
+	switch *anchortype {
+	// insertion code per enum code
+	case ANCHOR_TOP:
+		res = "ANCHOR_TOP"
+	case ANCHOR_BOTTOM:
+		res = "ANCHOR_BOTTOM"
+	case ANCHOR_LEFT:
+		res = "ANCHOR_LEFT"
+	case ANCHOR_RIGHT:
+		res = "ANCHOR_RIGHT"
+	case ANCHOR_CENTER:
+		res = "ANCHOR_CENTER"
+	}
+	return
+}
+
 // Utility function for ColorType
 // if enum values are string, it is stored with the value
 // if enum values are int, they are stored with the code of the value
@@ -1214,6 +1294,478 @@ func (colortype *ColorType) ToCodeString() (res string) {
 		res = "Yellow"
 	case Yellowgreen:
 		res = "Yellowgreen"
+	}
+	return
+}
+
+// Utility function for DrawingState
+// if enum values are string, it is stored with the value
+// if enum values are int, they are stored with the code of the value
+func (drawingstate DrawingState) ToString() (res string) {
+
+	// migration of former implementation of enum
+	switch drawingstate {
+	// insertion code per enum code
+	case NOT_DRAWING_LINE:
+		res = "NOT_DRAWING_LINE"
+	case DRAWING_LINE:
+		res = "DRAWING_LINE"
+	}
+	return
+}
+
+func (drawingstate *DrawingState) FromString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "NOT_DRAWING_LINE":
+		*drawingstate = NOT_DRAWING_LINE
+	case "DRAWING_LINE":
+		*drawingstate = DRAWING_LINE
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (drawingstate *DrawingState) FromCodeString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "NOT_DRAWING_LINE":
+		*drawingstate = NOT_DRAWING_LINE
+	case "DRAWING_LINE":
+		*drawingstate = DRAWING_LINE
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (drawingstate *DrawingState) ToCodeString() (res string) {
+
+	switch *drawingstate {
+	// insertion code per enum code
+	case NOT_DRAWING_LINE:
+		res = "NOT_DRAWING_LINE"
+	case DRAWING_LINE:
+		res = "DRAWING_LINE"
+	}
+	return
+}
+
+// Utility function for LinkType
+// if enum values are string, it is stored with the value
+// if enum values are int, they are stored with the code of the value
+func (linktype LinkType) ToString() (res string) {
+
+	// migration of former implementation of enum
+	switch linktype {
+	// insertion code per enum code
+	case LINK_TYPE_LINE_WITH_CONTROL_POINTS:
+		res = "LINK_TYPE_LINE_WITH_CONTROL_POINTS"
+	case LINK_TYPE_FLOATING_ORTHOGONAL:
+		res = "LINK_TYPE_FLOATING_ORTHOGONAL"
+	}
+	return
+}
+
+func (linktype *LinkType) FromString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "LINK_TYPE_LINE_WITH_CONTROL_POINTS":
+		*linktype = LINK_TYPE_LINE_WITH_CONTROL_POINTS
+	case "LINK_TYPE_FLOATING_ORTHOGONAL":
+		*linktype = LINK_TYPE_FLOATING_ORTHOGONAL
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (linktype *LinkType) FromCodeString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "LINK_TYPE_LINE_WITH_CONTROL_POINTS":
+		*linktype = LINK_TYPE_LINE_WITH_CONTROL_POINTS
+	case "LINK_TYPE_FLOATING_ORTHOGONAL":
+		*linktype = LINK_TYPE_FLOATING_ORTHOGONAL
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (linktype *LinkType) ToCodeString() (res string) {
+
+	switch *linktype {
+	// insertion code per enum code
+	case LINK_TYPE_LINE_WITH_CONTROL_POINTS:
+		res = "LINK_TYPE_LINE_WITH_CONTROL_POINTS"
+	case LINK_TYPE_FLOATING_ORTHOGONAL:
+		res = "LINK_TYPE_FLOATING_ORTHOGONAL"
+	}
+	return
+}
+
+// Utility function for OrientationType
+// if enum values are string, it is stored with the value
+// if enum values are int, they are stored with the code of the value
+func (orientationtype OrientationType) ToString() (res string) {
+
+	// migration of former implementation of enum
+	switch orientationtype {
+	// insertion code per enum code
+	case ORIENTATION_HORIZONTAL:
+		res = "ORIENTATION_HORIZONTAL"
+	case ORIENTATION_VERTICAL:
+		res = "ORIENTATION_VERTICAL"
+	}
+	return
+}
+
+func (orientationtype *OrientationType) FromString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "ORIENTATION_HORIZONTAL":
+		*orientationtype = ORIENTATION_HORIZONTAL
+	case "ORIENTATION_VERTICAL":
+		*orientationtype = ORIENTATION_VERTICAL
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (orientationtype *OrientationType) FromCodeString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "ORIENTATION_HORIZONTAL":
+		*orientationtype = ORIENTATION_HORIZONTAL
+	case "ORIENTATION_VERTICAL":
+		*orientationtype = ORIENTATION_VERTICAL
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (orientationtype *OrientationType) ToCodeString() (res string) {
+
+	switch *orientationtype {
+	// insertion code per enum code
+	case ORIENTATION_HORIZONTAL:
+		res = "ORIENTATION_HORIZONTAL"
+	case ORIENTATION_VERTICAL:
+		res = "ORIENTATION_VERTICAL"
+	}
+	return
+}
+
+// Utility function for PositionOnArrowType
+// if enum values are string, it is stored with the value
+// if enum values are int, they are stored with the code of the value
+func (positiononarrowtype PositionOnArrowType) ToString() (res string) {
+
+	// migration of former implementation of enum
+	switch positiononarrowtype {
+	// insertion code per enum code
+	case POSITION_ON_ARROW_START:
+		res = "POSITION_ON_ARROW_START"
+	case POSITION_ON_ARROW_END:
+		res = "POSITION_ON_ARROW_END"
+	}
+	return
+}
+
+func (positiononarrowtype *PositionOnArrowType) FromString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "POSITION_ON_ARROW_START":
+		*positiononarrowtype = POSITION_ON_ARROW_START
+	case "POSITION_ON_ARROW_END":
+		*positiononarrowtype = POSITION_ON_ARROW_END
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (positiononarrowtype *PositionOnArrowType) FromCodeString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "POSITION_ON_ARROW_START":
+		*positiononarrowtype = POSITION_ON_ARROW_START
+	case "POSITION_ON_ARROW_END":
+		*positiononarrowtype = POSITION_ON_ARROW_END
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (positiononarrowtype *PositionOnArrowType) ToCodeString() (res string) {
+
+	switch *positiononarrowtype {
+	// insertion code per enum code
+	case POSITION_ON_ARROW_START:
+		res = "POSITION_ON_ARROW_START"
+	case POSITION_ON_ARROW_END:
+		res = "POSITION_ON_ARROW_END"
+	}
+	return
+}
+
+// Utility function for RectAnchorType
+// if enum values are string, it is stored with the value
+// if enum values are int, they are stored with the code of the value
+func (rectanchortype RectAnchorType) ToString() (res string) {
+
+	// migration of former implementation of enum
+	switch rectanchortype {
+	// insertion code per enum code
+	case RECT_ANCHOR_TOP:
+		res = "RECT_ANCHOR_TOP"
+	case RECT_ANCHOR_TOP_LEFT:
+		res = "RECT_ANCHOR_TOP_LEFT"
+	case RECT_ANCHOR_TOP_RIGHT:
+		res = "RECT_ANCHOR_TOP_RIGHT"
+	case RECT_ANCHOR_BOTTOM:
+		res = "RECT_ANCHOR_BOTTOM"
+	case RECT_ANCHOR_BOTTOM_LEFT:
+		res = "RECT_ANCHOR_BOTTOM_LEFT"
+	case RECT_ANCHOR_BOTTOM_RIGHT:
+		res = "RECT_ANCHOR_BOTTOM_RIGHT"
+	case RECT_ANCHOR_LEFT:
+		res = "RECT_ANCHOR_LEFT"
+	case RECT_ANCHOR_RIGHT:
+		res = "RECT_ANCHOR_RIGHT"
+	case RECT_ANCHOR_CENTER:
+		res = "RECT_ANCHOR_CENTER"
+	}
+	return
+}
+
+func (rectanchortype *RectAnchorType) FromString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "RECT_ANCHOR_TOP":
+		*rectanchortype = RECT_ANCHOR_TOP
+	case "RECT_ANCHOR_TOP_LEFT":
+		*rectanchortype = RECT_ANCHOR_TOP_LEFT
+	case "RECT_ANCHOR_TOP_RIGHT":
+		*rectanchortype = RECT_ANCHOR_TOP_RIGHT
+	case "RECT_ANCHOR_BOTTOM":
+		*rectanchortype = RECT_ANCHOR_BOTTOM
+	case "RECT_ANCHOR_BOTTOM_LEFT":
+		*rectanchortype = RECT_ANCHOR_BOTTOM_LEFT
+	case "RECT_ANCHOR_BOTTOM_RIGHT":
+		*rectanchortype = RECT_ANCHOR_BOTTOM_RIGHT
+	case "RECT_ANCHOR_LEFT":
+		*rectanchortype = RECT_ANCHOR_LEFT
+	case "RECT_ANCHOR_RIGHT":
+		*rectanchortype = RECT_ANCHOR_RIGHT
+	case "RECT_ANCHOR_CENTER":
+		*rectanchortype = RECT_ANCHOR_CENTER
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (rectanchortype *RectAnchorType) FromCodeString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "RECT_ANCHOR_TOP":
+		*rectanchortype = RECT_ANCHOR_TOP
+	case "RECT_ANCHOR_TOP_LEFT":
+		*rectanchortype = RECT_ANCHOR_TOP_LEFT
+	case "RECT_ANCHOR_TOP_RIGHT":
+		*rectanchortype = RECT_ANCHOR_TOP_RIGHT
+	case "RECT_ANCHOR_BOTTOM":
+		*rectanchortype = RECT_ANCHOR_BOTTOM
+	case "RECT_ANCHOR_BOTTOM_LEFT":
+		*rectanchortype = RECT_ANCHOR_BOTTOM_LEFT
+	case "RECT_ANCHOR_BOTTOM_RIGHT":
+		*rectanchortype = RECT_ANCHOR_BOTTOM_RIGHT
+	case "RECT_ANCHOR_LEFT":
+		*rectanchortype = RECT_ANCHOR_LEFT
+	case "RECT_ANCHOR_RIGHT":
+		*rectanchortype = RECT_ANCHOR_RIGHT
+	case "RECT_ANCHOR_CENTER":
+		*rectanchortype = RECT_ANCHOR_CENTER
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (rectanchortype *RectAnchorType) ToCodeString() (res string) {
+
+	switch *rectanchortype {
+	// insertion code per enum code
+	case RECT_ANCHOR_TOP:
+		res = "RECT_ANCHOR_TOP"
+	case RECT_ANCHOR_TOP_LEFT:
+		res = "RECT_ANCHOR_TOP_LEFT"
+	case RECT_ANCHOR_TOP_RIGHT:
+		res = "RECT_ANCHOR_TOP_RIGHT"
+	case RECT_ANCHOR_BOTTOM:
+		res = "RECT_ANCHOR_BOTTOM"
+	case RECT_ANCHOR_BOTTOM_LEFT:
+		res = "RECT_ANCHOR_BOTTOM_LEFT"
+	case RECT_ANCHOR_BOTTOM_RIGHT:
+		res = "RECT_ANCHOR_BOTTOM_RIGHT"
+	case RECT_ANCHOR_LEFT:
+		res = "RECT_ANCHOR_LEFT"
+	case RECT_ANCHOR_RIGHT:
+		res = "RECT_ANCHOR_RIGHT"
+	case RECT_ANCHOR_CENTER:
+		res = "RECT_ANCHOR_CENTER"
+	}
+	return
+}
+
+// Utility function for SideType
+// if enum values are string, it is stored with the value
+// if enum values are int, they are stored with the code of the value
+func (sidetype SideType) ToString() (res string) {
+
+	// migration of former implementation of enum
+	switch sidetype {
+	// insertion code per enum code
+	case SIDE_TOP:
+		res = "SIDE_TOP"
+	case SIDE_BOTTOM:
+		res = "SIDE_BOTTOM"
+	case SIDE_LEFT:
+		res = "SIDE_LEFT"
+	case SIDE_RIGHT:
+		res = "SIDE_RIGHT"
+	}
+	return
+}
+
+func (sidetype *SideType) FromString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "SIDE_TOP":
+		*sidetype = SIDE_TOP
+	case "SIDE_BOTTOM":
+		*sidetype = SIDE_BOTTOM
+	case "SIDE_LEFT":
+		*sidetype = SIDE_LEFT
+	case "SIDE_RIGHT":
+		*sidetype = SIDE_RIGHT
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (sidetype *SideType) FromCodeString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "SIDE_TOP":
+		*sidetype = SIDE_TOP
+	case "SIDE_BOTTOM":
+		*sidetype = SIDE_BOTTOM
+	case "SIDE_LEFT":
+		*sidetype = SIDE_LEFT
+	case "SIDE_RIGHT":
+		*sidetype = SIDE_RIGHT
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (sidetype *SideType) ToCodeString() (res string) {
+
+	switch *sidetype {
+	// insertion code per enum code
+	case SIDE_TOP:
+		res = "SIDE_TOP"
+	case SIDE_BOTTOM:
+		res = "SIDE_BOTTOM"
+	case SIDE_LEFT:
+		res = "SIDE_LEFT"
+	case SIDE_RIGHT:
+		res = "SIDE_RIGHT"
+	}
+	return
+}
+
+// Utility function for TextAnchorType
+// if enum values are string, it is stored with the value
+// if enum values are int, they are stored with the code of the value
+func (textanchortype TextAnchorType) ToString() (res string) {
+
+	// migration of former implementation of enum
+	switch textanchortype {
+	// insertion code per enum code
+	case TEXT_ANCHOR_LEFT:
+		res = "left"
+	case TEXT_ANCHOR_RIGHT:
+		res = "right"
+	case TEXT_ANCHOR_CENTER:
+		res = "middle"
+	}
+	return
+}
+
+func (textanchortype *TextAnchorType) FromString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "left":
+		*textanchortype = TEXT_ANCHOR_LEFT
+	case "right":
+		*textanchortype = TEXT_ANCHOR_RIGHT
+	case "middle":
+		*textanchortype = TEXT_ANCHOR_CENTER
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (textanchortype *TextAnchorType) FromCodeString(input string) (err error) {
+
+	switch input {
+	// insertion code per enum code
+	case "TEXT_ANCHOR_LEFT":
+		*textanchortype = TEXT_ANCHOR_LEFT
+	case "TEXT_ANCHOR_RIGHT":
+		*textanchortype = TEXT_ANCHOR_RIGHT
+	case "TEXT_ANCHOR_CENTER":
+		*textanchortype = TEXT_ANCHOR_CENTER
+	default:
+		return errUnkownEnum
+	}
+	return
+}
+
+func (textanchortype *TextAnchorType) ToCodeString() (res string) {
+
+	switch *textanchortype {
+	// insertion code per enum code
+	case TEXT_ANCHOR_LEFT:
+		res = "TEXT_ANCHOR_LEFT"
+	case TEXT_ANCHOR_RIGHT:
+		res = "TEXT_ANCHOR_RIGHT"
+	case TEXT_ANCHOR_CENTER:
+		res = "TEXT_ANCHOR_CENTER"
 	}
 	return
 }

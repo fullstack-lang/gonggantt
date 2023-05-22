@@ -6,6 +6,9 @@ import { LayerDB } from './layer-db'
 import { NullInt64 } from './null-int64'
 
 export class PolygoneDB {
+
+	static GONGSTRUCT_NAME = "Polygone"
+
 	CreatedAt?: string
 	DeletedAt?: string
 	ID: number = 0
@@ -18,6 +21,7 @@ export class PolygoneDB {
 	Stroke: string = ""
 	StrokeWidth: number = 0
 	StrokeDashArray: string = ""
+	StrokeDashArrayWhenSelected: string = ""
 	Transform: string = ""
 
 	// insertion point for other declarations

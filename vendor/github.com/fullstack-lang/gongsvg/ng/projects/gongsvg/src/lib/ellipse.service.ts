@@ -128,7 +128,7 @@ export class EllipseService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         ellipsedb.Layer_Ellipses_reverse = _Layer_Ellipses_reverse
-        this.log(`updated ellipsedb id=${ellipsedb.ID}`)
+        // this.log(`updated ellipsedb id=${ellipsedb.ID}`)
       }),
       catchError(this.handleError<EllipseDB>('updateEllipse'))
     );

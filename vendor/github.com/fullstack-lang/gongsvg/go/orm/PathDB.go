@@ -85,6 +85,9 @@ type PathDB struct {
 	// Declation for basic field pathDB.StrokeDashArray
 	StrokeDashArray_Data sql.NullString
 
+	// Declation for basic field pathDB.StrokeDashArrayWhenSelected
+	StrokeDashArrayWhenSelected_Data sql.NullString
+
 	// Declation for basic field pathDB.Transform
 	Transform_Data sql.NullString
 	// encoding of pointers
@@ -122,7 +125,9 @@ type PathWOP struct {
 
 	StrokeDashArray string `xlsx:"7"`
 
-	Transform string `xlsx:"8"`
+	StrokeDashArrayWhenSelected string `xlsx:"8"`
+
+	Transform string `xlsx:"9"`
 	// insertion for WOP pointer fields
 }
 
@@ -136,6 +141,7 @@ var Path_Fields = []string{
 	"Stroke",
 	"StrokeWidth",
 	"StrokeDashArray",
+	"StrokeDashArrayWhenSelected",
 	"Transform",
 }
 
@@ -464,6 +470,9 @@ func (pathDB *PathDB) CopyBasicFieldsFromPath(path *models.Path) {
 	pathDB.StrokeDashArray_Data.String = path.StrokeDashArray
 	pathDB.StrokeDashArray_Data.Valid = true
 
+	pathDB.StrokeDashArrayWhenSelected_Data.String = path.StrokeDashArrayWhenSelected
+	pathDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	pathDB.Transform_Data.String = path.Transform
 	pathDB.Transform_Data.Valid = true
 }
@@ -493,6 +502,9 @@ func (pathDB *PathDB) CopyBasicFieldsFromPathWOP(path *PathWOP) {
 	pathDB.StrokeDashArray_Data.String = path.StrokeDashArray
 	pathDB.StrokeDashArray_Data.Valid = true
 
+	pathDB.StrokeDashArrayWhenSelected_Data.String = path.StrokeDashArrayWhenSelected
+	pathDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	pathDB.Transform_Data.String = path.Transform
 	pathDB.Transform_Data.Valid = true
 }
@@ -507,6 +519,7 @@ func (pathDB *PathDB) CopyBasicFieldsToPath(path *models.Path) {
 	path.Stroke = pathDB.Stroke_Data.String
 	path.StrokeWidth = pathDB.StrokeWidth_Data.Float64
 	path.StrokeDashArray = pathDB.StrokeDashArray_Data.String
+	path.StrokeDashArrayWhenSelected = pathDB.StrokeDashArrayWhenSelected_Data.String
 	path.Transform = pathDB.Transform_Data.String
 }
 
@@ -521,6 +534,7 @@ func (pathDB *PathDB) CopyBasicFieldsToPathWOP(path *PathWOP) {
 	path.Stroke = pathDB.Stroke_Data.String
 	path.StrokeWidth = pathDB.StrokeWidth_Data.Float64
 	path.StrokeDashArray = pathDB.StrokeDashArray_Data.String
+	path.StrokeDashArrayWhenSelected = pathDB.StrokeDashArrayWhenSelected_Data.String
 	path.Transform = pathDB.Transform_Data.String
 }
 

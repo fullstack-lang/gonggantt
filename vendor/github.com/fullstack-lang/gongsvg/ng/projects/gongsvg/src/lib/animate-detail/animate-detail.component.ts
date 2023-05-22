@@ -10,6 +10,7 @@ import { MapOfComponents } from '../map-components'
 import { MapOfSortingComponents } from '../map-components'
 
 // insertion point for imports
+import { AnchoredTextDB } from '../anchoredtext-db'
 import { CircleDB } from '../circle-db'
 import { EllipseDB } from '../ellipse-db'
 import { LineDB } from '../line-db'
@@ -17,6 +18,7 @@ import { PathDB } from '../path-db'
 import { PolygoneDB } from '../polygone-db'
 import { PolylineDB } from '../polyline-db'
 import { RectDB } from '../rect-db'
+import { RectAnchoredTextDB } from '../rectanchoredtext-db'
 import { TextDB } from '../text-db'
 
 import { Router, ActivatedRoute } from '@angular/router';
@@ -31,6 +33,7 @@ enum AnimateDetailComponentState {
 	CREATE_INSTANCE,
 	UPDATE_INSTANCE,
 	// insertion point for declarations of enum values of state
+	CREATE_INSTANCE_WITH_ASSOCIATION_AnchoredText_Animates_SET,
 	CREATE_INSTANCE_WITH_ASSOCIATION_Circle_Animations_SET,
 	CREATE_INSTANCE_WITH_ASSOCIATION_Ellipse_Animates_SET,
 	CREATE_INSTANCE_WITH_ASSOCIATION_Line_Animates_SET,
@@ -38,6 +41,7 @@ enum AnimateDetailComponentState {
 	CREATE_INSTANCE_WITH_ASSOCIATION_Polygone_Animates_SET,
 	CREATE_INSTANCE_WITH_ASSOCIATION_Polyline_Animates_SET,
 	CREATE_INSTANCE_WITH_ASSOCIATION_Rect_Animations_SET,
+	CREATE_INSTANCE_WITH_ASSOCIATION_RectAnchoredText_Animates_SET,
 	CREATE_INSTANCE_WITH_ASSOCIATION_Text_Animates_SET,
 }
 
@@ -108,6 +112,10 @@ export class AnimateDetailComponent implements OnInit {
 			} else {
 				switch (this.originStructFieldName) {
 					// insertion point for state computation
+					case "Animates":
+						// console.log("Animate" + " is instanciated with back pointer to instance " + this.id + " AnchoredText association Animates")
+						this.state = AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_AnchoredText_Animates_SET
+						break;
 					case "Animations":
 						// console.log("Animate" + " is instanciated with back pointer to instance " + this.id + " Circle association Animations")
 						this.state = AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Circle_Animations_SET
@@ -135,6 +143,10 @@ export class AnimateDetailComponent implements OnInit {
 					case "Animations":
 						// console.log("Animate" + " is instanciated with back pointer to instance " + this.id + " Rect association Animations")
 						this.state = AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Rect_Animations_SET
+						break;
+					case "Animates":
+						// console.log("Animate" + " is instanciated with back pointer to instance " + this.id + " RectAnchoredText association Animates")
+						this.state = AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_RectAnchoredText_Animates_SET
 						break;
 					case "Animates":
 						// console.log("Animate" + " is instanciated with back pointer to instance " + this.id + " Text association Animates")
@@ -176,6 +188,10 @@ export class AnimateDetailComponent implements OnInit {
 						this.animate = animate!
 						break;
 					// insertion point for init of association field
+					case AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_AnchoredText_Animates_SET:
+						this.animate = new (AnimateDB)
+						this.animate.AnchoredText_Animates_reverse = frontRepo.AnchoredTexts.get(this.id)!
+						break;
 					case AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Circle_Animations_SET:
 						this.animate = new (AnimateDB)
 						this.animate.Circle_Animations_reverse = frontRepo.Circles.get(this.id)!
@@ -204,6 +220,10 @@ export class AnimateDetailComponent implements OnInit {
 						this.animate = new (AnimateDB)
 						this.animate.Rect_Animations_reverse = frontRepo.Rects.get(this.id)!
 						break;
+					case AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_RectAnchoredText_Animates_SET:
+						this.animate = new (AnimateDB)
+						this.animate.RectAnchoredText_Animates_reverse = frontRepo.RectAnchoredTexts.get(this.id)!
+						break;
 					case AnimateDetailComponentState.CREATE_INSTANCE_WITH_ASSOCIATION_Text_Animates_SET:
 						this.animate = new (AnimateDB)
 						this.animate.Text_Animates_reverse = frontRepo.Texts.get(this.id)!
@@ -229,6 +249,18 @@ export class AnimateDetailComponent implements OnInit {
 		// save from the front pointer space to the non pointer space for serialization
 
 		// insertion point for translation/nullation of each pointers
+		if (this.animate.AnchoredText_Animates_reverse != undefined) {
+			if (this.animate.AnchoredText_AnimatesDBID == undefined) {
+				this.animate.AnchoredText_AnimatesDBID = new NullInt64
+			}
+			this.animate.AnchoredText_AnimatesDBID.Int64 = this.animate.AnchoredText_Animates_reverse.ID
+			this.animate.AnchoredText_AnimatesDBID.Valid = true
+			if (this.animate.AnchoredText_AnimatesDBID_Index == undefined) {
+				this.animate.AnchoredText_AnimatesDBID_Index = new NullInt64
+			}
+			this.animate.AnchoredText_AnimatesDBID_Index.Valid = true
+			this.animate.AnchoredText_Animates_reverse = new AnchoredTextDB // very important, otherwise, circular JSON
+		}
 		if (this.animate.Circle_Animations_reverse != undefined) {
 			if (this.animate.Circle_AnimationsDBID == undefined) {
 				this.animate.Circle_AnimationsDBID = new NullInt64
@@ -312,6 +344,18 @@ export class AnimateDetailComponent implements OnInit {
 			}
 			this.animate.Rect_AnimationsDBID_Index.Valid = true
 			this.animate.Rect_Animations_reverse = new RectDB // very important, otherwise, circular JSON
+		}
+		if (this.animate.RectAnchoredText_Animates_reverse != undefined) {
+			if (this.animate.RectAnchoredText_AnimatesDBID == undefined) {
+				this.animate.RectAnchoredText_AnimatesDBID = new NullInt64
+			}
+			this.animate.RectAnchoredText_AnimatesDBID.Int64 = this.animate.RectAnchoredText_Animates_reverse.ID
+			this.animate.RectAnchoredText_AnimatesDBID.Valid = true
+			if (this.animate.RectAnchoredText_AnimatesDBID_Index == undefined) {
+				this.animate.RectAnchoredText_AnimatesDBID_Index = new NullInt64
+			}
+			this.animate.RectAnchoredText_AnimatesDBID_Index.Valid = true
+			this.animate.RectAnchoredText_Animates_reverse = new RectAnchoredTextDB // very important, otherwise, circular JSON
 		}
 		if (this.animate.Text_Animates_reverse != undefined) {
 			if (this.animate.Text_AnimatesDBID == undefined) {

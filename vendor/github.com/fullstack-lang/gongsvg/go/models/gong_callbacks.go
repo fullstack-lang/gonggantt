@@ -5,6 +5,10 @@ func AfterCreateFromFront[Type Gongstruct](stage *StageStruct, instance *Type) {
 
 	switch target := any(instance).(type) {
 	// insertion point
+	case *AnchoredText:
+		if stage.OnAfterAnchoredTextCreateCallback != nil {
+			stage.OnAfterAnchoredTextCreateCallback.OnAfterCreate(stage, target)
+		}
 	case *Animate:
 		if stage.OnAfterAnimateCreateCallback != nil {
 			stage.OnAfterAnimateCreateCallback.OnAfterCreate(stage, target)
@@ -25,9 +29,17 @@ func AfterCreateFromFront[Type Gongstruct](stage *StageStruct, instance *Type) {
 		if stage.OnAfterLineCreateCallback != nil {
 			stage.OnAfterLineCreateCallback.OnAfterCreate(stage, target)
 		}
+	case *Link:
+		if stage.OnAfterLinkCreateCallback != nil {
+			stage.OnAfterLinkCreateCallback.OnAfterCreate(stage, target)
+		}
 	case *Path:
 		if stage.OnAfterPathCreateCallback != nil {
 			stage.OnAfterPathCreateCallback.OnAfterCreate(stage, target)
+		}
+	case *Point:
+		if stage.OnAfterPointCreateCallback != nil {
+			stage.OnAfterPointCreateCallback.OnAfterCreate(stage, target)
 		}
 	case *Polygone:
 		if stage.OnAfterPolygoneCreateCallback != nil {
@@ -40,6 +52,18 @@ func AfterCreateFromFront[Type Gongstruct](stage *StageStruct, instance *Type) {
 	case *Rect:
 		if stage.OnAfterRectCreateCallback != nil {
 			stage.OnAfterRectCreateCallback.OnAfterCreate(stage, target)
+		}
+	case *RectAnchoredRect:
+		if stage.OnAfterRectAnchoredRectCreateCallback != nil {
+			stage.OnAfterRectAnchoredRectCreateCallback.OnAfterCreate(stage, target)
+		}
+	case *RectAnchoredText:
+		if stage.OnAfterRectAnchoredTextCreateCallback != nil {
+			stage.OnAfterRectAnchoredTextCreateCallback.OnAfterCreate(stage, target)
+		}
+	case *RectLinkLink:
+		if stage.OnAfterRectLinkLinkCreateCallback != nil {
+			stage.OnAfterRectLinkLinkCreateCallback.OnAfterCreate(stage, target)
 		}
 	case *SVG:
 		if stage.OnAfterSVGCreateCallback != nil {
@@ -59,6 +83,11 @@ func AfterUpdateFromFront[Type Gongstruct](stage *StageStruct, old, new *Type) {
 
 	switch oldTarget := any(old).(type) {
 	// insertion point
+	case *AnchoredText:
+		newTarget := any(new).(*AnchoredText)
+		if stage.OnAfterAnchoredTextUpdateCallback != nil {
+			stage.OnAfterAnchoredTextUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
+		}
 	case *Animate:
 		newTarget := any(new).(*Animate)
 		if stage.OnAfterAnimateUpdateCallback != nil {
@@ -84,10 +113,20 @@ func AfterUpdateFromFront[Type Gongstruct](stage *StageStruct, old, new *Type) {
 		if stage.OnAfterLineUpdateCallback != nil {
 			stage.OnAfterLineUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
 		}
+	case *Link:
+		newTarget := any(new).(*Link)
+		if stage.OnAfterLinkUpdateCallback != nil {
+			stage.OnAfterLinkUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
+		}
 	case *Path:
 		newTarget := any(new).(*Path)
 		if stage.OnAfterPathUpdateCallback != nil {
 			stage.OnAfterPathUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
+		}
+	case *Point:
+		newTarget := any(new).(*Point)
+		if stage.OnAfterPointUpdateCallback != nil {
+			stage.OnAfterPointUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
 		}
 	case *Polygone:
 		newTarget := any(new).(*Polygone)
@@ -103,6 +142,21 @@ func AfterUpdateFromFront[Type Gongstruct](stage *StageStruct, old, new *Type) {
 		newTarget := any(new).(*Rect)
 		if stage.OnAfterRectUpdateCallback != nil {
 			stage.OnAfterRectUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
+		}
+	case *RectAnchoredRect:
+		newTarget := any(new).(*RectAnchoredRect)
+		if stage.OnAfterRectAnchoredRectUpdateCallback != nil {
+			stage.OnAfterRectAnchoredRectUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
+		}
+	case *RectAnchoredText:
+		newTarget := any(new).(*RectAnchoredText)
+		if stage.OnAfterRectAnchoredTextUpdateCallback != nil {
+			stage.OnAfterRectAnchoredTextUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
+		}
+	case *RectLinkLink:
+		newTarget := any(new).(*RectLinkLink)
+		if stage.OnAfterRectLinkLinkUpdateCallback != nil {
+			stage.OnAfterRectLinkLinkUpdateCallback.OnAfterUpdate(stage, oldTarget, newTarget)
 		}
 	case *SVG:
 		newTarget := any(new).(*SVG)
@@ -124,6 +178,11 @@ func AfterDeleteFromFront[Type Gongstruct](stage *StageStruct, staged, front *Ty
 
 	switch front := any(front).(type) {
 	// insertion point
+	case *AnchoredText:
+		if stage.OnAfterAnchoredTextDeleteCallback != nil {
+			staged := any(staged).(*AnchoredText)
+			stage.OnAfterAnchoredTextDeleteCallback.OnAfterDelete(stage, staged, front)
+		}
 	case *Animate:
 		if stage.OnAfterAnimateDeleteCallback != nil {
 			staged := any(staged).(*Animate)
@@ -149,10 +208,20 @@ func AfterDeleteFromFront[Type Gongstruct](stage *StageStruct, staged, front *Ty
 			staged := any(staged).(*Line)
 			stage.OnAfterLineDeleteCallback.OnAfterDelete(stage, staged, front)
 		}
+	case *Link:
+		if stage.OnAfterLinkDeleteCallback != nil {
+			staged := any(staged).(*Link)
+			stage.OnAfterLinkDeleteCallback.OnAfterDelete(stage, staged, front)
+		}
 	case *Path:
 		if stage.OnAfterPathDeleteCallback != nil {
 			staged := any(staged).(*Path)
 			stage.OnAfterPathDeleteCallback.OnAfterDelete(stage, staged, front)
+		}
+	case *Point:
+		if stage.OnAfterPointDeleteCallback != nil {
+			staged := any(staged).(*Point)
+			stage.OnAfterPointDeleteCallback.OnAfterDelete(stage, staged, front)
 		}
 	case *Polygone:
 		if stage.OnAfterPolygoneDeleteCallback != nil {
@@ -168,6 +237,21 @@ func AfterDeleteFromFront[Type Gongstruct](stage *StageStruct, staged, front *Ty
 		if stage.OnAfterRectDeleteCallback != nil {
 			staged := any(staged).(*Rect)
 			stage.OnAfterRectDeleteCallback.OnAfterDelete(stage, staged, front)
+		}
+	case *RectAnchoredRect:
+		if stage.OnAfterRectAnchoredRectDeleteCallback != nil {
+			staged := any(staged).(*RectAnchoredRect)
+			stage.OnAfterRectAnchoredRectDeleteCallback.OnAfterDelete(stage, staged, front)
+		}
+	case *RectAnchoredText:
+		if stage.OnAfterRectAnchoredTextDeleteCallback != nil {
+			staged := any(staged).(*RectAnchoredText)
+			stage.OnAfterRectAnchoredTextDeleteCallback.OnAfterDelete(stage, staged, front)
+		}
+	case *RectLinkLink:
+		if stage.OnAfterRectLinkLinkDeleteCallback != nil {
+			staged := any(staged).(*RectLinkLink)
+			stage.OnAfterRectLinkLinkDeleteCallback.OnAfterDelete(stage, staged, front)
 		}
 	case *SVG:
 		if stage.OnAfterSVGDeleteCallback != nil {
@@ -189,6 +273,10 @@ func AfterReadFromFront[Type Gongstruct](stage *StageStruct, instance *Type) {
 
 	switch target := any(instance).(type) {
 	// insertion point
+	case *AnchoredText:
+		if stage.OnAfterAnchoredTextReadCallback != nil {
+			stage.OnAfterAnchoredTextReadCallback.OnAfterRead(stage, target)
+		}
 	case *Animate:
 		if stage.OnAfterAnimateReadCallback != nil {
 			stage.OnAfterAnimateReadCallback.OnAfterRead(stage, target)
@@ -209,9 +297,17 @@ func AfterReadFromFront[Type Gongstruct](stage *StageStruct, instance *Type) {
 		if stage.OnAfterLineReadCallback != nil {
 			stage.OnAfterLineReadCallback.OnAfterRead(stage, target)
 		}
+	case *Link:
+		if stage.OnAfterLinkReadCallback != nil {
+			stage.OnAfterLinkReadCallback.OnAfterRead(stage, target)
+		}
 	case *Path:
 		if stage.OnAfterPathReadCallback != nil {
 			stage.OnAfterPathReadCallback.OnAfterRead(stage, target)
+		}
+	case *Point:
+		if stage.OnAfterPointReadCallback != nil {
+			stage.OnAfterPointReadCallback.OnAfterRead(stage, target)
 		}
 	case *Polygone:
 		if stage.OnAfterPolygoneReadCallback != nil {
@@ -224,6 +320,18 @@ func AfterReadFromFront[Type Gongstruct](stage *StageStruct, instance *Type) {
 	case *Rect:
 		if stage.OnAfterRectReadCallback != nil {
 			stage.OnAfterRectReadCallback.OnAfterRead(stage, target)
+		}
+	case *RectAnchoredRect:
+		if stage.OnAfterRectAnchoredRectReadCallback != nil {
+			stage.OnAfterRectAnchoredRectReadCallback.OnAfterRead(stage, target)
+		}
+	case *RectAnchoredText:
+		if stage.OnAfterRectAnchoredTextReadCallback != nil {
+			stage.OnAfterRectAnchoredTextReadCallback.OnAfterRead(stage, target)
+		}
+	case *RectLinkLink:
+		if stage.OnAfterRectLinkLinkReadCallback != nil {
+			stage.OnAfterRectLinkLinkReadCallback.OnAfterRead(stage, target)
 		}
 	case *SVG:
 		if stage.OnAfterSVGReadCallback != nil {
@@ -244,6 +352,9 @@ func SetCallbackAfterUpdateFromFront[Type Gongstruct](stage *StageStruct, callba
 	var instance Type
 	switch any(instance).(type) {
 		// insertion point
+	case *AnchoredText:
+		stage.OnAfterAnchoredTextUpdateCallback = any(callback).(OnAfterUpdateInterface[AnchoredText])
+	
 	case *Animate:
 		stage.OnAfterAnimateUpdateCallback = any(callback).(OnAfterUpdateInterface[Animate])
 	
@@ -259,8 +370,14 @@ func SetCallbackAfterUpdateFromFront[Type Gongstruct](stage *StageStruct, callba
 	case *Line:
 		stage.OnAfterLineUpdateCallback = any(callback).(OnAfterUpdateInterface[Line])
 	
+	case *Link:
+		stage.OnAfterLinkUpdateCallback = any(callback).(OnAfterUpdateInterface[Link])
+	
 	case *Path:
 		stage.OnAfterPathUpdateCallback = any(callback).(OnAfterUpdateInterface[Path])
+	
+	case *Point:
+		stage.OnAfterPointUpdateCallback = any(callback).(OnAfterUpdateInterface[Point])
 	
 	case *Polygone:
 		stage.OnAfterPolygoneUpdateCallback = any(callback).(OnAfterUpdateInterface[Polygone])
@@ -270,6 +387,15 @@ func SetCallbackAfterUpdateFromFront[Type Gongstruct](stage *StageStruct, callba
 	
 	case *Rect:
 		stage.OnAfterRectUpdateCallback = any(callback).(OnAfterUpdateInterface[Rect])
+	
+	case *RectAnchoredRect:
+		stage.OnAfterRectAnchoredRectUpdateCallback = any(callback).(OnAfterUpdateInterface[RectAnchoredRect])
+	
+	case *RectAnchoredText:
+		stage.OnAfterRectAnchoredTextUpdateCallback = any(callback).(OnAfterUpdateInterface[RectAnchoredText])
+	
+	case *RectLinkLink:
+		stage.OnAfterRectLinkLinkUpdateCallback = any(callback).(OnAfterUpdateInterface[RectLinkLink])
 	
 	case *SVG:
 		stage.OnAfterSVGUpdateCallback = any(callback).(OnAfterUpdateInterface[SVG])
@@ -284,6 +410,9 @@ func SetCallbackAfterCreateFromFront[Type Gongstruct](stage *StageStruct, callba
 	var instance Type
 	switch any(instance).(type) {
 		// insertion point
+	case *AnchoredText:
+		stage.OnAfterAnchoredTextCreateCallback = any(callback).(OnAfterCreateInterface[AnchoredText])
+	
 	case *Animate:
 		stage.OnAfterAnimateCreateCallback = any(callback).(OnAfterCreateInterface[Animate])
 	
@@ -299,8 +428,14 @@ func SetCallbackAfterCreateFromFront[Type Gongstruct](stage *StageStruct, callba
 	case *Line:
 		stage.OnAfterLineCreateCallback = any(callback).(OnAfterCreateInterface[Line])
 	
+	case *Link:
+		stage.OnAfterLinkCreateCallback = any(callback).(OnAfterCreateInterface[Link])
+	
 	case *Path:
 		stage.OnAfterPathCreateCallback = any(callback).(OnAfterCreateInterface[Path])
+	
+	case *Point:
+		stage.OnAfterPointCreateCallback = any(callback).(OnAfterCreateInterface[Point])
 	
 	case *Polygone:
 		stage.OnAfterPolygoneCreateCallback = any(callback).(OnAfterCreateInterface[Polygone])
@@ -310,6 +445,15 @@ func SetCallbackAfterCreateFromFront[Type Gongstruct](stage *StageStruct, callba
 	
 	case *Rect:
 		stage.OnAfterRectCreateCallback = any(callback).(OnAfterCreateInterface[Rect])
+	
+	case *RectAnchoredRect:
+		stage.OnAfterRectAnchoredRectCreateCallback = any(callback).(OnAfterCreateInterface[RectAnchoredRect])
+	
+	case *RectAnchoredText:
+		stage.OnAfterRectAnchoredTextCreateCallback = any(callback).(OnAfterCreateInterface[RectAnchoredText])
+	
+	case *RectLinkLink:
+		stage.OnAfterRectLinkLinkCreateCallback = any(callback).(OnAfterCreateInterface[RectLinkLink])
 	
 	case *SVG:
 		stage.OnAfterSVGCreateCallback = any(callback).(OnAfterCreateInterface[SVG])
@@ -324,6 +468,9 @@ func SetCallbackAfterDeleteFromFront[Type Gongstruct](stage *StageStruct, callba
 	var instance Type
 	switch any(instance).(type) {
 		// insertion point
+	case *AnchoredText:
+		stage.OnAfterAnchoredTextDeleteCallback = any(callback).(OnAfterDeleteInterface[AnchoredText])
+	
 	case *Animate:
 		stage.OnAfterAnimateDeleteCallback = any(callback).(OnAfterDeleteInterface[Animate])
 	
@@ -339,8 +486,14 @@ func SetCallbackAfterDeleteFromFront[Type Gongstruct](stage *StageStruct, callba
 	case *Line:
 		stage.OnAfterLineDeleteCallback = any(callback).(OnAfterDeleteInterface[Line])
 	
+	case *Link:
+		stage.OnAfterLinkDeleteCallback = any(callback).(OnAfterDeleteInterface[Link])
+	
 	case *Path:
 		stage.OnAfterPathDeleteCallback = any(callback).(OnAfterDeleteInterface[Path])
+	
+	case *Point:
+		stage.OnAfterPointDeleteCallback = any(callback).(OnAfterDeleteInterface[Point])
 	
 	case *Polygone:
 		stage.OnAfterPolygoneDeleteCallback = any(callback).(OnAfterDeleteInterface[Polygone])
@@ -350,6 +503,15 @@ func SetCallbackAfterDeleteFromFront[Type Gongstruct](stage *StageStruct, callba
 	
 	case *Rect:
 		stage.OnAfterRectDeleteCallback = any(callback).(OnAfterDeleteInterface[Rect])
+	
+	case *RectAnchoredRect:
+		stage.OnAfterRectAnchoredRectDeleteCallback = any(callback).(OnAfterDeleteInterface[RectAnchoredRect])
+	
+	case *RectAnchoredText:
+		stage.OnAfterRectAnchoredTextDeleteCallback = any(callback).(OnAfterDeleteInterface[RectAnchoredText])
+	
+	case *RectLinkLink:
+		stage.OnAfterRectLinkLinkDeleteCallback = any(callback).(OnAfterDeleteInterface[RectLinkLink])
 	
 	case *SVG:
 		stage.OnAfterSVGDeleteCallback = any(callback).(OnAfterDeleteInterface[SVG])
@@ -364,6 +526,9 @@ func SetCallbackAfterReadFromFront[Type Gongstruct](stage *StageStruct, callback
 	var instance Type
 	switch any(instance).(type) {
 		// insertion point
+	case *AnchoredText:
+		stage.OnAfterAnchoredTextReadCallback = any(callback).(OnAfterReadInterface[AnchoredText])
+	
 	case *Animate:
 		stage.OnAfterAnimateReadCallback = any(callback).(OnAfterReadInterface[Animate])
 	
@@ -379,8 +544,14 @@ func SetCallbackAfterReadFromFront[Type Gongstruct](stage *StageStruct, callback
 	case *Line:
 		stage.OnAfterLineReadCallback = any(callback).(OnAfterReadInterface[Line])
 	
+	case *Link:
+		stage.OnAfterLinkReadCallback = any(callback).(OnAfterReadInterface[Link])
+	
 	case *Path:
 		stage.OnAfterPathReadCallback = any(callback).(OnAfterReadInterface[Path])
+	
+	case *Point:
+		stage.OnAfterPointReadCallback = any(callback).(OnAfterReadInterface[Point])
 	
 	case *Polygone:
 		stage.OnAfterPolygoneReadCallback = any(callback).(OnAfterReadInterface[Polygone])
@@ -390,6 +561,15 @@ func SetCallbackAfterReadFromFront[Type Gongstruct](stage *StageStruct, callback
 	
 	case *Rect:
 		stage.OnAfterRectReadCallback = any(callback).(OnAfterReadInterface[Rect])
+	
+	case *RectAnchoredRect:
+		stage.OnAfterRectAnchoredRectReadCallback = any(callback).(OnAfterReadInterface[RectAnchoredRect])
+	
+	case *RectAnchoredText:
+		stage.OnAfterRectAnchoredTextReadCallback = any(callback).(OnAfterReadInterface[RectAnchoredText])
+	
+	case *RectLinkLink:
+		stage.OnAfterRectLinkLinkReadCallback = any(callback).(OnAfterReadInterface[RectLinkLink])
 	
 	case *SVG:
 		stage.OnAfterSVGReadCallback = any(callback).(OnAfterReadInterface[SVG])

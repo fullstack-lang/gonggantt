@@ -126,7 +126,7 @@ export class BarService {
       tap(_ => {
         // insertion point for restoration of reverse pointers
         bardb.Lane_Bars_reverse = _Lane_Bars_reverse
-        this.log(`updated bardb id=${bardb.ID}`)
+        // this.log(`updated bardb id=${bardb.ID}`)
       }),
       catchError(this.handleError<BarDB>('updateBar'))
     );

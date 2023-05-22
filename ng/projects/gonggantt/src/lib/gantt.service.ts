@@ -127,7 +127,7 @@ export class GanttService {
     return this.http.put<GanttDB>(url, ganttdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
-        this.log(`updated ganttdb id=${ganttdb.ID}`)
+        // this.log(`updated ganttdb id=${ganttdb.ID}`)
       }),
       catchError(this.handleError<GanttDB>('updateGantt'))
     );

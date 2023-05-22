@@ -85,6 +85,9 @@ type PolygoneDB struct {
 	// Declation for basic field polygoneDB.StrokeDashArray
 	StrokeDashArray_Data sql.NullString
 
+	// Declation for basic field polygoneDB.StrokeDashArrayWhenSelected
+	StrokeDashArrayWhenSelected_Data sql.NullString
+
 	// Declation for basic field polygoneDB.Transform
 	Transform_Data sql.NullString
 	// encoding of pointers
@@ -122,7 +125,9 @@ type PolygoneWOP struct {
 
 	StrokeDashArray string `xlsx:"7"`
 
-	Transform string `xlsx:"8"`
+	StrokeDashArrayWhenSelected string `xlsx:"8"`
+
+	Transform string `xlsx:"9"`
 	// insertion for WOP pointer fields
 }
 
@@ -136,6 +141,7 @@ var Polygone_Fields = []string{
 	"Stroke",
 	"StrokeWidth",
 	"StrokeDashArray",
+	"StrokeDashArrayWhenSelected",
 	"Transform",
 }
 
@@ -464,6 +470,9 @@ func (polygoneDB *PolygoneDB) CopyBasicFieldsFromPolygone(polygone *models.Polyg
 	polygoneDB.StrokeDashArray_Data.String = polygone.StrokeDashArray
 	polygoneDB.StrokeDashArray_Data.Valid = true
 
+	polygoneDB.StrokeDashArrayWhenSelected_Data.String = polygone.StrokeDashArrayWhenSelected
+	polygoneDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	polygoneDB.Transform_Data.String = polygone.Transform
 	polygoneDB.Transform_Data.Valid = true
 }
@@ -493,6 +502,9 @@ func (polygoneDB *PolygoneDB) CopyBasicFieldsFromPolygoneWOP(polygone *PolygoneW
 	polygoneDB.StrokeDashArray_Data.String = polygone.StrokeDashArray
 	polygoneDB.StrokeDashArray_Data.Valid = true
 
+	polygoneDB.StrokeDashArrayWhenSelected_Data.String = polygone.StrokeDashArrayWhenSelected
+	polygoneDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	polygoneDB.Transform_Data.String = polygone.Transform
 	polygoneDB.Transform_Data.Valid = true
 }
@@ -507,6 +519,7 @@ func (polygoneDB *PolygoneDB) CopyBasicFieldsToPolygone(polygone *models.Polygon
 	polygone.Stroke = polygoneDB.Stroke_Data.String
 	polygone.StrokeWidth = polygoneDB.StrokeWidth_Data.Float64
 	polygone.StrokeDashArray = polygoneDB.StrokeDashArray_Data.String
+	polygone.StrokeDashArrayWhenSelected = polygoneDB.StrokeDashArrayWhenSelected_Data.String
 	polygone.Transform = polygoneDB.Transform_Data.String
 }
 
@@ -521,6 +534,7 @@ func (polygoneDB *PolygoneDB) CopyBasicFieldsToPolygoneWOP(polygone *PolygoneWOP
 	polygone.Stroke = polygoneDB.Stroke_Data.String
 	polygone.StrokeWidth = polygoneDB.StrokeWidth_Data.Float64
 	polygone.StrokeDashArray = polygoneDB.StrokeDashArray_Data.String
+	polygone.StrokeDashArrayWhenSelected = polygoneDB.StrokeDashArrayWhenSelected_Data.String
 	polygone.Transform = polygoneDB.Transform_Data.String
 }
 

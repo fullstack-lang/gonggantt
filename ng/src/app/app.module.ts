@@ -36,8 +36,9 @@ import { GongganttModule } from 'gonggantt'
 import { GongganttspecificModule } from 'gongganttspecific'
 import { GongstructSelectionService } from 'gonggantt'
 
-import { GongsvgspecificModule } from 'gongsvgspecific'
 import { GongsvgModule } from 'gongsvg'
+import { GongsvgspecificModule } from 'gongsvgspecific'
+import { GongsvgdatamodelModule } from 'gongsvgdatamodel'
 
 
 // mandatory
@@ -83,6 +84,7 @@ import { HttpClientModule } from '@angular/common/http';
 
     GongsvgspecificModule,
     GongsvgModule,
+    GongsvgdatamodelModule
   ],
   providers: [
     GongstructSelectionService

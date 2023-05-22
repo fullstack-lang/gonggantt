@@ -45,6 +45,14 @@ type SVGAPI struct {
 // reverse pointers of slice of poitners to Struct
 type SVGPointersEnconding struct {
 	// insertion for pointer fields encoding declaration
+
+	// field StartRect is a pointer to another Struct (optional or 0..1)
+	// This field is generated into another field to enable AS ONE association
+	StartRectID sql.NullInt64
+
+	// field EndRect is a pointer to another Struct (optional or 0..1)
+	// This field is generated into another field to enable AS ONE association
+	EndRectID sql.NullInt64
 }
 
 // SVGDB describes a svg in the database
@@ -60,6 +68,13 @@ type SVGDB struct {
 
 	// Declation for basic field svgDB.Name
 	Name_Data sql.NullString
+
+	// Declation for basic field svgDB.DrawingState
+	DrawingState_Data sql.NullString
+
+	// Declation for basic field svgDB.IsEditable
+	// provide the sql storage for the boolan
+	IsEditable_Data sql.NullBool
 	// encoding of pointers
 	SVGPointersEnconding
 }
@@ -82,6 +97,10 @@ type SVGWOP struct {
 	// insertion for WOP basic fields
 
 	Name string `xlsx:"1"`
+
+	DrawingState models.DrawingState `xlsx:"2"`
+
+	IsEditable bool `xlsx:"3"`
 	// insertion for WOP pointer fields
 }
 
@@ -89,6 +108,8 @@ var SVG_Fields = []string{
 	// insertion for WOP basic fields
 	"ID",
 	"Name",
+	"DrawingState",
+	"IsEditable",
 }
 
 type BackRepoSVGStruct struct {
@@ -227,6 +248,24 @@ func (backRepoSVG *BackRepoSVGStruct) CommitPhaseTwoInstance(backRepo *BackRepoS
 			}
 		}
 
+		// commit pointer value svg.StartRect translates to updating the svg.StartRectID
+		svgDB.StartRectID.Valid = true // allow for a 0 value (nil association)
+		if svg.StartRect != nil {
+			if StartRectId, ok := backRepo.BackRepoRect.Map_RectPtr_RectDBID[svg.StartRect]; ok {
+				svgDB.StartRectID.Int64 = int64(StartRectId)
+				svgDB.StartRectID.Valid = true
+			}
+		}
+
+		// commit pointer value svg.EndRect translates to updating the svg.EndRectID
+		svgDB.EndRectID.Valid = true // allow for a 0 value (nil association)
+		if svg.EndRect != nil {
+			if EndRectId, ok := backRepo.BackRepoRect.Map_RectPtr_RectDBID[svg.EndRect]; ok {
+				svgDB.EndRectID.Int64 = int64(EndRectId)
+				svgDB.EndRectID.Valid = true
+			}
+		}
+
 		query := backRepoSVG.db.Save(&svgDB)
 		if query.Error != nil {
 			return query.Error
@@ -361,6 +400,14 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 		return layerDB_i.SVG_LayersDBID_Index.Int64 < layerDB_j.SVG_LayersDBID_Index.Int64
 	})
 
+	// StartRect field
+	if svgDB.StartRectID.Int64 != 0 {
+		svg.StartRect = backRepo.BackRepoRect.Map_RectDBID_RectPtr[uint(svgDB.StartRectID.Int64)]
+	}
+	// EndRect field
+	if svgDB.EndRectID.Int64 != 0 {
+		svg.EndRect = backRepo.BackRepoRect.Map_RectDBID_RectPtr[uint(svgDB.EndRectID.Int64)]
+	}
 	return
 }
 
@@ -397,6 +444,12 @@ func (svgDB *SVGDB) CopyBasicFieldsFromSVG(svg *models.SVG) {
 
 	svgDB.Name_Data.String = svg.Name
 	svgDB.Name_Data.Valid = true
+
+	svgDB.DrawingState_Data.String = svg.DrawingState.ToString()
+	svgDB.DrawingState_Data.Valid = true
+
+	svgDB.IsEditable_Data.Bool = svg.IsEditable
+	svgDB.IsEditable_Data.Valid = true
 }
 
 // CopyBasicFieldsFromSVGWOP
@@ -405,12 +458,20 @@ func (svgDB *SVGDB) CopyBasicFieldsFromSVGWOP(svg *SVGWOP) {
 
 	svgDB.Name_Data.String = svg.Name
 	svgDB.Name_Data.Valid = true
+
+	svgDB.DrawingState_Data.String = svg.DrawingState.ToString()
+	svgDB.DrawingState_Data.Valid = true
+
+	svgDB.IsEditable_Data.Bool = svg.IsEditable
+	svgDB.IsEditable_Data.Valid = true
 }
 
 // CopyBasicFieldsToSVG
 func (svgDB *SVGDB) CopyBasicFieldsToSVG(svg *models.SVG) {
 	// insertion point for checkout of basic fields (back repo to stage)
 	svg.Name = svgDB.Name_Data.String
+	svg.DrawingState.FromString(svgDB.DrawingState_Data.String)
+	svg.IsEditable = svgDB.IsEditable_Data.Bool
 }
 
 // CopyBasicFieldsToSVGWOP
@@ -418,6 +479,8 @@ func (svgDB *SVGDB) CopyBasicFieldsToSVGWOP(svg *SVGWOP) {
 	svg.ID = int(svgDB.ID)
 	// insertion point for checkout of basic fields (back repo to stage)
 	svg.Name = svgDB.Name_Data.String
+	svg.DrawingState.FromString(svgDB.DrawingState_Data.String)
+	svg.IsEditable = svgDB.IsEditable_Data.Bool
 }
 
 // Backup generates a json file from a slice of all SVGDB instances in the backrepo
@@ -575,6 +638,18 @@ func (backRepoSVG *BackRepoSVGStruct) RestorePhaseTwo() {
 		_ = svgDB
 
 		// insertion point for reindexing pointers encoding
+		// reindexing StartRect field
+		if svgDB.StartRectID.Int64 != 0 {
+			svgDB.StartRectID.Int64 = int64(BackRepoRectid_atBckpTime_newID[uint(svgDB.StartRectID.Int64)])
+			svgDB.StartRectID.Valid = true
+		}
+
+		// reindexing EndRect field
+		if svgDB.EndRectID.Int64 != 0 {
+			svgDB.EndRectID.Int64 = int64(BackRepoRectid_atBckpTime_newID[uint(svgDB.EndRectID.Int64)])
+			svgDB.EndRectID.Valid = true
+		}
+
 		// update databse with new index encoding
 		query := backRepoSVG.db.Model(svgDB).Updates(*svgDB)
 		if query.Error != nil {

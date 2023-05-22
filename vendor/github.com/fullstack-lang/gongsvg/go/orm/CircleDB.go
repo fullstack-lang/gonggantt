@@ -91,6 +91,9 @@ type CircleDB struct {
 	// Declation for basic field circleDB.StrokeDashArray
 	StrokeDashArray_Data sql.NullString
 
+	// Declation for basic field circleDB.StrokeDashArrayWhenSelected
+	StrokeDashArrayWhenSelected_Data sql.NullString
+
 	// Declation for basic field circleDB.Transform
 	Transform_Data sql.NullString
 	// encoding of pointers
@@ -132,7 +135,9 @@ type CircleWOP struct {
 
 	StrokeDashArray string `xlsx:"9"`
 
-	Transform string `xlsx:"10"`
+	StrokeDashArrayWhenSelected string `xlsx:"10"`
+
+	Transform string `xlsx:"11"`
 	// insertion for WOP pointer fields
 }
 
@@ -148,6 +153,7 @@ var Circle_Fields = []string{
 	"Stroke",
 	"StrokeWidth",
 	"StrokeDashArray",
+	"StrokeDashArrayWhenSelected",
 	"Transform",
 }
 
@@ -482,6 +488,9 @@ func (circleDB *CircleDB) CopyBasicFieldsFromCircle(circle *models.Circle) {
 	circleDB.StrokeDashArray_Data.String = circle.StrokeDashArray
 	circleDB.StrokeDashArray_Data.Valid = true
 
+	circleDB.StrokeDashArrayWhenSelected_Data.String = circle.StrokeDashArrayWhenSelected
+	circleDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	circleDB.Transform_Data.String = circle.Transform
 	circleDB.Transform_Data.Valid = true
 }
@@ -517,6 +526,9 @@ func (circleDB *CircleDB) CopyBasicFieldsFromCircleWOP(circle *CircleWOP) {
 	circleDB.StrokeDashArray_Data.String = circle.StrokeDashArray
 	circleDB.StrokeDashArray_Data.Valid = true
 
+	circleDB.StrokeDashArrayWhenSelected_Data.String = circle.StrokeDashArrayWhenSelected
+	circleDB.StrokeDashArrayWhenSelected_Data.Valid = true
+
 	circleDB.Transform_Data.String = circle.Transform
 	circleDB.Transform_Data.Valid = true
 }
@@ -533,6 +545,7 @@ func (circleDB *CircleDB) CopyBasicFieldsToCircle(circle *models.Circle) {
 	circle.Stroke = circleDB.Stroke_Data.String
 	circle.StrokeWidth = circleDB.StrokeWidth_Data.Float64
 	circle.StrokeDashArray = circleDB.StrokeDashArray_Data.String
+	circle.StrokeDashArrayWhenSelected = circleDB.StrokeDashArrayWhenSelected_Data.String
 	circle.Transform = circleDB.Transform_Data.String
 }
 
@@ -549,6 +562,7 @@ func (circleDB *CircleDB) CopyBasicFieldsToCircleWOP(circle *CircleWOP) {
 	circle.Stroke = circleDB.Stroke_Data.String
 	circle.StrokeWidth = circleDB.StrokeWidth_Data.Float64
 	circle.StrokeDashArray = circleDB.StrokeDashArray_Data.String
+	circle.StrokeDashArrayWhenSelected = circleDB.StrokeDashArrayWhenSelected_Data.String
 	circle.Transform = circleDB.Transform_Data.String
 }
 
