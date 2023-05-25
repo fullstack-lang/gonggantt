@@ -310,14 +310,14 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Bar]
 	__Link__000000_Bars.Fieldtypename = `ref_models.Bar`
-	__Link__000000_Bars.FieldOffsetX = 83.000000
-	__Link__000000_Bars.FieldOffsetY = 25.000000
+	__Link__000000_Bars.FieldOffsetX = -49.000000
+	__Link__000000_Bars.FieldOffsetY = -15.000000
 	__Link__000000_Bars.TargetMultiplicity = models.MANY
-	__Link__000000_Bars.TargetMultiplicityOffsetX = 109.000000
-	__Link__000000_Bars.TargetMultiplicityOffsetY = -7.000000
+	__Link__000000_Bars.TargetMultiplicityOffsetX = -27.000000
+	__Link__000000_Bars.TargetMultiplicityOffsetY = 28.000000
 	__Link__000000_Bars.SourceMultiplicity = models.ZERO_ONE
-	__Link__000000_Bars.SourceMultiplicityOffsetX = 11.000000
-	__Link__000000_Bars.SourceMultiplicityOffsetY = -13.000000
+	__Link__000000_Bars.SourceMultiplicityOffsetX = 6.000000
+	__Link__000000_Bars.SourceMultiplicityOffsetY = 22.000000
 	__Link__000000_Bars.StartOrientation = models.ORIENTATION_HORIZONTAL
 	__Link__000000_Bars.StartRatio = 0.448718
 	__Link__000000_Bars.EndOrientation = models.ORIENTATION_HORIZONTAL
@@ -336,14 +336,14 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Lane]
 	__Link__000001_Lanes.Fieldtypename = `ref_models.Lane`
-	__Link__000001_Lanes.FieldOffsetX = 50.000000
-	__Link__000001_Lanes.FieldOffsetY = 23.000000
+	__Link__000001_Lanes.FieldOffsetX = -60.000000
+	__Link__000001_Lanes.FieldOffsetY = -15.000000
 	__Link__000001_Lanes.TargetMultiplicity = models.MANY
-	__Link__000001_Lanes.TargetMultiplicityOffsetX = 80.000000
-	__Link__000001_Lanes.TargetMultiplicityOffsetY = -9.000000
+	__Link__000001_Lanes.TargetMultiplicityOffsetX = -29.000000
+	__Link__000001_Lanes.TargetMultiplicityOffsetY = 25.000000
 	__Link__000001_Lanes.SourceMultiplicity = models.ZERO_ONE
 	__Link__000001_Lanes.SourceMultiplicityOffsetX = 7.000000
-	__Link__000001_Lanes.SourceMultiplicityOffsetY = -9.000000
+	__Link__000001_Lanes.SourceMultiplicityOffsetY = 20.000000
 	__Link__000001_Lanes.StartOrientation = models.ORIENTATION_HORIZONTAL
 	__Link__000001_Lanes.StartRatio = 0.523810
 	__Link__000001_Lanes.EndOrientation = models.ORIENTATION_HORIZONTAL

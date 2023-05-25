@@ -27,7 +27,7 @@ func NewAnchoredTextImplLinkSourceMultiplicity(
 }
 
 func (anchoredtextImplAnchoredText *AnchoredTextImplLinkSourceMultiplicity) AnchoredTextUpdated(
-	updatedAnchoredText *gongsvg_models.AnchoredText) {
+	updatedAnchoredText *gongsvg_models.LinkAnchoredText) {
 
 	log.Println("AnchoredTextImplSourceMultiplicity:AnchoredTextUpdated")
 
@@ -35,5 +35,5 @@ func (anchoredtextImplAnchoredText *AnchoredTextImplLinkSourceMultiplicity) Anch
 	anchoredtextImplAnchoredText.link.SourceMultiplicityOffsetX = updatedAnchoredText.X_Offset
 	anchoredtextImplAnchoredText.link.SourceMultiplicityOffsetY = updatedAnchoredText.Y_Offset
 
-	anchoredtextImplAnchoredText.gongdocStage.Commit()
+	anchoredtextImplAnchoredText.gongdocStage.CommitWithSuspendedCallbacks()
 }

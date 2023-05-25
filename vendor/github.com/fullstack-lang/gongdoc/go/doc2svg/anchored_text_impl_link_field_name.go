@@ -27,7 +27,7 @@ func NewAnchoredTextImplLinkFieldName(
 }
 
 func (anchoredtextImplAnchoredText *AnchoredTextImplLinkFieldName) AnchoredTextUpdated(
-	updatedAnchoredText *gongsvg_models.AnchoredText) {
+	updatedAnchoredText *gongsvg_models.LinkAnchoredText) {
 
 	log.Println("AnchoredTextImplAnchoredText:AnchoredTextUpdated")
 
@@ -35,5 +35,5 @@ func (anchoredtextImplAnchoredText *AnchoredTextImplLinkFieldName) AnchoredTextU
 	anchoredtextImplAnchoredText.link.FieldOffsetX = updatedAnchoredText.X_Offset
 	anchoredtextImplAnchoredText.link.FieldOffsetY = updatedAnchoredText.Y_Offset
 
-	anchoredtextImplAnchoredText.gongdocStage.Commit()
+	anchoredtextImplAnchoredText.gongdocStage.CommitWithSuspendedCallbacks()
 }

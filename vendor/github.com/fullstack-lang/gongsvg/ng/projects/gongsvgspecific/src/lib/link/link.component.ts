@@ -12,6 +12,7 @@ import { AngularDragEndEventService } from '../angular-drag-end-event.service';
 import { mouseCoordInComponentRef } from '../mouse.coord.in.component.ref';
 import { drawLineFromRectToB } from '../draw.line.from.rect.to.point';
 import { IsEditableService } from '../is-editable.service';
+import { RefreshService } from '../refresh.service';
 
 @Component({
   selector: 'lib-link',
@@ -47,7 +48,7 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck, AfterViewC
   // LinkAtMouseDown is the clone of the Link when mouse down
   private PointAtMouseDown: gongsvg.PointDB | undefined
   private LinkAtMouseDown: gongsvg.LinkDB | undefined
-  private AnchoredTextAtMouseDown: gongsvg.AnchoredTextDB | undefined
+  private AnchoredTextAtMouseDown: gongsvg.LinkAnchoredTextDB | undefined
 
   //
   // for events management
@@ -71,16 +72,23 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck, AfterViewC
 
   constructor(
     private linkService: gongsvg.LinkService,
-    private anchoredTextService: gongsvg.AnchoredTextService,
+    private anchoredTextService: gongsvg.LinkAnchoredTextService,
     private angularDragEndEventService: AngularDragEndEventService,
     private mouseEventService: MouseEventService,
     private elementRef: ElementRef,
     private isEditableService: IsEditableService,
+    private refreshService: RefreshService,
   ) {
 
     this.subscriptions.push(
       mouseEventService.mouseMouseDownEvent$.subscribe(
         (shapeMouseEvent: ShapeMouseEvent) => {
+
+          if (shapeMouseEvent.ShapeType != gongsvg.LinkDB.GONGSTRUCT_NAME ||
+            shapeMouseEvent.ShapeID != this.Link!.ID) {
+            return
+          }
+
           this.PointAtMouseDown = structuredClone(shapeMouseEvent.Point)
           this.LinkAtMouseDown = structuredClone(this.Link!)
 
@@ -350,7 +358,7 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck, AfterViewC
                 link => {
                   // this.Link = link
                   this.linkUpdating = false
-                  // console.log("Updated", link.ID)
+                  this.refreshService.emitRefreshRequestEvent(0)
                 }
               )
             }
@@ -359,11 +367,11 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck, AfterViewC
           if (this.textDragging && this.isEditableService.getIsEditable()) {
             if (this.draggedSegmentPositionOnArrow == gongsvg.PositionOnArrowType.POSITION_ON_ARROW_END) {
               let text = this.Link!.TextAtArrowEnd![this.draggedTextIndex]
-              this.anchoredTextService.updateAnchoredText(text, this.GONG__StackPath).subscribe()
+              this.anchoredTextService.updateLinkAnchoredText(text, this.GONG__StackPath).subscribe()
             }
             if (this.draggedSegmentPositionOnArrow == gongsvg.PositionOnArrowType.POSITION_ON_ARROW_START) {
               let text = this.Link!.TextAtArrowStart![this.draggedTextIndex]
-              this.anchoredTextService.updateAnchoredText(text, this.GONG__StackPath).subscribe()
+              this.anchoredTextService.updateLinkAnchoredText(text, this.GONG__StackPath).subscribe()
             }
           }
           this.dragging = false
@@ -400,7 +408,7 @@ export class LinkComponent implements OnInit, AfterViewInit, DoCheck, AfterViewC
   }
 
   ngAfterViewChecked() {
-    console.log('Change detection run on MySvgComponent');
+    //  console.log('Change detection run on MySvgComponent');
   }
 
   ngOnChanges(changes: SimpleChanges) {

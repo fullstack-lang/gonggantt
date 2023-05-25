@@ -41,31 +41,31 @@ var map_DocLink_Identifier_NewDiagram_1 map[string]any = map[string]any{
 
 	"ref_models.AnchorType": ref_models.AnchorType(""),
 
-	"ref_models.AnchoredText": &(ref_models.AnchoredText{}),
+	"ref_models.AnchoredText": &(ref_models.LinkAnchoredText{}),
 
-	"ref_models.AnchoredText.Animates": (ref_models.AnchoredText{}).Animates,
+	"ref_models.AnchoredText.Animates": (ref_models.LinkAnchoredText{}).Animates,
 
-	"ref_models.AnchoredText.Color": (ref_models.AnchoredText{}).Color,
+	"ref_models.AnchoredText.Color": (ref_models.LinkAnchoredText{}).Color,
 
-	"ref_models.AnchoredText.Content": (ref_models.AnchoredText{}).Content,
+	"ref_models.AnchoredText.Content": (ref_models.LinkAnchoredText{}).Content,
 
-	"ref_models.AnchoredText.FillOpacity": (ref_models.AnchoredText{}).FillOpacity,
+	"ref_models.AnchoredText.FillOpacity": (ref_models.LinkAnchoredText{}).FillOpacity,
 
-	"ref_models.AnchoredText.Name": (ref_models.AnchoredText{}).Name,
+	"ref_models.AnchoredText.Name": (ref_models.LinkAnchoredText{}).Name,
 
-	"ref_models.AnchoredText.Stroke": (ref_models.AnchoredText{}).Stroke,
+	"ref_models.AnchoredText.Stroke": (ref_models.LinkAnchoredText{}).Stroke,
 
-	"ref_models.AnchoredText.StrokeDashArray": (ref_models.AnchoredText{}).StrokeDashArray,
+	"ref_models.AnchoredText.StrokeDashArray": (ref_models.LinkAnchoredText{}).StrokeDashArray,
 
-	"ref_models.AnchoredText.StrokeDashArrayWhenSelected": (ref_models.AnchoredText{}).StrokeDashArrayWhenSelected,
+	"ref_models.AnchoredText.StrokeDashArrayWhenSelected": (ref_models.LinkAnchoredText{}).StrokeDashArrayWhenSelected,
 
-	"ref_models.AnchoredText.StrokeWidth": (ref_models.AnchoredText{}).StrokeWidth,
+	"ref_models.AnchoredText.StrokeWidth": (ref_models.LinkAnchoredText{}).StrokeWidth,
 
-	"ref_models.AnchoredText.Transform": (ref_models.AnchoredText{}).Transform,
+	"ref_models.AnchoredText.Transform": (ref_models.LinkAnchoredText{}).Transform,
 
-	"ref_models.AnchoredText.X_Offset": (ref_models.AnchoredText{}).X_Offset,
+	"ref_models.AnchoredText.X_Offset": (ref_models.LinkAnchoredText{}).X_Offset,
 
-	"ref_models.AnchoredText.Y_Offset": (ref_models.AnchoredText{}).Y_Offset,
+	"ref_models.AnchoredText.Y_Offset": (ref_models.LinkAnchoredText{}).Y_Offset,
 
 	"ref_models.Animate": &(ref_models.Animate{}),
 
@@ -1103,5 +1103,3 @@ func NewDiagram_1Injection(stage *models.StageStruct) {
 	__Link__000002_Start.Middlevertice = __Vertice__000003_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect
 	__Link__000003_Start.Middlevertice = __Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect
 }
-
-
