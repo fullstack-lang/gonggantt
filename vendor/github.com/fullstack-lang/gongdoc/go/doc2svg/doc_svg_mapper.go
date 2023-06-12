@@ -1,6 +1,7 @@
 package doc2svg
 
 import (
+	"fmt"
 	"log"
 
 	gongdoc_models "github.com/fullstack-lang/gongdoc/go/models"
@@ -33,12 +34,16 @@ func (docSVGMapper *DocSVGMapper) GenerateSvg(
 
 	var selectedDiagram *gongdoc_models.Classdiagram
 
-	for diagramPackage := range *gongdoc_models.GetGongstructInstancesSet[gongdoc_models.DiagramPackage](gongdocStage) {
+	var diagramPackage *gongdoc_models.DiagramPackage
+	for diagramPackage = range *gongdoc_models.GetGongstructInstancesSet[gongdoc_models.DiagramPackage](gongdocStage) {
 
 		selectedDiagram = diagramPackage.SelectedClassdiagram
 		if selectedDiagram == nil {
 			return
 		}
+	}
+	if diagramPackage == nil {
+		return
 	}
 
 	svg := new(gongsvg_models.SVG).Stage(gongsvgStage)
@@ -126,11 +131,31 @@ func (docSVGMapper *DocSVGMapper) GenerateSvg(
 			fieldText.X_Offset = 10
 			fieldText.Y_Offset = 20 + 30 + float64(idx)*15
 			fieldText.RectAnchorType = gongsvg_models.RECT_ANCHOR_TOP_LEFT
-			fieldText.TextAnchorType = gongsvg_models.TEXT_ANCHOR_LEFT
+			fieldText.TextAnchorType = gongsvg_models.TEXT_ANCHOR_START
 
 			fieldText.Color = "black"
 			fieldText.FillOpacity = 1.0
 			rect.RectAnchoredTexts = append(rect.RectAnchoredTexts, fieldText)
+		}
+
+		//
+		// number of instance (x%d)
+		//
+		if gongstructShape.ShowNbInstances {
+			nbInstancesText := new(gongsvg_models.RectAnchoredText).Stage(gongsvgStage)
+			nbInstancesText.Name = fmt.Sprintf("(x%d)", gongstructShape.NbInstances)
+			nbInstancesText.Content = fmt.Sprintf("(x%d)", gongstructShape.NbInstances)
+
+			// text position
+			nbInstancesText.X_Offset = -5
+			nbInstancesText.Y_Offset = 20
+			nbInstancesText.RectAnchorType = gongsvg_models.RECT_ANCHOR_TOP_RIGHT
+			nbInstancesText.TextAnchorType = gongsvg_models.TEXT_ANCHOR_END
+
+			nbInstancesText.Color = "black"
+			nbInstancesText.FillOpacity = 1.0
+			rect.RectAnchoredTexts = append(rect.RectAnchoredTexts, nbInstancesText)
+
 		}
 
 	}
@@ -310,7 +335,7 @@ func (docSVGMapper *DocSVGMapper) GenerateSvg(
 			fieldText.X_Offset = 10
 			fieldText.Y_Offset = 20 + 30 + float64(idx)*15
 			fieldText.RectAnchorType = gongsvg_models.RECT_ANCHOR_TOP_LEFT
-			fieldText.TextAnchorType = gongsvg_models.TEXT_ANCHOR_LEFT
+			fieldText.TextAnchorType = gongsvg_models.TEXT_ANCHOR_START
 
 			fieldText.Color = "black"
 			fieldText.FillOpacity = 1.0

@@ -841,9 +841,9 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 
 	"ref_models.TEXT_ANCHOR_CENTER": ref_models.TEXT_ANCHOR_CENTER,
 
-	"ref_models.TEXT_ANCHOR_LEFT": ref_models.TEXT_ANCHOR_LEFT,
+	"ref_models.TEXT_ANCHOR_LEFT": ref_models.TEXT_ANCHOR_START,
 
-	"ref_models.TEXT_ANCHOR_RIGHT": ref_models.TEXT_ANCHOR_RIGHT,
+	"ref_models.TEXT_ANCHOR_RIGHT": ref_models.TEXT_ANCHOR_END,
 
 	"ref_models.Tan": ref_models.Tan,
 
@@ -2024,5 +2024,3 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Link__000010_TextAtArrowEnd.Middlevertice = __Vertice__000003_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_AnchoredText
 	__Link__000011_TextAtArrowStart.Middlevertice = __Vertice__000004_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_AnchoredText
 }
-
-

@@ -13,14 +13,16 @@ import { mouseCoordInComponentRef } from '../mouse.coord.in.component.ref';
 import { IsEditableService } from '../is-editable.service';
 import { RefreshService } from '../refresh.service';
 
+
 @Component({
   selector: 'lib-svg',
   templateUrl: './svg.component.html',
   styleUrls: ['./svg.component.css']
 })
-export class SvgComponent implements OnInit, OnDestroy, AfterViewInit {
+export class SvgComponent implements OnInit, OnDestroy {
 
   @Input() GONG__StackPath: string = ""
+  @ViewChild('drawingArea') drawingArea: ElementRef<HTMLDivElement> | undefined
 
   public gongsvgFrontRepo?: gongsvg.FrontRepo
 
@@ -261,25 +263,21 @@ export class SvgComponent implements OnInit, OnDestroy, AfterViewInit {
   mousedown(event: MouseEvent): void {
     if (event.shiftKey) {
 
-      this.updateSvgTopLeftCoordinates()
-      // console.log("page X, Y", this.pageX, this.pageY)
-
       this.selectionRectDrawing = true
-      this.startX = event.clientX - this.pageX
-      this.startY = event.clientY - this.pageY
+
+      let point = mouseCoordInComponentRef(event)
+
+      this.startX = point.X
+      this.startY = point.Y
     }
   }
 
   mousemove(event: MouseEvent): void {
-    this.updateSvgTopLeftCoordinates()
-
-    const x = event.clientX - this.pageX
-    const y = event.clientY - this.pageY
 
     let shapeMouseEvent: ShapeMouseEvent = {
       ShapeID: 0,
       ShapeType: "",
-      Point: createPoint(x, y),
+      Point: mouseCoordInComponentRef(event),
     }
 
     // we want this event to bubble to the SVG element
@@ -295,13 +293,6 @@ export class SvgComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     if (!event.shiftKey && !event.altKey) {
-      // in case of dragging something, when the mouse moves fast, it can reach the SVG background
-      // in this case, one forward the mouse event on the event bus
-      let shapeMouseEvent: ShapeMouseEvent = {
-        ShapeID: 0,
-        ShapeType: "",
-        Point: createPoint(x, y),
-      }
       this.mouseEventService.emitMouseMoveEvent(shapeMouseEvent)
       // console.log("svg background, mouse move", x, y)
     }
@@ -310,14 +301,10 @@ export class SvgComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onmouseup(event: MouseEvent): void {
 
-    this.updateSvgTopLeftCoordinates()
-    const x = event.clientX - this.pageX
-    const y = event.clientY - this.pageY
-
     let shapeMouseEvent: ShapeMouseEvent = {
       ShapeID: 0,
       ShapeType: "",
-      Point: createPoint(x, y),
+      Point: mouseCoordInComponentRef(event),
     }
 
     if (event.shiftKey) {
@@ -331,25 +318,28 @@ export class SvgComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  pageX: number = 0
-  pageY: number = 0
-  @ViewChild('drawingArea') drawingArea: ElementRef<HTMLDivElement> | undefined
-
-  ngAfterViewInit() {
-    this.updateSvgTopLeftCoordinates()
+  exportSVG() {
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(this.drawingArea!.nativeElement);
+    return svgString;
   }
 
-  updateSvgTopLeftCoordinates() {
-    const offset = this.getDivOffset(this.drawingArea!.nativeElement);
-    this.pageX = offset.offsetX
-    this.pageY = offset.offsetY
-  }
+  downloadSVG() {
+    const svgString = this.exportSVG();
+    const blob = new Blob([svgString], { type: 'image/svg+xml' });
+    const url = window.URL.createObjectURL(blob);
 
-  getDivOffset(div: HTMLDivElement): { offsetX: number; offsetY: number } {
-    const rect = div.getBoundingClientRect();
-    const offsetX = rect.left + window.pageXOffset;
-    const offsetY = rect.top + window.pageYOffset;
-    return { offsetX, offsetY };
+    // Create a link element
+    const downloadLink = document.createElement('a');
+    downloadLink.href = url;
+    downloadLink.download = 'image.svg';
+
+    // Attach the link to the document
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    // Clean up after to avoid memory leaks
+    document.body.removeChild(downloadLink);
   }
 
 }

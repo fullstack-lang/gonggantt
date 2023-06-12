@@ -11,6 +11,7 @@ import * as gonggantt from 'gonggantt'
 })
 export class AppComponent implements OnInit {
 
+
   default = 'Gantt diagram Data/Model'
   svg = 'SVG diagram Data/Model'
   gantt = "Gantt diagram"
@@ -21,7 +22,6 @@ export class AppComponent implements OnInit {
   GONG__GANTT_DATA_MODEL__StackPath = "github.com/fullstack-lang/gonggantt/go/models"
   GONG__SVG_DATA_MODEL__StackPath = "github.com/fullstack-lang/gongsvg/go/models"
   GONG__GANTT_SVG__StackPath = "gonggantt+github.com/fullstack-lang/gongsvg/go/models"
-
   constructor(
   ) {
 
