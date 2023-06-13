@@ -1,5 +1,4 @@
 <!-- button bar that is present in all tabs -->
-
 <ng-template #radioToolbar>
     <div [ngStyle]="containerStyle">
         <mat-radio-group aria-label="Select an option" [(ngModel)]="view" [ngStyle]="radioGroupStyle">
@@ -12,7 +11,6 @@
         <span [ngStyle]="textStyle">Stack : "{{GONG__StackPath}}"</span>
     </div>
 </ng-template>
-
 
 <as-split unit="pixel" *ngIf="view==default" direction="vertical">
     <as-split-area [size]=40>
