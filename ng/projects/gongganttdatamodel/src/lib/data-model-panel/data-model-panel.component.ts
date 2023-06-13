@@ -19,7 +19,7 @@ export class DataModelPanelComponent {
 
   containerStyle = {
     'display': 'flex',
-    'justify-content': 'space-between',
+    // 'justify-content': 'space-between',
     'align-items': 'center',
     'width': '100%' // Adjust as necessary.
   }
