@@ -809,9 +809,9 @@ var map_DocLink_Identifier_NewDiagram_1 map[string]any = map[string]any{
 
 	"ref_models.TEXT_ANCHOR_CENTER": ref_models.TEXT_ANCHOR_CENTER,
 
-	"ref_models.TEXT_ANCHOR_LEFT": ref_models.TEXT_ANCHOR_LEFT,
+	"ref_models.TEXT_ANCHOR_LEFT": ref_models.TEXT_ANCHOR_START,
 
-	"ref_models.TEXT_ANCHOR_RIGHT": ref_models.TEXT_ANCHOR_RIGHT,
+	"ref_models.TEXT_ANCHOR_RIGHT": ref_models.TEXT_ANCHOR_END,
 
 	"ref_models.Tan": ref_models.Tan,
 

@@ -3,8 +3,8 @@ module github.com/fullstack-lang/gonggantt
 go 1.18
 
 require (
-	github.com/fullstack-lang/gongdoc v0.0.0-20230524164709-d478d48e2e18
-	github.com/fullstack-lang/gongsvg v0.0.0-20230524191511-1b4b7a871c39
+	github.com/fullstack-lang/gongdoc v0.0.0-20230612230422-ec78b1485172
+	github.com/fullstack-lang/gongsvg v0.0.0-20230613071402-51cc2bb615bd
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.8.1
@@ -16,7 +16,7 @@ require (
 
 require (
 	github.com/frankban/quicktest v1.13.1 // indirect
-	github.com/fullstack-lang/gong v0.0.0-20230523071117-7f9768fe0a14 // indirect
+	github.com/fullstack-lang/gong v0.0.0-20230613065257-6c35778fa650 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/glebarez/go-sqlite v1.18.2 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
