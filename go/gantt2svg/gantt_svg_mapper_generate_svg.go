@@ -8,6 +8,7 @@ import (
 	"time"
 
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
+	"github.com/fullstack-lang/gonggantt/go/svg2gantt"
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
 
@@ -188,10 +189,10 @@ func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(
 			rect4Bar.CanMoveHorizontaly = false
 
 			// connects the call on rect to the bar
-			barImpl := new(BarImpl)
-			barImpl.bar = bar
-			barImpl.ganttToRender = ganttSVGMapper.ganttToRender
-			barImpl.gongganttStage = gongganttStage
+			barImpl := new(svg2gantt.BarImpl)
+			barImpl.Bar = bar
+			barImpl.GanttToRender = ganttSVGMapper.ganttToRender
+			barImpl.GongganttStage = gongganttStage
 			rect4Bar.Impl = barImpl
 
 			var barToDisplay gonggantt_models.Bar

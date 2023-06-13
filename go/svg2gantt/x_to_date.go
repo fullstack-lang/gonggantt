@@ -1,4 +1,4 @@
-package gantt2svg
+package svg2gantt
 
 import "time"
 
