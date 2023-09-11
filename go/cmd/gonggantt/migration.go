@@ -39,22 +39,24 @@ func migrationInjection(stage *models.StageStruct) {
 	// Declaration of instances to stage
 
 	// Declarations of staged instances of Arrow
+	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1 := (&models.Arrow{Name: `Lane 1 - Bar 1 to Lan 2 - Bar 1`}).Stage(stage)
 
 	// Declarations of staged instances of Bar
-	__Bar__000000_Conversion_mod_le := (&models.Bar{Name: `Conversion modèle`}).Stage(stage)
-	__Bar__000001_configuration_MMP := (&models.Bar{Name: `configuration MMP`}).Stage(stage)
+	__Bar__000000_Bar_3 := (&models.Bar{Name: `Bar 3`}).Stage(stage)
+	__Bar__000001_Conversion_MMP := (&models.Bar{Name: `Conversion MMP`}).Stage(stage)
+	__Bar__000002_Conversion_mod_le := (&models.Bar{Name: `Conversion modèle`}).Stage(stage)
 
 	// Declarations of staged instances of Gantt
-	__Gantt__000000_migration := (&models.Gantt{Name: `migration`}).Stage(stage)
+	__Gantt__000000_Migration := (&models.Gantt{Name: `Migration`}).Stage(stage)
 
 	// Declarations of staged instances of Group
-	__Group__000000_Sprint_1 := (&models.Group{Name: `Sprint 1`}).Stage(stage)
-	__Group__000001_sprint_2 := (&models.Group{Name: `sprint 2`}).Stage(stage)
-	__Group__000002_sprint_3 := (&models.Group{Name: `sprint 3`}).Stage(stage)
+	__Group__000000_Sprint_2 := (&models.Group{Name: `Sprint 2`}).Stage(stage)
 
 	// Declarations of staged instances of Lane
-	__Lane__000000_sprint_2_1 := (&models.Lane{Name: `sprint 2.1`}).Stage(stage)
-	__Lane__000001_sprint_3_1 := (&models.Lane{Name: `sprint 3.1`}).Stage(stage)
+	__Lane__000000_Lane_2 := (&models.Lane{Name: `Lane-2`}).Stage(stage)
+	__Lane__000001_Lane_4 := (&models.Lane{Name: `Lane-4`}).Stage(stage)
+	__Lane__000002_Sprint_2_1 := (&models.Lane{Name: `Sprint 2.1`}).Stage(stage)
+	__Lane__000003_Sprint_2_2 := (&models.Lane{Name: `Sprint 2.2`}).Stage(stage)
 
 	// Declarations of staged instances of LaneUse
 
@@ -62,79 +64,100 @@ func migrationInjection(stage *models.StageStruct) {
 
 	// Setup of values
 
-	// Bar values setup
-	__Bar__000000_Conversion_mod_le.Name = `Conversion modèle`
-	__Bar__000000_Conversion_mod_le.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "0001-01-01 00:00:00 +0000 UTC")
-	__Bar__000000_Conversion_mod_le.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "0001-01-01 00:00:00 +0000 UTC")
-	__Bar__000000_Conversion_mod_le.OptionnalColor = ``
-	__Bar__000000_Conversion_mod_le.OptionnalStroke = ``
-	__Bar__000000_Conversion_mod_le.FillOpacity = 0.000000
-	__Bar__000000_Conversion_mod_le.StrokeWidth = 0.000000
-	__Bar__000000_Conversion_mod_le.StrokeDashArray = ``
+	// Arrow values setup
+	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1.Name = `Lane 1 - Bar 1 to Lan 2 - Bar 1`
+	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1.OptionnalColor = ``
+	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1.OptionnalStroke = ``
 
 	// Bar values setup
-	__Bar__000001_configuration_MMP.Name = `configuration MMP`
-	__Bar__000001_configuration_MMP.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-09-11 14:12:22.214 +0000 UTC")
-	__Bar__000001_configuration_MMP.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-09-11 14:12:22.214 +0000 UTC")
-	__Bar__000001_configuration_MMP.OptionnalColor = ``
-	__Bar__000001_configuration_MMP.OptionnalStroke = ``
-	__Bar__000001_configuration_MMP.FillOpacity = 0.000000
-	__Bar__000001_configuration_MMP.StrokeWidth = 0.000000
-	__Bar__000001_configuration_MMP.StrokeDashArray = ``
+	__Bar__000000_Bar_3.Name = `Bar 3`
+	__Bar__000000_Bar_3.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-05-27 08:33:58.15384616 +0000 UTC")
+	__Bar__000000_Bar_3.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-11-27 02:39:30.461538464 +0000 UTC")
+	__Bar__000000_Bar_3.OptionnalColor = ``
+	__Bar__000000_Bar_3.OptionnalStroke = ``
+	__Bar__000000_Bar_3.FillOpacity = 0.000000
+	__Bar__000000_Bar_3.StrokeWidth = 0.000000
+	__Bar__000000_Bar_3.StrokeDashArray = ``
+
+	// Bar values setup
+	__Bar__000001_Conversion_MMP.Name = `Conversion MMP`
+	__Bar__000001_Conversion_MMP.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-03-20 22:35:48.92307692 +0000 UTC")
+	__Bar__000001_Conversion_MMP.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-08-16 06:07:45.230769216 +0000 UTC")
+	__Bar__000001_Conversion_MMP.OptionnalColor = ``
+	__Bar__000001_Conversion_MMP.OptionnalStroke = ``
+	__Bar__000001_Conversion_MMP.FillOpacity = 0.000000
+	__Bar__000001_Conversion_MMP.StrokeWidth = 0.000000
+	__Bar__000001_Conversion_MMP.StrokeDashArray = ``
+
+	// Bar values setup
+	__Bar__000002_Conversion_mod_le.Name = `Conversion modèle`
+	__Bar__000002_Conversion_mod_le.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2020-10-10 03:12:44.307692308 +0000 UTC")
+	__Bar__000002_Conversion_mod_le.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-04-14 23:35:37.846153832 +0000 UTC")
+	__Bar__000002_Conversion_mod_le.OptionnalColor = ``
+	__Bar__000002_Conversion_mod_le.OptionnalStroke = ``
+	__Bar__000002_Conversion_mod_le.FillOpacity = 0.000000
+	__Bar__000002_Conversion_mod_le.StrokeWidth = 1.000000
+	__Bar__000002_Conversion_mod_le.StrokeDashArray = ``
 
 	// Gantt values setup
-	__Gantt__000000_migration.Name = `migration`
-	__Gantt__000000_migration.ComputedStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "0001-01-01 00:00:00 +0000 UTC")
-	__Gantt__000000_migration.ComputedEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "0001-01-01 00:00:00 +0000 UTC")
-	__Gantt__000000_migration.UseManualStartAndEndDates = false
-	__Gantt__000000_migration.ManualStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "0001-01-01 00:00:00 +0000 UTC")
-	__Gantt__000000_migration.ManualEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "0001-01-01 00:00:00 +0000 UTC")
-	__Gantt__000000_migration.LaneHeight = 0.000000
-	__Gantt__000000_migration.RatioBarToLaneHeight = 0.000000
-	__Gantt__000000_migration.YTopMargin = 0.000000
-	__Gantt__000000_migration.XLeftText = 0.000000
-	__Gantt__000000_migration.TextHeight = 0.000000
-	__Gantt__000000_migration.XLeftLanes = 0.000000
-	__Gantt__000000_migration.XRightMargin = 0.000000
-	__Gantt__000000_migration.ArrowLengthToTheRightOfStartBar = 0.000000
-	__Gantt__000000_migration.ArrowTipLenght = 0.000000
-	__Gantt__000000_migration.TimeLine_Color = ``
-	__Gantt__000000_migration.TimeLine_FillOpacity = 0.000000
-	__Gantt__000000_migration.TimeLine_Stroke = ``
-	__Gantt__000000_migration.TimeLine_StrokeWidth = 0.000000
-	__Gantt__000000_migration.Group_Stroke = ``
-	__Gantt__000000_migration.Group_StrokeWidth = 0.000000
-	__Gantt__000000_migration.Group_StrokeDashArray = ``
-	__Gantt__000000_migration.DateYOffset = 0.000000
-	__Gantt__000000_migration.AlignOnStartEndOnYearStart = false
+	__Gantt__000000_Migration.Name = `Migration`
+	__Gantt__000000_Migration.ComputedStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2020-01-01 00:00:00 +0000 UTC")
+	__Gantt__000000_Migration.ComputedEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2022-12-31 00:00:00 +0000 UTC")
+	__Gantt__000000_Migration.UseManualStartAndEndDates = false
+	__Gantt__000000_Migration.ManualStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2017-02-12 00:00:00 +0000 UTC")
+	__Gantt__000000_Migration.ManualEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-02-12 00:00:00 +0000 UTC")
+	__Gantt__000000_Migration.LaneHeight = 80.000000
+	__Gantt__000000_Migration.RatioBarToLaneHeight = 0.700000
+	__Gantt__000000_Migration.YTopMargin = 10.000000
+	__Gantt__000000_Migration.XLeftText = 8.000000
+	__Gantt__000000_Migration.TextHeight = 16.000000
+	__Gantt__000000_Migration.XLeftLanes = 150.000000
+	__Gantt__000000_Migration.XRightMargin = 800.000000
+	__Gantt__000000_Migration.ArrowLengthToTheRightOfStartBar = 50.000000
+	__Gantt__000000_Migration.ArrowTipLenght = 15.000000
+	__Gantt__000000_Migration.TimeLine_Color = `"black"`
+	__Gantt__000000_Migration.TimeLine_FillOpacity = 1.000000
+	__Gantt__000000_Migration.TimeLine_Stroke = `"black"`
+	__Gantt__000000_Migration.TimeLine_StrokeWidth = 1.000000
+	__Gantt__000000_Migration.Group_Stroke = `blue`
+	__Gantt__000000_Migration.Group_StrokeWidth = 0.300000
+	__Gantt__000000_Migration.Group_StrokeDashArray = ``
+	__Gantt__000000_Migration.DateYOffset = 20.000000
+	__Gantt__000000_Migration.AlignOnStartEndOnYearStart = true
 
 	// Group values setup
-	__Group__000000_Sprint_1.Name = `Sprint 1`
-
-	// Group values setup
-	__Group__000001_sprint_2.Name = `sprint 2`
-
-	// Group values setup
-	__Group__000002_sprint_3.Name = `sprint 3`
+	__Group__000000_Sprint_2.Name = `Sprint 2`
 
 	// Lane values setup
-	__Lane__000000_sprint_2_1.Name = `sprint 2.1`
-	__Lane__000000_sprint_2_1.Order = 0
+	__Lane__000000_Lane_2.Name = `Lane-2`
+	__Lane__000000_Lane_2.Order = 20
 
 	// Lane values setup
-	__Lane__000001_sprint_3_1.Name = `sprint 3.1`
-	__Lane__000001_sprint_3_1.Order = 0
+	__Lane__000001_Lane_4.Name = `Lane-4`
+	__Lane__000001_Lane_4.Order = 40
+
+	// Lane values setup
+	__Lane__000002_Sprint_2_1.Name = `Sprint 2.1`
+	__Lane__000002_Sprint_2_1.Order = 10
+
+	// Lane values setup
+	__Lane__000003_Sprint_2_2.Name = `Sprint 2.2`
+	__Lane__000003_Sprint_2_2.Order = 15
 
 	// Setup of pointers
-	__Gantt__000000_migration.Lanes = append(__Gantt__000000_migration.Lanes, __Lane__000000_sprint_2_1)
-	__Gantt__000000_migration.Lanes = append(__Gantt__000000_migration.Lanes, __Lane__000001_sprint_3_1)
-	__Gantt__000000_migration.Groups = append(__Gantt__000000_migration.Groups, __Group__000000_Sprint_1)
-	__Gantt__000000_migration.Groups = append(__Gantt__000000_migration.Groups, __Group__000001_sprint_2)
-	__Gantt__000000_migration.Groups = append(__Gantt__000000_migration.Groups, __Group__000002_sprint_3)
-	__Group__000001_sprint_2.GroupLanes = append(__Group__000001_sprint_2.GroupLanes, __Lane__000000_sprint_2_1)
-	__Group__000002_sprint_3.GroupLanes = append(__Group__000002_sprint_3.GroupLanes, __Lane__000001_sprint_3_1)
-	__Lane__000000_sprint_2_1.Bars = append(__Lane__000000_sprint_2_1.Bars, __Bar__000001_configuration_MMP)
-	__Lane__000001_sprint_3_1.Bars = append(__Lane__000001_sprint_3_1.Bars, __Bar__000000_Conversion_mod_le)
+	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1.From = __Bar__000001_Conversion_MMP
+	__Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1.To = __Bar__000000_Bar_3
+	__Gantt__000000_Migration.Lanes = append(__Gantt__000000_Migration.Lanes, __Lane__000002_Sprint_2_1)
+	__Gantt__000000_Migration.Lanes = append(__Gantt__000000_Migration.Lanes, __Lane__000003_Sprint_2_2)
+	__Gantt__000000_Migration.Lanes = append(__Gantt__000000_Migration.Lanes, __Lane__000000_Lane_2)
+	__Gantt__000000_Migration.Lanes = append(__Gantt__000000_Migration.Lanes, __Lane__000001_Lane_4)
+	__Gantt__000000_Migration.Groups = append(__Gantt__000000_Migration.Groups, __Group__000000_Sprint_2)
+	__Gantt__000000_Migration.Arrows = append(__Gantt__000000_Migration.Arrows, __Arrow__000000_Lane_1_Bar_1_to_Lan_2_Bar_1)
+	__Group__000000_Sprint_2.GroupLanes = append(__Group__000000_Sprint_2.GroupLanes, __Lane__000002_Sprint_2_1)
+	__Group__000000_Sprint_2.GroupLanes = append(__Group__000000_Sprint_2.GroupLanes, __Lane__000003_Sprint_2_2)
+	__Lane__000000_Lane_2.Bars = append(__Lane__000000_Lane_2.Bars, __Bar__000000_Bar_3)
+	__Lane__000002_Sprint_2_1.Bars = append(__Lane__000002_Sprint_2_1.Bars, __Bar__000002_Conversion_mod_le)
+	__Lane__000003_Sprint_2_2.Bars = append(__Lane__000003_Sprint_2_2.Bars, __Bar__000001_Conversion_MMP)
 }
 
 
