@@ -6,17 +6,15 @@ import (
 	"log"
 	"os"
 
-	gonggantt_go "github.com/fullstack-lang/gonggantt/go"
 	gonggantt_fullstack "github.com/fullstack-lang/gonggantt/go/fullstack"
 
+	gonggantt_go "github.com/fullstack-lang/gonggantt/go"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
+	gonggantt_probe "github.com/fullstack-lang/gonggantt/go/probe"
 	gonggantt_static "github.com/fullstack-lang/gonggantt/go/static"
-
-	gongdoc_load "github.com/fullstack-lang/gongdoc/go/load"
 
 	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
-	gongsvg_go "github.com/fullstack-lang/gongsvg/go"
 	gongsvg_fullstack "github.com/fullstack-lang/gongsvg/go/fullstack"
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
@@ -86,8 +84,16 @@ func main() {
 	r := gonggantt_static.ServeStaticFiles(*logGINFlag)
 
 	// setup stack
-	gongganttStage, _ := gonggantt_fullstack.NewStackInstance(r, "gantt")
-	gongsvgStage, _ := gongsvg_fullstack.NewStackInstance(r, "gantt")
+	gongganttStage, gongganttBackRepo := gonggantt_fullstack.NewStackInstance(r, gonggantt_models.GanttStackName.ToString())
+	gongsvgStage, _ := gongsvg_fullstack.NewStackInstance(r, gonggantt_models.SvgStackName.ToString())
+
+	gonggantt_probe.NewProbe(
+		r,
+		gonggantt_go.GoModelsDir,
+		gonggantt_models.GanttProbeStackName.ToString(),
+		gongganttStage,
+		gongganttBackRepo,
+	)
 
 	if *unmarshallFromCode != "" {
 		gongganttStage.Checkout()
@@ -135,23 +141,23 @@ func main() {
 		ganttSVGMapper.GenerateSvg(gongganttStage, gongsvgStage)
 	}
 
-	gongdoc_load.Load(
-		"gonggantt",
-		"github.com/fullstack-lang/gonggantt/go/models",
-		gonggantt_go.GoModelsDir,
-		gonggantt_go.GoDiagramsDir,
-		r,
-		*embeddedDiagrams,
-		&gongganttStage.Map_GongStructName_InstancesNb)
+	// gongdoc_load.Load(
+	// 	"gonggantt",
+	// 	"github.com/fullstack-lang/gonggantt/go/models",
+	// 	gonggantt_go.GoModelsDir,
+	// 	gonggantt_go.GoDiagramsDir,
+	// 	r,
+	// 	*embeddedDiagrams,
+	// 	&gongganttStage.Map_GongStructName_InstancesNb)
 
-	gongdoc_load.Load(
-		"gongsvg",
-		"github.com/fullstack-lang/gongsvg/go/models",
-		gongsvg_go.GoModelsDir,
-		gongsvg_go.GoDiagramsDir,
-		r,
-		true,
-		&gongganttStage.Map_GongStructName_InstancesNb)
+	// gongdoc_load.Load(
+	// 	"gongsvg",
+	// 	"github.com/fullstack-lang/gongsvg/go/models",
+	// 	gongsvg_go.GoModelsDir,
+	// 	gongsvg_go.GoDiagramsDir,
+	// 	r,
+	// 	true,
+	// 	&gongganttStage.Map_GongStructName_InstancesNb)
 
 	log.Printf("Server ready serve on localhost:8080")
 	r.Run()

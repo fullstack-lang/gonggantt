@@ -59,3 +59,4 @@ export * from './lib/milestone-db'
 export * from './lib/milestone.service'
 
 
+export * from './lib/GanttStacksNames'
