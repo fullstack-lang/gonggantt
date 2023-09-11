@@ -25,6 +25,19 @@
             ]
         },
         {
+            "name": "go server unmarshallFromCode migration.go -marshallOnCommit migration",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/go/cmd/gonggantt",
+            "args": [
+                "-marshallOnCommit",
+                "migration",
+                "-unmarshallFromCode",
+                "migration.go",
+            ]
+        },
+        {
             "name": "go server unmarshallFromCode simple.go -marshallOnCommit simple",
             "type": "go",
             "request": "launch",

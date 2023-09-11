@@ -28,15 +28,15 @@
     <as-split-area [size]="$any('*')">
         <as-split direction="horizontal">
             <as-split-area [size]="20">
-                <lib-tree [GONG__StackPath]="GONG__DATA__StackPath+'-sidebar'" name="gong"></lib-tree>
+                <lib-tree [GONG__StackPath]="GONG__MODEL__StacksPath+'-sidebar'" name="gong"></lib-tree>
             </as-split-area>
             <as-split-area [size]="50">
                 <div [ngStyle]="scrollStyle">
-                    <lib-material-table TableName="Table" [DataStack]="GONG__DATA__StackPath"></lib-material-table>
+                    <lib-material-table TableName="Table" [DataStack]="GONG__MODEL__StacksPath"></lib-material-table>
                 </div>
             </as-split-area>
             <as-split-area [size]="30">
-                <lib-material-form FormName="Form" [DataStack]="GONG__DATA__StackPath+'-form'"></lib-material-form>
+                <lib-material-form FormName="Form" [DataStack]="GONG__MODEL__StacksPath+'-form'"></lib-material-form>
             </as-split-area>
         </as-split>
     </as-split-area>
