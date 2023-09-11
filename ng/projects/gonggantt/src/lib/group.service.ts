@@ -71,6 +71,7 @@ export class GroupService {
   postGroup(groupdb: GroupDB, GONG__StackPath: string): Observable<GroupDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let GroupLanes = groupdb.GroupLanes
     groupdb.GroupLanes = []
     let _Gantt_Groups_reverse = groupdb.Gantt_Groups_reverse
     groupdb.Gantt_Groups_reverse = new GanttDB
@@ -84,6 +85,7 @@ export class GroupService {
     return this.http.post<GroupDB>(this.groupsUrl, groupdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+	      groupdb.GroupLanes = GroupLanes
         groupdb.Gantt_Groups_reverse = _Gantt_Groups_reverse
         // this.log(`posted groupdb id=${groupdb.ID}`)
       }),
@@ -114,6 +116,7 @@ export class GroupService {
     const url = `${this.groupsUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let GroupLanes = groupdb.GroupLanes
     groupdb.GroupLanes = []
     let _Gantt_Groups_reverse = groupdb.Gantt_Groups_reverse
     groupdb.Gantt_Groups_reverse = new GanttDB
@@ -127,6 +130,7 @@ export class GroupService {
     return this.http.put<GroupDB>(url, groupdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+	      groupdb.GroupLanes = GroupLanes
         groupdb.Gantt_Groups_reverse = _Gantt_Groups_reverse
         // this.log(`updated groupdb id=${groupdb.ID}`)
       }),

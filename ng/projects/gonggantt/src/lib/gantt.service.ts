@@ -70,9 +70,13 @@ export class GanttService {
   postGantt(ganttdb: GanttDB, GONG__StackPath: string): Observable<GanttDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let Lanes = ganttdb.Lanes
     ganttdb.Lanes = []
+    let Milestones = ganttdb.Milestones
     ganttdb.Milestones = []
+    let Groups = ganttdb.Groups
     ganttdb.Groups = []
+    let Arrows = ganttdb.Arrows
     ganttdb.Arrows = []
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
@@ -84,6 +88,10 @@ export class GanttService {
     return this.http.post<GanttDB>(this.ganttsUrl, ganttdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+	      ganttdb.Lanes = Lanes
+	      ganttdb.Milestones = Milestones
+	      ganttdb.Groups = Groups
+	      ganttdb.Arrows = Arrows
         // this.log(`posted ganttdb id=${ganttdb.ID}`)
       }),
       catchError(this.handleError<GanttDB>('postGantt'))
@@ -113,9 +121,13 @@ export class GanttService {
     const url = `${this.ganttsUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let Lanes = ganttdb.Lanes
     ganttdb.Lanes = []
+    let Milestones = ganttdb.Milestones
     ganttdb.Milestones = []
+    let Groups = ganttdb.Groups
     ganttdb.Groups = []
+    let Arrows = ganttdb.Arrows
     ganttdb.Arrows = []
 
     let params = new HttpParams().set("GONG__StackPath", GONG__StackPath)
@@ -127,6 +139,10 @@ export class GanttService {
     return this.http.put<GanttDB>(url, ganttdb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+	      ganttdb.Lanes = Lanes
+	      ganttdb.Milestones = Milestones
+	      ganttdb.Groups = Groups
+	      ganttdb.Arrows = Arrows
         // this.log(`updated ganttdb id=${ganttdb.ID}`)
       }),
       catchError(this.handleError<GanttDB>('updateGantt'))

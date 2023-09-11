@@ -71,6 +71,7 @@ export class MilestoneService {
   postMilestone(milestonedb: MilestoneDB, GONG__StackPath: string): Observable<MilestoneDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let LanesToDisplayMilestoneUse = milestonedb.LanesToDisplayMilestoneUse
     milestonedb.LanesToDisplayMilestoneUse = []
     let _Gantt_Milestones_reverse = milestonedb.Gantt_Milestones_reverse
     milestonedb.Gantt_Milestones_reverse = new GanttDB
@@ -84,6 +85,7 @@ export class MilestoneService {
     return this.http.post<MilestoneDB>(this.milestonesUrl, milestonedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+	      milestonedb.LanesToDisplayMilestoneUse = LanesToDisplayMilestoneUse
         milestonedb.Gantt_Milestones_reverse = _Gantt_Milestones_reverse
         // this.log(`posted milestonedb id=${milestonedb.ID}`)
       }),
@@ -114,6 +116,7 @@ export class MilestoneService {
     const url = `${this.milestonesUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let LanesToDisplayMilestoneUse = milestonedb.LanesToDisplayMilestoneUse
     milestonedb.LanesToDisplayMilestoneUse = []
     let _Gantt_Milestones_reverse = milestonedb.Gantt_Milestones_reverse
     milestonedb.Gantt_Milestones_reverse = new GanttDB
@@ -127,6 +130,7 @@ export class MilestoneService {
     return this.http.put<MilestoneDB>(url, milestonedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+	      milestonedb.LanesToDisplayMilestoneUse = LanesToDisplayMilestoneUse
         milestonedb.Gantt_Milestones_reverse = _Gantt_Milestones_reverse
         // this.log(`updated milestonedb id=${milestonedb.ID}`)
       }),

@@ -241,6 +241,9 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackR
 				arrowDB.FromID.Int64 = int64(FromId)
 				arrowDB.FromID.Valid = true
 			}
+		} else {
+			arrowDB.FromID.Int64 = 0
+			arrowDB.FromID.Valid = true
 		}
 
 		// commit pointer value arrow.To translates to updating the arrow.ToID
@@ -250,6 +253,9 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackR
 				arrowDB.ToID.Int64 = int64(ToId)
 				arrowDB.ToID.Valid = true
 			}
+		} else {
+			arrowDB.ToID.Int64 = 0
+			arrowDB.ToID.Valid = true
 		}
 
 		query := backRepoArrow.db.Save(&arrowDB)
@@ -360,10 +366,12 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 
 	// insertion point for checkout of pointer encoding
 	// From field
+	arrow.From = nil
 	if arrowDB.FromID.Int64 != 0 {
 		arrow.From = backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(arrowDB.FromID.Int64)]
 	}
 	// To field
+	arrow.To = nil
 	if arrowDB.ToID.Int64 != 0 {
 		arrow.To = backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(arrowDB.ToID.Int64)]
 	}

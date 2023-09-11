@@ -225,6 +225,9 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseTwoInstance(backRepo *B
 				laneuseDB.LaneID.Int64 = int64(LaneId)
 				laneuseDB.LaneID.Valid = true
 			}
+		} else {
+			laneuseDB.LaneID.Int64 = 0
+			laneuseDB.LaneID.Valid = true
 		}
 
 		query := backRepoLaneUse.db.Save(&laneuseDB)
@@ -335,6 +338,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseTwoInstance(backRepo 
 
 	// insertion point for checkout of pointer encoding
 	// Lane field
+	laneuse.Lane = nil
 	if laneuseDB.LaneID.Int64 != 0 {
 		laneuse.Lane = backRepo.BackRepoLane.Map_LaneDBID_LanePtr[uint(laneuseDB.LaneID.Int64)]
 	}

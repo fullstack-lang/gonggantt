@@ -72,7 +72,9 @@ export class ArrowService {
   postArrow(arrowdb: ArrowDB, GONG__StackPath: string): Observable<ArrowDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let From = arrowdb.From
     arrowdb.From = new BarDB
+    let To = arrowdb.To
     arrowdb.To = new BarDB
     let _Gantt_Arrows_reverse = arrowdb.Gantt_Arrows_reverse
     arrowdb.Gantt_Arrows_reverse = new GanttDB
@@ -116,7 +118,9 @@ export class ArrowService {
     const url = `${this.arrowsUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let From = arrowdb.From
     arrowdb.From = new BarDB
+    let To = arrowdb.To
     arrowdb.To = new BarDB
     let _Gantt_Arrows_reverse = arrowdb.Gantt_Arrows_reverse
     arrowdb.Gantt_Arrows_reverse = new GanttDB

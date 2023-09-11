@@ -72,6 +72,7 @@ export class LaneUseService {
   postLaneUse(laneusedb: LaneUseDB, GONG__StackPath: string): Observable<LaneUseDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let Lane = laneusedb.Lane
     laneusedb.Lane = new LaneDB
     let _Milestone_LanesToDisplayMilestoneUse_reverse = laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse
     laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = new MilestoneDB
@@ -115,6 +116,7 @@ export class LaneUseService {
     const url = `${this.laneusesUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let Lane = laneusedb.Lane
     laneusedb.Lane = new LaneDB
     let _Milestone_LanesToDisplayMilestoneUse_reverse = laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse
     laneusedb.Milestone_LanesToDisplayMilestoneUse_reverse = new MilestoneDB

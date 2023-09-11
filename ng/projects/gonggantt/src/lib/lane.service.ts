@@ -72,6 +72,7 @@ export class LaneService {
   postLane(lanedb: LaneDB, GONG__StackPath: string): Observable<LaneDB> {
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let Bars = lanedb.Bars
     lanedb.Bars = []
     let _Gantt_Lanes_reverse = lanedb.Gantt_Lanes_reverse
     lanedb.Gantt_Lanes_reverse = new GanttDB
@@ -87,6 +88,7 @@ export class LaneService {
     return this.http.post<LaneDB>(this.lanesUrl, lanedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+	      lanedb.Bars = Bars
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
         lanedb.Group_GroupLanes_reverse = _Group_GroupLanes_reverse
         // this.log(`posted lanedb id=${lanedb.ID}`)
@@ -118,6 +120,7 @@ export class LaneService {
     const url = `${this.lanesUrl}/${id}`;
 
     // insertion point for reset of pointers and reverse pointers (to avoid circular JSON)
+    let Bars = lanedb.Bars
     lanedb.Bars = []
     let _Gantt_Lanes_reverse = lanedb.Gantt_Lanes_reverse
     lanedb.Gantt_Lanes_reverse = new GanttDB
@@ -133,6 +136,7 @@ export class LaneService {
     return this.http.put<LaneDB>(url, lanedb, httpOptions).pipe(
       tap(_ => {
         // insertion point for restoration of reverse pointers
+	      lanedb.Bars = Bars
         lanedb.Gantt_Lanes_reverse = _Gantt_Lanes_reverse
         lanedb.Group_GroupLanes_reverse = _Group_GroupLanes_reverse
         // this.log(`updated lanedb id=${lanedb.ID}`)

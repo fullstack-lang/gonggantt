@@ -41,32 +41,6 @@ var map_DocLink_Identifier_NewDiagram_1 map[string]any = map[string]any{
 
 	"ref_models.AnchorType": ref_models.AnchorType(""),
 
-	"ref_models.AnchoredText": &(ref_models.LinkAnchoredText{}),
-
-	"ref_models.AnchoredText.Animates": (ref_models.LinkAnchoredText{}).Animates,
-
-	"ref_models.AnchoredText.Color": (ref_models.LinkAnchoredText{}).Color,
-
-	"ref_models.AnchoredText.Content": (ref_models.LinkAnchoredText{}).Content,
-
-	"ref_models.AnchoredText.FillOpacity": (ref_models.LinkAnchoredText{}).FillOpacity,
-
-	"ref_models.AnchoredText.Name": (ref_models.LinkAnchoredText{}).Name,
-
-	"ref_models.AnchoredText.Stroke": (ref_models.LinkAnchoredText{}).Stroke,
-
-	"ref_models.AnchoredText.StrokeDashArray": (ref_models.LinkAnchoredText{}).StrokeDashArray,
-
-	"ref_models.AnchoredText.StrokeDashArrayWhenSelected": (ref_models.LinkAnchoredText{}).StrokeDashArrayWhenSelected,
-
-	"ref_models.AnchoredText.StrokeWidth": (ref_models.LinkAnchoredText{}).StrokeWidth,
-
-	"ref_models.AnchoredText.Transform": (ref_models.LinkAnchoredText{}).Transform,
-
-	"ref_models.AnchoredText.X_Offset": (ref_models.LinkAnchoredText{}).X_Offset,
-
-	"ref_models.AnchoredText.Y_Offset": (ref_models.LinkAnchoredText{}).Y_Offset,
-
 	"ref_models.Animate": &(ref_models.Animate{}),
 
 	"ref_models.Animate.AttributeName": (ref_models.Animate{}).AttributeName,
@@ -418,6 +392,34 @@ var map_DocLink_Identifier_NewDiagram_1 map[string]any = map[string]any{
 	"ref_models.Link.Transform": (ref_models.Link{}).Transform,
 
 	"ref_models.Link.Type": (ref_models.Link{}).Type,
+
+	"ref_models.LinkAnchoredText": &(ref_models.LinkAnchoredText{}),
+
+	"ref_models.LinkAnchoredText.Animates": (ref_models.LinkAnchoredText{}).Animates,
+
+	"ref_models.LinkAnchoredText.Color": (ref_models.LinkAnchoredText{}).Color,
+
+	"ref_models.LinkAnchoredText.Content": (ref_models.LinkAnchoredText{}).Content,
+
+	"ref_models.LinkAnchoredText.FillOpacity": (ref_models.LinkAnchoredText{}).FillOpacity,
+
+	"ref_models.LinkAnchoredText.FontWeight": (ref_models.LinkAnchoredText{}).FontWeight,
+
+	"ref_models.LinkAnchoredText.Name": (ref_models.LinkAnchoredText{}).Name,
+
+	"ref_models.LinkAnchoredText.Stroke": (ref_models.LinkAnchoredText{}).Stroke,
+
+	"ref_models.LinkAnchoredText.StrokeDashArray": (ref_models.LinkAnchoredText{}).StrokeDashArray,
+
+	"ref_models.LinkAnchoredText.StrokeDashArrayWhenSelected": (ref_models.LinkAnchoredText{}).StrokeDashArrayWhenSelected,
+
+	"ref_models.LinkAnchoredText.StrokeWidth": (ref_models.LinkAnchoredText{}).StrokeWidth,
+
+	"ref_models.LinkAnchoredText.Transform": (ref_models.LinkAnchoredText{}).Transform,
+
+	"ref_models.LinkAnchoredText.X_Offset": (ref_models.LinkAnchoredText{}).X_Offset,
+
+	"ref_models.LinkAnchoredText.Y_Offset": (ref_models.LinkAnchoredText{}).Y_Offset,
 
 	"ref_models.LinkType": ref_models.LinkType(""),
 
@@ -771,6 +773,8 @@ var map_DocLink_Identifier_NewDiagram_1 map[string]any = map[string]any{
 
 	"ref_models.SVG.EndRect": (ref_models.SVG{}).EndRect,
 
+	"ref_models.SVG.IsEditable": (ref_models.SVG{}).IsEditable,
+
 	"ref_models.SVG.Layers": (ref_models.SVG{}).Layers,
 
 	"ref_models.SVG.Name": (ref_models.SVG{}).Name,
@@ -809,9 +813,13 @@ var map_DocLink_Identifier_NewDiagram_1 map[string]any = map[string]any{
 
 	"ref_models.TEXT_ANCHOR_CENTER": ref_models.TEXT_ANCHOR_CENTER,
 
-	"ref_models.TEXT_ANCHOR_LEFT": ref_models.TEXT_ANCHOR_START,
+	"ref_models.TEXT_ANCHOR_END": ref_models.TEXT_ANCHOR_END,
 
-	"ref_models.TEXT_ANCHOR_RIGHT": ref_models.TEXT_ANCHOR_END,
+	"ref_models.TEXT_ANCHOR_END": ref_models.TEXT_ANCHOR_END,
+
+	"ref_models.TEXT_ANCHOR_START": ref_models.TEXT_ANCHOR_START,
+
+	"ref_models.TEXT_ANCHOR_START": ref_models.TEXT_ANCHOR_START,
 
 	"ref_models.Tan": ref_models.Tan,
 
@@ -896,11 +904,7 @@ func NewDiagram_1Injection(stage *models.StageStruct) {
 
 	// Declarations of staged instances of Link
 	__Link__000000_End := (&models.Link{Name: `End`}).Stage(stage)
-	__Link__000001_End := (&models.Link{Name: `End`}).Stage(stage)
-	__Link__000002_Start := (&models.Link{Name: `Start`}).Stage(stage)
-	__Link__000003_Start := (&models.Link{Name: `Start`}).Stage(stage)
-
-	// Declarations of staged instances of Node
+	__Link__000001_Start := (&models.Link{Name: `Start`}).Stage(stage)
 
 	// Declarations of staged instances of NoteShape
 
@@ -911,17 +915,13 @@ func NewDiagram_1Injection(stage *models.StageStruct) {
 	__Position__000001_Pos_NewDiagram_1_Rect := (&models.Position{Name: `Pos-NewDiagram_1-Rect`}).Stage(stage)
 	__Position__000002_Pos_NewDiagram_1_RectLinkLink := (&models.Position{Name: `Pos-NewDiagram_1-RectLinkLink`}).Stage(stage)
 
-	// Declarations of staged instances of Tree
-
 	// Declarations of staged instances of UmlState
 
 	// Declarations of staged instances of Umlsc
 
 	// Declarations of staged instances of Vertice
-	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect := (&models.Vertice{Name: `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-Link and NewDiagram_1-Rect`}).Stage(stage)
-	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect := (&models.Vertice{Name: `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-Link and NewDiagram_1-Rect`}).Stage(stage)
-	__Vertice__000002_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Link := (&models.Vertice{Name: `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-RectLinkLink and NewDiagram_1-Link`}).Stage(stage)
-	__Vertice__000003_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect := (&models.Vertice{Name: `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-RectLinkLink and NewDiagram_1-Rect`}).Stage(stage)
+	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Link := (&models.Vertice{Name: `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-RectLinkLink and NewDiagram_1-Link`}).Stage(stage)
+	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect := (&models.Vertice{Name: `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-RectLinkLink and NewDiagram_1-Rect`}).Stage(stage)
 
 	// Setup of values
 
@@ -958,10 +958,10 @@ func NewDiagram_1Injection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Link]
 	__GongStructShape__000000_NewDiagram_1_Link.Identifier = `ref_models.Link`
-	__GongStructShape__000000_NewDiagram_1_Link.ShowNbInstances = false
-	__GongStructShape__000000_NewDiagram_1_Link.NbInstances = 0
+	__GongStructShape__000000_NewDiagram_1_Link.ShowNbInstances = true
+	__GongStructShape__000000_NewDiagram_1_Link.NbInstances = 1
 	__GongStructShape__000000_NewDiagram_1_Link.Width = 240.000000
-	__GongStructShape__000000_NewDiagram_1_Link.Heigth = 93.000000
+	__GongStructShape__000000_NewDiagram_1_Link.Heigth = 96.000000
 	__GongStructShape__000000_NewDiagram_1_Link.IsSelected = false
 
 	// GongStructShape values setup
@@ -971,8 +971,8 @@ func NewDiagram_1Injection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Rect]
 	__GongStructShape__000001_NewDiagram_1_Rect.Identifier = `ref_models.Rect`
-	__GongStructShape__000001_NewDiagram_1_Rect.ShowNbInstances = false
-	__GongStructShape__000001_NewDiagram_1_Rect.NbInstances = 0
+	__GongStructShape__000001_NewDiagram_1_Rect.ShowNbInstances = true
+	__GongStructShape__000001_NewDiagram_1_Rect.NbInstances = 3
 	__GongStructShape__000001_NewDiagram_1_Rect.Width = 240.000000
 	__GongStructShape__000001_NewDiagram_1_Rect.Heigth = 63.000000
 	__GongStructShape__000001_NewDiagram_1_Rect.IsSelected = false
@@ -984,8 +984,8 @@ func NewDiagram_1Injection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.RectLinkLink]
 	__GongStructShape__000002_NewDiagram_1_RectLinkLink.Identifier = `ref_models.RectLinkLink`
-	__GongStructShape__000002_NewDiagram_1_RectLinkLink.ShowNbInstances = false
-	__GongStructShape__000002_NewDiagram_1_RectLinkLink.NbInstances = 0
+	__GongStructShape__000002_NewDiagram_1_RectLinkLink.ShowNbInstances = true
+	__GongStructShape__000002_NewDiagram_1_RectLinkLink.NbInstances = 1
 	__GongStructShape__000002_NewDiagram_1_RectLinkLink.Width = 240.000000
 	__GongStructShape__000002_NewDiagram_1_RectLinkLink.Heigth = 63.000000
 	__GongStructShape__000002_NewDiagram_1_RectLinkLink.IsSelected = false
@@ -1002,88 +1002,70 @@ func NewDiagram_1Injection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Link]
 	__Link__000000_End.Fieldtypename = `ref_models.Link`
+	__Link__000000_End.FieldOffsetX = -63.000000
+	__Link__000000_End.FieldOffsetY = -21.000000
 	__Link__000000_End.TargetMultiplicity = models.ZERO_ONE
+	__Link__000000_End.TargetMultiplicityOffsetX = -55.000000
+	__Link__000000_End.TargetMultiplicityOffsetY = 23.000000
 	__Link__000000_End.SourceMultiplicity = models.MANY
+	__Link__000000_End.SourceMultiplicityOffsetX = 19.000000
+	__Link__000000_End.SourceMultiplicityOffsetY = 19.000000
+	__Link__000000_End.StartOrientation = models.ORIENTATION_VERTICAL
+	__Link__000000_End.StartRatio = 0.318055
+	__Link__000000_End.EndOrientation = models.ORIENTATION_HORIZONTAL
+	__Link__000000_End.EndRatio = 0.746528
+	__Link__000000_End.CornerOffsetRatio = 2.429067
 
 	// Link values setup
-	__Link__000001_End.Name = `End`
-
-	// comment added to overcome the problem with the comment map association
-
-	//gong:ident [ref_models.Link.End]
-	__Link__000001_End.Identifier = `ref_models.Link.End`
-
-	// comment added to overcome the problem with the comment map association
-
-	//gong:ident [ref_models.Rect]
-	__Link__000001_End.Fieldtypename = `ref_models.Rect`
-	__Link__000001_End.TargetMultiplicity = models.ZERO_ONE
-	__Link__000001_End.SourceMultiplicity = models.MANY
-
-	// Link values setup
-	__Link__000002_Start.Name = `Start`
+	__Link__000001_Start.Name = `Start`
 
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.RectLinkLink.Start]
-	__Link__000002_Start.Identifier = `ref_models.RectLinkLink.Start`
+	__Link__000001_Start.Identifier = `ref_models.RectLinkLink.Start`
 
 	// comment added to overcome the problem with the comment map association
 
 	//gong:ident [ref_models.Rect]
-	__Link__000002_Start.Fieldtypename = `ref_models.Rect`
-	__Link__000002_Start.TargetMultiplicity = models.ZERO_ONE
-	__Link__000002_Start.SourceMultiplicity = models.MANY
-
-	// Link values setup
-	__Link__000003_Start.Name = `Start`
-
-	// comment added to overcome the problem with the comment map association
-
-	//gong:ident [ref_models.Link.Start]
-	__Link__000003_Start.Identifier = `ref_models.Link.Start`
-
-	// comment added to overcome the problem with the comment map association
-
-	//gong:ident [ref_models.Rect]
-	__Link__000003_Start.Fieldtypename = `ref_models.Rect`
-	__Link__000003_Start.TargetMultiplicity = models.ZERO_ONE
-	__Link__000003_Start.SourceMultiplicity = models.MANY
+	__Link__000001_Start.Fieldtypename = `ref_models.Rect`
+	__Link__000001_Start.FieldOffsetX = -62.000000
+	__Link__000001_Start.FieldOffsetY = -20.000000
+	__Link__000001_Start.TargetMultiplicity = models.ZERO_ONE
+	__Link__000001_Start.TargetMultiplicityOffsetX = -52.000000
+	__Link__000001_Start.TargetMultiplicityOffsetY = 27.000000
+	__Link__000001_Start.SourceMultiplicity = models.MANY
+	__Link__000001_Start.SourceMultiplicityOffsetX = 13.000000
+	__Link__000001_Start.SourceMultiplicityOffsetY = 29.000000
+	__Link__000001_Start.StartOrientation = models.ORIENTATION_HORIZONTAL
+	__Link__000001_Start.StartRatio = 0.333829
+	__Link__000001_Start.EndOrientation = models.ORIENTATION_HORIZONTAL
+	__Link__000001_Start.EndRatio = 0.397321
+	__Link__000001_Start.CornerOffsetRatio = 1.284722
 
 	// Position values setup
-	__Position__000000_Pos_NewDiagram_1_Link.X = 80.000000
-	__Position__000000_Pos_NewDiagram_1_Link.Y = 120.000000
+	__Position__000000_Pos_NewDiagram_1_Link.X = 592.000000
+	__Position__000000_Pos_NewDiagram_1_Link.Y = 222.000000
 	__Position__000000_Pos_NewDiagram_1_Link.Name = `Pos-NewDiagram_1-Link`
 
 	// Position values setup
-	__Position__000001_Pos_NewDiagram_1_Rect.X = 420.000000
-	__Position__000001_Pos_NewDiagram_1_Rect.Y = 430.000000
+	__Position__000001_Pos_NewDiagram_1_Rect.X = 598.000000
+	__Position__000001_Pos_NewDiagram_1_Rect.Y = 89.000000
 	__Position__000001_Pos_NewDiagram_1_Rect.Name = `Pos-NewDiagram_1-Rect`
 
 	// Position values setup
-	__Position__000002_Pos_NewDiagram_1_RectLinkLink.X = 640.000000
-	__Position__000002_Pos_NewDiagram_1_RectLinkLink.Y = 160.000000
+	__Position__000002_Pos_NewDiagram_1_RectLinkLink.X = 80.000000
+	__Position__000002_Pos_NewDiagram_1_RectLinkLink.Y = 97.000000
 	__Position__000002_Pos_NewDiagram_1_RectLinkLink.Name = `Pos-NewDiagram_1-RectLinkLink`
 
 	// Vertice values setup
-	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect.X = 130.000000
-	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect.Y = 366.500000
-	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect.Name = `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-Link and NewDiagram_1-Rect`
+	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Link.X = 490.000000
+	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Link.Y = 81.500000
+	__Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Link.Name = `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-RectLinkLink and NewDiagram_1-Link`
 
 	// Vertice values setup
-	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect.X = 580.000000
-	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect.Y = 326.500000
-	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect.Name = `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-Link and NewDiagram_1-Rect`
-
-	// Vertice values setup
-	__Vertice__000002_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Link.X = 490.000000
-	__Vertice__000002_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Link.Y = 81.500000
-	__Vertice__000002_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Link.Name = `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-RectLinkLink and NewDiagram_1-Link`
-
-	// Vertice values setup
-	__Vertice__000003_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect.X = 770.000000
-	__Vertice__000003_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect.Y = 456.500000
-	__Vertice__000003_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect.Name = `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-RectLinkLink and NewDiagram_1-Rect`
+	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect.X = 770.000000
+	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect.Y = 456.500000
+	__Vertice__000001_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect.Name = `Verticle in class diagram NewDiagram_1 in middle between NewDiagram_1-RectLinkLink and NewDiagram_1-Rect`
 
 	// Setup of pointers
 	__Classdiagram__000000_NewDiagram_1.GongStructShapes = append(__Classdiagram__000000_NewDiagram_1.GongStructShapes, __GongStructShape__000000_NewDiagram_1_Link)
@@ -1092,14 +1074,12 @@ func NewDiagram_1Injection(stage *models.StageStruct) {
 	__GongStructShape__000000_NewDiagram_1_Link.Position = __Position__000000_Pos_NewDiagram_1_Link
 	__GongStructShape__000000_NewDiagram_1_Link.Fields = append(__GongStructShape__000000_NewDiagram_1_Link.Fields, __Field__000000_CornerOffsetRatio)
 	__GongStructShape__000000_NewDiagram_1_Link.Fields = append(__GongStructShape__000000_NewDiagram_1_Link.Fields, __Field__000001_CornerRadius)
-	__GongStructShape__000000_NewDiagram_1_Link.Links = append(__GongStructShape__000000_NewDiagram_1_Link.Links, __Link__000001_End)
-	__GongStructShape__000000_NewDiagram_1_Link.Links = append(__GongStructShape__000000_NewDiagram_1_Link.Links, __Link__000003_Start)
 	__GongStructShape__000001_NewDiagram_1_Rect.Position = __Position__000001_Pos_NewDiagram_1_Rect
 	__GongStructShape__000002_NewDiagram_1_RectLinkLink.Position = __Position__000002_Pos_NewDiagram_1_RectLinkLink
 	__GongStructShape__000002_NewDiagram_1_RectLinkLink.Links = append(__GongStructShape__000002_NewDiagram_1_RectLinkLink.Links, __Link__000000_End)
-	__GongStructShape__000002_NewDiagram_1_RectLinkLink.Links = append(__GongStructShape__000002_NewDiagram_1_RectLinkLink.Links, __Link__000002_Start)
-	__Link__000000_End.Middlevertice = __Vertice__000002_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Link
-	__Link__000001_End.Middlevertice = __Vertice__000001_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect
-	__Link__000002_Start.Middlevertice = __Vertice__000003_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect
-	__Link__000003_Start.Middlevertice = __Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_Link_and_NewDiagram_1_Rect
+	__GongStructShape__000002_NewDiagram_1_RectLinkLink.Links = append(__GongStructShape__000002_NewDiagram_1_RectLinkLink.Links, __Link__000001_Start)
+	__Link__000000_End.Middlevertice = __Vertice__000000_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Link
+	__Link__000001_Start.Middlevertice = __Vertice__000001_Verticle_in_class_diagram_NewDiagram_1_in_middle_between_NewDiagram_1_RectLinkLink_and_NewDiagram_1_Rect
 }
+
+

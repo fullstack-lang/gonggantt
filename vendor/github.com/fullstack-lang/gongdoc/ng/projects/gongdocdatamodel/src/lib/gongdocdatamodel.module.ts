@@ -5,7 +5,13 @@ import { DataModelPanelComponent } from './data-model-panel/data-model-panel.com
 import { GongdocModule } from 'gongdoc'
 import { GongdocspecificModule } from 'gongdocspecific'
 
-import { GongdocModule } from 'gongdoc'
+import { GongtreeModule } from 'gongtree'
+import { GongtreespecificModule } from 'gongtreespecific'
+
+import { GongtableModule } from 'gongtable'
+import { GongtablespecificModule } from 'gongtablespecific'
+import { GongtabledatamodelModule } from 'gongtabledatamodel'
+
 
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
@@ -20,13 +26,19 @@ import { AngularSplitModule } from 'angular-split';
     GongdocModule,
     GongdocspecificModule,
 
+    GongtreeModule,
+    GongtreespecificModule,
+
+    GongtableModule,
+    GongtablespecificModule,
+    GongtabledatamodelModule,
+
     MatRadioModule,
     FormsModule,
     CommonModule,
 
     AngularSplitModule,
 
-    GongdocModule,
   ],
   exports: [
     DataModelPanelComponent

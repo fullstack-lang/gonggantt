@@ -255,6 +255,9 @@ func (backRepoSVG *BackRepoSVGStruct) CommitPhaseTwoInstance(backRepo *BackRepoS
 				svgDB.StartRectID.Int64 = int64(StartRectId)
 				svgDB.StartRectID.Valid = true
 			}
+		} else {
+			svgDB.StartRectID.Int64 = 0
+			svgDB.StartRectID.Valid = true
 		}
 
 		// commit pointer value svg.EndRect translates to updating the svg.EndRectID
@@ -264,6 +267,9 @@ func (backRepoSVG *BackRepoSVGStruct) CommitPhaseTwoInstance(backRepo *BackRepoS
 				svgDB.EndRectID.Int64 = int64(EndRectId)
 				svgDB.EndRectID.Valid = true
 			}
+		} else {
+			svgDB.EndRectID.Int64 = 0
+			svgDB.EndRectID.Valid = true
 		}
 
 		query := backRepoSVG.db.Save(&svgDB)
@@ -401,10 +407,12 @@ func (backRepoSVG *BackRepoSVGStruct) CheckoutPhaseTwoInstance(backRepo *BackRep
 	})
 
 	// StartRect field
+	svg.StartRect = nil
 	if svgDB.StartRectID.Int64 != 0 {
 		svg.StartRect = backRepo.BackRepoRect.Map_RectDBID_RectPtr[uint(svgDB.StartRectID.Int64)]
 	}
 	// EndRect field
+	svg.EndRect = nil
 	if svgDB.EndRectID.Int64 != 0 {
 		svg.EndRect = backRepo.BackRepoRect.Map_RectDBID_RectPtr[uint(svgDB.EndRectID.Int64)]
 	}

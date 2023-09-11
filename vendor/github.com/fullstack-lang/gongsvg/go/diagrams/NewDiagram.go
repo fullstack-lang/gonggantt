@@ -395,57 +395,29 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 
 	"ref_models.LinkAnchoredText": &(ref_models.LinkAnchoredText{}),
 
-	"ref_models.LinkAnchoredText": &(ref_models.LinkAnchoredText{}),
-
 	"ref_models.LinkAnchoredText.Animates": (ref_models.LinkAnchoredText{}).Animates,
-
-	"ref_models.LinkAnchoredText.Animates": (ref_models.LinkAnchoredText{}).Animates,
-
-	"ref_models.LinkAnchoredText.Color": (ref_models.LinkAnchoredText{}).Color,
 
 	"ref_models.LinkAnchoredText.Color": (ref_models.LinkAnchoredText{}).Color,
 
 	"ref_models.LinkAnchoredText.Content": (ref_models.LinkAnchoredText{}).Content,
 
-	"ref_models.LinkAnchoredText.Content": (ref_models.LinkAnchoredText{}).Content,
-
 	"ref_models.LinkAnchoredText.FillOpacity": (ref_models.LinkAnchoredText{}).FillOpacity,
-
-	"ref_models.LinkAnchoredText.FillOpacity": (ref_models.LinkAnchoredText{}).FillOpacity,
-
-	"ref_models.LinkAnchoredText.FontWeight": (ref_models.LinkAnchoredText{}).FontWeight,
 
 	"ref_models.LinkAnchoredText.FontWeight": (ref_models.LinkAnchoredText{}).FontWeight,
 
 	"ref_models.LinkAnchoredText.Name": (ref_models.LinkAnchoredText{}).Name,
 
-	"ref_models.LinkAnchoredText.Name": (ref_models.LinkAnchoredText{}).Name,
-
 	"ref_models.LinkAnchoredText.Stroke": (ref_models.LinkAnchoredText{}).Stroke,
-
-	"ref_models.LinkAnchoredText.Stroke": (ref_models.LinkAnchoredText{}).Stroke,
-
-	"ref_models.LinkAnchoredText.StrokeDashArray": (ref_models.LinkAnchoredText{}).StrokeDashArray,
 
 	"ref_models.LinkAnchoredText.StrokeDashArray": (ref_models.LinkAnchoredText{}).StrokeDashArray,
 
 	"ref_models.LinkAnchoredText.StrokeDashArrayWhenSelected": (ref_models.LinkAnchoredText{}).StrokeDashArrayWhenSelected,
 
-	"ref_models.LinkAnchoredText.StrokeDashArrayWhenSelected": (ref_models.LinkAnchoredText{}).StrokeDashArrayWhenSelected,
-
-	"ref_models.LinkAnchoredText.StrokeWidth": (ref_models.LinkAnchoredText{}).StrokeWidth,
-
 	"ref_models.LinkAnchoredText.StrokeWidth": (ref_models.LinkAnchoredText{}).StrokeWidth,
 
 	"ref_models.LinkAnchoredText.Transform": (ref_models.LinkAnchoredText{}).Transform,
 
-	"ref_models.LinkAnchoredText.Transform": (ref_models.LinkAnchoredText{}).Transform,
-
 	"ref_models.LinkAnchoredText.X_Offset": (ref_models.LinkAnchoredText{}).X_Offset,
-
-	"ref_models.LinkAnchoredText.X_Offset": (ref_models.LinkAnchoredText{}).X_Offset,
-
-	"ref_models.LinkAnchoredText.Y_Offset": (ref_models.LinkAnchoredText{}).Y_Offset,
 
 	"ref_models.LinkAnchoredText.Y_Offset": (ref_models.LinkAnchoredText{}).Y_Offset,
 
@@ -841,9 +813,13 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 
 	"ref_models.TEXT_ANCHOR_CENTER": ref_models.TEXT_ANCHOR_CENTER,
 
-	"ref_models.TEXT_ANCHOR_LEFT": ref_models.TEXT_ANCHOR_START,
+	"ref_models.TEXT_ANCHOR_END": ref_models.TEXT_ANCHOR_END,
 
-	"ref_models.TEXT_ANCHOR_RIGHT": ref_models.TEXT_ANCHOR_END,
+	"ref_models.TEXT_ANCHOR_END": ref_models.TEXT_ANCHOR_END,
+
+	"ref_models.TEXT_ANCHOR_START": ref_models.TEXT_ANCHOR_START,
+
+	"ref_models.TEXT_ANCHOR_START": ref_models.TEXT_ANCHOR_START,
 
 	"ref_models.Tan": ref_models.Tan,
 
@@ -980,8 +956,6 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Link__000010_TextAtArrowEnd := (&models.Link{Name: `TextAtArrowEnd`}).Stage(stage)
 	__Link__000011_TextAtArrowStart := (&models.Link{Name: `TextAtArrowStart`}).Stage(stage)
 
-	// Declarations of staged instances of Node
-
 	// Declarations of staged instances of NoteShape
 
 	// Declarations of staged instances of NoteShapeLink
@@ -995,8 +969,6 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Position__000005_Pos_NewDiagram_RectAnchoredText := (&models.Position{Name: `Pos-NewDiagram-RectAnchoredText`}).Stage(stage)
 	__Position__000006_Pos_NewDiagram_RectLinkLink := (&models.Position{Name: `Pos-NewDiagram-RectLinkLink`}).Stage(stage)
 	__Position__000007_Pos_NewDiagram_SVG := (&models.Position{Name: `Pos-NewDiagram-SVG`}).Stage(stage)
-
-	// Declarations of staged instances of Tree
 
 	// Declarations of staged instances of UmlState
 
@@ -1269,10 +1241,10 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.LinkAnchoredText.Name]
-	__Field__000022_Name.Identifier = `ref_models.LinkAnchoredText.Name`
+	//gong:ident [ref_models.Layer.Name]
+	__Field__000022_Name.Identifier = `ref_models.Layer.Name`
 	__Field__000022_Name.FieldTypeAsString = ``
-	__Field__000022_Name.Structname = `AnchoredText`
+	__Field__000022_Name.Structname = `Layer`
 	__Field__000022_Name.Fieldtypename = `string`
 
 	// Field values setup
@@ -1291,10 +1263,10 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.SVG.Name]
-	__Field__000024_Name.Identifier = `ref_models.SVG.Name`
+	//gong:ident [ref_models.LinkAnchoredText.Name]
+	__Field__000024_Name.Identifier = `ref_models.LinkAnchoredText.Name`
 	__Field__000024_Name.FieldTypeAsString = ``
-	__Field__000024_Name.Structname = `SVG`
+	__Field__000024_Name.Structname = `AnchoredText`
 	__Field__000024_Name.Fieldtypename = `string`
 
 	// Field values setup
@@ -1302,10 +1274,10 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.Layer.Name]
-	__Field__000025_Name.Identifier = `ref_models.Layer.Name`
+	//gong:ident [ref_models.SVG.Name]
+	__Field__000025_Name.Identifier = `ref_models.SVG.Name`
 	__Field__000025_Name.FieldTypeAsString = ``
-	__Field__000025_Name.Structname = `Layer`
+	__Field__000025_Name.Structname = `SVG`
 	__Field__000025_Name.Fieldtypename = `string`
 
 	// Field values setup
@@ -1436,7 +1408,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.LinkAnchoredText]
 	__GongStructShape__000000_NewDiagram_AnchoredText.Identifier = `ref_models.LinkAnchoredText`
-	__GongStructShape__000000_NewDiagram_AnchoredText.ShowNbInstances = false
+	__GongStructShape__000000_NewDiagram_AnchoredText.ShowNbInstances = true
 	__GongStructShape__000000_NewDiagram_AnchoredText.NbInstances = 0
 	__GongStructShape__000000_NewDiagram_AnchoredText.Width = 240.000000
 	__GongStructShape__000000_NewDiagram_AnchoredText.Heigth = 153.000000
@@ -1449,8 +1421,8 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Layer]
 	__GongStructShape__000001_NewDiagram_Layer.Identifier = `ref_models.Layer`
-	__GongStructShape__000001_NewDiagram_Layer.ShowNbInstances = false
-	__GongStructShape__000001_NewDiagram_Layer.NbInstances = 0
+	__GongStructShape__000001_NewDiagram_Layer.ShowNbInstances = true
+	__GongStructShape__000001_NewDiagram_Layer.NbInstances = 1
 	__GongStructShape__000001_NewDiagram_Layer.Width = 138.000000
 	__GongStructShape__000001_NewDiagram_Layer.Heigth = 605.000000
 	__GongStructShape__000001_NewDiagram_Layer.IsSelected = false
@@ -1462,7 +1434,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Link]
 	__GongStructShape__000002_NewDiagram_Link.Identifier = `ref_models.Link`
-	__GongStructShape__000002_NewDiagram_Link.ShowNbInstances = false
+	__GongStructShape__000002_NewDiagram_Link.ShowNbInstances = true
 	__GongStructShape__000002_NewDiagram_Link.NbInstances = 0
 	__GongStructShape__000002_NewDiagram_Link.Width = 330.000000
 	__GongStructShape__000002_NewDiagram_Link.Heigth = 198.000000
@@ -1475,8 +1447,8 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Rect]
 	__GongStructShape__000003_NewDiagram_Rect.Identifier = `ref_models.Rect`
-	__GongStructShape__000003_NewDiagram_Rect.ShowNbInstances = false
-	__GongStructShape__000003_NewDiagram_Rect.NbInstances = 0
+	__GongStructShape__000003_NewDiagram_Rect.ShowNbInstances = true
+	__GongStructShape__000003_NewDiagram_Rect.NbInstances = 5
 	__GongStructShape__000003_NewDiagram_Rect.Width = 316.000000
 	__GongStructShape__000003_NewDiagram_Rect.Heigth = 330.000000
 	__GongStructShape__000003_NewDiagram_Rect.IsSelected = false
@@ -1488,7 +1460,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.RectAnchoredRect]
 	__GongStructShape__000004_NewDiagram_RectAnchoredRect.Identifier = `ref_models.RectAnchoredRect`
-	__GongStructShape__000004_NewDiagram_RectAnchoredRect.ShowNbInstances = false
+	__GongStructShape__000004_NewDiagram_RectAnchoredRect.ShowNbInstances = true
 	__GongStructShape__000004_NewDiagram_RectAnchoredRect.NbInstances = 0
 	__GongStructShape__000004_NewDiagram_RectAnchoredRect.Width = 240.000000
 	__GongStructShape__000004_NewDiagram_RectAnchoredRect.Heigth = 63.000000
@@ -1501,7 +1473,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.RectAnchoredText]
 	__GongStructShape__000005_NewDiagram_RectAnchoredText.Identifier = `ref_models.RectAnchoredText`
-	__GongStructShape__000005_NewDiagram_RectAnchoredText.ShowNbInstances = false
+	__GongStructShape__000005_NewDiagram_RectAnchoredText.ShowNbInstances = true
 	__GongStructShape__000005_NewDiagram_RectAnchoredText.NbInstances = 0
 	__GongStructShape__000005_NewDiagram_RectAnchoredText.Width = 240.000000
 	__GongStructShape__000005_NewDiagram_RectAnchoredText.Heigth = 63.000000
@@ -1514,7 +1486,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.RectLinkLink]
 	__GongStructShape__000006_NewDiagram_RectLinkLink.Identifier = `ref_models.RectLinkLink`
-	__GongStructShape__000006_NewDiagram_RectLinkLink.ShowNbInstances = false
+	__GongStructShape__000006_NewDiagram_RectLinkLink.ShowNbInstances = true
 	__GongStructShape__000006_NewDiagram_RectLinkLink.NbInstances = 0
 	__GongStructShape__000006_NewDiagram_RectLinkLink.Width = 240.000000
 	__GongStructShape__000006_NewDiagram_RectLinkLink.Heigth = 78.000000
@@ -1527,8 +1499,8 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.SVG]
 	__GongStructShape__000007_NewDiagram_SVG.Identifier = `ref_models.SVG`
-	__GongStructShape__000007_NewDiagram_SVG.ShowNbInstances = false
-	__GongStructShape__000007_NewDiagram_SVG.NbInstances = 0
+	__GongStructShape__000007_NewDiagram_SVG.ShowNbInstances = true
+	__GongStructShape__000007_NewDiagram_SVG.NbInstances = 1
 	__GongStructShape__000007_NewDiagram_SVG.Width = 139.000000
 	__GongStructShape__000007_NewDiagram_SVG.Heigth = 63.000000
 	__GongStructShape__000007_NewDiagram_SVG.IsSelected = false
@@ -1538,52 +1510,52 @@ func NewDiagramInjection(stage *models.StageStruct) {
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.Link.End]
-	__Link__000000_End.Identifier = `ref_models.Link.End`
+	//gong:ident [ref_models.RectLinkLink.End]
+	__Link__000000_End.Identifier = `ref_models.RectLinkLink.End`
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.Rect]
-	__Link__000000_End.Fieldtypename = `ref_models.Rect`
-	__Link__000000_End.FieldOffsetX = -37.000000
-	__Link__000000_End.FieldOffsetY = 23.000000
+	//gong:ident [ref_models.Link]
+	__Link__000000_End.Fieldtypename = `ref_models.Link`
+	__Link__000000_End.FieldOffsetX = -50.000000
+	__Link__000000_End.FieldOffsetY = -16.000000
 	__Link__000000_End.TargetMultiplicity = models.ZERO_ONE
-	__Link__000000_End.TargetMultiplicityOffsetX = 14.000000
-	__Link__000000_End.TargetMultiplicityOffsetY = 21.000000
+	__Link__000000_End.TargetMultiplicityOffsetX = -50.000000
+	__Link__000000_End.TargetMultiplicityOffsetY = 16.000000
 	__Link__000000_End.SourceMultiplicity = models.MANY
-	__Link__000000_End.SourceMultiplicityOffsetX = 11.000000
-	__Link__000000_End.SourceMultiplicityOffsetY = -12.000000
+	__Link__000000_End.SourceMultiplicityOffsetX = -26.000000
+	__Link__000000_End.SourceMultiplicityOffsetY = 22.000000
 	__Link__000000_End.StartOrientation = models.ORIENTATION_VERTICAL
-	__Link__000000_End.StartRatio = 0.743838
-	__Link__000000_End.EndOrientation = models.ORIENTATION_VERTICAL
-	__Link__000000_End.EndRatio = 0.766550
-	__Link__000000_End.CornerOffsetRatio = -0.434343
+	__Link__000000_End.StartRatio = 0.718611
+	__Link__000000_End.EndOrientation = models.ORIENTATION_HORIZONTAL
+	__Link__000000_End.EndRatio = 0.227273
+	__Link__000000_End.CornerOffsetRatio = 1.015873
 
 	// Link values setup
 	__Link__000001_End.Name = `End`
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.RectLinkLink.End]
-	__Link__000001_End.Identifier = `ref_models.RectLinkLink.End`
+	//gong:ident [ref_models.Link.End]
+	__Link__000001_End.Identifier = `ref_models.Link.End`
 
 	// comment added to overcome the problem with the comment map association
 
-	//gong:ident [ref_models.Link]
-	__Link__000001_End.Fieldtypename = `ref_models.Link`
-	__Link__000001_End.FieldOffsetX = -50.000000
-	__Link__000001_End.FieldOffsetY = -16.000000
+	//gong:ident [ref_models.Rect]
+	__Link__000001_End.Fieldtypename = `ref_models.Rect`
+	__Link__000001_End.FieldOffsetX = -37.000000
+	__Link__000001_End.FieldOffsetY = 23.000000
 	__Link__000001_End.TargetMultiplicity = models.ZERO_ONE
-	__Link__000001_End.TargetMultiplicityOffsetX = -50.000000
-	__Link__000001_End.TargetMultiplicityOffsetY = 16.000000
+	__Link__000001_End.TargetMultiplicityOffsetX = 14.000000
+	__Link__000001_End.TargetMultiplicityOffsetY = 21.000000
 	__Link__000001_End.SourceMultiplicity = models.MANY
-	__Link__000001_End.SourceMultiplicityOffsetX = -26.000000
-	__Link__000001_End.SourceMultiplicityOffsetY = 22.000000
+	__Link__000001_End.SourceMultiplicityOffsetX = 11.000000
+	__Link__000001_End.SourceMultiplicityOffsetY = -12.000000
 	__Link__000001_End.StartOrientation = models.ORIENTATION_VERTICAL
-	__Link__000001_End.StartRatio = 0.718611
-	__Link__000001_End.EndOrientation = models.ORIENTATION_HORIZONTAL
-	__Link__000001_End.EndRatio = 0.227273
-	__Link__000001_End.CornerOffsetRatio = 1.015873
+	__Link__000001_End.StartRatio = 0.743838
+	__Link__000001_End.EndOrientation = models.ORIENTATION_VERTICAL
+	__Link__000001_End.EndRatio = 0.766550
+	__Link__000001_End.CornerOffsetRatio = -0.434343
 
 	// Link values setup
 	__Link__000002_Layers.Name = `Layers`
@@ -1955,7 +1927,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000006_NewDiagram_RectLinkLink)
 	__Classdiagram__000000_NewDiagram.GongStructShapes = append(__Classdiagram__000000_NewDiagram.GongStructShapes, __GongStructShape__000007_NewDiagram_SVG)
 	__GongStructShape__000000_NewDiagram_AnchoredText.Position = __Position__000000_Pos_NewDiagram_AnchoredText
-	__GongStructShape__000000_NewDiagram_AnchoredText.Fields = append(__GongStructShape__000000_NewDiagram_AnchoredText.Fields, __Field__000022_Name)
+	__GongStructShape__000000_NewDiagram_AnchoredText.Fields = append(__GongStructShape__000000_NewDiagram_AnchoredText.Fields, __Field__000024_Name)
 	__GongStructShape__000000_NewDiagram_AnchoredText.Fields = append(__GongStructShape__000000_NewDiagram_AnchoredText.Fields, __Field__000007_Content)
 	__GongStructShape__000000_NewDiagram_AnchoredText.Fields = append(__GongStructShape__000000_NewDiagram_AnchoredText.Fields, __Field__000034_X_Offset)
 	__GongStructShape__000000_NewDiagram_AnchoredText.Fields = append(__GongStructShape__000000_NewDiagram_AnchoredText.Fields, __Field__000036_Y_Offset)
@@ -1963,7 +1935,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000000_NewDiagram_AnchoredText.Fields = append(__GongStructShape__000000_NewDiagram_AnchoredText.Fields, __Field__000030_Stroke)
 	__GongStructShape__000001_NewDiagram_Layer.Position = __Position__000001_Pos_NewDiagram_Layer
 	__GongStructShape__000001_NewDiagram_Layer.Fields = append(__GongStructShape__000001_NewDiagram_Layer.Fields, __Field__000010_Display)
-	__GongStructShape__000001_NewDiagram_Layer.Fields = append(__GongStructShape__000001_NewDiagram_Layer.Fields, __Field__000025_Name)
+	__GongStructShape__000001_NewDiagram_Layer.Fields = append(__GongStructShape__000001_NewDiagram_Layer.Fields, __Field__000022_Name)
 	__GongStructShape__000001_NewDiagram_Layer.Links = append(__GongStructShape__000001_NewDiagram_Layer.Links, __Link__000006_RectLinkLinks)
 	__GongStructShape__000001_NewDiagram_Layer.Links = append(__GongStructShape__000001_NewDiagram_Layer.Links, __Link__000003_Links)
 	__GongStructShape__000001_NewDiagram_Layer.Links = append(__GongStructShape__000001_NewDiagram_Layer.Links, __Link__000007_Rects)
@@ -1977,7 +1949,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000002_NewDiagram_Link.Fields = append(__GongStructShape__000002_NewDiagram_Link.Fields, __Field__000008_CornerOffsetRatio)
 	__GongStructShape__000002_NewDiagram_Link.Fields = append(__GongStructShape__000002_NewDiagram_Link.Fields, __Field__000009_CornerRadius)
 	__GongStructShape__000002_NewDiagram_Link.Fields = append(__GongStructShape__000002_NewDiagram_Link.Fields, __Field__000012_EndArrowSize)
-	__GongStructShape__000002_NewDiagram_Link.Links = append(__GongStructShape__000002_NewDiagram_Link.Links, __Link__000000_End)
+	__GongStructShape__000002_NewDiagram_Link.Links = append(__GongStructShape__000002_NewDiagram_Link.Links, __Link__000001_End)
 	__GongStructShape__000002_NewDiagram_Link.Links = append(__GongStructShape__000002_NewDiagram_Link.Links, __Link__000009_Start)
 	__GongStructShape__000002_NewDiagram_Link.Links = append(__GongStructShape__000002_NewDiagram_Link.Links, __Link__000010_TextAtArrowEnd)
 	__GongStructShape__000002_NewDiagram_Link.Links = append(__GongStructShape__000002_NewDiagram_Link.Links, __Link__000011_TextAtArrowStart)
@@ -2007,12 +1979,12 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000006_NewDiagram_RectLinkLink.Position = __Position__000006_Pos_NewDiagram_RectLinkLink
 	__GongStructShape__000006_NewDiagram_RectLinkLink.Fields = append(__GongStructShape__000006_NewDiagram_RectLinkLink.Fields, __Field__000031_TargetAnchorPosition)
 	__GongStructShape__000006_NewDiagram_RectLinkLink.Links = append(__GongStructShape__000006_NewDiagram_RectLinkLink.Links, __Link__000008_Start)
-	__GongStructShape__000006_NewDiagram_RectLinkLink.Links = append(__GongStructShape__000006_NewDiagram_RectLinkLink.Links, __Link__000001_End)
+	__GongStructShape__000006_NewDiagram_RectLinkLink.Links = append(__GongStructShape__000006_NewDiagram_RectLinkLink.Links, __Link__000000_End)
 	__GongStructShape__000007_NewDiagram_SVG.Position = __Position__000007_Pos_NewDiagram_SVG
-	__GongStructShape__000007_NewDiagram_SVG.Fields = append(__GongStructShape__000007_NewDiagram_SVG.Fields, __Field__000024_Name)
+	__GongStructShape__000007_NewDiagram_SVG.Fields = append(__GongStructShape__000007_NewDiagram_SVG.Fields, __Field__000025_Name)
 	__GongStructShape__000007_NewDiagram_SVG.Links = append(__GongStructShape__000007_NewDiagram_SVG.Links, __Link__000002_Layers)
-	__Link__000000_End.Middlevertice = __Vertice__000005_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_Rect
-	__Link__000001_End.Middlevertice = __Vertice__000009_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_RectLinkLink_and_NewDiagram_Link
+	__Link__000000_End.Middlevertice = __Vertice__000009_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_RectLinkLink_and_NewDiagram_Link
+	__Link__000001_End.Middlevertice = __Vertice__000005_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_Rect
 	__Link__000002_Layers.Middlevertice = __Vertice__000011_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_SVG_and_NewDiagram_Layer
 	__Link__000003_Links.Middlevertice = __Vertice__000000_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Layer_and_NewDiagram_Link
 	__Link__000004_RectAnchoredRects.Middlevertice = __Vertice__000007_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Rect_and_NewDiagram_RectAnchoredRect
@@ -2021,6 +1993,8 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Link__000007_Rects.Middlevertice = __Vertice__000001_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Layer_and_NewDiagram_Rect
 	__Link__000008_Start.Middlevertice = __Vertice__000010_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_RectLinkLink_and_NewDiagram_Rect
 	__Link__000009_Start.Middlevertice = __Vertice__000006_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_Rect
-	__Link__000010_TextAtArrowEnd.Middlevertice = __Vertice__000003_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_AnchoredText
-	__Link__000011_TextAtArrowStart.Middlevertice = __Vertice__000004_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_AnchoredText
+	__Link__000010_TextAtArrowEnd.Middlevertice = __Vertice__000004_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_AnchoredText
+	__Link__000011_TextAtArrowStart.Middlevertice = __Vertice__000003_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_AnchoredText
 }
+
+
