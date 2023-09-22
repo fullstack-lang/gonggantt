@@ -616,6 +616,115 @@ export class FrontRepoService {
               }
             )
 
+            // 
+            // Third Step: sort arrays (slices in go) according to their index
+            // insertion point sub template for redeem 
+            arrows.forEach(
+              arrow => {
+                // insertion point for sorting
+              }
+            )
+            bars.forEach(
+              bar => {
+                // insertion point for sorting
+              }
+            )
+            gantts.forEach(
+              gantt => {
+                // insertion point for sorting
+                gantt.Lanes?.sort((t1, t2) => {
+                  if (t1.Gantt_LanesDBID_Index.Int64 > t2.Gantt_LanesDBID_Index.Int64) {
+                    return 1;
+                  }
+                  if (t1.Gantt_LanesDBID_Index.Int64 < t2.Gantt_LanesDBID_Index.Int64) {
+                    return -1;
+                  }
+                  return 0;
+                })
+
+                gantt.Milestones?.sort((t1, t2) => {
+                  if (t1.Gantt_MilestonesDBID_Index.Int64 > t2.Gantt_MilestonesDBID_Index.Int64) {
+                    return 1;
+                  }
+                  if (t1.Gantt_MilestonesDBID_Index.Int64 < t2.Gantt_MilestonesDBID_Index.Int64) {
+                    return -1;
+                  }
+                  return 0;
+                })
+
+                gantt.Groups?.sort((t1, t2) => {
+                  if (t1.Gantt_GroupsDBID_Index.Int64 > t2.Gantt_GroupsDBID_Index.Int64) {
+                    return 1;
+                  }
+                  if (t1.Gantt_GroupsDBID_Index.Int64 < t2.Gantt_GroupsDBID_Index.Int64) {
+                    return -1;
+                  }
+                  return 0;
+                })
+
+                gantt.Arrows?.sort((t1, t2) => {
+                  if (t1.Gantt_ArrowsDBID_Index.Int64 > t2.Gantt_ArrowsDBID_Index.Int64) {
+                    return 1;
+                  }
+                  if (t1.Gantt_ArrowsDBID_Index.Int64 < t2.Gantt_ArrowsDBID_Index.Int64) {
+                    return -1;
+                  }
+                  return 0;
+                })
+
+              }
+            )
+            groups.forEach(
+              group => {
+                // insertion point for sorting
+                group.GroupLanes?.sort((t1, t2) => {
+                  if (t1.Group_GroupLanesDBID_Index.Int64 > t2.Group_GroupLanesDBID_Index.Int64) {
+                    return 1;
+                  }
+                  if (t1.Group_GroupLanesDBID_Index.Int64 < t2.Group_GroupLanesDBID_Index.Int64) {
+                    return -1;
+                  }
+                  return 0;
+                })
+
+              }
+            )
+            lanes.forEach(
+              lane => {
+                // insertion point for sorting
+                lane.Bars?.sort((t1, t2) => {
+                  if (t1.Lane_BarsDBID_Index.Int64 > t2.Lane_BarsDBID_Index.Int64) {
+                    return 1;
+                  }
+                  if (t1.Lane_BarsDBID_Index.Int64 < t2.Lane_BarsDBID_Index.Int64) {
+                    return -1;
+                  }
+                  return 0;
+                })
+
+              }
+            )
+            laneuses.forEach(
+              laneuse => {
+                // insertion point for sorting
+              }
+            )
+            milestones.forEach(
+              milestone => {
+                // insertion point for sorting
+                milestone.LanesToDisplayMilestoneUse?.sort((t1, t2) => {
+                  if (t1.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64 > t2.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64) {
+                    return 1;
+                  }
+                  if (t1.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64 < t2.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64) {
+                    return -1;
+                  }
+                  return 0;
+                })
+
+              }
+            )
+
             // hand over control flow to observer
             observer.next(this.frontRepo)
           }

@@ -632,6 +632,39 @@ func (backRepoArrow *BackRepoArrowStruct) RestorePhaseTwo() {
 
 }
 
+// BackRepoArrow.ResetReversePointers commits all staged instances of Arrow to the BackRepo
+// Phase Two is the update of instance with the field in the database
+func (backRepoArrow *BackRepoArrowStruct) ResetReversePointers(backRepo *BackRepoStruct) (Error error) {
+
+	for idx, arrow := range backRepoArrow.Map_ArrowDBID_ArrowPtr {
+		backRepoArrow.ResetReversePointersInstance(backRepo, idx, arrow)
+	}
+
+	return
+}
+
+func (backRepoArrow *BackRepoArrowStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.Arrow) (Error error) {
+
+	// fetch matching arrowDB
+	if arrowDB, ok := backRepoArrow.Map_ArrowDBID_ArrowDB[idx]; ok {
+		_ = arrowDB // to avoid unused variable error if there are no reverse to reset
+
+		// insertion point for reverse pointers reset
+		if arrowDB.Gantt_ArrowsDBID.Int64 != 0 {
+			arrowDB.Gantt_ArrowsDBID.Int64 = 0
+			arrowDB.Gantt_ArrowsDBID.Valid = true
+
+			// save the reset
+			if q := backRepoArrow.db.Save(arrowDB); q.Error != nil {
+				return q.Error
+			}
+		}
+		// end of insertion point for reverse pointers reset
+	}
+
+	return
+}
+
 // this field is used during the restauration process.
 // it stores the ID at the backup time and is used for renumbering
 var BackRepoArrowid_atBckpTime_newID map[uint]uint

@@ -309,6 +309,12 @@ func (arrow *Arrow) Unstage(stage *StageStruct) *Arrow {
 	return arrow
 }
 
+// UnstageVoid removes arrow off the model stage
+func (arrow *Arrow) UnstageVoid(stage *StageStruct) {
+	delete(stage.Arrows, arrow)
+	delete(stage.Arrows_mapString, arrow.Name)
+}
+
 // commit arrow to the back repo (if it is already staged)
 func (arrow *Arrow) Commit(stage *StageStruct) *Arrow {
 	if _, ok := stage.Arrows[arrow]; ok {
@@ -351,6 +357,12 @@ func (bar *Bar) Unstage(stage *StageStruct) *Bar {
 	delete(stage.Bars, bar)
 	delete(stage.Bars_mapString, bar.Name)
 	return bar
+}
+
+// UnstageVoid removes bar off the model stage
+func (bar *Bar) UnstageVoid(stage *StageStruct) {
+	delete(stage.Bars, bar)
+	delete(stage.Bars_mapString, bar.Name)
 }
 
 // commit bar to the back repo (if it is already staged)
@@ -397,6 +409,12 @@ func (gantt *Gantt) Unstage(stage *StageStruct) *Gantt {
 	return gantt
 }
 
+// UnstageVoid removes gantt off the model stage
+func (gantt *Gantt) UnstageVoid(stage *StageStruct) {
+	delete(stage.Gantts, gantt)
+	delete(stage.Gantts_mapString, gantt.Name)
+}
+
 // commit gantt to the back repo (if it is already staged)
 func (gantt *Gantt) Commit(stage *StageStruct) *Gantt {
 	if _, ok := stage.Gantts[gantt]; ok {
@@ -439,6 +457,12 @@ func (group *Group) Unstage(stage *StageStruct) *Group {
 	delete(stage.Groups, group)
 	delete(stage.Groups_mapString, group.Name)
 	return group
+}
+
+// UnstageVoid removes group off the model stage
+func (group *Group) UnstageVoid(stage *StageStruct) {
+	delete(stage.Groups, group)
+	delete(stage.Groups_mapString, group.Name)
 }
 
 // commit group to the back repo (if it is already staged)
@@ -485,6 +509,12 @@ func (lane *Lane) Unstage(stage *StageStruct) *Lane {
 	return lane
 }
 
+// UnstageVoid removes lane off the model stage
+func (lane *Lane) UnstageVoid(stage *StageStruct) {
+	delete(stage.Lanes, lane)
+	delete(stage.Lanes_mapString, lane.Name)
+}
+
 // commit lane to the back repo (if it is already staged)
 func (lane *Lane) Commit(stage *StageStruct) *Lane {
 	if _, ok := stage.Lanes[lane]; ok {
@@ -529,6 +559,12 @@ func (laneuse *LaneUse) Unstage(stage *StageStruct) *LaneUse {
 	return laneuse
 }
 
+// UnstageVoid removes laneuse off the model stage
+func (laneuse *LaneUse) UnstageVoid(stage *StageStruct) {
+	delete(stage.LaneUses, laneuse)
+	delete(stage.LaneUses_mapString, laneuse.Name)
+}
+
 // commit laneuse to the back repo (if it is already staged)
 func (laneuse *LaneUse) Commit(stage *StageStruct) *LaneUse {
 	if _, ok := stage.LaneUses[laneuse]; ok {
@@ -571,6 +607,12 @@ func (milestone *Milestone) Unstage(stage *StageStruct) *Milestone {
 	delete(stage.Milestones, milestone)
 	delete(stage.Milestones_mapString, milestone.Name)
 	return milestone
+}
+
+// UnstageVoid removes milestone off the model stage
+func (milestone *Milestone) UnstageVoid(stage *StageStruct) {
+	delete(stage.Milestones, milestone)
+	delete(stage.Milestones_mapString, milestone.Name)
 }
 
 // commit milestone to the back repo (if it is already staged)
@@ -724,6 +766,7 @@ type PointerToGongstruct interface {
 	*Arrow | *Bar | *Gantt | *Group | *Lane | *LaneUse | *Milestone
 	GetName() string
 	CommitVoid(*StageStruct)
+	UnstageVoid(stage *StageStruct)
 }
 
 type GongstructSet interface {
@@ -1180,6 +1223,32 @@ func GetGongstructName[Type Gongstruct]() (res string) {
 	return res
 }
 
+// GetPointerToGongstructName returns the name of the Gongstruct
+// this can be usefull if one want program robust to refactoring
+func GetPointerToGongstructName[Type PointerToGongstruct]() (res string) {
+
+	var ret Type
+
+	switch any(ret).(type) {
+	// insertion point for generic get gongstruct name
+	case *Arrow:
+		res = "Arrow"
+	case *Bar:
+		res = "Bar"
+	case *Gantt:
+		res = "Gantt"
+	case *Group:
+		res = "Group"
+	case *Lane:
+		res = "Lane"
+	case *LaneUse:
+		res = "LaneUse"
+	case *Milestone:
+		res = "Milestone"
+	}
+	return res
+}
+
 // GetFields return the array of the fields
 func GetFields[Type Gongstruct]() (res []string) {
 
@@ -1201,6 +1270,66 @@ func GetFields[Type Gongstruct]() (res []string) {
 		res = []string{"Name", "Lane"}
 	case Milestone:
 		res = []string{"Name", "Date", "DisplayVerticalBar", "LanesToDisplayMilestoneUse"}
+	}
+	return
+}
+
+type ReverseField struct {
+	GongstructName string
+	Fieldname      string
+}
+
+func GetReverseFields[Type Gongstruct]() (res []ReverseField) {
+
+	res = make([]ReverseField, 0)
+
+	var ret Type
+
+	switch any(ret).(type) {
+
+	// insertion point for generic get gongstruct name
+	case Arrow:
+		var rf ReverseField
+		_ = rf
+		rf.GongstructName = "Gantt"
+		rf.Fieldname = "Arrows"
+		res = append(res, rf)
+	case Bar:
+		var rf ReverseField
+		_ = rf
+		rf.GongstructName = "Lane"
+		rf.Fieldname = "Bars"
+		res = append(res, rf)
+	case Gantt:
+		var rf ReverseField
+		_ = rf
+	case Group:
+		var rf ReverseField
+		_ = rf
+		rf.GongstructName = "Gantt"
+		rf.Fieldname = "Groups"
+		res = append(res, rf)
+	case Lane:
+		var rf ReverseField
+		_ = rf
+		rf.GongstructName = "Gantt"
+		rf.Fieldname = "Lanes"
+		res = append(res, rf)
+		rf.GongstructName = "Group"
+		rf.Fieldname = "GroupLanes"
+		res = append(res, rf)
+	case LaneUse:
+		var rf ReverseField
+		_ = rf
+		rf.GongstructName = "Milestone"
+		rf.Fieldname = "LanesToDisplayMilestoneUse"
+		res = append(res, rf)
+	case Milestone:
+		var rf ReverseField
+		_ = rf
+		rf.GongstructName = "Gantt"
+		rf.Fieldname = "Milestones"
+		res = append(res, rf)
 	}
 	return
 }
@@ -1408,7 +1537,7 @@ func GetFieldStringValueFromPointer[Type PointerToGongstruct](instance Type, fie
 			}
 		}
 	default:
-		_ = inferedInstance	
+		_ = inferedInstance
 	}
 	return
 }
@@ -1591,7 +1720,7 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 			}
 		}
 	default:
-		_ = inferedInstance	
+		_ = inferedInstance
 	}
 	return
 }

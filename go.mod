@@ -3,23 +3,23 @@ module github.com/fullstack-lang/gonggantt
 go 1.21.0
 
 require (
-	github.com/fullstack-lang/gong v0.0.0-20230911061011-24cd70bf159e
-	github.com/fullstack-lang/gongdoc v0.0.0-20230910200256-43715514dfd6
-	github.com/fullstack-lang/gongsvg v0.0.0-20230911060720-98a87e9652d5
-	github.com/fullstack-lang/gongtable v0.0.0-20230910195851-8b43d1e51164
-	github.com/fullstack-lang/gongtree v0.0.0-20230910195944-cb51919c64fc
+	github.com/fullstack-lang/gong v0.0.0-20230921120559-469fd58207e3
+	github.com/fullstack-lang/gongdoc v0.0.0-20230919095607-ee8bf177c061
+	github.com/fullstack-lang/gongsvg v0.0.0-20230920025630-2af58a136b69
+	github.com/fullstack-lang/gongtable v0.0.0-20230921070108-230485bce4a7
+	github.com/fullstack-lang/gongtree v0.0.0-20230919100336-c9c1257019d1
 	github.com/fullstack-lang/maticons v0.0.0-20230823061653-70c364fbdd00
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/static v0.0.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/glebarez/sqlite v1.9.0
-	github.com/tealeg/xlsx/v3 v3.3.0
+	github.com/tealeg/xlsx/v3 v3.3.1
 	github.com/xuri/excelize/v2 v2.8.0
 	gorm.io/gorm v1.25.4
 )
 
 require (
-	github.com/bytedance/sonic v1.10.0 // indirect
+	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -29,7 +29,7 @@ require (
 	github.com/glebarez/go-sqlite v1.21.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.15.3 // indirect
+	github.com/go-playground/validator/v10 v10.15.4 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect

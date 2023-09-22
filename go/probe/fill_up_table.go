@@ -6,82 +6,13 @@ import (
 	"log"
 	"sort"
 
-	gong_models "github.com/fullstack-lang/gong/go/models"
 	gongtable "github.com/fullstack-lang/gongtable/go/models"
-	gongtree_models "github.com/fullstack-lang/gongtree/go/models"
 
 	"github.com/fullstack-lang/maticons/maticons"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
 	"github.com/fullstack-lang/gonggantt/go/orm"
 )
-
-type NodeImplGongstruct struct {
-	gongStruct *gong_models.GongStruct
-	playground *Playground
-}
-
-func NewNodeImplGongstruct(
-	gongStruct *gong_models.GongStruct,
-	playground *Playground,
-) (nodeImplGongstruct *NodeImplGongstruct) {
-
-	nodeImplGongstruct = new(NodeImplGongstruct)
-	nodeImplGongstruct.gongStruct = gongStruct
-	nodeImplGongstruct.playground = playground
-	return
-}
-
-func (nodeImplGongstruct *NodeImplGongstruct) OnAfterUpdate(
-	gongtreeStage *gongtree_models.StageStruct,
-	stagedNode, frontNode *gongtree_models.Node) {
-
-	// setting the value of the staged node	to the new value
-	// otherwise, the expansion memory is lost
-	if stagedNode.IsExpanded != frontNode.IsExpanded {
-		stagedNode.IsExpanded = frontNode.IsExpanded
-		return
-	}
-
-	// if node is unchecked
-	if stagedNode.IsChecked && !frontNode.IsChecked {
-
-	}
-
-	// if node is checked, add gongstructshape
-	if !stagedNode.IsChecked && frontNode.IsChecked {
-
-	}
-
-	// the node was selected. Therefore, one request the
-	// table to route to the table
-	log.Println("NodeImplGongstruct:OnAfterUpdate with: ", nodeImplGongstruct.gongStruct.GetName())
-
-	// insertion point
-	if nodeImplGongstruct.gongStruct.GetName() == "Arrow" {
-		fillUpTable[models.Arrow](nodeImplGongstruct.playground)
-	}
-	if nodeImplGongstruct.gongStruct.GetName() == "Bar" {
-		fillUpTable[models.Bar](nodeImplGongstruct.playground)
-	}
-	if nodeImplGongstruct.gongStruct.GetName() == "Gantt" {
-		fillUpTable[models.Gantt](nodeImplGongstruct.playground)
-	}
-	if nodeImplGongstruct.gongStruct.GetName() == "Group" {
-		fillUpTable[models.Group](nodeImplGongstruct.playground)
-	}
-	if nodeImplGongstruct.gongStruct.GetName() == "Lane" {
-		fillUpTable[models.Lane](nodeImplGongstruct.playground)
-	}
-	if nodeImplGongstruct.gongStruct.GetName() == "LaneUse" {
-		fillUpTable[models.LaneUse](nodeImplGongstruct.playground)
-	}
-	if nodeImplGongstruct.gongStruct.GetName() == "Milestone" {
-		fillUpTable[models.Milestone](nodeImplGongstruct.playground)
-	}
-
-	nodeImplGongstruct.playground.tableStage.Commit()
-}
 
 func fillUpTablePointerToGongstruct[T models.PointerToGongstruct](
 	playground *Playground,
@@ -124,6 +55,8 @@ func fillUpTable[T models.Gongstruct](
 	table.HasSaveButton = false
 
 	fields := models.GetFields[T]()
+	reverseFields := models.GetReverseFields[T]()
+
 	table.NbOfStickyColumns = 3
 
 	// refresh the stage of interest
@@ -162,6 +95,11 @@ func fillUpTable[T models.Gongstruct](
 		column.Name = fieldName
 		table.DisplayedColumns = append(table.DisplayedColumns, column)
 	}
+	for _, reverseField := range reverseFields {
+		column := new(gongtable.DisplayedColumn).Stage(playground.tableStage)
+		column.Name = "(" + reverseField.GongstructName + ") -> " + reverseField.Fieldname
+		table.DisplayedColumns = append(table.DisplayedColumns, column)
+	}
 
 	fieldIndex := 0
 	for _, structInstance := range sliceOfGongStructsSorted {
@@ -196,10 +134,32 @@ func fillUpTable[T models.Gongstruct](
 			Name: "Delete Icon",
 			Icon: string(maticons.BUTTON_delete),
 		}).Stage(playground.tableStage)
+		cellIcon.Impl = NewCellDeleteIconImpl[T](structInstance, playground)
 		cell.CellIcon = cellIcon
 
 		for _, fieldName := range fields {
 			value := models.GetFieldStringValue[T](*structInstance, fieldName)
+			name := fmt.Sprintf("%d", fieldIndex) + " " + value
+			fieldIndex++
+			// log.Println(fieldName, value)
+			cell := (&gongtable.Cell{
+				Name: name,
+			}).Stage(playground.tableStage)
+			row.Cells = append(row.Cells, cell)
+
+			cellString := (&gongtable.CellString{
+				Name:  name,
+				Value: value,
+			}).Stage(playground.tableStage)
+			cell.CellString = cellString
+		}
+		for _, reverseField := range reverseFields {
+
+			value := orm.GetReverseFieldOwnerName[T](
+				playground.stageOfInterest,
+				playground.backRepoOfInterest,
+				structInstance,
+				&reverseField)
 			name := fmt.Sprintf("%d", fieldIndex) + " " + value
 			fieldIndex++
 			// log.Println(fieldName, value)
@@ -235,76 +195,5 @@ type RowUpdate[T models.Gongstruct] struct {
 func (rowUpdate *RowUpdate[T]) RowUpdated(stage *gongtable.StageStruct, row, updatedRow *gongtable.Row) {
 	log.Println("RowUpdate: RowUpdated", updatedRow.Name)
 
-	formStage := rowUpdate.playground.formStage
-	formStage.Reset()
-	formStage.Commit()
-
-	switch instancesTyped := any(rowUpdate.Instance).(type) {
-	// insertion point
-	case *models.Arrow:
-		formGroup := (&gongtable.FormGroup{
-			Name: gongtable.FormGroupDefaultName.ToString(),
-			OnSave: NewArrowFormCallback(
-				instancesTyped,
-				rowUpdate.playground,
-			),
-		}).Stage(formStage)
-		FillUpForm(instancesTyped, formGroup, rowUpdate.playground)
-	case *models.Bar:
-		formGroup := (&gongtable.FormGroup{
-			Name: gongtable.FormGroupDefaultName.ToString(),
-			OnSave: NewBarFormCallback(
-				instancesTyped,
-				rowUpdate.playground,
-			),
-		}).Stage(formStage)
-		FillUpForm(instancesTyped, formGroup, rowUpdate.playground)
-	case *models.Gantt:
-		formGroup := (&gongtable.FormGroup{
-			Name: gongtable.FormGroupDefaultName.ToString(),
-			OnSave: NewGanttFormCallback(
-				instancesTyped,
-				rowUpdate.playground,
-			),
-		}).Stage(formStage)
-		FillUpForm(instancesTyped, formGroup, rowUpdate.playground)
-	case *models.Group:
-		formGroup := (&gongtable.FormGroup{
-			Name: gongtable.FormGroupDefaultName.ToString(),
-			OnSave: NewGroupFormCallback(
-				instancesTyped,
-				rowUpdate.playground,
-			),
-		}).Stage(formStage)
-		FillUpForm(instancesTyped, formGroup, rowUpdate.playground)
-	case *models.Lane:
-		formGroup := (&gongtable.FormGroup{
-			Name: gongtable.FormGroupDefaultName.ToString(),
-			OnSave: NewLaneFormCallback(
-				instancesTyped,
-				rowUpdate.playground,
-			),
-		}).Stage(formStage)
-		FillUpForm(instancesTyped, formGroup, rowUpdate.playground)
-	case *models.LaneUse:
-		formGroup := (&gongtable.FormGroup{
-			Name: gongtable.FormGroupDefaultName.ToString(),
-			OnSave: NewLaneUseFormCallback(
-				instancesTyped,
-				rowUpdate.playground,
-			),
-		}).Stage(formStage)
-		FillUpForm(instancesTyped, formGroup, rowUpdate.playground)
-	case *models.Milestone:
-		formGroup := (&gongtable.FormGroup{
-			Name: gongtable.FormGroupDefaultName.ToString(),
-			OnSave: NewMilestoneFormCallback(
-				instancesTyped,
-				rowUpdate.playground,
-			),
-		}).Stage(formStage)
-		FillUpForm(instancesTyped, formGroup, rowUpdate.playground)
-	}
-	formStage.Commit()
-
+	FillUpFormFromGongstruct(rowUpdate.Instance, rowUpdate.playground)
 }

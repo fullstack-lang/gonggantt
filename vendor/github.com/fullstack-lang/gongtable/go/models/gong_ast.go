@@ -1184,6 +1184,10 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 					// remove first and last char
 					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
 					__gong__map_FormGroup[identifier].Name = fielValue
+				case "Label":
+					// remove first and last char
+					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
+					__gong__map_FormGroup[identifier].Label = fielValue
 				}
 			case "FormSortAssocButton":
 				switch fieldName {
@@ -1410,6 +1414,13 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 			case "FormFieldString":
 				switch fieldName {
 				// insertion point for field dependant code
+				case "IsTextArea":
+					// convert string to boolean
+					fielValue, err := strconv.ParseBool(ident.Name)
+					if err != nil {
+						log.Fatalln(err)
+					}
+					__gong__map_FormFieldString[identifier].IsTextArea = fielValue
 				}
 			case "FormFieldTime":
 				switch fieldName {

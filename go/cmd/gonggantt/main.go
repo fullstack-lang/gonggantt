@@ -15,6 +15,8 @@ import (
 
 	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
+	gongdoc_load "github.com/fullstack-lang/gongdoc/go/load"
+
 	gongsvg_fullstack "github.com/fullstack-lang/gongsvg/go/fullstack"
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
@@ -141,14 +143,14 @@ func main() {
 		ganttSVGMapper.GenerateSvg(gongganttStage, gongsvgStage)
 	}
 
-	// gongdoc_load.Load(
-	// 	"gonggantt",
-	// 	"github.com/fullstack-lang/gonggantt/go/models",
-	// 	gonggantt_go.GoModelsDir,
-	// 	gonggantt_go.GoDiagramsDir,
-	// 	r,
-	// 	*embeddedDiagrams,
-	// 	&gongganttStage.Map_GongStructName_InstancesNb)
+	gongdoc_load.Load(
+		"gonggantt",
+		"github.com/fullstack-lang/gonggantt/go/models",
+		gonggantt_go.GoModelsDir,
+		gonggantt_go.GoDiagramsDir,
+		r,
+		*embeddedDiagrams,
+		&gongganttStage.Map_GongStructName_InstancesNb)
 
 	// gongdoc_load.Load(
 	// 	"gongsvg",

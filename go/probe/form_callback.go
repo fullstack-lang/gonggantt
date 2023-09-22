@@ -3,28 +3,36 @@ package probe
 
 import (
 	"log"
+	"slices"
 	"time"
 
 	table "github.com/fullstack-lang/gongtable/go/models"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
+	"github.com/fullstack-lang/gonggantt/go/orm"
 )
 
 const __dummmy__time = time.Nanosecond
 
 // insertion point
-func NewArrowFormCallback(
+func __gong__New__ArrowFormCallback(
 	arrow *models.Arrow,
 	playground *Playground,
 ) (arrowFormCallback *ArrowFormCallback) {
 	arrowFormCallback = new(ArrowFormCallback)
 	arrowFormCallback.playground = playground
 	arrowFormCallback.arrow = arrow
+
+	arrowFormCallback.CreationMode = (arrow == nil)
+
 	return
 }
 
 type ArrowFormCallback struct {
 	arrow *models.Arrow
+
+	// If the form call is called on the creation of a new instnace
+	CreationMode bool
 
 	playground *Playground
 }
@@ -59,6 +67,48 @@ func (arrowFormCallback *ArrowFormCallback) OnSave() {
 			FormDivBasicFieldToField(&(arrow_.OptionnalColor), formDiv)
 		case "OptionnalStroke":
 			FormDivBasicFieldToField(&(arrow_.OptionnalStroke), formDiv)
+		case "Gantt:Arrows":
+			// we need to retrieve the field owner before the change
+			var pastGanttOwner *models.Gantt
+			var rf models.ReverseField
+			_ = rf
+			rf.GongstructName = "Gantt"
+			rf.Fieldname = "Arrows"
+			reverseFieldOwner := orm.GetReverseFieldOwner(
+				arrowFormCallback.playground.stageOfInterest,
+				arrowFormCallback.playground.backRepoOfInterest,
+				arrow_,
+				&rf)
+
+			if reverseFieldOwner != nil {
+				pastGanttOwner = reverseFieldOwner.(*models.Gantt)
+			}
+			if formDiv.FormFields[0].FormFieldSelect.Value == nil {
+				if pastGanttOwner != nil {
+					idx := slices.Index(pastGanttOwner.Arrows, arrow_)
+					pastGanttOwner.Arrows = slices.Delete(pastGanttOwner.Arrows, idx, idx+1)
+				}
+			} else {
+				// we need to retrieve the field owner after the change
+				// parse all astrcut and get the one with the name in the
+				// div
+				for _gantt := range *models.GetGongstructInstancesSet[models.Gantt](arrowFormCallback.playground.stageOfInterest) {
+
+					// the match is base on the name
+					if _gantt.GetName() == formDiv.FormFields[0].FormFieldSelect.Value.GetName() {
+						newGanttOwner := _gantt // we have a match
+						if pastGanttOwner != nil {
+							if newGanttOwner != pastGanttOwner {
+								idx := slices.Index(pastGanttOwner.Arrows, arrow_)
+								pastGanttOwner.Arrows = slices.Delete(pastGanttOwner.Arrows, idx, idx+1)
+								newGanttOwner.Arrows = append(newGanttOwner.Arrows, arrow_)
+							}
+						} else {
+							newGanttOwner.Arrows = append(newGanttOwner.Arrows, arrow_)
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -67,19 +117,41 @@ func (arrowFormCallback *ArrowFormCallback) OnSave() {
 		arrowFormCallback.playground,
 	)
 	arrowFormCallback.playground.tableStage.Commit()
+
+	// display a new form by reset the form stage
+	if arrowFormCallback.CreationMode {
+		arrowFormCallback.playground.formStage.Reset()
+		newFormGroup := (&table.FormGroup{
+			Name: table.FormGroupDefaultName.ToString(),
+			OnSave: __gong__New__ArrowFormCallback(
+				nil,
+				arrowFormCallback.playground,
+			),
+		}).Stage(arrowFormCallback.playground.formStage)
+		arrow := new(models.Arrow)
+		FillUpForm(arrow, newFormGroup, arrowFormCallback.playground)
+		arrowFormCallback.playground.formStage.Commit()
+	}
+
 }
-func NewBarFormCallback(
+func __gong__New__BarFormCallback(
 	bar *models.Bar,
 	playground *Playground,
 ) (barFormCallback *BarFormCallback) {
 	barFormCallback = new(BarFormCallback)
 	barFormCallback.playground = playground
 	barFormCallback.bar = bar
+
+	barFormCallback.CreationMode = (bar == nil)
+
 	return
 }
 
 type BarFormCallback struct {
 	bar *models.Bar
+
+	// If the form call is called on the creation of a new instnace
+	CreationMode bool
 
 	playground *Playground
 }
@@ -116,6 +188,48 @@ func (barFormCallback *BarFormCallback) OnSave() {
 			FormDivBasicFieldToField(&(bar_.StrokeWidth), formDiv)
 		case "StrokeDashArray":
 			FormDivBasicFieldToField(&(bar_.StrokeDashArray), formDiv)
+		case "Lane:Bars":
+			// we need to retrieve the field owner before the change
+			var pastLaneOwner *models.Lane
+			var rf models.ReverseField
+			_ = rf
+			rf.GongstructName = "Lane"
+			rf.Fieldname = "Bars"
+			reverseFieldOwner := orm.GetReverseFieldOwner(
+				barFormCallback.playground.stageOfInterest,
+				barFormCallback.playground.backRepoOfInterest,
+				bar_,
+				&rf)
+
+			if reverseFieldOwner != nil {
+				pastLaneOwner = reverseFieldOwner.(*models.Lane)
+			}
+			if formDiv.FormFields[0].FormFieldSelect.Value == nil {
+				if pastLaneOwner != nil {
+					idx := slices.Index(pastLaneOwner.Bars, bar_)
+					pastLaneOwner.Bars = slices.Delete(pastLaneOwner.Bars, idx, idx+1)
+				}
+			} else {
+				// we need to retrieve the field owner after the change
+				// parse all astrcut and get the one with the name in the
+				// div
+				for _lane := range *models.GetGongstructInstancesSet[models.Lane](barFormCallback.playground.stageOfInterest) {
+
+					// the match is base on the name
+					if _lane.GetName() == formDiv.FormFields[0].FormFieldSelect.Value.GetName() {
+						newLaneOwner := _lane // we have a match
+						if pastLaneOwner != nil {
+							if newLaneOwner != pastLaneOwner {
+								idx := slices.Index(pastLaneOwner.Bars, bar_)
+								pastLaneOwner.Bars = slices.Delete(pastLaneOwner.Bars, idx, idx+1)
+								newLaneOwner.Bars = append(newLaneOwner.Bars, bar_)
+							}
+						} else {
+							newLaneOwner.Bars = append(newLaneOwner.Bars, bar_)
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -124,19 +238,41 @@ func (barFormCallback *BarFormCallback) OnSave() {
 		barFormCallback.playground,
 	)
 	barFormCallback.playground.tableStage.Commit()
+
+	// display a new form by reset the form stage
+	if barFormCallback.CreationMode {
+		barFormCallback.playground.formStage.Reset()
+		newFormGroup := (&table.FormGroup{
+			Name: table.FormGroupDefaultName.ToString(),
+			OnSave: __gong__New__BarFormCallback(
+				nil,
+				barFormCallback.playground,
+			),
+		}).Stage(barFormCallback.playground.formStage)
+		bar := new(models.Bar)
+		FillUpForm(bar, newFormGroup, barFormCallback.playground)
+		barFormCallback.playground.formStage.Commit()
+	}
+
 }
-func NewGanttFormCallback(
+func __gong__New__GanttFormCallback(
 	gantt *models.Gantt,
 	playground *Playground,
 ) (ganttFormCallback *GanttFormCallback) {
 	ganttFormCallback = new(GanttFormCallback)
 	ganttFormCallback.playground = playground
 	ganttFormCallback.gantt = gantt
+
+	ganttFormCallback.CreationMode = (gantt == nil)
+
 	return
 }
 
 type GanttFormCallback struct {
 	gantt *models.Gantt
+
+	// If the form call is called on the creation of a new instnace
+	CreationMode bool
 
 	playground *Playground
 }
@@ -209,19 +345,41 @@ func (ganttFormCallback *GanttFormCallback) OnSave() {
 		ganttFormCallback.playground,
 	)
 	ganttFormCallback.playground.tableStage.Commit()
+
+	// display a new form by reset the form stage
+	if ganttFormCallback.CreationMode {
+		ganttFormCallback.playground.formStage.Reset()
+		newFormGroup := (&table.FormGroup{
+			Name: table.FormGroupDefaultName.ToString(),
+			OnSave: __gong__New__GanttFormCallback(
+				nil,
+				ganttFormCallback.playground,
+			),
+		}).Stage(ganttFormCallback.playground.formStage)
+		gantt := new(models.Gantt)
+		FillUpForm(gantt, newFormGroup, ganttFormCallback.playground)
+		ganttFormCallback.playground.formStage.Commit()
+	}
+
 }
-func NewGroupFormCallback(
+func __gong__New__GroupFormCallback(
 	group *models.Group,
 	playground *Playground,
 ) (groupFormCallback *GroupFormCallback) {
 	groupFormCallback = new(GroupFormCallback)
 	groupFormCallback.playground = playground
 	groupFormCallback.group = group
+
+	groupFormCallback.CreationMode = (group == nil)
+
 	return
 }
 
 type GroupFormCallback struct {
 	group *models.Group
+
+	// If the form call is called on the creation of a new instnace
+	CreationMode bool
 
 	playground *Playground
 }
@@ -248,6 +406,48 @@ func (groupFormCallback *GroupFormCallback) OnSave() {
 		// insertion point per field
 		case "Name":
 			FormDivBasicFieldToField(&(group_.Name), formDiv)
+		case "Gantt:Groups":
+			// we need to retrieve the field owner before the change
+			var pastGanttOwner *models.Gantt
+			var rf models.ReverseField
+			_ = rf
+			rf.GongstructName = "Gantt"
+			rf.Fieldname = "Groups"
+			reverseFieldOwner := orm.GetReverseFieldOwner(
+				groupFormCallback.playground.stageOfInterest,
+				groupFormCallback.playground.backRepoOfInterest,
+				group_,
+				&rf)
+
+			if reverseFieldOwner != nil {
+				pastGanttOwner = reverseFieldOwner.(*models.Gantt)
+			}
+			if formDiv.FormFields[0].FormFieldSelect.Value == nil {
+				if pastGanttOwner != nil {
+					idx := slices.Index(pastGanttOwner.Groups, group_)
+					pastGanttOwner.Groups = slices.Delete(pastGanttOwner.Groups, idx, idx+1)
+				}
+			} else {
+				// we need to retrieve the field owner after the change
+				// parse all astrcut and get the one with the name in the
+				// div
+				for _gantt := range *models.GetGongstructInstancesSet[models.Gantt](groupFormCallback.playground.stageOfInterest) {
+
+					// the match is base on the name
+					if _gantt.GetName() == formDiv.FormFields[0].FormFieldSelect.Value.GetName() {
+						newGanttOwner := _gantt // we have a match
+						if pastGanttOwner != nil {
+							if newGanttOwner != pastGanttOwner {
+								idx := slices.Index(pastGanttOwner.Groups, group_)
+								pastGanttOwner.Groups = slices.Delete(pastGanttOwner.Groups, idx, idx+1)
+								newGanttOwner.Groups = append(newGanttOwner.Groups, group_)
+							}
+						} else {
+							newGanttOwner.Groups = append(newGanttOwner.Groups, group_)
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -256,19 +456,41 @@ func (groupFormCallback *GroupFormCallback) OnSave() {
 		groupFormCallback.playground,
 	)
 	groupFormCallback.playground.tableStage.Commit()
+
+	// display a new form by reset the form stage
+	if groupFormCallback.CreationMode {
+		groupFormCallback.playground.formStage.Reset()
+		newFormGroup := (&table.FormGroup{
+			Name: table.FormGroupDefaultName.ToString(),
+			OnSave: __gong__New__GroupFormCallback(
+				nil,
+				groupFormCallback.playground,
+			),
+		}).Stage(groupFormCallback.playground.formStage)
+		group := new(models.Group)
+		FillUpForm(group, newFormGroup, groupFormCallback.playground)
+		groupFormCallback.playground.formStage.Commit()
+	}
+
 }
-func NewLaneFormCallback(
+func __gong__New__LaneFormCallback(
 	lane *models.Lane,
 	playground *Playground,
 ) (laneFormCallback *LaneFormCallback) {
 	laneFormCallback = new(LaneFormCallback)
 	laneFormCallback.playground = playground
 	laneFormCallback.lane = lane
+
+	laneFormCallback.CreationMode = (lane == nil)
+
 	return
 }
 
 type LaneFormCallback struct {
 	lane *models.Lane
+
+	// If the form call is called on the creation of a new instnace
+	CreationMode bool
 
 	playground *Playground
 }
@@ -297,6 +519,90 @@ func (laneFormCallback *LaneFormCallback) OnSave() {
 			FormDivBasicFieldToField(&(lane_.Name), formDiv)
 		case "Order":
 			FormDivBasicFieldToField(&(lane_.Order), formDiv)
+		case "Gantt:Lanes":
+			// we need to retrieve the field owner before the change
+			var pastGanttOwner *models.Gantt
+			var rf models.ReverseField
+			_ = rf
+			rf.GongstructName = "Gantt"
+			rf.Fieldname = "Lanes"
+			reverseFieldOwner := orm.GetReverseFieldOwner(
+				laneFormCallback.playground.stageOfInterest,
+				laneFormCallback.playground.backRepoOfInterest,
+				lane_,
+				&rf)
+
+			if reverseFieldOwner != nil {
+				pastGanttOwner = reverseFieldOwner.(*models.Gantt)
+			}
+			if formDiv.FormFields[0].FormFieldSelect.Value == nil {
+				if pastGanttOwner != nil {
+					idx := slices.Index(pastGanttOwner.Lanes, lane_)
+					pastGanttOwner.Lanes = slices.Delete(pastGanttOwner.Lanes, idx, idx+1)
+				}
+			} else {
+				// we need to retrieve the field owner after the change
+				// parse all astrcut and get the one with the name in the
+				// div
+				for _gantt := range *models.GetGongstructInstancesSet[models.Gantt](laneFormCallback.playground.stageOfInterest) {
+
+					// the match is base on the name
+					if _gantt.GetName() == formDiv.FormFields[0].FormFieldSelect.Value.GetName() {
+						newGanttOwner := _gantt // we have a match
+						if pastGanttOwner != nil {
+							if newGanttOwner != pastGanttOwner {
+								idx := slices.Index(pastGanttOwner.Lanes, lane_)
+								pastGanttOwner.Lanes = slices.Delete(pastGanttOwner.Lanes, idx, idx+1)
+								newGanttOwner.Lanes = append(newGanttOwner.Lanes, lane_)
+							}
+						} else {
+							newGanttOwner.Lanes = append(newGanttOwner.Lanes, lane_)
+						}
+					}
+				}
+			}
+		case "Group:GroupLanes":
+			// we need to retrieve the field owner before the change
+			var pastGroupOwner *models.Group
+			var rf models.ReverseField
+			_ = rf
+			rf.GongstructName = "Group"
+			rf.Fieldname = "GroupLanes"
+			reverseFieldOwner := orm.GetReverseFieldOwner(
+				laneFormCallback.playground.stageOfInterest,
+				laneFormCallback.playground.backRepoOfInterest,
+				lane_,
+				&rf)
+
+			if reverseFieldOwner != nil {
+				pastGroupOwner = reverseFieldOwner.(*models.Group)
+			}
+			if formDiv.FormFields[0].FormFieldSelect.Value == nil {
+				if pastGroupOwner != nil {
+					idx := slices.Index(pastGroupOwner.GroupLanes, lane_)
+					pastGroupOwner.GroupLanes = slices.Delete(pastGroupOwner.GroupLanes, idx, idx+1)
+				}
+			} else {
+				// we need to retrieve the field owner after the change
+				// parse all astrcut and get the one with the name in the
+				// div
+				for _group := range *models.GetGongstructInstancesSet[models.Group](laneFormCallback.playground.stageOfInterest) {
+
+					// the match is base on the name
+					if _group.GetName() == formDiv.FormFields[0].FormFieldSelect.Value.GetName() {
+						newGroupOwner := _group // we have a match
+						if pastGroupOwner != nil {
+							if newGroupOwner != pastGroupOwner {
+								idx := slices.Index(pastGroupOwner.GroupLanes, lane_)
+								pastGroupOwner.GroupLanes = slices.Delete(pastGroupOwner.GroupLanes, idx, idx+1)
+								newGroupOwner.GroupLanes = append(newGroupOwner.GroupLanes, lane_)
+							}
+						} else {
+							newGroupOwner.GroupLanes = append(newGroupOwner.GroupLanes, lane_)
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -305,19 +611,41 @@ func (laneFormCallback *LaneFormCallback) OnSave() {
 		laneFormCallback.playground,
 	)
 	laneFormCallback.playground.tableStage.Commit()
+
+	// display a new form by reset the form stage
+	if laneFormCallback.CreationMode {
+		laneFormCallback.playground.formStage.Reset()
+		newFormGroup := (&table.FormGroup{
+			Name: table.FormGroupDefaultName.ToString(),
+			OnSave: __gong__New__LaneFormCallback(
+				nil,
+				laneFormCallback.playground,
+			),
+		}).Stage(laneFormCallback.playground.formStage)
+		lane := new(models.Lane)
+		FillUpForm(lane, newFormGroup, laneFormCallback.playground)
+		laneFormCallback.playground.formStage.Commit()
+	}
+
 }
-func NewLaneUseFormCallback(
+func __gong__New__LaneUseFormCallback(
 	laneuse *models.LaneUse,
 	playground *Playground,
 ) (laneuseFormCallback *LaneUseFormCallback) {
 	laneuseFormCallback = new(LaneUseFormCallback)
 	laneuseFormCallback.playground = playground
 	laneuseFormCallback.laneuse = laneuse
+
+	laneuseFormCallback.CreationMode = (laneuse == nil)
+
 	return
 }
 
 type LaneUseFormCallback struct {
 	laneuse *models.LaneUse
+
+	// If the form call is called on the creation of a new instnace
+	CreationMode bool
 
 	playground *Playground
 }
@@ -346,6 +674,48 @@ func (laneuseFormCallback *LaneUseFormCallback) OnSave() {
 			FormDivBasicFieldToField(&(laneuse_.Name), formDiv)
 		case "Lane":
 			FormDivSelectFieldToField(&(laneuse_.Lane), laneuseFormCallback.playground.stageOfInterest, formDiv)
+		case "Milestone:LanesToDisplayMilestoneUse":
+			// we need to retrieve the field owner before the change
+			var pastMilestoneOwner *models.Milestone
+			var rf models.ReverseField
+			_ = rf
+			rf.GongstructName = "Milestone"
+			rf.Fieldname = "LanesToDisplayMilestoneUse"
+			reverseFieldOwner := orm.GetReverseFieldOwner(
+				laneuseFormCallback.playground.stageOfInterest,
+				laneuseFormCallback.playground.backRepoOfInterest,
+				laneuse_,
+				&rf)
+
+			if reverseFieldOwner != nil {
+				pastMilestoneOwner = reverseFieldOwner.(*models.Milestone)
+			}
+			if formDiv.FormFields[0].FormFieldSelect.Value == nil {
+				if pastMilestoneOwner != nil {
+					idx := slices.Index(pastMilestoneOwner.LanesToDisplayMilestoneUse, laneuse_)
+					pastMilestoneOwner.LanesToDisplayMilestoneUse = slices.Delete(pastMilestoneOwner.LanesToDisplayMilestoneUse, idx, idx+1)
+				}
+			} else {
+				// we need to retrieve the field owner after the change
+				// parse all astrcut and get the one with the name in the
+				// div
+				for _milestone := range *models.GetGongstructInstancesSet[models.Milestone](laneuseFormCallback.playground.stageOfInterest) {
+
+					// the match is base on the name
+					if _milestone.GetName() == formDiv.FormFields[0].FormFieldSelect.Value.GetName() {
+						newMilestoneOwner := _milestone // we have a match
+						if pastMilestoneOwner != nil {
+							if newMilestoneOwner != pastMilestoneOwner {
+								idx := slices.Index(pastMilestoneOwner.LanesToDisplayMilestoneUse, laneuse_)
+								pastMilestoneOwner.LanesToDisplayMilestoneUse = slices.Delete(pastMilestoneOwner.LanesToDisplayMilestoneUse, idx, idx+1)
+								newMilestoneOwner.LanesToDisplayMilestoneUse = append(newMilestoneOwner.LanesToDisplayMilestoneUse, laneuse_)
+							}
+						} else {
+							newMilestoneOwner.LanesToDisplayMilestoneUse = append(newMilestoneOwner.LanesToDisplayMilestoneUse, laneuse_)
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -354,19 +724,41 @@ func (laneuseFormCallback *LaneUseFormCallback) OnSave() {
 		laneuseFormCallback.playground,
 	)
 	laneuseFormCallback.playground.tableStage.Commit()
+
+	// display a new form by reset the form stage
+	if laneuseFormCallback.CreationMode {
+		laneuseFormCallback.playground.formStage.Reset()
+		newFormGroup := (&table.FormGroup{
+			Name: table.FormGroupDefaultName.ToString(),
+			OnSave: __gong__New__LaneUseFormCallback(
+				nil,
+				laneuseFormCallback.playground,
+			),
+		}).Stage(laneuseFormCallback.playground.formStage)
+		laneuse := new(models.LaneUse)
+		FillUpForm(laneuse, newFormGroup, laneuseFormCallback.playground)
+		laneuseFormCallback.playground.formStage.Commit()
+	}
+
 }
-func NewMilestoneFormCallback(
+func __gong__New__MilestoneFormCallback(
 	milestone *models.Milestone,
 	playground *Playground,
 ) (milestoneFormCallback *MilestoneFormCallback) {
 	milestoneFormCallback = new(MilestoneFormCallback)
 	milestoneFormCallback.playground = playground
 	milestoneFormCallback.milestone = milestone
+
+	milestoneFormCallback.CreationMode = (milestone == nil)
+
 	return
 }
 
 type MilestoneFormCallback struct {
 	milestone *models.Milestone
+
+	// If the form call is called on the creation of a new instnace
+	CreationMode bool
 
 	playground *Playground
 }
@@ -395,6 +787,48 @@ func (milestoneFormCallback *MilestoneFormCallback) OnSave() {
 			FormDivBasicFieldToField(&(milestone_.Name), formDiv)
 		case "DisplayVerticalBar":
 			FormDivBasicFieldToField(&(milestone_.DisplayVerticalBar), formDiv)
+		case "Gantt:Milestones":
+			// we need to retrieve the field owner before the change
+			var pastGanttOwner *models.Gantt
+			var rf models.ReverseField
+			_ = rf
+			rf.GongstructName = "Gantt"
+			rf.Fieldname = "Milestones"
+			reverseFieldOwner := orm.GetReverseFieldOwner(
+				milestoneFormCallback.playground.stageOfInterest,
+				milestoneFormCallback.playground.backRepoOfInterest,
+				milestone_,
+				&rf)
+
+			if reverseFieldOwner != nil {
+				pastGanttOwner = reverseFieldOwner.(*models.Gantt)
+			}
+			if formDiv.FormFields[0].FormFieldSelect.Value == nil {
+				if pastGanttOwner != nil {
+					idx := slices.Index(pastGanttOwner.Milestones, milestone_)
+					pastGanttOwner.Milestones = slices.Delete(pastGanttOwner.Milestones, idx, idx+1)
+				}
+			} else {
+				// we need to retrieve the field owner after the change
+				// parse all astrcut and get the one with the name in the
+				// div
+				for _gantt := range *models.GetGongstructInstancesSet[models.Gantt](milestoneFormCallback.playground.stageOfInterest) {
+
+					// the match is base on the name
+					if _gantt.GetName() == formDiv.FormFields[0].FormFieldSelect.Value.GetName() {
+						newGanttOwner := _gantt // we have a match
+						if pastGanttOwner != nil {
+							if newGanttOwner != pastGanttOwner {
+								idx := slices.Index(pastGanttOwner.Milestones, milestone_)
+								pastGanttOwner.Milestones = slices.Delete(pastGanttOwner.Milestones, idx, idx+1)
+								newGanttOwner.Milestones = append(newGanttOwner.Milestones, milestone_)
+							}
+						} else {
+							newGanttOwner.Milestones = append(newGanttOwner.Milestones, milestone_)
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -403,4 +837,20 @@ func (milestoneFormCallback *MilestoneFormCallback) OnSave() {
 		milestoneFormCallback.playground,
 	)
 	milestoneFormCallback.playground.tableStage.Commit()
+
+	// display a new form by reset the form stage
+	if milestoneFormCallback.CreationMode {
+		milestoneFormCallback.playground.formStage.Reset()
+		newFormGroup := (&table.FormGroup{
+			Name: table.FormGroupDefaultName.ToString(),
+			OnSave: __gong__New__MilestoneFormCallback(
+				nil,
+				milestoneFormCallback.playground,
+			),
+		}).Stage(milestoneFormCallback.playground.formStage)
+		milestone := new(models.Milestone)
+		FillUpForm(milestone, newFormGroup, milestoneFormCallback.playground)
+		milestoneFormCallback.playground.formStage.Commit()
+	}
+
 }

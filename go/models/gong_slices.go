@@ -19,14 +19,14 @@ package models
 // fields of other instance
 //
 // Note : algo is in O(N)log(N) of nb of Astruct and Bstruct instances
-func EvictInOtherSlices[T PointerToGongstruct, TF PointerToGongstruct](
+func EvictInOtherSlices[OwningType PointerToGongstruct, FieldType PointerToGongstruct](
 	stage *StageStruct,
-	owningInstance T,
-	sliceField []TF,
+	owningInstance OwningType,
+	sliceField []FieldType,
 	fieldName string) {
 
 	// create a map of the field elements
-	setOfFieldInstances := make(map[TF]any, 0)
+	setOfFieldInstances := make(map[FieldType]any, 0)
 	for _, fieldInstance := range sliceField {
 		setOfFieldInstances[fieldInstance] = true
 	}
@@ -41,69 +41,77 @@ func EvictInOtherSlices[T PointerToGongstruct, TF PointerToGongstruct](
 
 	case *Gantt:
 		// insertion point per field
-		// tweaking, it might be streamlined
 		if fieldName == "Lanes" {
-			for _instance := range *GetGongstructInstancesSetFromPointerType[T](stage) {
-				_inferedTypeInstance := any(_instance).(*Gantt)
-				reference := make([]TF, 0)
-				targetFieldSlice := any(_inferedTypeInstance.Lanes).([]TF)
-				copy(targetFieldSlice, reference)
-				_inferedTypeInstance.Lanes = make([]*Lane, 0)
+
+			// walk all instances of the owning type
+			for _instance := range *GetGongstructInstancesSetFromPointerType[OwningType](stage) {
 				if any(_instance).(*Gantt) != owningInstanceInfered {
+					_inferedTypeInstance := any(_instance).(*Gantt)
+					reference := make([]FieldType, 0)
+					targetFieldSlice := any(_inferedTypeInstance.Lanes).([]FieldType)
+					copy(targetFieldSlice, reference)
+					_inferedTypeInstance.Lanes = _inferedTypeInstance.Lanes[0:]
 					for _, fieldInstance := range reference {
-						if _, ok := setOfFieldInstances[any(fieldInstance).(TF)]; !ok {
-							targetFieldSlice = append(targetFieldSlice, fieldInstance)
+						if _, ok := setOfFieldInstances[any(fieldInstance).(FieldType)]; !ok {
+							_inferedTypeInstance.Lanes =
+								append(_inferedTypeInstance.Lanes, any(fieldInstance).(*Lane))
 						}
 					}
 				}
 			}
 		}
-		// tweaking, it might be streamlined
 		if fieldName == "Milestones" {
-			for _instance := range *GetGongstructInstancesSetFromPointerType[T](stage) {
-				_inferedTypeInstance := any(_instance).(*Gantt)
-				reference := make([]TF, 0)
-				targetFieldSlice := any(_inferedTypeInstance.Milestones).([]TF)
-				copy(targetFieldSlice, reference)
-				_inferedTypeInstance.Milestones = make([]*Milestone, 0)
+
+			// walk all instances of the owning type
+			for _instance := range *GetGongstructInstancesSetFromPointerType[OwningType](stage) {
 				if any(_instance).(*Gantt) != owningInstanceInfered {
+					_inferedTypeInstance := any(_instance).(*Gantt)
+					reference := make([]FieldType, 0)
+					targetFieldSlice := any(_inferedTypeInstance.Milestones).([]FieldType)
+					copy(targetFieldSlice, reference)
+					_inferedTypeInstance.Milestones = _inferedTypeInstance.Milestones[0:]
 					for _, fieldInstance := range reference {
-						if _, ok := setOfFieldInstances[any(fieldInstance).(TF)]; !ok {
-							targetFieldSlice = append(targetFieldSlice, fieldInstance)
+						if _, ok := setOfFieldInstances[any(fieldInstance).(FieldType)]; !ok {
+							_inferedTypeInstance.Milestones =
+								append(_inferedTypeInstance.Milestones, any(fieldInstance).(*Milestone))
 						}
 					}
 				}
 			}
 		}
-		// tweaking, it might be streamlined
 		if fieldName == "Groups" {
-			for _instance := range *GetGongstructInstancesSetFromPointerType[T](stage) {
-				_inferedTypeInstance := any(_instance).(*Gantt)
-				reference := make([]TF, 0)
-				targetFieldSlice := any(_inferedTypeInstance.Groups).([]TF)
-				copy(targetFieldSlice, reference)
-				_inferedTypeInstance.Groups = make([]*Group, 0)
+
+			// walk all instances of the owning type
+			for _instance := range *GetGongstructInstancesSetFromPointerType[OwningType](stage) {
 				if any(_instance).(*Gantt) != owningInstanceInfered {
+					_inferedTypeInstance := any(_instance).(*Gantt)
+					reference := make([]FieldType, 0)
+					targetFieldSlice := any(_inferedTypeInstance.Groups).([]FieldType)
+					copy(targetFieldSlice, reference)
+					_inferedTypeInstance.Groups = _inferedTypeInstance.Groups[0:]
 					for _, fieldInstance := range reference {
-						if _, ok := setOfFieldInstances[any(fieldInstance).(TF)]; !ok {
-							targetFieldSlice = append(targetFieldSlice, fieldInstance)
+						if _, ok := setOfFieldInstances[any(fieldInstance).(FieldType)]; !ok {
+							_inferedTypeInstance.Groups =
+								append(_inferedTypeInstance.Groups, any(fieldInstance).(*Group))
 						}
 					}
 				}
 			}
 		}
-		// tweaking, it might be streamlined
 		if fieldName == "Arrows" {
-			for _instance := range *GetGongstructInstancesSetFromPointerType[T](stage) {
-				_inferedTypeInstance := any(_instance).(*Gantt)
-				reference := make([]TF, 0)
-				targetFieldSlice := any(_inferedTypeInstance.Arrows).([]TF)
-				copy(targetFieldSlice, reference)
-				_inferedTypeInstance.Arrows = make([]*Arrow, 0)
+
+			// walk all instances of the owning type
+			for _instance := range *GetGongstructInstancesSetFromPointerType[OwningType](stage) {
 				if any(_instance).(*Gantt) != owningInstanceInfered {
+					_inferedTypeInstance := any(_instance).(*Gantt)
+					reference := make([]FieldType, 0)
+					targetFieldSlice := any(_inferedTypeInstance.Arrows).([]FieldType)
+					copy(targetFieldSlice, reference)
+					_inferedTypeInstance.Arrows = _inferedTypeInstance.Arrows[0:]
 					for _, fieldInstance := range reference {
-						if _, ok := setOfFieldInstances[any(fieldInstance).(TF)]; !ok {
-							targetFieldSlice = append(targetFieldSlice, fieldInstance)
+						if _, ok := setOfFieldInstances[any(fieldInstance).(FieldType)]; !ok {
+							_inferedTypeInstance.Arrows =
+								append(_inferedTypeInstance.Arrows, any(fieldInstance).(*Arrow))
 						}
 					}
 				}
@@ -112,18 +120,20 @@ func EvictInOtherSlices[T PointerToGongstruct, TF PointerToGongstruct](
 
 	case *Group:
 		// insertion point per field
-		// tweaking, it might be streamlined
 		if fieldName == "GroupLanes" {
-			for _instance := range *GetGongstructInstancesSetFromPointerType[T](stage) {
-				_inferedTypeInstance := any(_instance).(*Group)
-				reference := make([]TF, 0)
-				targetFieldSlice := any(_inferedTypeInstance.GroupLanes).([]TF)
-				copy(targetFieldSlice, reference)
-				_inferedTypeInstance.GroupLanes = make([]*Lane, 0)
+
+			// walk all instances of the owning type
+			for _instance := range *GetGongstructInstancesSetFromPointerType[OwningType](stage) {
 				if any(_instance).(*Group) != owningInstanceInfered {
+					_inferedTypeInstance := any(_instance).(*Group)
+					reference := make([]FieldType, 0)
+					targetFieldSlice := any(_inferedTypeInstance.GroupLanes).([]FieldType)
+					copy(targetFieldSlice, reference)
+					_inferedTypeInstance.GroupLanes = _inferedTypeInstance.GroupLanes[0:]
 					for _, fieldInstance := range reference {
-						if _, ok := setOfFieldInstances[any(fieldInstance).(TF)]; !ok {
-							targetFieldSlice = append(targetFieldSlice, fieldInstance)
+						if _, ok := setOfFieldInstances[any(fieldInstance).(FieldType)]; !ok {
+							_inferedTypeInstance.GroupLanes =
+								append(_inferedTypeInstance.GroupLanes, any(fieldInstance).(*Lane))
 						}
 					}
 				}
@@ -132,18 +142,20 @@ func EvictInOtherSlices[T PointerToGongstruct, TF PointerToGongstruct](
 
 	case *Lane:
 		// insertion point per field
-		// tweaking, it might be streamlined
 		if fieldName == "Bars" {
-			for _instance := range *GetGongstructInstancesSetFromPointerType[T](stage) {
-				_inferedTypeInstance := any(_instance).(*Lane)
-				reference := make([]TF, 0)
-				targetFieldSlice := any(_inferedTypeInstance.Bars).([]TF)
-				copy(targetFieldSlice, reference)
-				_inferedTypeInstance.Bars = make([]*Bar, 0)
+
+			// walk all instances of the owning type
+			for _instance := range *GetGongstructInstancesSetFromPointerType[OwningType](stage) {
 				if any(_instance).(*Lane) != owningInstanceInfered {
+					_inferedTypeInstance := any(_instance).(*Lane)
+					reference := make([]FieldType, 0)
+					targetFieldSlice := any(_inferedTypeInstance.Bars).([]FieldType)
+					copy(targetFieldSlice, reference)
+					_inferedTypeInstance.Bars = _inferedTypeInstance.Bars[0:]
 					for _, fieldInstance := range reference {
-						if _, ok := setOfFieldInstances[any(fieldInstance).(TF)]; !ok {
-							targetFieldSlice = append(targetFieldSlice, fieldInstance)
+						if _, ok := setOfFieldInstances[any(fieldInstance).(FieldType)]; !ok {
+							_inferedTypeInstance.Bars =
+								append(_inferedTypeInstance.Bars, any(fieldInstance).(*Bar))
 						}
 					}
 				}
@@ -155,18 +167,20 @@ func EvictInOtherSlices[T PointerToGongstruct, TF PointerToGongstruct](
 
 	case *Milestone:
 		// insertion point per field
-		// tweaking, it might be streamlined
 		if fieldName == "LanesToDisplayMilestoneUse" {
-			for _instance := range *GetGongstructInstancesSetFromPointerType[T](stage) {
-				_inferedTypeInstance := any(_instance).(*Milestone)
-				reference := make([]TF, 0)
-				targetFieldSlice := any(_inferedTypeInstance.LanesToDisplayMilestoneUse).([]TF)
-				copy(targetFieldSlice, reference)
-				_inferedTypeInstance.LanesToDisplayMilestoneUse = make([]*LaneUse, 0)
+
+			// walk all instances of the owning type
+			for _instance := range *GetGongstructInstancesSetFromPointerType[OwningType](stage) {
 				if any(_instance).(*Milestone) != owningInstanceInfered {
+					_inferedTypeInstance := any(_instance).(*Milestone)
+					reference := make([]FieldType, 0)
+					targetFieldSlice := any(_inferedTypeInstance.LanesToDisplayMilestoneUse).([]FieldType)
+					copy(targetFieldSlice, reference)
+					_inferedTypeInstance.LanesToDisplayMilestoneUse = _inferedTypeInstance.LanesToDisplayMilestoneUse[0:]
 					for _, fieldInstance := range reference {
-						if _, ok := setOfFieldInstances[any(fieldInstance).(TF)]; !ok {
-							targetFieldSlice = append(targetFieldSlice, fieldInstance)
+						if _, ok := setOfFieldInstances[any(fieldInstance).(FieldType)]; !ok {
+							_inferedTypeInstance.LanesToDisplayMilestoneUse =
+								append(_inferedTypeInstance.LanesToDisplayMilestoneUse, any(fieldInstance).(*LaneUse))
 						}
 					}
 				}

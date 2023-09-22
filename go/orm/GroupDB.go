@@ -596,6 +596,39 @@ func (backRepoGroup *BackRepoGroupStruct) RestorePhaseTwo() {
 
 }
 
+// BackRepoGroup.ResetReversePointers commits all staged instances of Group to the BackRepo
+// Phase Two is the update of instance with the field in the database
+func (backRepoGroup *BackRepoGroupStruct) ResetReversePointers(backRepo *BackRepoStruct) (Error error) {
+
+	for idx, group := range backRepoGroup.Map_GroupDBID_GroupPtr {
+		backRepoGroup.ResetReversePointersInstance(backRepo, idx, group)
+	}
+
+	return
+}
+
+func (backRepoGroup *BackRepoGroupStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.Group) (Error error) {
+
+	// fetch matching groupDB
+	if groupDB, ok := backRepoGroup.Map_GroupDBID_GroupDB[idx]; ok {
+		_ = groupDB // to avoid unused variable error if there are no reverse to reset
+
+		// insertion point for reverse pointers reset
+		if groupDB.Gantt_GroupsDBID.Int64 != 0 {
+			groupDB.Gantt_GroupsDBID.Int64 = 0
+			groupDB.Gantt_GroupsDBID.Valid = true
+
+			// save the reset
+			if q := backRepoGroup.db.Save(groupDB); q.Error != nil {
+				return q.Error
+			}
+		}
+		// end of insertion point for reverse pointers reset
+	}
+
+	return
+}
+
 // this field is used during the restauration process.
 // it stores the ID at the backup time and is used for renumbering
 var BackRepoGroupid_atBckpTime_newID map[uint]uint

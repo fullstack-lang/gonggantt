@@ -1046,6 +1046,30 @@ func (backRepoGantt *BackRepoGanttStruct) RestorePhaseTwo() {
 
 }
 
+// BackRepoGantt.ResetReversePointers commits all staged instances of Gantt to the BackRepo
+// Phase Two is the update of instance with the field in the database
+func (backRepoGantt *BackRepoGanttStruct) ResetReversePointers(backRepo *BackRepoStruct) (Error error) {
+
+	for idx, gantt := range backRepoGantt.Map_GanttDBID_GanttPtr {
+		backRepoGantt.ResetReversePointersInstance(backRepo, idx, gantt)
+	}
+
+	return
+}
+
+func (backRepoGantt *BackRepoGanttStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.Gantt) (Error error) {
+
+	// fetch matching ganttDB
+	if ganttDB, ok := backRepoGantt.Map_GanttDBID_GanttDB[idx]; ok {
+		_ = ganttDB // to avoid unused variable error if there are no reverse to reset
+
+		// insertion point for reverse pointers reset
+		// end of insertion point for reverse pointers reset
+	}
+
+	return
+}
+
 // this field is used during the restauration process.
 // it stores the ID at the backup time and is used for renumbering
 var BackRepoGanttid_atBckpTime_newID map[uint]uint

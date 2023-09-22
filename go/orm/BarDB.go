@@ -648,6 +648,39 @@ func (backRepoBar *BackRepoBarStruct) RestorePhaseTwo() {
 
 }
 
+// BackRepoBar.ResetReversePointers commits all staged instances of Bar to the BackRepo
+// Phase Two is the update of instance with the field in the database
+func (backRepoBar *BackRepoBarStruct) ResetReversePointers(backRepo *BackRepoStruct) (Error error) {
+
+	for idx, bar := range backRepoBar.Map_BarDBID_BarPtr {
+		backRepoBar.ResetReversePointersInstance(backRepo, idx, bar)
+	}
+
+	return
+}
+
+func (backRepoBar *BackRepoBarStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.Bar) (Error error) {
+
+	// fetch matching barDB
+	if barDB, ok := backRepoBar.Map_BarDBID_BarDB[idx]; ok {
+		_ = barDB // to avoid unused variable error if there are no reverse to reset
+
+		// insertion point for reverse pointers reset
+		if barDB.Lane_BarsDBID.Int64 != 0 {
+			barDB.Lane_BarsDBID.Int64 = 0
+			barDB.Lane_BarsDBID.Valid = true
+
+			// save the reset
+			if q := backRepoBar.db.Save(barDB); q.Error != nil {
+				return q.Error
+			}
+		}
+		// end of insertion point for reverse pointers reset
+	}
+
+	return
+}
+
 // this field is used during the restauration process.
 // it stores the ID at the backup time and is used for renumbering
 var BackRepoBarid_atBckpTime_newID map[uint]uint

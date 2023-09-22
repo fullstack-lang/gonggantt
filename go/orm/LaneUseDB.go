@@ -577,6 +577,39 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseTwo() {
 
 }
 
+// BackRepoLaneUse.ResetReversePointers commits all staged instances of LaneUse to the BackRepo
+// Phase Two is the update of instance with the field in the database
+func (backRepoLaneUse *BackRepoLaneUseStruct) ResetReversePointers(backRepo *BackRepoStruct) (Error error) {
+
+	for idx, laneuse := range backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr {
+		backRepoLaneUse.ResetReversePointersInstance(backRepo, idx, laneuse)
+	}
+
+	return
+}
+
+func (backRepoLaneUse *BackRepoLaneUseStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.LaneUse) (Error error) {
+
+	// fetch matching laneuseDB
+	if laneuseDB, ok := backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[idx]; ok {
+		_ = laneuseDB // to avoid unused variable error if there are no reverse to reset
+
+		// insertion point for reverse pointers reset
+		if laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 != 0 {
+			laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 = 0
+			laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Valid = true
+
+			// save the reset
+			if q := backRepoLaneUse.db.Save(laneuseDB); q.Error != nil {
+				return q.Error
+			}
+		}
+		// end of insertion point for reverse pointers reset
+	}
+
+	return
+}
+
 // this field is used during the restauration process.
 // it stores the ID at the backup time and is used for renumbering
 var BackRepoLaneUseid_atBckpTime_newID map[uint]uint

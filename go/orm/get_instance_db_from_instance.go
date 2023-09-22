@@ -8,7 +8,7 @@ import (
 type GongstructDB interface {
 	// insertion point for generic types
 	// "int" is present to handle the case when no struct is present
-	int  | ArrowDB | BarDB | GanttDB | GroupDB | LaneDB | LaneUseDB | MilestoneDB
+	int | ArrowDB | BarDB | GanttDB | GroupDB | LaneDB | LaneUseDB | MilestoneDB
 }
 
 func GetInstanceDBFromInstance[T models.Gongstruct, T2 GongstructDB](
@@ -56,6 +56,54 @@ func GetID[T models.Gongstruct](
 	stage *models.StageStruct,
 	backRepo *BackRepoStruct,
 	instance *T) (id int) {
+
+	switch inst := any(instance).(type) {
+	// insertion point for per struct backup
+	case *models.Arrow:
+		tmp := GetInstanceDBFromInstance[models.Arrow, ArrowDB](
+			stage, backRepo, inst,
+		)
+		id = int(tmp.ID)
+	case *models.Bar:
+		tmp := GetInstanceDBFromInstance[models.Bar, BarDB](
+			stage, backRepo, inst,
+		)
+		id = int(tmp.ID)
+	case *models.Gantt:
+		tmp := GetInstanceDBFromInstance[models.Gantt, GanttDB](
+			stage, backRepo, inst,
+		)
+		id = int(tmp.ID)
+	case *models.Group:
+		tmp := GetInstanceDBFromInstance[models.Group, GroupDB](
+			stage, backRepo, inst,
+		)
+		id = int(tmp.ID)
+	case *models.Lane:
+		tmp := GetInstanceDBFromInstance[models.Lane, LaneDB](
+			stage, backRepo, inst,
+		)
+		id = int(tmp.ID)
+	case *models.LaneUse:
+		tmp := GetInstanceDBFromInstance[models.LaneUse, LaneUseDB](
+			stage, backRepo, inst,
+		)
+		id = int(tmp.ID)
+	case *models.Milestone:
+		tmp := GetInstanceDBFromInstance[models.Milestone, MilestoneDB](
+			stage, backRepo, inst,
+		)
+		id = int(tmp.ID)
+	default:
+		_ = inst
+	}
+	return
+}
+
+func GetIDPointer[T models.PointerToGongstruct](
+	stage *models.StageStruct,
+	backRepo *BackRepoStruct,
+	instance T) (id int) {
 
 	switch inst := any(instance).(type) {
 	// insertion point for per struct backup

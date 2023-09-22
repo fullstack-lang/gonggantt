@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
 
@@ -198,6 +197,15 @@ func (backRepo *BackRepoStruct) Commit(stage *models.StageStruct) {
 	backRepo.BackRepoLaneUse.CommitPhaseOne(stage)
 	backRepo.BackRepoMilestone.CommitPhaseOne(stage)
 
+	// insertion point for per struct back repo for reseting the reverse pointers
+	backRepo.BackRepoArrow.ResetReversePointers(backRepo)
+	backRepo.BackRepoBar.ResetReversePointers(backRepo)
+	backRepo.BackRepoGantt.ResetReversePointers(backRepo)
+	backRepo.BackRepoGroup.ResetReversePointers(backRepo)
+	backRepo.BackRepoLane.ResetReversePointers(backRepo)
+	backRepo.BackRepoLaneUse.ResetReversePointers(backRepo)
+	backRepo.BackRepoMilestone.ResetReversePointers(backRepo)
+
 	// insertion point for per struct back repo phase two commit
 	backRepo.BackRepoArrow.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoBar.CommitPhaseTwo(backRepo)
@@ -229,25 +237,6 @@ func (backRepo *BackRepoStruct) Checkout(stage *models.StageStruct) {
 	backRepo.BackRepoLane.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoLaneUse.CheckoutPhaseTwo(backRepo)
 	backRepo.BackRepoMilestone.CheckoutPhaseTwo(backRepo)
-}
-
-var _backRepo *BackRepoStruct
-
-var once sync.Once
-
-func GetDefaultBackRepo() *BackRepoStruct {
-	once.Do(func() {
-		_backRepo = NewBackRepo(models.GetDefaultStage(), "")
-	})
-	return _backRepo
-}
-
-func GetLastCommitFromBackNb() uint {
-	return GetDefaultBackRepo().GetLastCommitFromBackNb()
-}
-
-func GetLastPushFromFrontNb() uint {
-	return GetDefaultBackRepo().GetLastPushFromFrontNb()
 }
 
 // Backup the BackRepoStruct
