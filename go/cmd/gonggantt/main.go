@@ -89,14 +89,6 @@ func main() {
 	gongganttStage, gongganttBackRepo := gonggantt_fullstack.NewStackInstance(r, gonggantt_models.GanttStackName.ToString())
 	gongsvgStage, _ := gongsvg_fullstack.NewStackInstance(r, gonggantt_models.SvgStackName.ToString())
 
-	gonggantt_probe.NewProbe(
-		r,
-		gonggantt_go.GoModelsDir,
-		gonggantt_models.GanttProbeStackName.ToString(),
-		gongganttStage,
-		gongganttBackRepo,
-	)
-
 	if *unmarshallFromCode != "" {
 		gongganttStage.Checkout()
 		gongganttStage.Reset()
@@ -142,6 +134,14 @@ func main() {
 		// initial publication
 		ganttSVGMapper.GenerateSvg(gongganttStage, gongsvgStage)
 	}
+
+	gonggantt_probe.NewProbe(
+		r,
+		gonggantt_go.GoModelsDir,
+		gonggantt_models.GanttProbeStackName.ToString(),
+		gongganttStage,
+		gongganttBackRepo,
+	)
 
 	gongdoc_load.Load(
 		"gonggantt",
