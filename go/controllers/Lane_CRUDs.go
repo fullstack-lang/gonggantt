@@ -65,6 +65,9 @@ func (controller *Controller) GetLanes(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoLane.GetDB()
 
 	query := db.Find(&laneDBs)
@@ -124,6 +127,9 @@ func (controller *Controller) PostLane(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoLane.GetDB()
 
 	// Validate input
@@ -193,6 +199,9 @@ func (controller *Controller) GetLane(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoLane.GetDB()
 
 	// Get laneDB in DB
@@ -238,6 +247,9 @@ func (controller *Controller) UpdateLane(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoLane.GetDB()
 
 	// Validate input
@@ -322,6 +334,9 @@ func (controller *Controller) DeleteLane(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoLane.GetDB()
 
 	// Get model if exist

@@ -65,6 +65,9 @@ func (controller *Controller) GetArrows(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoArrow.GetDB()
 
 	query := db.Find(&arrowDBs)
@@ -124,6 +127,9 @@ func (controller *Controller) PostArrow(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoArrow.GetDB()
 
 	// Validate input
@@ -193,6 +199,9 @@ func (controller *Controller) GetArrow(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoArrow.GetDB()
 
 	// Get arrowDB in DB
@@ -238,6 +247,9 @@ func (controller *Controller) UpdateArrow(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoArrow.GetDB()
 
 	// Validate input
@@ -322,6 +334,9 @@ func (controller *Controller) DeleteArrow(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoArrow.GetDB()
 
 	// Get model if exist

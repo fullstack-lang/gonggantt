@@ -65,6 +65,9 @@ func (controller *Controller) GetBars(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoBar.GetDB()
 
 	query := db.Find(&barDBs)
@@ -124,6 +127,9 @@ func (controller *Controller) PostBar(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoBar.GetDB()
 
 	// Validate input
@@ -193,6 +199,9 @@ func (controller *Controller) GetBar(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoBar.GetDB()
 
 	// Get barDB in DB
@@ -238,6 +247,9 @@ func (controller *Controller) UpdateBar(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoBar.GetDB()
 
 	// Validate input
@@ -322,6 +334,9 @@ func (controller *Controller) DeleteBar(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoBar.GetDB()
 
 	// Get model if exist

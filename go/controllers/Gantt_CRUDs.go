@@ -65,6 +65,9 @@ func (controller *Controller) GetGantts(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoGantt.GetDB()
 
 	query := db.Find(&ganttDBs)
@@ -124,6 +127,9 @@ func (controller *Controller) PostGantt(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoGantt.GetDB()
 
 	// Validate input
@@ -193,6 +199,9 @@ func (controller *Controller) GetGantt(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoGantt.GetDB()
 
 	// Get ganttDB in DB
@@ -238,6 +247,9 @@ func (controller *Controller) UpdateGantt(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoGantt.GetDB()
 
 	// Validate input
@@ -322,6 +334,9 @@ func (controller *Controller) DeleteGantt(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoGantt.GetDB()
 
 	// Get model if exist

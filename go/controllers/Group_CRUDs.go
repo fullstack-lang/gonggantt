@@ -65,6 +65,9 @@ func (controller *Controller) GetGroups(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoGroup.GetDB()
 
 	query := db.Find(&groupDBs)
@@ -124,6 +127,9 @@ func (controller *Controller) PostGroup(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoGroup.GetDB()
 
 	// Validate input
@@ -193,6 +199,9 @@ func (controller *Controller) GetGroup(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoGroup.GetDB()
 
 	// Get groupDB in DB
@@ -238,6 +247,9 @@ func (controller *Controller) UpdateGroup(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoGroup.GetDB()
 
 	// Validate input
@@ -322,6 +334,9 @@ func (controller *Controller) DeleteGroup(c *gin.Context) {
 		}
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
+	if backRepo == nil {
+		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+	}
 	db := backRepo.BackRepoGroup.GetDB()
 
 	// Get model if exist

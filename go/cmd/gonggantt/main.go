@@ -5,33 +5,34 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	gonggantt_fullstack "github.com/fullstack-lang/gonggantt/go/fullstack"
+	"strconv"
 
 	gonggantt_go "github.com/fullstack-lang/gonggantt/go"
+	gonggantt_fullstack "github.com/fullstack-lang/gonggantt/go/fullstack"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
+	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
 	gonggantt_probe "github.com/fullstack-lang/gonggantt/go/probe"
 	gonggantt_static "github.com/fullstack-lang/gonggantt/go/static"
 
 	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
-	gongdoc_load "github.com/fullstack-lang/gongdoc/go/load"
-
+	gongsvg_go "github.com/fullstack-lang/gongsvg/go"
 	gongsvg_fullstack "github.com/fullstack-lang/gongsvg/go/fullstack"
+	gongsvg_probe "github.com/fullstack-lang/gongsvg/go/probe"
+
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
 
 var (
-	logDBFlag  = flag.Bool("logDB", false, "log mode for db")
 	logGINFlag = flag.Bool("logGIN", false, "log mode for gin")
 
-	marshallOnStartup  = flag.String("marshallOnStartup", "", "at startup, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
 	unmarshallFromCode = flag.String("unmarshallFromCode", "", "unmarshall data from go file and '.go' (must be lowercased without spaces), If unmarshallFromCode arg is '', no unmarshalling")
-	unmarshall         = flag.String("unmarshall", "", "unmarshall data from marshall name and '.go' (must be lowercased without spaces), If unmarshall arg is '', no unmarshalling")
 	marshallOnCommit   = flag.String("marshallOnCommit", "", "on all commits, marshall staged data to a go file with the marshall name and '.go' (must be lowercased without spaces). If marshall arg is '', no marshalling")
 
 	diagrams         = flag.Bool("diagrams", true, "parse/analysis go/models and go/diagrams")
 	embeddedDiagrams = flag.Bool("embeddedDiagrams", false, "parse/analysis go/models and go/embeddedDiagrams")
+
+	port = flag.Int("port", 8080, "port server")
 )
 
 // hook marhalling to stage
@@ -86,8 +87,18 @@ func main() {
 	r := gonggantt_static.ServeStaticFiles(*logGINFlag)
 
 	// setup stack
-	gongganttStage, gongganttBackRepo := gonggantt_fullstack.NewStackInstance(r, gonggantt_models.GanttStackName.ToString())
-	gongsvgStage, _ := gongsvg_fullstack.NewStackInstance(r, gonggantt_models.SvgStackName.ToString())
+	var gongganttStage *gonggantt_models.StageStruct
+	gongsvgStage, gongsvgBackRepo := gongsvg_fullstack.NewStackInstance(r, gonggantt_models.SvgStackName.ToString())
+
+	var backRepo *gonggantt_orm.BackRepoStruct
+
+	if *marshallOnCommit != "" {
+		// persistence in a SQLite file on disk in memory
+		gongganttStage, backRepo = gonggantt_fullstack.NewStackInstance(r, "gonggantt")
+	} else {
+		// persistence in a SQLite file on disk
+		gongganttStage, backRepo = gonggantt_fullstack.NewStackInstance(r, "gonggantt", "./gonggantt.db")
+	}
 
 	if *unmarshallFromCode != "" {
 		gongganttStage.Checkout()
@@ -135,32 +146,15 @@ func main() {
 		ganttSVGMapper.GenerateSvg(gongganttStage, gongsvgStage)
 	}
 
-	gonggantt_probe.NewProbe(
-		r,
-		gonggantt_go.GoModelsDir,
-		gonggantt_models.GanttProbeStackName.ToString(),
-		gongganttStage,
-		gongganttBackRepo,
-	)
+	gonggantt_probe.NewProbe(r, gonggantt_go.GoModelsDir, gonggantt_go.GoDiagramsDir,
+		*embeddedDiagrams, "gonggantt", gongganttStage, backRepo)
 
-	gongdoc_load.Load(
-		"gonggantt",
-		"github.com/fullstack-lang/gonggantt/go/models",
-		gonggantt_go.GoModelsDir,
-		gonggantt_go.GoDiagramsDir,
-		r,
-		*embeddedDiagrams,
-		&gongganttStage.Map_GongStructName_InstancesNb)
+	gongsvg_probe.NewProbe(r, gongsvg_go.GoModelsDir, gongsvg_go.GoDiagramsDir,
+		false, "gongsvg", gongsvgStage, gongsvgBackRepo)
 
-	// gongdoc_load.Load(
-	// 	"gongsvg",
-	// 	"github.com/fullstack-lang/gongsvg/go/models",
-	// 	gongsvg_go.GoModelsDir,
-	// 	gongsvg_go.GoDiagramsDir,
-	// 	r,
-	// 	true,
-	// 	&gongganttStage.Map_GongStructName_InstancesNb)
-
-	log.Printf("Server ready serve on localhost:8080")
-	r.Run()
+	log.Printf("Server ready serve on localhost:" + strconv.Itoa(*port))
+	err := r.Run(":" + strconv.Itoa(*port))
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
 }
