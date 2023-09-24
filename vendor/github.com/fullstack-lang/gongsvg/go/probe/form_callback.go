@@ -514,6 +514,7 @@ func (animateFormCallback *AnimateFormCallback) OnSave() {
 		animateFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(animateFormCallback.playground)
 }
 func __gong__New__CircleFormCallback(
 	circle *models.Circle,
@@ -645,6 +646,7 @@ func (circleFormCallback *CircleFormCallback) OnSave() {
 		circleFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(circleFormCallback.playground)
 }
 func __gong__New__EllipseFormCallback(
 	ellipse *models.Ellipse,
@@ -778,6 +780,7 @@ func (ellipseFormCallback *EllipseFormCallback) OnSave() {
 		ellipseFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(ellipseFormCallback.playground)
 }
 func __gong__New__LayerFormCallback(
 	layer *models.Layer,
@@ -891,6 +894,7 @@ func (layerFormCallback *LayerFormCallback) OnSave() {
 		layerFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(layerFormCallback.playground)
 }
 func __gong__New__LineFormCallback(
 	line *models.Line,
@@ -1028,6 +1032,7 @@ func (lineFormCallback *LineFormCallback) OnSave() {
 		lineFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(lineFormCallback.playground)
 }
 func __gong__New__LinkFormCallback(
 	link *models.Link,
@@ -1179,6 +1184,7 @@ func (linkFormCallback *LinkFormCallback) OnSave() {
 		linkFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(linkFormCallback.playground)
 }
 func __gong__New__LinkAnchoredTextFormCallback(
 	linkanchoredtext *models.LinkAnchoredText,
@@ -1354,6 +1360,7 @@ func (linkanchoredtextFormCallback *LinkAnchoredTextFormCallback) OnSave() {
 		linkanchoredtextFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(linkanchoredtextFormCallback.playground)
 }
 func __gong__New__PathFormCallback(
 	path *models.Path,
@@ -1481,6 +1488,7 @@ func (pathFormCallback *PathFormCallback) OnSave() {
 		pathFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(pathFormCallback.playground)
 }
 func __gong__New__PointFormCallback(
 	point *models.Point,
@@ -1596,6 +1604,7 @@ func (pointFormCallback *PointFormCallback) OnSave() {
 		pointFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(pointFormCallback.playground)
 }
 func __gong__New__PolygoneFormCallback(
 	polygone *models.Polygone,
@@ -1723,6 +1732,7 @@ func (polygoneFormCallback *PolygoneFormCallback) OnSave() {
 		polygoneFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(polygoneFormCallback.playground)
 }
 func __gong__New__PolylineFormCallback(
 	polyline *models.Polyline,
@@ -1850,6 +1860,7 @@ func (polylineFormCallback *PolylineFormCallback) OnSave() {
 		polylineFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(polylineFormCallback.playground)
 }
 func __gong__New__RectFormCallback(
 	rect *models.Rect,
@@ -2009,6 +2020,7 @@ func (rectFormCallback *RectFormCallback) OnSave() {
 		rectFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(rectFormCallback.playground)
 }
 func __gong__New__RectAnchoredRectFormCallback(
 	rectanchoredrect *models.RectAnchoredRect,
@@ -2154,6 +2166,7 @@ func (rectanchoredrectFormCallback *RectAnchoredRectFormCallback) OnSave() {
 		rectanchoredrectFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(rectanchoredrectFormCallback.playground)
 }
 func __gong__New__RectAnchoredTextFormCallback(
 	rectanchoredtext *models.RectAnchoredText,
@@ -2293,6 +2306,7 @@ func (rectanchoredtextFormCallback *RectAnchoredTextFormCallback) OnSave() {
 		rectanchoredtextFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(rectanchoredtextFormCallback.playground)
 }
 func __gong__New__RectLinkLinkFormCallback(
 	rectlinklink *models.RectLinkLink,
@@ -2424,6 +2438,7 @@ func (rectlinklinkFormCallback *RectLinkLinkFormCallback) OnSave() {
 		rectlinklinkFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(rectlinklinkFormCallback.playground)
 }
 func __gong__New__SVGFormCallback(
 	svg *models.SVG,
@@ -2501,6 +2516,7 @@ func (svgFormCallback *SVGFormCallback) OnSave() {
 		svgFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(svgFormCallback.playground)
 }
 func __gong__New__TextFormCallback(
 	text *models.Text,
@@ -2632,4 +2648,5 @@ func (textFormCallback *TextFormCallback) OnSave() {
 		textFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(textFormCallback.playground)
 }

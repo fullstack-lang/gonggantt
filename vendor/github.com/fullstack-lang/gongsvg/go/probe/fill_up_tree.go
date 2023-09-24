@@ -66,170 +66,170 @@ func fillUpTree(
 		case "Animate":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Animate](playground.stageOfInterest)
-			for animate := range set {
-				nodeInstance := (&tree.Node{Name: animate.GetName()}).Stage(playground.treeStage)
+			for _animate := range set {
+				nodeInstance := (&tree.Node{Name: _animate.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(animate, "Animate", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_animate, "Animate", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Circle":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Circle](playground.stageOfInterest)
-			for circle := range set {
-				nodeInstance := (&tree.Node{Name: circle.GetName()}).Stage(playground.treeStage)
+			for _circle := range set {
+				nodeInstance := (&tree.Node{Name: _circle.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(circle, "Circle", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_circle, "Circle", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Ellipse":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Ellipse](playground.stageOfInterest)
-			for ellipse := range set {
-				nodeInstance := (&tree.Node{Name: ellipse.GetName()}).Stage(playground.treeStage)
+			for _ellipse := range set {
+				nodeInstance := (&tree.Node{Name: _ellipse.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(ellipse, "Ellipse", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_ellipse, "Ellipse", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Layer":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Layer](playground.stageOfInterest)
-			for layer := range set {
-				nodeInstance := (&tree.Node{Name: layer.GetName()}).Stage(playground.treeStage)
+			for _layer := range set {
+				nodeInstance := (&tree.Node{Name: _layer.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(layer, "Layer", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_layer, "Layer", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Line":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Line](playground.stageOfInterest)
-			for line := range set {
-				nodeInstance := (&tree.Node{Name: line.GetName()}).Stage(playground.treeStage)
+			for _line := range set {
+				nodeInstance := (&tree.Node{Name: _line.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(line, "Line", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_line, "Line", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Link":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Link](playground.stageOfInterest)
-			for link := range set {
-				nodeInstance := (&tree.Node{Name: link.GetName()}).Stage(playground.treeStage)
+			for _link := range set {
+				nodeInstance := (&tree.Node{Name: _link.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(link, "Link", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_link, "Link", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "LinkAnchoredText":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.LinkAnchoredText](playground.stageOfInterest)
-			for linkanchoredtext := range set {
-				nodeInstance := (&tree.Node{Name: linkanchoredtext.GetName()}).Stage(playground.treeStage)
+			for _linkanchoredtext := range set {
+				nodeInstance := (&tree.Node{Name: _linkanchoredtext.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(linkanchoredtext, "LinkAnchoredText", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_linkanchoredtext, "LinkAnchoredText", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Path":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Path](playground.stageOfInterest)
-			for path := range set {
-				nodeInstance := (&tree.Node{Name: path.GetName()}).Stage(playground.treeStage)
+			for _path := range set {
+				nodeInstance := (&tree.Node{Name: _path.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(path, "Path", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_path, "Path", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Point":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Point](playground.stageOfInterest)
-			for point := range set {
-				nodeInstance := (&tree.Node{Name: point.GetName()}).Stage(playground.treeStage)
+			for _point := range set {
+				nodeInstance := (&tree.Node{Name: _point.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(point, "Point", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_point, "Point", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Polygone":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Polygone](playground.stageOfInterest)
-			for polygone := range set {
-				nodeInstance := (&tree.Node{Name: polygone.GetName()}).Stage(playground.treeStage)
+			for _polygone := range set {
+				nodeInstance := (&tree.Node{Name: _polygone.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(polygone, "Polygone", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_polygone, "Polygone", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Polyline":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Polyline](playground.stageOfInterest)
-			for polyline := range set {
-				nodeInstance := (&tree.Node{Name: polyline.GetName()}).Stage(playground.treeStage)
+			for _polyline := range set {
+				nodeInstance := (&tree.Node{Name: _polyline.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(polyline, "Polyline", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_polyline, "Polyline", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Rect":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Rect](playground.stageOfInterest)
-			for rect := range set {
-				nodeInstance := (&tree.Node{Name: rect.GetName()}).Stage(playground.treeStage)
+			for _rect := range set {
+				nodeInstance := (&tree.Node{Name: _rect.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(rect, "Rect", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_rect, "Rect", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "RectAnchoredRect":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.RectAnchoredRect](playground.stageOfInterest)
-			for rectanchoredrect := range set {
-				nodeInstance := (&tree.Node{Name: rectanchoredrect.GetName()}).Stage(playground.treeStage)
+			for _rectanchoredrect := range set {
+				nodeInstance := (&tree.Node{Name: _rectanchoredrect.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(rectanchoredrect, "RectAnchoredRect", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_rectanchoredrect, "RectAnchoredRect", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "RectAnchoredText":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.RectAnchoredText](playground.stageOfInterest)
-			for rectanchoredtext := range set {
-				nodeInstance := (&tree.Node{Name: rectanchoredtext.GetName()}).Stage(playground.treeStage)
+			for _rectanchoredtext := range set {
+				nodeInstance := (&tree.Node{Name: _rectanchoredtext.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(rectanchoredtext, "RectAnchoredText", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_rectanchoredtext, "RectAnchoredText", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "RectLinkLink":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.RectLinkLink](playground.stageOfInterest)
-			for rectlinklink := range set {
-				nodeInstance := (&tree.Node{Name: rectlinklink.GetName()}).Stage(playground.treeStage)
+			for _rectlinklink := range set {
+				nodeInstance := (&tree.Node{Name: _rectlinklink.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(rectlinklink, "RectLinkLink", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_rectlinklink, "RectLinkLink", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "SVG":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.SVG](playground.stageOfInterest)
-			for svg := range set {
-				nodeInstance := (&tree.Node{Name: svg.GetName()}).Stage(playground.treeStage)
+			for _svg := range set {
+				nodeInstance := (&tree.Node{Name: _svg.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(svg, "SVG", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_svg, "SVG", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
 		case "Text":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.Text](playground.stageOfInterest)
-			for text := range set {
-				nodeInstance := (&tree.Node{Name: text.GetName()}).Stage(playground.treeStage)
+			for _text := range set {
+				nodeInstance := (&tree.Node{Name: _text.GetName()}).Stage(playground.treeStage)
 				nodeInstance.IsNodeClickable = true
-				nodeInstance.Impl = NewInstanceNodeCallback(text, "Text", playground)
+				nodeInstance.Impl = NewInstanceNodeCallback(_text, "Text", playground)
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}	

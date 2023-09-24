@@ -34,14 +34,14 @@ github.com/dustin/go-humanize
 # github.com/frankban/quicktest v1.14.6
 ## explicit; go 1.13
 github.com/frankban/quicktest
-# github.com/fullstack-lang/gong v0.0.0-20230924103131-79425cf8646a
+# github.com/fullstack-lang/gong v0.0.0-20230924201212-df64e9c25096
 ## explicit; go 1.21.0
 github.com/fullstack-lang/gong/go/controllers
 github.com/fullstack-lang/gong/go/fullstack
 github.com/fullstack-lang/gong/go/models
 github.com/fullstack-lang/gong/go/orm
 github.com/fullstack-lang/gong/ng/projects
-# github.com/fullstack-lang/gongdoc v0.0.0-20230924121728-01d48cd1e773
+# github.com/fullstack-lang/gongdoc v0.0.0-20230924202435-cb28e3e843c5
 ## explicit; go 1.21.0
 github.com/fullstack-lang/gongdoc/go/controllers
 github.com/fullstack-lang/gongdoc/go/doc2svg
@@ -51,7 +51,7 @@ github.com/fullstack-lang/gongdoc/go/models
 github.com/fullstack-lang/gongdoc/go/node2gongdoc
 github.com/fullstack-lang/gongdoc/go/orm
 github.com/fullstack-lang/gongdoc/ng/projects
-# github.com/fullstack-lang/gongsvg v0.0.0-20230924033802-07d8637aae0b
+# github.com/fullstack-lang/gongsvg v0.0.0-20230924202533-98a6f709b7b6
 ## explicit; go 1.21.0
 github.com/fullstack-lang/gongsvg/go
 github.com/fullstack-lang/gongsvg/go/controllers
@@ -60,14 +60,14 @@ github.com/fullstack-lang/gongsvg/go/models
 github.com/fullstack-lang/gongsvg/go/orm
 github.com/fullstack-lang/gongsvg/go/probe
 github.com/fullstack-lang/gongsvg/ng/projects
-# github.com/fullstack-lang/gongtable v0.0.0-20230924120425-218d39757b14
+# github.com/fullstack-lang/gongtable v0.0.0-20230924202518-b23f8fdd8863
 ## explicit; go 1.21.0
 github.com/fullstack-lang/gongtable/go/controllers
 github.com/fullstack-lang/gongtable/go/fullstack
 github.com/fullstack-lang/gongtable/go/models
 github.com/fullstack-lang/gongtable/go/orm
 github.com/fullstack-lang/gongtable/ng/projects
-# github.com/fullstack-lang/gongtree v0.0.0-20230924104339-4df8647a3874
+# github.com/fullstack-lang/gongtree v0.0.0-20230924202511-bfe7f3abf1aa
 ## explicit; go 1.21.0
 github.com/fullstack-lang/gongtree/go/buttons
 github.com/fullstack-lang/gongtree/go/controllers
