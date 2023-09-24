@@ -136,6 +136,7 @@ func (arrowFormCallback *ArrowFormCallback) OnSave() {
 		arrowFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(arrowFormCallback.playground)
 }
 func __gong__New__BarFormCallback(
 	bar *models.Bar,
@@ -257,6 +258,7 @@ func (barFormCallback *BarFormCallback) OnSave() {
 		barFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(barFormCallback.playground)
 }
 func __gong__New__GanttFormCallback(
 	gantt *models.Gantt,
@@ -364,6 +366,7 @@ func (ganttFormCallback *GanttFormCallback) OnSave() {
 		ganttFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(ganttFormCallback.playground)
 }
 func __gong__New__GroupFormCallback(
 	group *models.Group,
@@ -475,6 +478,7 @@ func (groupFormCallback *GroupFormCallback) OnSave() {
 		groupFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(groupFormCallback.playground)
 }
 func __gong__New__LaneFormCallback(
 	lane *models.Lane,
@@ -630,6 +634,7 @@ func (laneFormCallback *LaneFormCallback) OnSave() {
 		laneFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(laneFormCallback.playground)
 }
 func __gong__New__LaneUseFormCallback(
 	laneuse *models.LaneUse,
@@ -743,6 +748,7 @@ func (laneuseFormCallback *LaneUseFormCallback) OnSave() {
 		laneuseFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(laneuseFormCallback.playground)
 }
 func __gong__New__MilestoneFormCallback(
 	milestone *models.Milestone,
@@ -856,4 +862,5 @@ func (milestoneFormCallback *MilestoneFormCallback) OnSave() {
 		milestoneFormCallback.playground.formStage.Commit()
 	}
 
+	fillUpTree(milestoneFormCallback.playground)
 }

@@ -34,74 +34,8 @@ import {
 
 import { AppRoutingModule } from './app-routing.module';
 
-import { SplitterComponent } from './splitter/splitter.component'
-import { SidebarComponent } from './sidebar/sidebar.component';
-import { GongstructSelectionService } from './gongstruct-selection.service'
-
-// insertion point for imports 
-import { ArrowsTableComponent } from './arrows-table/arrows-table.component'
-import { ArrowSortingComponent } from './arrow-sorting/arrow-sorting.component'
-import { ArrowDetailComponent } from './arrow-detail/arrow-detail.component'
-
-import { BarsTableComponent } from './bars-table/bars-table.component'
-import { BarSortingComponent } from './bar-sorting/bar-sorting.component'
-import { BarDetailComponent } from './bar-detail/bar-detail.component'
-
-import { GanttsTableComponent } from './gantts-table/gantts-table.component'
-import { GanttSortingComponent } from './gantt-sorting/gantt-sorting.component'
-import { GanttDetailComponent } from './gantt-detail/gantt-detail.component'
-
-import { GroupsTableComponent } from './groups-table/groups-table.component'
-import { GroupSortingComponent } from './group-sorting/group-sorting.component'
-import { GroupDetailComponent } from './group-detail/group-detail.component'
-
-import { LanesTableComponent } from './lanes-table/lanes-table.component'
-import { LaneSortingComponent } from './lane-sorting/lane-sorting.component'
-import { LaneDetailComponent } from './lane-detail/lane-detail.component'
-
-import { LaneUsesTableComponent } from './laneuses-table/laneuses-table.component'
-import { LaneUseSortingComponent } from './laneuse-sorting/laneuse-sorting.component'
-import { LaneUseDetailComponent } from './laneuse-detail/laneuse-detail.component'
-
-import { MilestonesTableComponent } from './milestones-table/milestones-table.component'
-import { MilestoneSortingComponent } from './milestone-sorting/milestone-sorting.component'
-import { MilestoneDetailComponent } from './milestone-detail/milestone-detail.component'
-
-
 @NgModule({
 	declarations: [
-		// insertion point for declarations 
-		ArrowsTableComponent,
-		ArrowSortingComponent,
-		ArrowDetailComponent,
-
-		BarsTableComponent,
-		BarSortingComponent,
-		BarDetailComponent,
-
-		GanttsTableComponent,
-		GanttSortingComponent,
-		GanttDetailComponent,
-
-		GroupsTableComponent,
-		GroupSortingComponent,
-		GroupDetailComponent,
-
-		LanesTableComponent,
-		LaneSortingComponent,
-		LaneDetailComponent,
-
-		LaneUsesTableComponent,
-		LaneUseSortingComponent,
-		LaneUseDetailComponent,
-
-		MilestonesTableComponent,
-		MilestoneSortingComponent,
-		MilestoneDetailComponent,
-
-
-		SplitterComponent,
-		SidebarComponent
 	],
 	imports: [
 		FormsModule,
@@ -137,46 +71,9 @@ import { MilestoneDetailComponent } from './milestone-detail/milestone-detail.co
 		AngularSplitModule,
 	],
 	exports: [
-		// insertion point for declarations 
-		ArrowsTableComponent,
-		ArrowSortingComponent,
-		ArrowDetailComponent,
-
-		BarsTableComponent,
-		BarSortingComponent,
-		BarDetailComponent,
-
-		GanttsTableComponent,
-		GanttSortingComponent,
-		GanttDetailComponent,
-
-		GroupsTableComponent,
-		GroupSortingComponent,
-		GroupDetailComponent,
-
-		LanesTableComponent,
-		LaneSortingComponent,
-		LaneDetailComponent,
-
-		LaneUsesTableComponent,
-		LaneUseSortingComponent,
-		LaneUseDetailComponent,
-
-		MilestonesTableComponent,
-		MilestoneSortingComponent,
-		MilestoneDetailComponent,
-
-
-		SplitterComponent,
-		SidebarComponent,
-
 	],
 	providers: [
-		GongstructSelectionService,
-		{
-			provide: MatDialogRef,
-			useValue: {}
-		},
+		{ provide: MatDialogRef, useValue: { close: () => { } } }
 	],
 })
 export class GongganttModule { }
