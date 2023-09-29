@@ -1,12 +1,39 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 
-import { Observable, combineLatest, BehaviorSubject, of } from 'rxjs';
+import { Observable, combineLatest, BehaviorSubject, of } from 'rxjs'
 
 // insertion point sub template for services imports 
 
 // FrontRepo stores all instances in a front repository (design pattern repository)
 export class FrontRepo { // insertion point sub template 
+
+  getArray<Type>(): Array<Type> {
+    const token = this.getToken<Type>();
+
+    switch (token) {
+    // insertion point
+    default:
+      throw new Error("Type not recognized");
+    }
+  }
+
+  // getMap allows for a get function that is robust to refactoring of the named struct name
+  getMap<Type>(): Map<number, Type> {
+    const token = this.getToken<Type>();
+
+    switch (token) {
+    // insertion point
+    default:
+      throw new Error("Type not recognized");
+    }
+  }
+
+  // getToken allows for a get function that is robust to refactoring of the named struct name
+  private getToken<Type>(): string {
+    // insertion point
+    return '';
+  }
 }
 
 // the table component is called in different ways
