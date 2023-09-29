@@ -3,7 +3,8 @@ export enum GanttStacksNames {
 	// insertion point	
 	SvgStackName = "svg",
 	GanttStackName = "gantt",
-	GanttProbeStackName = "gantt-probe",
+	GanttProbeStacksPrefix = "gantt-probe",
+	SVGProbeStacksPrefix = "svg-probe",
 }
 
 export interface GanttStacksNamesSelect {
@@ -14,5 +15,6 @@ export interface GanttStacksNamesSelect {
 export const GanttStacksNamesList: GanttStacksNamesSelect[] = [ // insertion point	
 	{ value: GanttStacksNames.SvgStackName, viewValue: "svg" },
 	{ value: GanttStacksNames.GanttStackName, viewValue: "gantt" },
-	{ value: GanttStacksNames.GanttProbeStackName, viewValue: "gantt-probe" },
+	{ value: GanttStacksNames.GanttProbeStacksPrefix, viewValue: "gantt-probe" },
+	{ value: GanttStacksNames.SVGProbeStacksPrefix, viewValue: "svg-probe" },
 ];

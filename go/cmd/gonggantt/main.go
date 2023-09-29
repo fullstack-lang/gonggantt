@@ -9,6 +9,7 @@ import (
 
 	gonggantt_go "github.com/fullstack-lang/gonggantt/go"
 	gonggantt_fullstack "github.com/fullstack-lang/gonggantt/go/fullstack"
+	"github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
 	gonggantt_probe "github.com/fullstack-lang/gonggantt/go/probe"
@@ -94,10 +95,10 @@ func main() {
 
 	if *marshallOnCommit != "" {
 		// persistence in a SQLite file on disk in memory
-		gongganttStage, backRepo = gonggantt_fullstack.NewStackInstance(r, "gonggantt")
+		gongganttStage, backRepo = gonggantt_fullstack.NewStackInstance(r, models.GanttStackName.ToString())
 	} else {
 		// persistence in a SQLite file on disk
-		gongganttStage, backRepo = gonggantt_fullstack.NewStackInstance(r, "gonggantt", "./gonggantt.db")
+		gongganttStage, backRepo = gonggantt_fullstack.NewStackInstance(r, models.GanttStackName.ToString(), "./gonggantt.db")
 	}
 
 	if *unmarshallFromCode != "" {
@@ -147,10 +148,10 @@ func main() {
 	}
 
 	gonggantt_probe.NewProbe(r, gonggantt_go.GoModelsDir, gonggantt_go.GoDiagramsDir,
-		*embeddedDiagrams, "gonggantt", gongganttStage, backRepo)
+		*embeddedDiagrams, models.GanttProbeStacksPrefix.ToString(), gongganttStage, backRepo)
 
 	gongsvg_probe.NewProbe(r, gongsvg_go.GoModelsDir, gongsvg_go.GoDiagramsDir,
-		false, "gongsvg", gongsvgStage, gongsvgBackRepo)
+		true, models.SVGProbeStacksPrefix.ToString(), gongsvgStage, gongsvgBackRepo)
 
 	log.Printf("Server ready serve on localhost:" + strconv.Itoa(*port))
 	err := r.Run(":" + strconv.Itoa(*port))
