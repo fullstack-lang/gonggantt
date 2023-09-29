@@ -14,8 +14,10 @@ func (ganttstacksnames GanttStacksNames) ToString() (res string) {
 		res = "svg"
 	case GanttStackName:
 		res = "gantt"
-	case GanttProbeStackName:
+	case GanttProbeStacksPrefix:
 		res = "gantt-probe"
+	case SVGProbeStacksPrefix:
+		res = "svg-probe"
 	}
 	return
 }
@@ -29,7 +31,9 @@ func (ganttstacksnames *GanttStacksNames) FromString(input string) (err error) {
 	case "gantt":
 		*ganttstacksnames = GanttStackName
 	case "gantt-probe":
-		*ganttstacksnames = GanttProbeStackName
+		*ganttstacksnames = GanttProbeStacksPrefix
+	case "svg-probe":
+		*ganttstacksnames = SVGProbeStacksPrefix
 	default:
 		return errUnkownEnum
 	}
@@ -44,8 +48,10 @@ func (ganttstacksnames *GanttStacksNames) FromCodeString(input string) (err erro
 		*ganttstacksnames = SvgStackName
 	case "GanttStackName":
 		*ganttstacksnames = GanttStackName
-	case "GanttProbeStackName":
-		*ganttstacksnames = GanttProbeStackName
+	case "GanttProbeStacksPrefix":
+		*ganttstacksnames = GanttProbeStacksPrefix
+	case "SVGProbeStacksPrefix":
+		*ganttstacksnames = SVGProbeStacksPrefix
 	default:
 		return errUnkownEnum
 	}
@@ -60,8 +66,10 @@ func (ganttstacksnames *GanttStacksNames) ToCodeString() (res string) {
 		res = "SvgStackName"
 	case GanttStackName:
 		res = "GanttStackName"
-	case GanttProbeStackName:
-		res = "GanttProbeStackName"
+	case GanttProbeStacksPrefix:
+		res = "GanttProbeStacksPrefix"
+	case SVGProbeStacksPrefix:
+		res = "SVGProbeStacksPrefix"
 	}
 	return
 }
@@ -73,7 +81,8 @@ func (ganttstacksnames GanttStacksNames) Codes() (res []string) {
 	// insertion code per enum code
 	res = append(res, "SvgStackName")
 	res = append(res, "GanttStackName")
-	res = append(res, "GanttProbeStackName")
+	res = append(res, "GanttProbeStacksPrefix")
+	res = append(res, "SVGProbeStacksPrefix")
 
 	return
 }
@@ -86,6 +95,7 @@ func (ganttstacksnames GanttStacksNames) CodeValues() (res []string) {
 	res = append(res, "svg")
 	res = append(res, "gantt")
 	res = append(res, "gantt-probe")
+	res = append(res, "svg-probe")
 
 	return
 }
