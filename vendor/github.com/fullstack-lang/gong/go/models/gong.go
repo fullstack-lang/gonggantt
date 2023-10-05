@@ -4,7 +4,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"sync"
 	"time"
 )
 
@@ -221,17 +220,6 @@ type BackRepoInterface interface {
 	CheckoutSliceOfPointerToGongStructField(sliceofpointertogongstructfield *SliceOfPointerToGongStructField)
 	GetLastCommitFromBackNb() uint
 	GetLastPushFromFrontNb() uint
-}
-
-var _stage *StageStruct
-
-var once sync.Once
-
-func GetDefaultStage() *StageStruct {
-	once.Do(func() {
-		_stage = NewStage("")
-	})
-	return _stage
 }
 
 func NewStage(path string) (stage *StageStruct) {
@@ -1802,7 +1790,7 @@ func GetFields[Type Gongstruct]() (res []string) {
 	case GongNote:
 		res = []string{"Name", "Body", "BodyHTML", "Links"}
 	case GongStruct:
-		res = []string{"Name", "GongBasicFields", "GongTimeFields", "PointerToGongStructFields", "SliceOfPointerToGongStructFields", "HasOnAfterUpdateSignature"}
+		res = []string{"Name", "GongBasicFields", "GongTimeFields", "PointerToGongStructFields", "SliceOfPointerToGongStructFields", "HasOnAfterUpdateSignature", "IsIgnoredForFront"}
 	case GongTimeField:
 		res = []string{"Name", "Index", "CompositeStructName"}
 	case Meta:
@@ -1912,7 +1900,7 @@ func GetFieldsFromPointer[Type PointerToGongstruct]() (res []string) {
 	case *GongNote:
 		res = []string{"Name", "Body", "BodyHTML", "Links"}
 	case *GongStruct:
-		res = []string{"Name", "GongBasicFields", "GongTimeFields", "PointerToGongStructFields", "SliceOfPointerToGongStructFields", "HasOnAfterUpdateSignature"}
+		res = []string{"Name", "GongBasicFields", "GongTimeFields", "PointerToGongStructFields", "SliceOfPointerToGongStructFields", "HasOnAfterUpdateSignature", "IsIgnoredForFront"}
 	case *GongTimeField:
 		res = []string{"Name", "Index", "CompositeStructName"}
 	case *Meta:
@@ -2041,6 +2029,8 @@ func GetFieldStringValueFromPointer[Type PointerToGongstruct](instance Type, fie
 			}
 		case "HasOnAfterUpdateSignature":
 			res = fmt.Sprintf("%t", inferedInstance.HasOnAfterUpdateSignature)
+		case "IsIgnoredForFront":
+			res = fmt.Sprintf("%t", inferedInstance.IsIgnoredForFront)
 		}
 	case *GongTimeField:
 		switch fieldName {
@@ -2227,6 +2217,8 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 			}
 		case "HasOnAfterUpdateSignature":
 			res = fmt.Sprintf("%t", inferedInstance.HasOnAfterUpdateSignature)
+		case "IsIgnoredForFront":
+			res = fmt.Sprintf("%t", inferedInstance.IsIgnoredForFront)
 		}
 	case GongTimeField:
 		switch fieldName {

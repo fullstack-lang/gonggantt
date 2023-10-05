@@ -3,11 +3,11 @@ module github.com/fullstack-lang/gonggantt
 go 1.21.0
 
 require (
-	github.com/fullstack-lang/gong v0.0.0-20230924201212-df64e9c25096
-	github.com/fullstack-lang/gongdoc v0.0.0-20230924202435-cb28e3e843c5
-	github.com/fullstack-lang/gongsvg v0.0.0-20230924202533-98a6f709b7b6
-	github.com/fullstack-lang/gongtable v0.0.0-20230924202518-b23f8fdd8863
-	github.com/fullstack-lang/gongtree v0.0.0-20230924202511-bfe7f3abf1aa
+	github.com/fullstack-lang/gong v0.0.0-20231005035438-25a654ab000e
+	github.com/fullstack-lang/gongdoc v0.0.0-20230930153532-6971ca68af6e
+	github.com/fullstack-lang/gongsvg v0.0.0-20230930153534-f017e6e8db37
+	github.com/fullstack-lang/gongtable v0.0.0-20230930153534-5c06a4fe6556
+	github.com/fullstack-lang/gongtree v0.0.0-20230930153534-1cd7b09885d2
 	github.com/fullstack-lang/maticons v0.0.0-20230823061653-70c364fbdd00
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/static v0.0.1
@@ -29,7 +29,7 @@ require (
 	github.com/glebarez/go-sqlite v1.21.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.15.4 // indirect
+	github.com/go-playground/validator/v10 v10.15.5 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
@@ -52,6 +52,7 @@ require (
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/rogpeppe/fastuuid v1.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
+	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06 // indirect
 	github.com/shabbyrobe/xmlwriter v0.0.0-20230525083848-85336ec334fa // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
@@ -67,6 +68,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.24.1 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
-	modernc.org/memory v1.7.1 // indirect
-	modernc.org/sqlite v1.25.0 // indirect
+	modernc.org/memory v1.7.2 // indirect
+	modernc.org/sqlite v1.26.0 // indirect
 )
