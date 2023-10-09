@@ -3,7 +3,7 @@ module github.com/fullstack-lang/gonggantt
 go 1.21.0
 
 require (
-	github.com/fullstack-lang/gong v0.0.0-20231005035438-25a654ab000e
+	github.com/fullstack-lang/gong v0.0.0-20231005164917-4ea23c685e0a
 	github.com/fullstack-lang/gongdoc v0.0.0-20230930153532-6971ca68af6e
 	github.com/fullstack-lang/gongsvg v0.0.0-20230930153534-f017e6e8db37
 	github.com/fullstack-lang/gongtable v0.0.0-20230930153534-5c06a4fe6556
@@ -19,7 +19,7 @@ require (
 )
 
 require (
-	github.com/bytedance/sonic v1.10.1 // indirect
+	github.com/bytedance/sonic v1.10.2 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -59,10 +59,10 @@ require (
 	github.com/xuri/efp v0.0.0-20230802181842-ad255f2331ca // indirect
 	github.com/xuri/nfp v0.0.0-20230919160717-d98342af3f05 // indirect
 	golang.org/x/arch v0.5.0 // indirect
-	golang.org/x/crypto v0.13.0 // indirect
-	golang.org/x/mod v0.12.0 // indirect
-	golang.org/x/net v0.15.0 // indirect
-	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/crypto v0.14.0 // indirect
+	golang.org/x/mod v0.13.0 // indirect
+	golang.org/x/net v0.16.0 // indirect
+	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
