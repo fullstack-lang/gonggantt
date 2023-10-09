@@ -145,6 +145,9 @@ func main() {
 
 		// initial publication
 		ganttSVGMapper.GenerateSvg(gongganttStage, gongsvgStage)
+
+		// to have the probe see the results of the computed duration
+		gongganttStage.Commit()
 	}
 
 	gonggantt_probe.NewProbe(r, gonggantt_go.GoModelsDir, gonggantt_go.GoDiagramsDir,

@@ -6,8 +6,9 @@ type Gantt struct {
 	Name string
 
 	// dates computed from tasks of the gantt
-	ComputedStart time.Time
-	ComputedEnd   time.Time
+	ComputedStart    time.Time
+	ComputedEnd      time.Time
+	ComputedDuration time.Duration
 
 	// start and end dates if manual setup is true
 	UseManualStartAndEndDates bool
@@ -59,6 +60,8 @@ func (gantt *Gantt) ComputeStartAndEndDate() {
 	for _, lane := range gantt.Lanes {
 		for _, bar := range lane.Bars {
 
+			bar.ComputedDuration = bar.End.Sub(bar.Start)
+
 			if firstBar {
 				gantt.ComputedStart = bar.Start
 				gantt.ComputedEnd = bar.End
@@ -79,6 +82,7 @@ func (gantt *Gantt) ComputeStartAndEndDate() {
 		gantt.ComputedStart = gantt.ManualStart
 		gantt.ComputedEnd = gantt.ManualEnd
 	}
+	gantt.ComputedDuration = gantt.ComputedEnd.Sub(gantt.ComputedStart)
 
 	// align start on the beginning of the year
 	if gantt.AlignOnStartEndOnYearStart {

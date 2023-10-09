@@ -1258,9 +1258,9 @@ func GetFields[Type Gongstruct]() (res []string) {
 	case Arrow:
 		res = []string{"Name", "From", "To", "OptionnalColor", "OptionnalStroke"}
 	case Bar:
-		res = []string{"Name", "Start", "End", "OptionnalColor", "OptionnalStroke", "FillOpacity", "StrokeWidth", "StrokeDashArray"}
+		res = []string{"Name", "Start", "End", "ComputedDuration", "OptionnalColor", "OptionnalStroke", "FillOpacity", "StrokeWidth", "StrokeDashArray"}
 	case Gantt:
-		res = []string{"Name", "ComputedStart", "ComputedEnd", "UseManualStartAndEndDates", "ManualStart", "ManualEnd", "LaneHeight", "RatioBarToLaneHeight", "YTopMargin", "XLeftText", "TextHeight", "XLeftLanes", "XRightMargin", "ArrowLengthToTheRightOfStartBar", "ArrowTipLenght", "TimeLine_Color", "TimeLine_FillOpacity", "TimeLine_Stroke", "TimeLine_StrokeWidth", "Group_Stroke", "Group_StrokeWidth", "Group_StrokeDashArray", "DateYOffset", "AlignOnStartEndOnYearStart", "Lanes", "Milestones", "Groups", "Arrows"}
+		res = []string{"Name", "ComputedStart", "ComputedEnd", "ComputedDuration", "UseManualStartAndEndDates", "ManualStart", "ManualEnd", "LaneHeight", "RatioBarToLaneHeight", "YTopMargin", "XLeftText", "TextHeight", "XLeftLanes", "XRightMargin", "ArrowLengthToTheRightOfStartBar", "ArrowTipLenght", "TimeLine_Color", "TimeLine_FillOpacity", "TimeLine_Stroke", "TimeLine_StrokeWidth", "Group_Stroke", "Group_StrokeWidth", "Group_StrokeDashArray", "DateYOffset", "AlignOnStartEndOnYearStart", "Lanes", "Milestones", "Groups", "Arrows"}
 	case Group:
 		res = []string{"Name", "GroupLanes"}
 	case Lane:
@@ -1343,9 +1343,9 @@ func GetFieldsFromPointer[Type PointerToGongstruct]() (res []string) {
 	case *Arrow:
 		res = []string{"Name", "From", "To", "OptionnalColor", "OptionnalStroke"}
 	case *Bar:
-		res = []string{"Name", "Start", "End", "OptionnalColor", "OptionnalStroke", "FillOpacity", "StrokeWidth", "StrokeDashArray"}
+		res = []string{"Name", "Start", "End", "ComputedDuration", "OptionnalColor", "OptionnalStroke", "FillOpacity", "StrokeWidth", "StrokeDashArray"}
 	case *Gantt:
-		res = []string{"Name", "ComputedStart", "ComputedEnd", "UseManualStartAndEndDates", "ManualStart", "ManualEnd", "LaneHeight", "RatioBarToLaneHeight", "YTopMargin", "XLeftText", "TextHeight", "XLeftLanes", "XRightMargin", "ArrowLengthToTheRightOfStartBar", "ArrowTipLenght", "TimeLine_Color", "TimeLine_FillOpacity", "TimeLine_Stroke", "TimeLine_StrokeWidth", "Group_Stroke", "Group_StrokeWidth", "Group_StrokeDashArray", "DateYOffset", "AlignOnStartEndOnYearStart", "Lanes", "Milestones", "Groups", "Arrows"}
+		res = []string{"Name", "ComputedStart", "ComputedEnd", "ComputedDuration", "UseManualStartAndEndDates", "ManualStart", "ManualEnd", "LaneHeight", "RatioBarToLaneHeight", "YTopMargin", "XLeftText", "TextHeight", "XLeftLanes", "XRightMargin", "ArrowLengthToTheRightOfStartBar", "ArrowTipLenght", "TimeLine_Color", "TimeLine_FillOpacity", "TimeLine_Stroke", "TimeLine_StrokeWidth", "Group_Stroke", "Group_StrokeWidth", "Group_StrokeDashArray", "DateYOffset", "AlignOnStartEndOnYearStart", "Lanes", "Milestones", "Groups", "Arrows"}
 	case *Group:
 		res = []string{"Name", "GroupLanes"}
 	case *Lane:
@@ -1389,6 +1389,47 @@ func GetFieldStringValueFromPointer[Type PointerToGongstruct](instance Type, fie
 			res = inferedInstance.Start.String()
 		case "End":
 			res = inferedInstance.End.String()
+		case "ComputedDuration":
+			if math.Abs(inferedInstance.ComputedDuration.Hours()) >= 24 {
+				days := __Gong__Abs(int(int(inferedInstance.ComputedDuration.Hours()) / 24))
+				months := int(days / 31)
+				days = days - months*31
+
+				remainingHours := int(inferedInstance.ComputedDuration.Hours()) % 24
+				remainingMinutes := int(inferedInstance.ComputedDuration.Minutes()) % 60
+				remainingSeconds := int(inferedInstance.ComputedDuration.Seconds()) % 60
+
+				if inferedInstance.ComputedDuration.Hours() < 0 {
+					res = "- "
+				}
+
+				if months > 0 {
+					if months > 1 {
+						res = res + fmt.Sprintf("%d months", months)
+					} else {
+						res = res + fmt.Sprintf("%d month", months)
+					}
+				}
+				if days > 0 {
+					if months != 0 {
+						res = res + ", "
+					}
+					if days > 1 {
+						res = res + fmt.Sprintf("%d days", days)
+					} else {
+						res = res + fmt.Sprintf("%d day", days)
+					}
+
+				}
+				if remainingHours != 0 || remainingMinutes != 0 || remainingSeconds != 0 {
+					if days != 0 || (days == 0 && months != 0) {
+						res = res + ", "
+					}
+					res = res + fmt.Sprintf("%d hours, %d minutes, %d seconds\n", remainingHours, remainingMinutes, remainingSeconds)
+				}
+			} else {
+				res = fmt.Sprintf("%s\n", inferedInstance.ComputedDuration.String())
+			}
 		case "OptionnalColor":
 			res = inferedInstance.OptionnalColor
 		case "OptionnalStroke":
@@ -1409,6 +1450,47 @@ func GetFieldStringValueFromPointer[Type PointerToGongstruct](instance Type, fie
 			res = inferedInstance.ComputedStart.String()
 		case "ComputedEnd":
 			res = inferedInstance.ComputedEnd.String()
+		case "ComputedDuration":
+			if math.Abs(inferedInstance.ComputedDuration.Hours()) >= 24 {
+				days := __Gong__Abs(int(int(inferedInstance.ComputedDuration.Hours()) / 24))
+				months := int(days / 31)
+				days = days - months*31
+
+				remainingHours := int(inferedInstance.ComputedDuration.Hours()) % 24
+				remainingMinutes := int(inferedInstance.ComputedDuration.Minutes()) % 60
+				remainingSeconds := int(inferedInstance.ComputedDuration.Seconds()) % 60
+
+				if inferedInstance.ComputedDuration.Hours() < 0 {
+					res = "- "
+				}
+
+				if months > 0 {
+					if months > 1 {
+						res = res + fmt.Sprintf("%d months", months)
+					} else {
+						res = res + fmt.Sprintf("%d month", months)
+					}
+				}
+				if days > 0 {
+					if months != 0 {
+						res = res + ", "
+					}
+					if days > 1 {
+						res = res + fmt.Sprintf("%d days", days)
+					} else {
+						res = res + fmt.Sprintf("%d day", days)
+					}
+
+				}
+				if remainingHours != 0 || remainingMinutes != 0 || remainingSeconds != 0 {
+					if days != 0 || (days == 0 && months != 0) {
+						res = res + ", "
+					}
+					res = res + fmt.Sprintf("%d hours, %d minutes, %d seconds\n", remainingHours, remainingMinutes, remainingSeconds)
+				}
+			} else {
+				res = fmt.Sprintf("%s\n", inferedInstance.ComputedDuration.String())
+			}
 		case "UseManualStartAndEndDates":
 			res = fmt.Sprintf("%t", inferedInstance.UseManualStartAndEndDates)
 		case "ManualStart":
@@ -1572,6 +1654,47 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 			res = inferedInstance.Start.String()
 		case "End":
 			res = inferedInstance.End.String()
+		case "ComputedDuration":
+			if math.Abs(inferedInstance.ComputedDuration.Hours()) >= 24 {
+				days := __Gong__Abs(int(int(inferedInstance.ComputedDuration.Hours()) / 24))
+				months := int(days / 31)
+				days = days - months*31
+
+				remainingHours := int(inferedInstance.ComputedDuration.Hours()) % 24
+				remainingMinutes := int(inferedInstance.ComputedDuration.Minutes()) % 60
+				remainingSeconds := int(inferedInstance.ComputedDuration.Seconds()) % 60
+
+				if inferedInstance.ComputedDuration.Hours() < 0 {
+					res = "- "
+				}
+
+				if months > 0 {
+					if months > 1 {
+						res = res + fmt.Sprintf("%d months", months)
+					} else {
+						res = res + fmt.Sprintf("%d month", months)
+					}
+				}
+				if days > 0 {
+					if months != 0 {
+						res = res + ", "
+					}
+					if days > 1 {
+						res = res + fmt.Sprintf("%d days", days)
+					} else {
+						res = res + fmt.Sprintf("%d day", days)
+					}
+
+				}
+				if remainingHours != 0 || remainingMinutes != 0 || remainingSeconds != 0 {
+					if days != 0 || (days == 0 && months != 0) {
+						res = res + ", "
+					}
+					res = res + fmt.Sprintf("%d hours, %d minutes, %d seconds\n", remainingHours, remainingMinutes, remainingSeconds)
+				}
+			} else {
+				res = fmt.Sprintf("%s\n", inferedInstance.ComputedDuration.String())
+			}
 		case "OptionnalColor":
 			res = inferedInstance.OptionnalColor
 		case "OptionnalStroke":
@@ -1592,6 +1715,47 @@ func GetFieldStringValue[Type Gongstruct](instance Type, fieldName string) (res 
 			res = inferedInstance.ComputedStart.String()
 		case "ComputedEnd":
 			res = inferedInstance.ComputedEnd.String()
+		case "ComputedDuration":
+			if math.Abs(inferedInstance.ComputedDuration.Hours()) >= 24 {
+				days := __Gong__Abs(int(int(inferedInstance.ComputedDuration.Hours()) / 24))
+				months := int(days / 31)
+				days = days - months*31
+
+				remainingHours := int(inferedInstance.ComputedDuration.Hours()) % 24
+				remainingMinutes := int(inferedInstance.ComputedDuration.Minutes()) % 60
+				remainingSeconds := int(inferedInstance.ComputedDuration.Seconds()) % 60
+
+				if inferedInstance.ComputedDuration.Hours() < 0 {
+					res = "- "
+				}
+
+				if months > 0 {
+					if months > 1 {
+						res = res + fmt.Sprintf("%d months", months)
+					} else {
+						res = res + fmt.Sprintf("%d month", months)
+					}
+				}
+				if days > 0 {
+					if months != 0 {
+						res = res + ", "
+					}
+					if days > 1 {
+						res = res + fmt.Sprintf("%d days", days)
+					} else {
+						res = res + fmt.Sprintf("%d day", days)
+					}
+
+				}
+				if remainingHours != 0 || remainingMinutes != 0 || remainingSeconds != 0 {
+					if days != 0 || (days == 0 && months != 0) {
+						res = res + ", "
+					}
+					res = res + fmt.Sprintf("%d hours, %d minutes, %d seconds\n", remainingHours, remainingMinutes, remainingSeconds)
+				}
+			} else {
+				res = fmt.Sprintf("%s\n", inferedInstance.ComputedDuration.String())
+			}
 		case "UseManualStartAndEndDates":
 			res = fmt.Sprintf("%t", inferedInstance.UseManualStartAndEndDates)
 		case "ManualStart":

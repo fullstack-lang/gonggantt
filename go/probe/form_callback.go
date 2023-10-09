@@ -182,6 +182,8 @@ func (barFormCallback *BarFormCallback) OnSave() {
 		// insertion point per field
 		case "Name":
 			FormDivBasicFieldToField(&(bar_.Name), formDiv)
+		case "ComputedDuration":
+			FormDivBasicFieldToField(&(bar_.ComputedDuration), formDiv)
 		case "OptionnalColor":
 			FormDivBasicFieldToField(&(bar_.OptionnalColor), formDiv)
 		case "OptionnalStroke":
@@ -304,6 +306,8 @@ func (ganttFormCallback *GanttFormCallback) OnSave() {
 		// insertion point per field
 		case "Name":
 			FormDivBasicFieldToField(&(gantt_.Name), formDiv)
+		case "ComputedDuration":
+			FormDivBasicFieldToField(&(gantt_.ComputedDuration), formDiv)
 		case "UseManualStartAndEndDates":
 			FormDivBasicFieldToField(&(gantt_.UseManualStartAndEndDates), formDiv)
 		case "LaneHeight":

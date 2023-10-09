@@ -73,6 +73,9 @@ type BarDB struct {
 	// Declation for basic field barDB.End
 	End_Data sql.NullTime
 
+	// Declation for basic field barDB.ComputedDuration
+	ComputedDuration_Data sql.NullInt64
+
 	// Declation for basic field barDB.OptionnalColor
 	OptionnalColor_Data sql.NullString
 
@@ -114,15 +117,17 @@ type BarWOP struct {
 
 	End time.Time `xlsx:"3"`
 
-	OptionnalColor string `xlsx:"4"`
+	ComputedDuration time.Duration `xlsx:"4"`
 
-	OptionnalStroke string `xlsx:"5"`
+	OptionnalColor string `xlsx:"5"`
 
-	FillOpacity float64 `xlsx:"6"`
+	OptionnalStroke string `xlsx:"6"`
 
-	StrokeWidth float64 `xlsx:"7"`
+	FillOpacity float64 `xlsx:"7"`
 
-	StrokeDashArray string `xlsx:"8"`
+	StrokeWidth float64 `xlsx:"8"`
+
+	StrokeDashArray string `xlsx:"9"`
 	// insertion for WOP pointer fields
 }
 
@@ -132,6 +137,7 @@ var Bar_Fields = []string{
 	"Name",
 	"Start",
 	"End",
+	"ComputedDuration",
 	"OptionnalColor",
 	"OptionnalStroke",
 	"FillOpacity",
@@ -406,6 +412,9 @@ func (barDB *BarDB) CopyBasicFieldsFromBar(bar *models.Bar) {
 	barDB.End_Data.Time = bar.End
 	barDB.End_Data.Valid = true
 
+	barDB.ComputedDuration_Data.Int64 = int64(bar.ComputedDuration)
+	barDB.ComputedDuration_Data.Valid = true
+
 	barDB.OptionnalColor_Data.String = bar.OptionnalColor
 	barDB.OptionnalColor_Data.Valid = true
 
@@ -435,6 +444,9 @@ func (barDB *BarDB) CopyBasicFieldsFromBarWOP(bar *BarWOP) {
 	barDB.End_Data.Time = bar.End
 	barDB.End_Data.Valid = true
 
+	barDB.ComputedDuration_Data.Int64 = int64(bar.ComputedDuration)
+	barDB.ComputedDuration_Data.Valid = true
+
 	barDB.OptionnalColor_Data.String = bar.OptionnalColor
 	barDB.OptionnalColor_Data.Valid = true
 
@@ -457,6 +469,7 @@ func (barDB *BarDB) CopyBasicFieldsToBar(bar *models.Bar) {
 	bar.Name = barDB.Name_Data.String
 	bar.Start = barDB.Start_Data.Time
 	bar.End = barDB.End_Data.Time
+	bar.ComputedDuration = time.Duration(barDB.ComputedDuration_Data.Int64)
 	bar.OptionnalColor = barDB.OptionnalColor_Data.String
 	bar.OptionnalStroke = barDB.OptionnalStroke_Data.String
 	bar.FillOpacity = barDB.FillOpacity_Data.Float64
@@ -471,6 +484,7 @@ func (barDB *BarDB) CopyBasicFieldsToBarWOP(bar *BarWOP) {
 	bar.Name = barDB.Name_Data.String
 	bar.Start = barDB.Start_Data.Time
 	bar.End = barDB.End_Data.Time
+	bar.ComputedDuration = time.Duration(barDB.ComputedDuration_Data.Int64)
 	bar.OptionnalColor = barDB.OptionnalColor_Data.String
 	bar.OptionnalStroke = barDB.OptionnalStroke_Data.String
 	bar.FillOpacity = barDB.FillOpacity_Data.Float64

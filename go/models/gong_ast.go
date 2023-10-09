@@ -770,6 +770,13 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 					// remove first and last char
 					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
 					__gong__map_Bar[identifier].Name = fielValue
+				case "ComputedDuration":
+					// convert string to duration
+					fielValue, err := strconv.ParseInt(basicLit.Value, 10, 64)
+					if err != nil {
+						log.Fatalln(err)
+					}
+					__gong__map_Bar[identifier].ComputedDuration = time.Duration(int(exprSign) * int(fielValue))
 				case "OptionnalColor":
 					// remove first and last char
 					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
@@ -804,6 +811,13 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 					// remove first and last char
 					fielValue := basicLit.Value[1 : len(basicLit.Value)-1]
 					__gong__map_Gantt[identifier].Name = fielValue
+				case "ComputedDuration":
+					// convert string to duration
+					fielValue, err := strconv.ParseInt(basicLit.Value, 10, 64)
+					if err != nil {
+						log.Fatalln(err)
+					}
+					__gong__map_Gantt[identifier].ComputedDuration = time.Duration(int(exprSign) * int(fielValue))
 				case "LaneHeight":
 					// convert string to float64
 					fielValue, err := strconv.ParseFloat(basicLit.Value, 64)
