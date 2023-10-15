@@ -91,8 +91,8 @@ func (controller *Controller) GetArrows(c *gin.Context) {
 
 		// insertion point for updating fields
 		arrowAPI.ID = arrowDB.ID
-		arrowDB.CopyBasicFieldsToArrow(&arrowAPI.Arrow)
-		arrowAPI.ArrowPointersEnconding = arrowDB.ArrowPointersEnconding
+		arrowDB.CopyBasicFieldsToArrow_WOP(&arrowAPI.Arrow_WOP)
+		arrowAPI.ArrowPointersEncoding = arrowDB.ArrowPointersEncoding
 		arrowAPIs = append(arrowAPIs, arrowAPI)
 	}
 
@@ -147,8 +147,8 @@ func (controller *Controller) PostArrow(c *gin.Context) {
 
 	// Create arrow
 	arrowDB := orm.ArrowDB{}
-	arrowDB.ArrowPointersEnconding = input.ArrowPointersEnconding
-	arrowDB.CopyBasicFieldsFromArrow(&input.Arrow)
+	arrowDB.ArrowPointersEncoding = input.ArrowPointersEncoding
+	arrowDB.CopyBasicFieldsFromArrow_WOP(&input.Arrow_WOP)
 
 	query := db.Create(&arrowDB)
 	if query.Error != nil {
@@ -217,8 +217,8 @@ func (controller *Controller) GetArrow(c *gin.Context) {
 
 	var arrowAPI orm.ArrowAPI
 	arrowAPI.ID = arrowDB.ID
-	arrowAPI.ArrowPointersEnconding = arrowDB.ArrowPointersEnconding
-	arrowDB.CopyBasicFieldsToArrow(&arrowAPI.Arrow)
+	arrowAPI.ArrowPointersEncoding = arrowDB.ArrowPointersEncoding
+	arrowDB.CopyBasicFieldsToArrow_WOP(&arrowAPI.Arrow_WOP)
 
 	c.JSON(http.StatusOK, arrowAPI)
 }
@@ -276,8 +276,8 @@ func (controller *Controller) UpdateArrow(c *gin.Context) {
 	}
 
 	// update
-	arrowDB.CopyBasicFieldsFromArrow(&input.Arrow)
-	arrowDB.ArrowPointersEnconding = input.ArrowPointersEnconding
+	arrowDB.CopyBasicFieldsFromArrow_WOP(&input.Arrow_WOP)
+	arrowDB.ArrowPointersEncoding = input.ArrowPointersEncoding
 
 	query = db.Model(&arrowDB).Updates(arrowDB)
 	if query.Error != nil {

@@ -91,8 +91,8 @@ func (controller *Controller) GetLaneUses(c *gin.Context) {
 
 		// insertion point for updating fields
 		laneuseAPI.ID = laneuseDB.ID
-		laneuseDB.CopyBasicFieldsToLaneUse(&laneuseAPI.LaneUse)
-		laneuseAPI.LaneUsePointersEnconding = laneuseDB.LaneUsePointersEnconding
+		laneuseDB.CopyBasicFieldsToLaneUse_WOP(&laneuseAPI.LaneUse_WOP)
+		laneuseAPI.LaneUsePointersEncoding = laneuseDB.LaneUsePointersEncoding
 		laneuseAPIs = append(laneuseAPIs, laneuseAPI)
 	}
 
@@ -147,8 +147,8 @@ func (controller *Controller) PostLaneUse(c *gin.Context) {
 
 	// Create laneuse
 	laneuseDB := orm.LaneUseDB{}
-	laneuseDB.LaneUsePointersEnconding = input.LaneUsePointersEnconding
-	laneuseDB.CopyBasicFieldsFromLaneUse(&input.LaneUse)
+	laneuseDB.LaneUsePointersEncoding = input.LaneUsePointersEncoding
+	laneuseDB.CopyBasicFieldsFromLaneUse_WOP(&input.LaneUse_WOP)
 
 	query := db.Create(&laneuseDB)
 	if query.Error != nil {
@@ -217,8 +217,8 @@ func (controller *Controller) GetLaneUse(c *gin.Context) {
 
 	var laneuseAPI orm.LaneUseAPI
 	laneuseAPI.ID = laneuseDB.ID
-	laneuseAPI.LaneUsePointersEnconding = laneuseDB.LaneUsePointersEnconding
-	laneuseDB.CopyBasicFieldsToLaneUse(&laneuseAPI.LaneUse)
+	laneuseAPI.LaneUsePointersEncoding = laneuseDB.LaneUsePointersEncoding
+	laneuseDB.CopyBasicFieldsToLaneUse_WOP(&laneuseAPI.LaneUse_WOP)
 
 	c.JSON(http.StatusOK, laneuseAPI)
 }
@@ -276,8 +276,8 @@ func (controller *Controller) UpdateLaneUse(c *gin.Context) {
 	}
 
 	// update
-	laneuseDB.CopyBasicFieldsFromLaneUse(&input.LaneUse)
-	laneuseDB.LaneUsePointersEnconding = input.LaneUsePointersEnconding
+	laneuseDB.CopyBasicFieldsFromLaneUse_WOP(&input.LaneUse_WOP)
+	laneuseDB.LaneUsePointersEncoding = input.LaneUsePointersEncoding
 
 	query = db.Model(&laneuseDB).Updates(laneuseDB)
 	if query.Error != nil {

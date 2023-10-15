@@ -91,8 +91,8 @@ func (controller *Controller) GetLanes(c *gin.Context) {
 
 		// insertion point for updating fields
 		laneAPI.ID = laneDB.ID
-		laneDB.CopyBasicFieldsToLane(&laneAPI.Lane)
-		laneAPI.LanePointersEnconding = laneDB.LanePointersEnconding
+		laneDB.CopyBasicFieldsToLane_WOP(&laneAPI.Lane_WOP)
+		laneAPI.LanePointersEncoding = laneDB.LanePointersEncoding
 		laneAPIs = append(laneAPIs, laneAPI)
 	}
 
@@ -147,8 +147,8 @@ func (controller *Controller) PostLane(c *gin.Context) {
 
 	// Create lane
 	laneDB := orm.LaneDB{}
-	laneDB.LanePointersEnconding = input.LanePointersEnconding
-	laneDB.CopyBasicFieldsFromLane(&input.Lane)
+	laneDB.LanePointersEncoding = input.LanePointersEncoding
+	laneDB.CopyBasicFieldsFromLane_WOP(&input.Lane_WOP)
 
 	query := db.Create(&laneDB)
 	if query.Error != nil {
@@ -217,8 +217,8 @@ func (controller *Controller) GetLane(c *gin.Context) {
 
 	var laneAPI orm.LaneAPI
 	laneAPI.ID = laneDB.ID
-	laneAPI.LanePointersEnconding = laneDB.LanePointersEnconding
-	laneDB.CopyBasicFieldsToLane(&laneAPI.Lane)
+	laneAPI.LanePointersEncoding = laneDB.LanePointersEncoding
+	laneDB.CopyBasicFieldsToLane_WOP(&laneAPI.Lane_WOP)
 
 	c.JSON(http.StatusOK, laneAPI)
 }
@@ -276,8 +276,8 @@ func (controller *Controller) UpdateLane(c *gin.Context) {
 	}
 
 	// update
-	laneDB.CopyBasicFieldsFromLane(&input.Lane)
-	laneDB.LanePointersEnconding = input.LanePointersEnconding
+	laneDB.CopyBasicFieldsFromLane_WOP(&input.Lane_WOP)
+	laneDB.LanePointersEncoding = input.LanePointersEncoding
 
 	query = db.Model(&laneDB).Updates(laneDB)
 	if query.Error != nil {

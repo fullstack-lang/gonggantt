@@ -35,16 +35,19 @@ var dummy_Lane_sort sort.Float64Slice
 type LaneAPI struct {
 	gorm.Model
 
-	models.Lane
+	models.Lane_WOP
 
 	// encoding of pointers
-	LanePointersEnconding
+	LanePointersEncoding
 }
 
-// LanePointersEnconding encodes pointers to Struct and
+// LanePointersEncoding encodes pointers to Struct and
 // reverse pointers of slice of poitners to Struct
-type LanePointersEnconding struct {
+type LanePointersEncoding struct {
 	// insertion for pointer fields encoding declaration
+
+	// field Bars is a slice of pointers to another Struct (optional or 0..1)
+	Bars IntSlice`gorm:"type:TEXT"`
 
 	// Implementation of a reverse ID for field Gantt{}.Lanes []*Lane
 	Gantt_LanesDBID sql.NullInt64
@@ -76,7 +79,7 @@ type LaneDB struct {
 	// Declation for basic field laneDB.Order
 	Order_Data sql.NullInt64
 	// encoding of pointers
-	LanePointersEnconding
+	LanePointersEncoding
 }
 
 // LaneDBs arrays laneDBs
@@ -168,7 +171,7 @@ func (backRepoLane *BackRepoLaneStruct) CommitDeleteInstance(id uint) (Error err
 	laneDB := backRepoLane.Map_LaneDBID_LaneDB[id]
 	query := backRepoLane.db.Unscoped().Delete(&laneDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -194,7 +197,7 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseOneInstance(lane *models.Lane
 
 	query := backRepoLane.db.Create(&laneDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -245,9 +248,19 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 			}
 		}
 
+		// 1. reset
+		laneDB.LanePointersEncoding.Bars = make([]int, 0)
+		// 2. encode
+		for _, barAssocEnd := range lane.Bars {
+			barAssocEnd_DB :=
+				backRepo.BackRepoBar.GetBarDBFromBarPtr(barAssocEnd)
+			laneDB.LanePointersEncoding.Bars =
+				append(laneDB.LanePointersEncoding.Bars, int(barAssocEnd_DB.ID))
+		}
+
 		query := backRepoLane.db.Save(&laneDB)
 		if query.Error != nil {
-			return query.Error
+			log.Fatalln(query.Error)
 		}
 
 	} else {
@@ -401,7 +414,7 @@ func (backRepo *BackRepoStruct) CheckoutLane(lane *models.Lane) {
 			laneDB.ID = id
 
 			if err := backRepo.BackRepoLane.db.First(&laneDB, id).Error; err != nil {
-				log.Panicln("CheckoutLane : Problem with getting object with id:", id)
+				log.Fatalln("CheckoutLane : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoLane.CheckoutPhaseOneInstance(&laneDB)
 			backRepo.BackRepoLane.CheckoutPhaseTwoInstance(backRepo, &laneDB)
@@ -411,6 +424,17 @@ func (backRepo *BackRepoStruct) CheckoutLane(lane *models.Lane) {
 
 // CopyBasicFieldsFromLane
 func (laneDB *LaneDB) CopyBasicFieldsFromLane(lane *models.Lane) {
+	// insertion point for fields commit
+
+	laneDB.Name_Data.String = lane.Name
+	laneDB.Name_Data.Valid = true
+
+	laneDB.Order_Data.Int64 = int64(lane.Order)
+	laneDB.Order_Data.Valid = true
+}
+
+// CopyBasicFieldsFromLane_WOP
+func (laneDB *LaneDB) CopyBasicFieldsFromLane_WOP(lane *models.Lane_WOP) {
 	// insertion point for fields commit
 
 	laneDB.Name_Data.String = lane.Name
@@ -433,6 +457,13 @@ func (laneDB *LaneDB) CopyBasicFieldsFromLaneWOP(lane *LaneWOP) {
 
 // CopyBasicFieldsToLane
 func (laneDB *LaneDB) CopyBasicFieldsToLane(lane *models.Lane) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	lane.Name = laneDB.Name_Data.String
+	lane.Order = int(laneDB.Order_Data.Int64)
+}
+
+// CopyBasicFieldsToLane_WOP
+func (laneDB *LaneDB) CopyBasicFieldsToLane_WOP(lane *models.Lane_WOP) {
 	// insertion point for checkout of basic fields (back repo to stage)
 	lane.Name = laneDB.Name_Data.String
 	lane.Order = int(laneDB.Order_Data.Int64)
@@ -465,12 +496,12 @@ func (backRepoLane *BackRepoLaneStruct) Backup(dirPath string) {
 	file, err := json.MarshalIndent(forBackup, "", " ")
 
 	if err != nil {
-		log.Panic("Cannot json Lane ", filename, " ", err.Error())
+		log.Fatal("Cannot json Lane ", filename, " ", err.Error())
 	}
 
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
-		log.Panic("Cannot write the json Lane file", err.Error())
+		log.Fatal("Cannot write the json Lane file", err.Error())
 	}
 }
 
@@ -490,7 +521,7 @@ func (backRepoLane *BackRepoLaneStruct) BackupXL(file *xlsx.File) {
 
 	sh, err := file.AddSheet("Lane")
 	if err != nil {
-		log.Panic("Cannot add XL file", err.Error())
+		log.Fatal("Cannot add XL file", err.Error())
 	}
 	_ = sh
 
@@ -515,13 +546,13 @@ func (backRepoLane *BackRepoLaneStruct) RestoreXLPhaseOne(file *xlsx.File) {
 	sh, ok := file.Sheet["Lane"]
 	_ = sh
 	if !ok {
-		log.Panic(errors.New("sheet not found"))
+		log.Fatal(errors.New("sheet not found"))
 	}
 
 	// log.Println("Max row is", sh.MaxRow)
 	err := sh.ForEachRow(backRepoLane.rowVisitorLane)
 	if err != nil {
-		log.Panic("Err=", err)
+		log.Fatal("Err=", err)
 	}
 }
 
@@ -543,7 +574,7 @@ func (backRepoLane *BackRepoLaneStruct) rowVisitorLane(row *xlsx.Row) error {
 		laneDB.ID = 0
 		query := backRepoLane.db.Create(laneDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoLane.Map_LaneDBID_LaneDB[laneDB.ID] = laneDB
 		BackRepoLaneid_atBckpTime_newID[laneDB_ID_atBackupTime] = laneDB.ID
@@ -563,7 +594,7 @@ func (backRepoLane *BackRepoLaneStruct) RestorePhaseOne(dirPath string) {
 	jsonFile, err := os.Open(filename)
 	// if we os.Open returns an error then handle it
 	if err != nil {
-		log.Panic("Cannot restore/open the json Lane file", filename, " ", err.Error())
+		log.Fatal("Cannot restore/open the json Lane file", filename, " ", err.Error())
 	}
 
 	// read our opened jsonFile as a byte array.
@@ -580,14 +611,14 @@ func (backRepoLane *BackRepoLaneStruct) RestorePhaseOne(dirPath string) {
 		laneDB.ID = 0
 		query := backRepoLane.db.Create(laneDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoLane.Map_LaneDBID_LaneDB[laneDB.ID] = laneDB
 		BackRepoLaneid_atBckpTime_newID[laneDB_ID_atBackupTime] = laneDB.ID
 	}
 
 	if err != nil {
-		log.Panic("Cannot restore/unmarshall json Lane file", err.Error())
+		log.Fatal("Cannot restore/unmarshall json Lane file", err.Error())
 	}
 }
 
@@ -616,7 +647,7 @@ func (backRepoLane *BackRepoLaneStruct) RestorePhaseTwo() {
 		// update databse with new index encoding
 		query := backRepoLane.db.Model(laneDB).Updates(*laneDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 	}
 

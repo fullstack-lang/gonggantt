@@ -91,8 +91,8 @@ func (controller *Controller) GetMilestones(c *gin.Context) {
 
 		// insertion point for updating fields
 		milestoneAPI.ID = milestoneDB.ID
-		milestoneDB.CopyBasicFieldsToMilestone(&milestoneAPI.Milestone)
-		milestoneAPI.MilestonePointersEnconding = milestoneDB.MilestonePointersEnconding
+		milestoneDB.CopyBasicFieldsToMilestone_WOP(&milestoneAPI.Milestone_WOP)
+		milestoneAPI.MilestonePointersEncoding = milestoneDB.MilestonePointersEncoding
 		milestoneAPIs = append(milestoneAPIs, milestoneAPI)
 	}
 
@@ -147,8 +147,8 @@ func (controller *Controller) PostMilestone(c *gin.Context) {
 
 	// Create milestone
 	milestoneDB := orm.MilestoneDB{}
-	milestoneDB.MilestonePointersEnconding = input.MilestonePointersEnconding
-	milestoneDB.CopyBasicFieldsFromMilestone(&input.Milestone)
+	milestoneDB.MilestonePointersEncoding = input.MilestonePointersEncoding
+	milestoneDB.CopyBasicFieldsFromMilestone_WOP(&input.Milestone_WOP)
 
 	query := db.Create(&milestoneDB)
 	if query.Error != nil {
@@ -217,8 +217,8 @@ func (controller *Controller) GetMilestone(c *gin.Context) {
 
 	var milestoneAPI orm.MilestoneAPI
 	milestoneAPI.ID = milestoneDB.ID
-	milestoneAPI.MilestonePointersEnconding = milestoneDB.MilestonePointersEnconding
-	milestoneDB.CopyBasicFieldsToMilestone(&milestoneAPI.Milestone)
+	milestoneAPI.MilestonePointersEncoding = milestoneDB.MilestonePointersEncoding
+	milestoneDB.CopyBasicFieldsToMilestone_WOP(&milestoneAPI.Milestone_WOP)
 
 	c.JSON(http.StatusOK, milestoneAPI)
 }
@@ -276,8 +276,8 @@ func (controller *Controller) UpdateMilestone(c *gin.Context) {
 	}
 
 	// update
-	milestoneDB.CopyBasicFieldsFromMilestone(&input.Milestone)
-	milestoneDB.MilestonePointersEnconding = input.MilestonePointersEnconding
+	milestoneDB.CopyBasicFieldsFromMilestone_WOP(&input.Milestone_WOP)
+	milestoneDB.MilestonePointersEncoding = input.MilestonePointersEncoding
 
 	query = db.Model(&milestoneDB).Updates(milestoneDB)
 	if query.Error != nil {

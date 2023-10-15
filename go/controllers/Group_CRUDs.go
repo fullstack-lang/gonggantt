@@ -91,8 +91,8 @@ func (controller *Controller) GetGroups(c *gin.Context) {
 
 		// insertion point for updating fields
 		groupAPI.ID = groupDB.ID
-		groupDB.CopyBasicFieldsToGroup(&groupAPI.Group)
-		groupAPI.GroupPointersEnconding = groupDB.GroupPointersEnconding
+		groupDB.CopyBasicFieldsToGroup_WOP(&groupAPI.Group_WOP)
+		groupAPI.GroupPointersEncoding = groupDB.GroupPointersEncoding
 		groupAPIs = append(groupAPIs, groupAPI)
 	}
 
@@ -147,8 +147,8 @@ func (controller *Controller) PostGroup(c *gin.Context) {
 
 	// Create group
 	groupDB := orm.GroupDB{}
-	groupDB.GroupPointersEnconding = input.GroupPointersEnconding
-	groupDB.CopyBasicFieldsFromGroup(&input.Group)
+	groupDB.GroupPointersEncoding = input.GroupPointersEncoding
+	groupDB.CopyBasicFieldsFromGroup_WOP(&input.Group_WOP)
 
 	query := db.Create(&groupDB)
 	if query.Error != nil {
@@ -217,8 +217,8 @@ func (controller *Controller) GetGroup(c *gin.Context) {
 
 	var groupAPI orm.GroupAPI
 	groupAPI.ID = groupDB.ID
-	groupAPI.GroupPointersEnconding = groupDB.GroupPointersEnconding
-	groupDB.CopyBasicFieldsToGroup(&groupAPI.Group)
+	groupAPI.GroupPointersEncoding = groupDB.GroupPointersEncoding
+	groupDB.CopyBasicFieldsToGroup_WOP(&groupAPI.Group_WOP)
 
 	c.JSON(http.StatusOK, groupAPI)
 }
@@ -276,8 +276,8 @@ func (controller *Controller) UpdateGroup(c *gin.Context) {
 	}
 
 	// update
-	groupDB.CopyBasicFieldsFromGroup(&input.Group)
-	groupDB.GroupPointersEnconding = input.GroupPointersEnconding
+	groupDB.CopyBasicFieldsFromGroup_WOP(&input.Group_WOP)
+	groupDB.GroupPointersEncoding = input.GroupPointersEncoding
 
 	query = db.Model(&groupDB).Updates(groupDB)
 	if query.Error != nil {

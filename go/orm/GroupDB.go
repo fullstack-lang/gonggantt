@@ -35,16 +35,19 @@ var dummy_Group_sort sort.Float64Slice
 type GroupAPI struct {
 	gorm.Model
 
-	models.Group
+	models.Group_WOP
 
 	// encoding of pointers
-	GroupPointersEnconding
+	GroupPointersEncoding
 }
 
-// GroupPointersEnconding encodes pointers to Struct and
+// GroupPointersEncoding encodes pointers to Struct and
 // reverse pointers of slice of poitners to Struct
-type GroupPointersEnconding struct {
+type GroupPointersEncoding struct {
 	// insertion for pointer fields encoding declaration
+
+	// field GroupLanes is a slice of pointers to another Struct (optional or 0..1)
+	GroupLanes IntSlice`gorm:"type:TEXT"`
 
 	// Implementation of a reverse ID for field Gantt{}.Groups []*Group
 	Gantt_GroupsDBID sql.NullInt64
@@ -67,7 +70,7 @@ type GroupDB struct {
 	// Declation for basic field groupDB.Name
 	Name_Data sql.NullString
 	// encoding of pointers
-	GroupPointersEnconding
+	GroupPointersEncoding
 }
 
 // GroupDBs arrays groupDBs
@@ -156,7 +159,7 @@ func (backRepoGroup *BackRepoGroupStruct) CommitDeleteInstance(id uint) (Error e
 	groupDB := backRepoGroup.Map_GroupDBID_GroupDB[id]
 	query := backRepoGroup.db.Unscoped().Delete(&groupDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -182,7 +185,7 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseOneInstance(group *models.G
 
 	query := backRepoGroup.db.Create(&groupDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -233,9 +236,19 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwoInstance(backRepo *BackR
 			}
 		}
 
+		// 1. reset
+		groupDB.GroupPointersEncoding.GroupLanes = make([]int, 0)
+		// 2. encode
+		for _, laneAssocEnd := range group.GroupLanes {
+			laneAssocEnd_DB :=
+				backRepo.BackRepoLane.GetLaneDBFromLanePtr(laneAssocEnd)
+			groupDB.GroupPointersEncoding.GroupLanes =
+				append(groupDB.GroupPointersEncoding.GroupLanes, int(laneAssocEnd_DB.ID))
+		}
+
 		query := backRepoGroup.db.Save(&groupDB)
 		if query.Error != nil {
-			return query.Error
+			log.Fatalln(query.Error)
 		}
 
 	} else {
@@ -389,7 +402,7 @@ func (backRepo *BackRepoStruct) CheckoutGroup(group *models.Group) {
 			groupDB.ID = id
 
 			if err := backRepo.BackRepoGroup.db.First(&groupDB, id).Error; err != nil {
-				log.Panicln("CheckoutGroup : Problem with getting object with id:", id)
+				log.Fatalln("CheckoutGroup : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoGroup.CheckoutPhaseOneInstance(&groupDB)
 			backRepo.BackRepoGroup.CheckoutPhaseTwoInstance(backRepo, &groupDB)
@@ -399,6 +412,14 @@ func (backRepo *BackRepoStruct) CheckoutGroup(group *models.Group) {
 
 // CopyBasicFieldsFromGroup
 func (groupDB *GroupDB) CopyBasicFieldsFromGroup(group *models.Group) {
+	// insertion point for fields commit
+
+	groupDB.Name_Data.String = group.Name
+	groupDB.Name_Data.Valid = true
+}
+
+// CopyBasicFieldsFromGroup_WOP
+func (groupDB *GroupDB) CopyBasicFieldsFromGroup_WOP(group *models.Group_WOP) {
 	// insertion point for fields commit
 
 	groupDB.Name_Data.String = group.Name
@@ -415,6 +436,12 @@ func (groupDB *GroupDB) CopyBasicFieldsFromGroupWOP(group *GroupWOP) {
 
 // CopyBasicFieldsToGroup
 func (groupDB *GroupDB) CopyBasicFieldsToGroup(group *models.Group) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	group.Name = groupDB.Name_Data.String
+}
+
+// CopyBasicFieldsToGroup_WOP
+func (groupDB *GroupDB) CopyBasicFieldsToGroup_WOP(group *models.Group_WOP) {
 	// insertion point for checkout of basic fields (back repo to stage)
 	group.Name = groupDB.Name_Data.String
 }
@@ -445,12 +472,12 @@ func (backRepoGroup *BackRepoGroupStruct) Backup(dirPath string) {
 	file, err := json.MarshalIndent(forBackup, "", " ")
 
 	if err != nil {
-		log.Panic("Cannot json Group ", filename, " ", err.Error())
+		log.Fatal("Cannot json Group ", filename, " ", err.Error())
 	}
 
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
-		log.Panic("Cannot write the json Group file", err.Error())
+		log.Fatal("Cannot write the json Group file", err.Error())
 	}
 }
 
@@ -470,7 +497,7 @@ func (backRepoGroup *BackRepoGroupStruct) BackupXL(file *xlsx.File) {
 
 	sh, err := file.AddSheet("Group")
 	if err != nil {
-		log.Panic("Cannot add XL file", err.Error())
+		log.Fatal("Cannot add XL file", err.Error())
 	}
 	_ = sh
 
@@ -495,13 +522,13 @@ func (backRepoGroup *BackRepoGroupStruct) RestoreXLPhaseOne(file *xlsx.File) {
 	sh, ok := file.Sheet["Group"]
 	_ = sh
 	if !ok {
-		log.Panic(errors.New("sheet not found"))
+		log.Fatal(errors.New("sheet not found"))
 	}
 
 	// log.Println("Max row is", sh.MaxRow)
 	err := sh.ForEachRow(backRepoGroup.rowVisitorGroup)
 	if err != nil {
-		log.Panic("Err=", err)
+		log.Fatal("Err=", err)
 	}
 }
 
@@ -523,7 +550,7 @@ func (backRepoGroup *BackRepoGroupStruct) rowVisitorGroup(row *xlsx.Row) error {
 		groupDB.ID = 0
 		query := backRepoGroup.db.Create(groupDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoGroup.Map_GroupDBID_GroupDB[groupDB.ID] = groupDB
 		BackRepoGroupid_atBckpTime_newID[groupDB_ID_atBackupTime] = groupDB.ID
@@ -543,7 +570,7 @@ func (backRepoGroup *BackRepoGroupStruct) RestorePhaseOne(dirPath string) {
 	jsonFile, err := os.Open(filename)
 	// if we os.Open returns an error then handle it
 	if err != nil {
-		log.Panic("Cannot restore/open the json Group file", filename, " ", err.Error())
+		log.Fatal("Cannot restore/open the json Group file", filename, " ", err.Error())
 	}
 
 	// read our opened jsonFile as a byte array.
@@ -560,14 +587,14 @@ func (backRepoGroup *BackRepoGroupStruct) RestorePhaseOne(dirPath string) {
 		groupDB.ID = 0
 		query := backRepoGroup.db.Create(groupDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoGroup.Map_GroupDBID_GroupDB[groupDB.ID] = groupDB
 		BackRepoGroupid_atBckpTime_newID[groupDB_ID_atBackupTime] = groupDB.ID
 	}
 
 	if err != nil {
-		log.Panic("Cannot restore/unmarshall json Group file", err.Error())
+		log.Fatal("Cannot restore/unmarshall json Group file", err.Error())
 	}
 }
 
@@ -590,7 +617,7 @@ func (backRepoGroup *BackRepoGroupStruct) RestorePhaseTwo() {
 		// update databse with new index encoding
 		query := backRepoGroup.db.Model(groupDB).Updates(*groupDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 	}
 

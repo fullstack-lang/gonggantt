@@ -35,16 +35,28 @@ var dummy_Gantt_sort sort.Float64Slice
 type GanttAPI struct {
 	gorm.Model
 
-	models.Gantt
+	models.Gantt_WOP
 
 	// encoding of pointers
-	GanttPointersEnconding
+	GanttPointersEncoding
 }
 
-// GanttPointersEnconding encodes pointers to Struct and
+// GanttPointersEncoding encodes pointers to Struct and
 // reverse pointers of slice of poitners to Struct
-type GanttPointersEnconding struct {
+type GanttPointersEncoding struct {
 	// insertion for pointer fields encoding declaration
+
+	// field Lanes is a slice of pointers to another Struct (optional or 0..1)
+	Lanes IntSlice`gorm:"type:TEXT"`
+
+	// field Milestones is a slice of pointers to another Struct (optional or 0..1)
+	Milestones IntSlice`gorm:"type:TEXT"`
+
+	// field Groups is a slice of pointers to another Struct (optional or 0..1)
+	Groups IntSlice`gorm:"type:TEXT"`
+
+	// field Arrows is a slice of pointers to another Struct (optional or 0..1)
+	Arrows IntSlice`gorm:"type:TEXT"`
 }
 
 // GanttDB describes a gantt in the database
@@ -135,7 +147,7 @@ type GanttDB struct {
 	// provide the sql storage for the boolan
 	AlignOnStartEndOnYearStart_Data sql.NullBool
 	// encoding of pointers
-	GanttPointersEnconding
+	GanttPointersEncoding
 }
 
 // GanttDBs arrays ganttDBs
@@ -296,7 +308,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitDeleteInstance(id uint) (Error e
 	ganttDB := backRepoGantt.Map_GanttDBID_GanttDB[id]
 	query := backRepoGantt.db.Unscoped().Delete(&ganttDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -322,7 +334,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseOneInstance(gantt *models.G
 
 	query := backRepoGantt.db.Create(&ganttDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -373,6 +385,16 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 			}
 		}
 
+		// 1. reset
+		ganttDB.GanttPointersEncoding.Lanes = make([]int, 0)
+		// 2. encode
+		for _, laneAssocEnd := range gantt.Lanes {
+			laneAssocEnd_DB :=
+				backRepo.BackRepoLane.GetLaneDBFromLanePtr(laneAssocEnd)
+			ganttDB.GanttPointersEncoding.Lanes =
+				append(ganttDB.GanttPointersEncoding.Lanes, int(laneAssocEnd_DB.ID))
+		}
+
 		// This loop encodes the slice of pointers gantt.Milestones into the back repo.
 		// Each back repo instance at the end of the association encode the ID of the association start
 		// into a dedicated field for coding the association. The back repo instance is then saved to the db
@@ -390,6 +412,16 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 			if q := backRepoGantt.db.Save(milestoneAssocEnd_DB); q.Error != nil {
 				return q.Error
 			}
+		}
+
+		// 1. reset
+		ganttDB.GanttPointersEncoding.Milestones = make([]int, 0)
+		// 2. encode
+		for _, milestoneAssocEnd := range gantt.Milestones {
+			milestoneAssocEnd_DB :=
+				backRepo.BackRepoMilestone.GetMilestoneDBFromMilestonePtr(milestoneAssocEnd)
+			ganttDB.GanttPointersEncoding.Milestones =
+				append(ganttDB.GanttPointersEncoding.Milestones, int(milestoneAssocEnd_DB.ID))
 		}
 
 		// This loop encodes the slice of pointers gantt.Groups into the back repo.
@@ -411,6 +443,16 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 			}
 		}
 
+		// 1. reset
+		ganttDB.GanttPointersEncoding.Groups = make([]int, 0)
+		// 2. encode
+		for _, groupAssocEnd := range gantt.Groups {
+			groupAssocEnd_DB :=
+				backRepo.BackRepoGroup.GetGroupDBFromGroupPtr(groupAssocEnd)
+			ganttDB.GanttPointersEncoding.Groups =
+				append(ganttDB.GanttPointersEncoding.Groups, int(groupAssocEnd_DB.ID))
+		}
+
 		// This loop encodes the slice of pointers gantt.Arrows into the back repo.
 		// Each back repo instance at the end of the association encode the ID of the association start
 		// into a dedicated field for coding the association. The back repo instance is then saved to the db
@@ -430,9 +472,19 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 			}
 		}
 
+		// 1. reset
+		ganttDB.GanttPointersEncoding.Arrows = make([]int, 0)
+		// 2. encode
+		for _, arrowAssocEnd := range gantt.Arrows {
+			arrowAssocEnd_DB :=
+				backRepo.BackRepoArrow.GetArrowDBFromArrowPtr(arrowAssocEnd)
+			ganttDB.GanttPointersEncoding.Arrows =
+				append(ganttDB.GanttPointersEncoding.Arrows, int(arrowAssocEnd_DB.ID))
+		}
+
 		query := backRepoGantt.db.Save(&ganttDB)
 		if query.Error != nil {
-			return query.Error
+			log.Fatalln(query.Error)
 		}
 
 	} else {
@@ -667,7 +719,7 @@ func (backRepo *BackRepoStruct) CheckoutGantt(gantt *models.Gantt) {
 			ganttDB.ID = id
 
 			if err := backRepo.BackRepoGantt.db.First(&ganttDB, id).Error; err != nil {
-				log.Panicln("CheckoutGantt : Problem with getting object with id:", id)
+				log.Fatalln("CheckoutGantt : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoGantt.CheckoutPhaseOneInstance(&ganttDB)
 			backRepo.BackRepoGantt.CheckoutPhaseTwoInstance(backRepo, &ganttDB)
@@ -677,6 +729,86 @@ func (backRepo *BackRepoStruct) CheckoutGantt(gantt *models.Gantt) {
 
 // CopyBasicFieldsFromGantt
 func (ganttDB *GanttDB) CopyBasicFieldsFromGantt(gantt *models.Gantt) {
+	// insertion point for fields commit
+
+	ganttDB.Name_Data.String = gantt.Name
+	ganttDB.Name_Data.Valid = true
+
+	ganttDB.ComputedStart_Data.Time = gantt.ComputedStart
+	ganttDB.ComputedStart_Data.Valid = true
+
+	ganttDB.ComputedEnd_Data.Time = gantt.ComputedEnd
+	ganttDB.ComputedEnd_Data.Valid = true
+
+	ganttDB.ComputedDuration_Data.Int64 = int64(gantt.ComputedDuration)
+	ganttDB.ComputedDuration_Data.Valid = true
+
+	ganttDB.UseManualStartAndEndDates_Data.Bool = gantt.UseManualStartAndEndDates
+	ganttDB.UseManualStartAndEndDates_Data.Valid = true
+
+	ganttDB.ManualStart_Data.Time = gantt.ManualStart
+	ganttDB.ManualStart_Data.Valid = true
+
+	ganttDB.ManualEnd_Data.Time = gantt.ManualEnd
+	ganttDB.ManualEnd_Data.Valid = true
+
+	ganttDB.LaneHeight_Data.Float64 = gantt.LaneHeight
+	ganttDB.LaneHeight_Data.Valid = true
+
+	ganttDB.RatioBarToLaneHeight_Data.Float64 = gantt.RatioBarToLaneHeight
+	ganttDB.RatioBarToLaneHeight_Data.Valid = true
+
+	ganttDB.YTopMargin_Data.Float64 = gantt.YTopMargin
+	ganttDB.YTopMargin_Data.Valid = true
+
+	ganttDB.XLeftText_Data.Float64 = gantt.XLeftText
+	ganttDB.XLeftText_Data.Valid = true
+
+	ganttDB.TextHeight_Data.Float64 = gantt.TextHeight
+	ganttDB.TextHeight_Data.Valid = true
+
+	ganttDB.XLeftLanes_Data.Float64 = gantt.XLeftLanes
+	ganttDB.XLeftLanes_Data.Valid = true
+
+	ganttDB.XRightMargin_Data.Float64 = gantt.XRightMargin
+	ganttDB.XRightMargin_Data.Valid = true
+
+	ganttDB.ArrowLengthToTheRightOfStartBar_Data.Float64 = gantt.ArrowLengthToTheRightOfStartBar
+	ganttDB.ArrowLengthToTheRightOfStartBar_Data.Valid = true
+
+	ganttDB.ArrowTipLenght_Data.Float64 = gantt.ArrowTipLenght
+	ganttDB.ArrowTipLenght_Data.Valid = true
+
+	ganttDB.TimeLine_Color_Data.String = gantt.TimeLine_Color
+	ganttDB.TimeLine_Color_Data.Valid = true
+
+	ganttDB.TimeLine_FillOpacity_Data.Float64 = gantt.TimeLine_FillOpacity
+	ganttDB.TimeLine_FillOpacity_Data.Valid = true
+
+	ganttDB.TimeLine_Stroke_Data.String = gantt.TimeLine_Stroke
+	ganttDB.TimeLine_Stroke_Data.Valid = true
+
+	ganttDB.TimeLine_StrokeWidth_Data.Float64 = gantt.TimeLine_StrokeWidth
+	ganttDB.TimeLine_StrokeWidth_Data.Valid = true
+
+	ganttDB.Group_Stroke_Data.String = gantt.Group_Stroke
+	ganttDB.Group_Stroke_Data.Valid = true
+
+	ganttDB.Group_StrokeWidth_Data.Float64 = gantt.Group_StrokeWidth
+	ganttDB.Group_StrokeWidth_Data.Valid = true
+
+	ganttDB.Group_StrokeDashArray_Data.String = gantt.Group_StrokeDashArray
+	ganttDB.Group_StrokeDashArray_Data.Valid = true
+
+	ganttDB.DateYOffset_Data.Float64 = gantt.DateYOffset
+	ganttDB.DateYOffset_Data.Valid = true
+
+	ganttDB.AlignOnStartEndOnYearStart_Data.Bool = gantt.AlignOnStartEndOnYearStart
+	ganttDB.AlignOnStartEndOnYearStart_Data.Valid = true
+}
+
+// CopyBasicFieldsFromGantt_WOP
+func (ganttDB *GanttDB) CopyBasicFieldsFromGantt_WOP(gantt *models.Gantt_WOP) {
 	// insertion point for fields commit
 
 	ganttDB.Name_Data.String = gantt.Name
@@ -865,6 +997,36 @@ func (ganttDB *GanttDB) CopyBasicFieldsToGantt(gantt *models.Gantt) {
 	gantt.AlignOnStartEndOnYearStart = ganttDB.AlignOnStartEndOnYearStart_Data.Bool
 }
 
+// CopyBasicFieldsToGantt_WOP
+func (ganttDB *GanttDB) CopyBasicFieldsToGantt_WOP(gantt *models.Gantt_WOP) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	gantt.Name = ganttDB.Name_Data.String
+	gantt.ComputedStart = ganttDB.ComputedStart_Data.Time
+	gantt.ComputedEnd = ganttDB.ComputedEnd_Data.Time
+	gantt.ComputedDuration = time.Duration(ganttDB.ComputedDuration_Data.Int64)
+	gantt.UseManualStartAndEndDates = ganttDB.UseManualStartAndEndDates_Data.Bool
+	gantt.ManualStart = ganttDB.ManualStart_Data.Time
+	gantt.ManualEnd = ganttDB.ManualEnd_Data.Time
+	gantt.LaneHeight = ganttDB.LaneHeight_Data.Float64
+	gantt.RatioBarToLaneHeight = ganttDB.RatioBarToLaneHeight_Data.Float64
+	gantt.YTopMargin = ganttDB.YTopMargin_Data.Float64
+	gantt.XLeftText = ganttDB.XLeftText_Data.Float64
+	gantt.TextHeight = ganttDB.TextHeight_Data.Float64
+	gantt.XLeftLanes = ganttDB.XLeftLanes_Data.Float64
+	gantt.XRightMargin = ganttDB.XRightMargin_Data.Float64
+	gantt.ArrowLengthToTheRightOfStartBar = ganttDB.ArrowLengthToTheRightOfStartBar_Data.Float64
+	gantt.ArrowTipLenght = ganttDB.ArrowTipLenght_Data.Float64
+	gantt.TimeLine_Color = ganttDB.TimeLine_Color_Data.String
+	gantt.TimeLine_FillOpacity = ganttDB.TimeLine_FillOpacity_Data.Float64
+	gantt.TimeLine_Stroke = ganttDB.TimeLine_Stroke_Data.String
+	gantt.TimeLine_StrokeWidth = ganttDB.TimeLine_StrokeWidth_Data.Float64
+	gantt.Group_Stroke = ganttDB.Group_Stroke_Data.String
+	gantt.Group_StrokeWidth = ganttDB.Group_StrokeWidth_Data.Float64
+	gantt.Group_StrokeDashArray = ganttDB.Group_StrokeDashArray_Data.String
+	gantt.DateYOffset = ganttDB.DateYOffset_Data.Float64
+	gantt.AlignOnStartEndOnYearStart = ganttDB.AlignOnStartEndOnYearStart_Data.Bool
+}
+
 // CopyBasicFieldsToGanttWOP
 func (ganttDB *GanttDB) CopyBasicFieldsToGanttWOP(gantt *GanttWOP) {
 	gantt.ID = int(ganttDB.ID)
@@ -915,12 +1077,12 @@ func (backRepoGantt *BackRepoGanttStruct) Backup(dirPath string) {
 	file, err := json.MarshalIndent(forBackup, "", " ")
 
 	if err != nil {
-		log.Panic("Cannot json Gantt ", filename, " ", err.Error())
+		log.Fatal("Cannot json Gantt ", filename, " ", err.Error())
 	}
 
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
-		log.Panic("Cannot write the json Gantt file", err.Error())
+		log.Fatal("Cannot write the json Gantt file", err.Error())
 	}
 }
 
@@ -940,7 +1102,7 @@ func (backRepoGantt *BackRepoGanttStruct) BackupXL(file *xlsx.File) {
 
 	sh, err := file.AddSheet("Gantt")
 	if err != nil {
-		log.Panic("Cannot add XL file", err.Error())
+		log.Fatal("Cannot add XL file", err.Error())
 	}
 	_ = sh
 
@@ -965,13 +1127,13 @@ func (backRepoGantt *BackRepoGanttStruct) RestoreXLPhaseOne(file *xlsx.File) {
 	sh, ok := file.Sheet["Gantt"]
 	_ = sh
 	if !ok {
-		log.Panic(errors.New("sheet not found"))
+		log.Fatal(errors.New("sheet not found"))
 	}
 
 	// log.Println("Max row is", sh.MaxRow)
 	err := sh.ForEachRow(backRepoGantt.rowVisitorGantt)
 	if err != nil {
-		log.Panic("Err=", err)
+		log.Fatal("Err=", err)
 	}
 }
 
@@ -993,7 +1155,7 @@ func (backRepoGantt *BackRepoGanttStruct) rowVisitorGantt(row *xlsx.Row) error {
 		ganttDB.ID = 0
 		query := backRepoGantt.db.Create(ganttDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoGantt.Map_GanttDBID_GanttDB[ganttDB.ID] = ganttDB
 		BackRepoGanttid_atBckpTime_newID[ganttDB_ID_atBackupTime] = ganttDB.ID
@@ -1013,7 +1175,7 @@ func (backRepoGantt *BackRepoGanttStruct) RestorePhaseOne(dirPath string) {
 	jsonFile, err := os.Open(filename)
 	// if we os.Open returns an error then handle it
 	if err != nil {
-		log.Panic("Cannot restore/open the json Gantt file", filename, " ", err.Error())
+		log.Fatal("Cannot restore/open the json Gantt file", filename, " ", err.Error())
 	}
 
 	// read our opened jsonFile as a byte array.
@@ -1030,14 +1192,14 @@ func (backRepoGantt *BackRepoGanttStruct) RestorePhaseOne(dirPath string) {
 		ganttDB.ID = 0
 		query := backRepoGantt.db.Create(ganttDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoGantt.Map_GanttDBID_GanttDB[ganttDB.ID] = ganttDB
 		BackRepoGanttid_atBckpTime_newID[ganttDB_ID_atBackupTime] = ganttDB.ID
 	}
 
 	if err != nil {
-		log.Panic("Cannot restore/unmarshall json Gantt file", err.Error())
+		log.Fatal("Cannot restore/unmarshall json Gantt file", err.Error())
 	}
 }
 
@@ -1054,7 +1216,7 @@ func (backRepoGantt *BackRepoGanttStruct) RestorePhaseTwo() {
 		// update databse with new index encoding
 		query := backRepoGantt.db.Model(ganttDB).Updates(*ganttDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 	}
 

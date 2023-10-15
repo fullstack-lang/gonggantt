@@ -35,15 +35,15 @@ var dummy_Arrow_sort sort.Float64Slice
 type ArrowAPI struct {
 	gorm.Model
 
-	models.Arrow
+	models.Arrow_WOP
 
 	// encoding of pointers
-	ArrowPointersEnconding
+	ArrowPointersEncoding
 }
 
-// ArrowPointersEnconding encodes pointers to Struct and
+// ArrowPointersEncoding encodes pointers to Struct and
 // reverse pointers of slice of poitners to Struct
-type ArrowPointersEnconding struct {
+type ArrowPointersEncoding struct {
 	// insertion for pointer fields encoding declaration
 
 	// field From is a pointer to another Struct (optional or 0..1)
@@ -81,7 +81,7 @@ type ArrowDB struct {
 	// Declation for basic field arrowDB.OptionnalStroke
 	OptionnalStroke_Data sql.NullString
 	// encoding of pointers
-	ArrowPointersEnconding
+	ArrowPointersEncoding
 }
 
 // ArrowDBs arrays arrowDBs
@@ -176,7 +176,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitDeleteInstance(id uint) (Error e
 	arrowDB := backRepoArrow.Map_ArrowDBID_ArrowDB[id]
 	query := backRepoArrow.db.Unscoped().Delete(&arrowDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -202,7 +202,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseOneInstance(arrow *models.A
 
 	query := backRepoArrow.db.Create(&arrowDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -260,7 +260,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackR
 
 		query := backRepoArrow.db.Save(&arrowDB)
 		if query.Error != nil {
-			return query.Error
+			log.Fatalln(query.Error)
 		}
 
 	} else {
@@ -397,7 +397,7 @@ func (backRepo *BackRepoStruct) CheckoutArrow(arrow *models.Arrow) {
 			arrowDB.ID = id
 
 			if err := backRepo.BackRepoArrow.db.First(&arrowDB, id).Error; err != nil {
-				log.Panicln("CheckoutArrow : Problem with getting object with id:", id)
+				log.Fatalln("CheckoutArrow : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoArrow.CheckoutPhaseOneInstance(&arrowDB)
 			backRepo.BackRepoArrow.CheckoutPhaseTwoInstance(backRepo, &arrowDB)
@@ -407,6 +407,20 @@ func (backRepo *BackRepoStruct) CheckoutArrow(arrow *models.Arrow) {
 
 // CopyBasicFieldsFromArrow
 func (arrowDB *ArrowDB) CopyBasicFieldsFromArrow(arrow *models.Arrow) {
+	// insertion point for fields commit
+
+	arrowDB.Name_Data.String = arrow.Name
+	arrowDB.Name_Data.Valid = true
+
+	arrowDB.OptionnalColor_Data.String = arrow.OptionnalColor
+	arrowDB.OptionnalColor_Data.Valid = true
+
+	arrowDB.OptionnalStroke_Data.String = arrow.OptionnalStroke
+	arrowDB.OptionnalStroke_Data.Valid = true
+}
+
+// CopyBasicFieldsFromArrow_WOP
+func (arrowDB *ArrowDB) CopyBasicFieldsFromArrow_WOP(arrow *models.Arrow_WOP) {
 	// insertion point for fields commit
 
 	arrowDB.Name_Data.String = arrow.Name
@@ -441,6 +455,14 @@ func (arrowDB *ArrowDB) CopyBasicFieldsToArrow(arrow *models.Arrow) {
 	arrow.OptionnalStroke = arrowDB.OptionnalStroke_Data.String
 }
 
+// CopyBasicFieldsToArrow_WOP
+func (arrowDB *ArrowDB) CopyBasicFieldsToArrow_WOP(arrow *models.Arrow_WOP) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	arrow.Name = arrowDB.Name_Data.String
+	arrow.OptionnalColor = arrowDB.OptionnalColor_Data.String
+	arrow.OptionnalStroke = arrowDB.OptionnalStroke_Data.String
+}
+
 // CopyBasicFieldsToArrowWOP
 func (arrowDB *ArrowDB) CopyBasicFieldsToArrowWOP(arrow *ArrowWOP) {
 	arrow.ID = int(arrowDB.ID)
@@ -469,12 +491,12 @@ func (backRepoArrow *BackRepoArrowStruct) Backup(dirPath string) {
 	file, err := json.MarshalIndent(forBackup, "", " ")
 
 	if err != nil {
-		log.Panic("Cannot json Arrow ", filename, " ", err.Error())
+		log.Fatal("Cannot json Arrow ", filename, " ", err.Error())
 	}
 
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
-		log.Panic("Cannot write the json Arrow file", err.Error())
+		log.Fatal("Cannot write the json Arrow file", err.Error())
 	}
 }
 
@@ -494,7 +516,7 @@ func (backRepoArrow *BackRepoArrowStruct) BackupXL(file *xlsx.File) {
 
 	sh, err := file.AddSheet("Arrow")
 	if err != nil {
-		log.Panic("Cannot add XL file", err.Error())
+		log.Fatal("Cannot add XL file", err.Error())
 	}
 	_ = sh
 
@@ -519,13 +541,13 @@ func (backRepoArrow *BackRepoArrowStruct) RestoreXLPhaseOne(file *xlsx.File) {
 	sh, ok := file.Sheet["Arrow"]
 	_ = sh
 	if !ok {
-		log.Panic(errors.New("sheet not found"))
+		log.Fatal(errors.New("sheet not found"))
 	}
 
 	// log.Println("Max row is", sh.MaxRow)
 	err := sh.ForEachRow(backRepoArrow.rowVisitorArrow)
 	if err != nil {
-		log.Panic("Err=", err)
+		log.Fatal("Err=", err)
 	}
 }
 
@@ -547,7 +569,7 @@ func (backRepoArrow *BackRepoArrowStruct) rowVisitorArrow(row *xlsx.Row) error {
 		arrowDB.ID = 0
 		query := backRepoArrow.db.Create(arrowDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoArrow.Map_ArrowDBID_ArrowDB[arrowDB.ID] = arrowDB
 		BackRepoArrowid_atBckpTime_newID[arrowDB_ID_atBackupTime] = arrowDB.ID
@@ -567,7 +589,7 @@ func (backRepoArrow *BackRepoArrowStruct) RestorePhaseOne(dirPath string) {
 	jsonFile, err := os.Open(filename)
 	// if we os.Open returns an error then handle it
 	if err != nil {
-		log.Panic("Cannot restore/open the json Arrow file", filename, " ", err.Error())
+		log.Fatal("Cannot restore/open the json Arrow file", filename, " ", err.Error())
 	}
 
 	// read our opened jsonFile as a byte array.
@@ -584,14 +606,14 @@ func (backRepoArrow *BackRepoArrowStruct) RestorePhaseOne(dirPath string) {
 		arrowDB.ID = 0
 		query := backRepoArrow.db.Create(arrowDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoArrow.Map_ArrowDBID_ArrowDB[arrowDB.ID] = arrowDB
 		BackRepoArrowid_atBckpTime_newID[arrowDB_ID_atBackupTime] = arrowDB.ID
 	}
 
 	if err != nil {
-		log.Panic("Cannot restore/unmarshall json Arrow file", err.Error())
+		log.Fatal("Cannot restore/unmarshall json Arrow file", err.Error())
 	}
 }
 
@@ -626,7 +648,7 @@ func (backRepoArrow *BackRepoArrowStruct) RestorePhaseTwo() {
 		// update databse with new index encoding
 		query := backRepoArrow.db.Model(arrowDB).Updates(*arrowDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 	}
 

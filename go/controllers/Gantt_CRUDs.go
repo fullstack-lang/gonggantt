@@ -91,8 +91,8 @@ func (controller *Controller) GetGantts(c *gin.Context) {
 
 		// insertion point for updating fields
 		ganttAPI.ID = ganttDB.ID
-		ganttDB.CopyBasicFieldsToGantt(&ganttAPI.Gantt)
-		ganttAPI.GanttPointersEnconding = ganttDB.GanttPointersEnconding
+		ganttDB.CopyBasicFieldsToGantt_WOP(&ganttAPI.Gantt_WOP)
+		ganttAPI.GanttPointersEncoding = ganttDB.GanttPointersEncoding
 		ganttAPIs = append(ganttAPIs, ganttAPI)
 	}
 
@@ -147,8 +147,8 @@ func (controller *Controller) PostGantt(c *gin.Context) {
 
 	// Create gantt
 	ganttDB := orm.GanttDB{}
-	ganttDB.GanttPointersEnconding = input.GanttPointersEnconding
-	ganttDB.CopyBasicFieldsFromGantt(&input.Gantt)
+	ganttDB.GanttPointersEncoding = input.GanttPointersEncoding
+	ganttDB.CopyBasicFieldsFromGantt_WOP(&input.Gantt_WOP)
 
 	query := db.Create(&ganttDB)
 	if query.Error != nil {
@@ -217,8 +217,8 @@ func (controller *Controller) GetGantt(c *gin.Context) {
 
 	var ganttAPI orm.GanttAPI
 	ganttAPI.ID = ganttDB.ID
-	ganttAPI.GanttPointersEnconding = ganttDB.GanttPointersEnconding
-	ganttDB.CopyBasicFieldsToGantt(&ganttAPI.Gantt)
+	ganttAPI.GanttPointersEncoding = ganttDB.GanttPointersEncoding
+	ganttDB.CopyBasicFieldsToGantt_WOP(&ganttAPI.Gantt_WOP)
 
 	c.JSON(http.StatusOK, ganttAPI)
 }
@@ -276,8 +276,8 @@ func (controller *Controller) UpdateGantt(c *gin.Context) {
 	}
 
 	// update
-	ganttDB.CopyBasicFieldsFromGantt(&input.Gantt)
-	ganttDB.GanttPointersEnconding = input.GanttPointersEnconding
+	ganttDB.CopyBasicFieldsFromGantt_WOP(&input.Gantt_WOP)
+	ganttDB.GanttPointersEncoding = input.GanttPointersEncoding
 
 	query = db.Model(&ganttDB).Updates(ganttDB)
 	if query.Error != nil {

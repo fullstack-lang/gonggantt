@@ -35,16 +35,19 @@ var dummy_Milestone_sort sort.Float64Slice
 type MilestoneAPI struct {
 	gorm.Model
 
-	models.Milestone
+	models.Milestone_WOP
 
 	// encoding of pointers
-	MilestonePointersEnconding
+	MilestonePointersEncoding
 }
 
-// MilestonePointersEnconding encodes pointers to Struct and
+// MilestonePointersEncoding encodes pointers to Struct and
 // reverse pointers of slice of poitners to Struct
-type MilestonePointersEnconding struct {
+type MilestonePointersEncoding struct {
 	// insertion for pointer fields encoding declaration
+
+	// field LanesToDisplayMilestoneUse is a slice of pointers to another Struct (optional or 0..1)
+	LanesToDisplayMilestoneUse IntSlice`gorm:"type:TEXT"`
 
 	// Implementation of a reverse ID for field Gantt{}.Milestones []*Milestone
 	Gantt_MilestonesDBID sql.NullInt64
@@ -74,7 +77,7 @@ type MilestoneDB struct {
 	// provide the sql storage for the boolan
 	DisplayVerticalBar_Data sql.NullBool
 	// encoding of pointers
-	MilestonePointersEnconding
+	MilestonePointersEncoding
 }
 
 // MilestoneDBs arrays milestoneDBs
@@ -169,7 +172,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitDeleteInstance(id uint) 
 	milestoneDB := backRepoMilestone.Map_MilestoneDBID_MilestoneDB[id]
 	query := backRepoMilestone.db.Unscoped().Delete(&milestoneDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -195,7 +198,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseOneInstance(milesto
 
 	query := backRepoMilestone.db.Create(&milestoneDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -246,9 +249,19 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 			}
 		}
 
+		// 1. reset
+		milestoneDB.MilestonePointersEncoding.LanesToDisplayMilestoneUse = make([]int, 0)
+		// 2. encode
+		for _, laneuseAssocEnd := range milestone.LanesToDisplayMilestoneUse {
+			laneuseAssocEnd_DB :=
+				backRepo.BackRepoLaneUse.GetLaneUseDBFromLaneUsePtr(laneuseAssocEnd)
+			milestoneDB.MilestonePointersEncoding.LanesToDisplayMilestoneUse =
+				append(milestoneDB.MilestonePointersEncoding.LanesToDisplayMilestoneUse, int(laneuseAssocEnd_DB.ID))
+		}
+
 		query := backRepoMilestone.db.Save(&milestoneDB)
 		if query.Error != nil {
-			return query.Error
+			log.Fatalln(query.Error)
 		}
 
 	} else {
@@ -402,7 +415,7 @@ func (backRepo *BackRepoStruct) CheckoutMilestone(milestone *models.Milestone) {
 			milestoneDB.ID = id
 
 			if err := backRepo.BackRepoMilestone.db.First(&milestoneDB, id).Error; err != nil {
-				log.Panicln("CheckoutMilestone : Problem with getting object with id:", id)
+				log.Fatalln("CheckoutMilestone : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoMilestone.CheckoutPhaseOneInstance(&milestoneDB)
 			backRepo.BackRepoMilestone.CheckoutPhaseTwoInstance(backRepo, &milestoneDB)
@@ -412,6 +425,20 @@ func (backRepo *BackRepoStruct) CheckoutMilestone(milestone *models.Milestone) {
 
 // CopyBasicFieldsFromMilestone
 func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestone(milestone *models.Milestone) {
+	// insertion point for fields commit
+
+	milestoneDB.Name_Data.String = milestone.Name
+	milestoneDB.Name_Data.Valid = true
+
+	milestoneDB.Date_Data.Time = milestone.Date
+	milestoneDB.Date_Data.Valid = true
+
+	milestoneDB.DisplayVerticalBar_Data.Bool = milestone.DisplayVerticalBar
+	milestoneDB.DisplayVerticalBar_Data.Valid = true
+}
+
+// CopyBasicFieldsFromMilestone_WOP
+func (milestoneDB *MilestoneDB) CopyBasicFieldsFromMilestone_WOP(milestone *models.Milestone_WOP) {
 	// insertion point for fields commit
 
 	milestoneDB.Name_Data.String = milestone.Name
@@ -446,6 +473,14 @@ func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestone(milestone *models.Mil
 	milestone.DisplayVerticalBar = milestoneDB.DisplayVerticalBar_Data.Bool
 }
 
+// CopyBasicFieldsToMilestone_WOP
+func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestone_WOP(milestone *models.Milestone_WOP) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	milestone.Name = milestoneDB.Name_Data.String
+	milestone.Date = milestoneDB.Date_Data.Time
+	milestone.DisplayVerticalBar = milestoneDB.DisplayVerticalBar_Data.Bool
+}
+
 // CopyBasicFieldsToMilestoneWOP
 func (milestoneDB *MilestoneDB) CopyBasicFieldsToMilestoneWOP(milestone *MilestoneWOP) {
 	milestone.ID = int(milestoneDB.ID)
@@ -474,12 +509,12 @@ func (backRepoMilestone *BackRepoMilestoneStruct) Backup(dirPath string) {
 	file, err := json.MarshalIndent(forBackup, "", " ")
 
 	if err != nil {
-		log.Panic("Cannot json Milestone ", filename, " ", err.Error())
+		log.Fatal("Cannot json Milestone ", filename, " ", err.Error())
 	}
 
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
-		log.Panic("Cannot write the json Milestone file", err.Error())
+		log.Fatal("Cannot write the json Milestone file", err.Error())
 	}
 }
 
@@ -499,7 +534,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) BackupXL(file *xlsx.File) {
 
 	sh, err := file.AddSheet("Milestone")
 	if err != nil {
-		log.Panic("Cannot add XL file", err.Error())
+		log.Fatal("Cannot add XL file", err.Error())
 	}
 	_ = sh
 
@@ -524,13 +559,13 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestoreXLPhaseOne(file *xlsx.F
 	sh, ok := file.Sheet["Milestone"]
 	_ = sh
 	if !ok {
-		log.Panic(errors.New("sheet not found"))
+		log.Fatal(errors.New("sheet not found"))
 	}
 
 	// log.Println("Max row is", sh.MaxRow)
 	err := sh.ForEachRow(backRepoMilestone.rowVisitorMilestone)
 	if err != nil {
-		log.Panic("Err=", err)
+		log.Fatal("Err=", err)
 	}
 }
 
@@ -552,7 +587,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) rowVisitorMilestone(row *xlsx.
 		milestoneDB.ID = 0
 		query := backRepoMilestone.db.Create(milestoneDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoMilestone.Map_MilestoneDBID_MilestoneDB[milestoneDB.ID] = milestoneDB
 		BackRepoMilestoneid_atBckpTime_newID[milestoneDB_ID_atBackupTime] = milestoneDB.ID
@@ -572,7 +607,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseOne(dirPath string
 	jsonFile, err := os.Open(filename)
 	// if we os.Open returns an error then handle it
 	if err != nil {
-		log.Panic("Cannot restore/open the json Milestone file", filename, " ", err.Error())
+		log.Fatal("Cannot restore/open the json Milestone file", filename, " ", err.Error())
 	}
 
 	// read our opened jsonFile as a byte array.
@@ -589,14 +624,14 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseOne(dirPath string
 		milestoneDB.ID = 0
 		query := backRepoMilestone.db.Create(milestoneDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoMilestone.Map_MilestoneDBID_MilestoneDB[milestoneDB.ID] = milestoneDB
 		BackRepoMilestoneid_atBckpTime_newID[milestoneDB_ID_atBackupTime] = milestoneDB.ID
 	}
 
 	if err != nil {
-		log.Panic("Cannot restore/unmarshall json Milestone file", err.Error())
+		log.Fatal("Cannot restore/unmarshall json Milestone file", err.Error())
 	}
 }
 
@@ -619,7 +654,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseTwo() {
 		// update databse with new index encoding
 		query := backRepoMilestone.db.Model(milestoneDB).Updates(*milestoneDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 	}
 

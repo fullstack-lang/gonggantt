@@ -35,15 +35,15 @@ var dummy_LaneUse_sort sort.Float64Slice
 type LaneUseAPI struct {
 	gorm.Model
 
-	models.LaneUse
+	models.LaneUse_WOP
 
 	// encoding of pointers
-	LaneUsePointersEnconding
+	LaneUsePointersEncoding
 }
 
-// LaneUsePointersEnconding encodes pointers to Struct and
+// LaneUsePointersEncoding encodes pointers to Struct and
 // reverse pointers of slice of poitners to Struct
-type LaneUsePointersEnconding struct {
+type LaneUsePointersEncoding struct {
 	// insertion for pointer fields encoding declaration
 
 	// field Lane is a pointer to another Struct (optional or 0..1)
@@ -71,7 +71,7 @@ type LaneUseDB struct {
 	// Declation for basic field laneuseDB.Name
 	Name_Data sql.NullString
 	// encoding of pointers
-	LaneUsePointersEnconding
+	LaneUsePointersEncoding
 }
 
 // LaneUseDBs arrays laneuseDBs
@@ -160,7 +160,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitDeleteInstance(id uint) (Err
 	laneuseDB := backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[id]
 	query := backRepoLaneUse.db.Unscoped().Delete(&laneuseDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -186,7 +186,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseOneInstance(laneuse *mo
 
 	query := backRepoLaneUse.db.Create(&laneuseDB)
 	if query.Error != nil {
-		return query.Error
+		log.Fatal(query.Error)
 	}
 
 	// update stores
@@ -232,7 +232,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseTwoInstance(backRepo *B
 
 		query := backRepoLaneUse.db.Save(&laneuseDB)
 		if query.Error != nil {
-			return query.Error
+			log.Fatalln(query.Error)
 		}
 
 	} else {
@@ -364,7 +364,7 @@ func (backRepo *BackRepoStruct) CheckoutLaneUse(laneuse *models.LaneUse) {
 			laneuseDB.ID = id
 
 			if err := backRepo.BackRepoLaneUse.db.First(&laneuseDB, id).Error; err != nil {
-				log.Panicln("CheckoutLaneUse : Problem with getting object with id:", id)
+				log.Fatalln("CheckoutLaneUse : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoLaneUse.CheckoutPhaseOneInstance(&laneuseDB)
 			backRepo.BackRepoLaneUse.CheckoutPhaseTwoInstance(backRepo, &laneuseDB)
@@ -374,6 +374,14 @@ func (backRepo *BackRepoStruct) CheckoutLaneUse(laneuse *models.LaneUse) {
 
 // CopyBasicFieldsFromLaneUse
 func (laneuseDB *LaneUseDB) CopyBasicFieldsFromLaneUse(laneuse *models.LaneUse) {
+	// insertion point for fields commit
+
+	laneuseDB.Name_Data.String = laneuse.Name
+	laneuseDB.Name_Data.Valid = true
+}
+
+// CopyBasicFieldsFromLaneUse_WOP
+func (laneuseDB *LaneUseDB) CopyBasicFieldsFromLaneUse_WOP(laneuse *models.LaneUse_WOP) {
 	// insertion point for fields commit
 
 	laneuseDB.Name_Data.String = laneuse.Name
@@ -390,6 +398,12 @@ func (laneuseDB *LaneUseDB) CopyBasicFieldsFromLaneUseWOP(laneuse *LaneUseWOP) {
 
 // CopyBasicFieldsToLaneUse
 func (laneuseDB *LaneUseDB) CopyBasicFieldsToLaneUse(laneuse *models.LaneUse) {
+	// insertion point for checkout of basic fields (back repo to stage)
+	laneuse.Name = laneuseDB.Name_Data.String
+}
+
+// CopyBasicFieldsToLaneUse_WOP
+func (laneuseDB *LaneUseDB) CopyBasicFieldsToLaneUse_WOP(laneuse *models.LaneUse_WOP) {
 	// insertion point for checkout of basic fields (back repo to stage)
 	laneuse.Name = laneuseDB.Name_Data.String
 }
@@ -420,12 +434,12 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) Backup(dirPath string) {
 	file, err := json.MarshalIndent(forBackup, "", " ")
 
 	if err != nil {
-		log.Panic("Cannot json LaneUse ", filename, " ", err.Error())
+		log.Fatal("Cannot json LaneUse ", filename, " ", err.Error())
 	}
 
 	err = ioutil.WriteFile(filename, file, 0644)
 	if err != nil {
-		log.Panic("Cannot write the json LaneUse file", err.Error())
+		log.Fatal("Cannot write the json LaneUse file", err.Error())
 	}
 }
 
@@ -445,7 +459,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) BackupXL(file *xlsx.File) {
 
 	sh, err := file.AddSheet("LaneUse")
 	if err != nil {
-		log.Panic("Cannot add XL file", err.Error())
+		log.Fatal("Cannot add XL file", err.Error())
 	}
 	_ = sh
 
@@ -470,13 +484,13 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestoreXLPhaseOne(file *xlsx.File)
 	sh, ok := file.Sheet["LaneUse"]
 	_ = sh
 	if !ok {
-		log.Panic(errors.New("sheet not found"))
+		log.Fatal(errors.New("sheet not found"))
 	}
 
 	// log.Println("Max row is", sh.MaxRow)
 	err := sh.ForEachRow(backRepoLaneUse.rowVisitorLaneUse)
 	if err != nil {
-		log.Panic("Err=", err)
+		log.Fatal("Err=", err)
 	}
 }
 
@@ -498,7 +512,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) rowVisitorLaneUse(row *xlsx.Row) e
 		laneuseDB.ID = 0
 		query := backRepoLaneUse.db.Create(laneuseDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB.ID] = laneuseDB
 		BackRepoLaneUseid_atBckpTime_newID[laneuseDB_ID_atBackupTime] = laneuseDB.ID
@@ -518,7 +532,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseOne(dirPath string) {
 	jsonFile, err := os.Open(filename)
 	// if we os.Open returns an error then handle it
 	if err != nil {
-		log.Panic("Cannot restore/open the json LaneUse file", filename, " ", err.Error())
+		log.Fatal("Cannot restore/open the json LaneUse file", filename, " ", err.Error())
 	}
 
 	// read our opened jsonFile as a byte array.
@@ -535,14 +549,14 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseOne(dirPath string) {
 		laneuseDB.ID = 0
 		query := backRepoLaneUse.db.Create(laneuseDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 		backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB.ID] = laneuseDB
 		BackRepoLaneUseid_atBckpTime_newID[laneuseDB_ID_atBackupTime] = laneuseDB.ID
 	}
 
 	if err != nil {
-		log.Panic("Cannot restore/unmarshall json LaneUse file", err.Error())
+		log.Fatal("Cannot restore/unmarshall json LaneUse file", err.Error())
 	}
 }
 
@@ -571,7 +585,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseTwo() {
 		// update databse with new index encoding
 		query := backRepoLaneUse.db.Model(laneuseDB).Updates(*laneuseDB)
 		if query.Error != nil {
-			log.Panic(query.Error)
+			log.Fatal(query.Error)
 		}
 	}
 
