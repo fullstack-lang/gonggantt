@@ -48,6 +48,8 @@ type StageStruct struct {
 	Arrows           map[*Arrow]any
 	Arrows_mapString map[string]*Arrow
 
+	// insertion point for slice of pointers maps
+
 	OnAfterArrowCreateCallback OnAfterCreateInterface[Arrow]
 	OnAfterArrowUpdateCallback OnAfterUpdateInterface[Arrow]
 	OnAfterArrowDeleteCallback OnAfterDeleteInterface[Arrow]
@@ -55,6 +57,8 @@ type StageStruct struct {
 
 	Bars           map[*Bar]any
 	Bars_mapString map[string]*Bar
+
+	// insertion point for slice of pointers maps
 
 	OnAfterBarCreateCallback OnAfterCreateInterface[Bar]
 	OnAfterBarUpdateCallback OnAfterUpdateInterface[Bar]
@@ -64,6 +68,12 @@ type StageStruct struct {
 	Gantts           map[*Gantt]any
 	Gantts_mapString map[string]*Gantt
 
+	// insertion point for slice of pointers maps
+	Gantt_Lanes_reverseMap map[*Lane]*Gantt
+	Gantt_Milestones_reverseMap map[*Milestone]*Gantt
+	Gantt_Groups_reverseMap map[*Group]*Gantt
+	Gantt_Arrows_reverseMap map[*Arrow]*Gantt
+
 	OnAfterGanttCreateCallback OnAfterCreateInterface[Gantt]
 	OnAfterGanttUpdateCallback OnAfterUpdateInterface[Gantt]
 	OnAfterGanttDeleteCallback OnAfterDeleteInterface[Gantt]
@@ -71,6 +81,9 @@ type StageStruct struct {
 
 	Groups           map[*Group]any
 	Groups_mapString map[string]*Group
+
+	// insertion point for slice of pointers maps
+	Group_GroupLanes_reverseMap map[*Lane]*Group
 
 	OnAfterGroupCreateCallback OnAfterCreateInterface[Group]
 	OnAfterGroupUpdateCallback OnAfterUpdateInterface[Group]
@@ -80,6 +93,9 @@ type StageStruct struct {
 	Lanes           map[*Lane]any
 	Lanes_mapString map[string]*Lane
 
+	// insertion point for slice of pointers maps
+	Lane_Bars_reverseMap map[*Bar]*Lane
+
 	OnAfterLaneCreateCallback OnAfterCreateInterface[Lane]
 	OnAfterLaneUpdateCallback OnAfterUpdateInterface[Lane]
 	OnAfterLaneDeleteCallback OnAfterDeleteInterface[Lane]
@@ -88,6 +104,8 @@ type StageStruct struct {
 	LaneUses           map[*LaneUse]any
 	LaneUses_mapString map[string]*LaneUse
 
+	// insertion point for slice of pointers maps
+
 	OnAfterLaneUseCreateCallback OnAfterCreateInterface[LaneUse]
 	OnAfterLaneUseUpdateCallback OnAfterUpdateInterface[LaneUse]
 	OnAfterLaneUseDeleteCallback OnAfterDeleteInterface[LaneUse]
@@ -95,6 +113,9 @@ type StageStruct struct {
 
 	Milestones           map[*Milestone]any
 	Milestones_mapString map[string]*Milestone
+
+	// insertion point for slice of pointers maps
+	Milestone_LanesToDisplayMilestoneUse_reverseMap map[*LaneUse]*Milestone
 
 	OnAfterMilestoneCreateCallback OnAfterCreateInterface[Milestone]
 	OnAfterMilestoneUpdateCallback OnAfterUpdateInterface[Milestone]
@@ -233,6 +254,8 @@ func (stage *StageStruct) CommitWithSuspendedCallbacks() {
 }
 
 func (stage *StageStruct) Commit() {
+	stage.ComputeReverseMaps()
+
 	if stage.BackRepo != nil {
 		stage.BackRepo.Commit(stage)
 	}
@@ -253,6 +276,7 @@ func (stage *StageStruct) Checkout() {
 		stage.BackRepo.Checkout(stage)
 	}
 
+	stage.ComputeReverseMaps()
 	// insertion point for computing the map of number of instances per gongstruct
 	stage.Map_GongStructName_InstancesNb["Arrow"] = len(stage.Arrows)
 	stage.Map_GongStructName_InstancesNb["Bar"] = len(stage.Bars)

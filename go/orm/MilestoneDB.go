@@ -38,7 +38,7 @@ type MilestoneAPI struct {
 	models.Milestone_WOP
 
 	// encoding of pointers
-	MilestonePointersEncoding
+	MilestonePointersEncoding MilestonePointersEncoding
 }
 
 // MilestonePointersEncoding encodes pointers to Struct and
@@ -47,13 +47,7 @@ type MilestonePointersEncoding struct {
 	// insertion for pointer fields encoding declaration
 
 	// field LanesToDisplayMilestoneUse is a slice of pointers to another Struct (optional or 0..1)
-	LanesToDisplayMilestoneUse IntSlice`gorm:"type:TEXT"`
-
-	// Implementation of a reverse ID for field Gantt{}.Milestones []*Milestone
-	Gantt_MilestonesDBID sql.NullInt64
-
-	// implementation of the index of the withing the slice
-	Gantt_MilestonesDBID_Index sql.NullInt64
+	LanesToDisplayMilestoneUse IntSlice `gorm:"type:TEXT"`
 }
 
 // MilestoneDB describes a milestone in the database
@@ -230,25 +224,6 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 		milestoneDB.CopyBasicFieldsFromMilestone(milestone)
 
 		// insertion point for translating pointers encodings into actual pointers
-		// This loop encodes the slice of pointers milestone.LanesToDisplayMilestoneUse into the back repo.
-		// Each back repo instance at the end of the association encode the ID of the association start
-		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, laneuseAssocEnd := range milestone.LanesToDisplayMilestoneUse {
-
-			// get the back repo instance at the association end
-			laneuseAssocEnd_DB :=
-				backRepo.BackRepoLaneUse.GetLaneUseDBFromLaneUsePtr(laneuseAssocEnd)
-
-			// encode reverse pointer in the association end back repo instance
-			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 = int64(milestoneDB.ID)
-			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID.Valid = true
-			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64 = int64(idx)
-			laneuseAssocEnd_DB.Milestone_LanesToDisplayMilestoneUseDBID_Index.Valid = true
-			if q := backRepoMilestone.db.Save(laneuseAssocEnd_DB); q.Error != nil {
-				return q.Error
-			}
-		}
-
 		// 1. reset
 		milestoneDB.MilestonePointersEncoding.LanesToDisplayMilestoneUse = make([]int, 0)
 		// 2. encode
@@ -371,27 +346,9 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwoInstance(backR
 	// it appends the stage instance
 	// 1. reset the slice
 	milestone.LanesToDisplayMilestoneUse = milestone.LanesToDisplayMilestoneUse[:0]
-	// 2. loop all instances in the type in the association end
-	for _, laneuseDB_AssocEnd := range backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB {
-		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if laneuseDB_AssocEnd.Milestone_LanesToDisplayMilestoneUseDBID.Int64 == int64(milestoneDB.ID) {
-			// 4. fetch the associated instance in the stage
-			laneuse_AssocEnd := backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB_AssocEnd.ID]
-			// 5. append it the association slice
-			milestone.LanesToDisplayMilestoneUse = append(milestone.LanesToDisplayMilestoneUse, laneuse_AssocEnd)
-		}
+	for _, _LaneUseid := range milestoneDB.MilestonePointersEncoding.LanesToDisplayMilestoneUse {
+		milestone.LanesToDisplayMilestoneUse = append(milestone.LanesToDisplayMilestoneUse, backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[uint(_LaneUseid)])
 	}
-
-	// sort the array according to the order
-	sort.Slice(milestone.LanesToDisplayMilestoneUse, func(i, j int) bool {
-		laneuseDB_i_ID := backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[milestone.LanesToDisplayMilestoneUse[i]]
-		laneuseDB_j_ID := backRepo.BackRepoLaneUse.Map_LaneUsePtr_LaneUseDBID[milestone.LanesToDisplayMilestoneUse[j]]
-
-		laneuseDB_i := backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB_i_ID]
-		laneuseDB_j := backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB_j_ID]
-
-		return laneuseDB_i.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64 < laneuseDB_j.Milestone_LanesToDisplayMilestoneUseDBID_Index.Int64
-	})
 
 	return
 }
@@ -645,12 +602,6 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseTwo() {
 		_ = milestoneDB
 
 		// insertion point for reindexing pointers encoding
-		// This reindex milestone.Milestones
-		if milestoneDB.Gantt_MilestonesDBID.Int64 != 0 {
-			milestoneDB.Gantt_MilestonesDBID.Int64 =
-				int64(BackRepoGanttid_atBckpTime_newID[uint(milestoneDB.Gantt_MilestonesDBID.Int64)])
-		}
-
 		// update databse with new index encoding
 		query := backRepoMilestone.db.Model(milestoneDB).Updates(*milestoneDB)
 		if query.Error != nil {
@@ -678,15 +629,6 @@ func (backRepoMilestone *BackRepoMilestoneStruct) ResetReversePointersInstance(b
 		_ = milestoneDB // to avoid unused variable error if there are no reverse to reset
 
 		// insertion point for reverse pointers reset
-		if milestoneDB.Gantt_MilestonesDBID.Int64 != 0 {
-			milestoneDB.Gantt_MilestonesDBID.Int64 = 0
-			milestoneDB.Gantt_MilestonesDBID.Valid = true
-
-			// save the reset
-			if q := backRepoMilestone.db.Save(milestoneDB); q.Error != nil {
-				return q.Error
-			}
-		}
 		// end of insertion point for reverse pointers reset
 	}
 

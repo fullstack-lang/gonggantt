@@ -38,19 +38,13 @@ type BarAPI struct {
 	models.Bar_WOP
 
 	// encoding of pointers
-	BarPointersEncoding
+	BarPointersEncoding BarPointersEncoding
 }
 
 // BarPointersEncoding encodes pointers to Struct and
 // reverse pointers of slice of poitners to Struct
 type BarPointersEncoding struct {
 	// insertion for pointer fields encoding declaration
-
-	// Implementation of a reverse ID for field Lane{}.Bars []*Bar
-	Lane_BarsDBID sql.NullInt64
-
-	// implementation of the index of the withing the slice
-	Lane_BarsDBID_Index sql.NullInt64
 }
 
 // BarDB describes a bar in the database
@@ -693,12 +687,6 @@ func (backRepoBar *BackRepoBarStruct) RestorePhaseTwo() {
 		_ = barDB
 
 		// insertion point for reindexing pointers encoding
-		// This reindex bar.Bars
-		if barDB.Lane_BarsDBID.Int64 != 0 {
-			barDB.Lane_BarsDBID.Int64 =
-				int64(BackRepoLaneid_atBckpTime_newID[uint(barDB.Lane_BarsDBID.Int64)])
-		}
-
 		// update databse with new index encoding
 		query := backRepoBar.db.Model(barDB).Updates(*barDB)
 		if query.Error != nil {
@@ -726,15 +714,6 @@ func (backRepoBar *BackRepoBarStruct) ResetReversePointersInstance(backRepo *Bac
 		_ = barDB // to avoid unused variable error if there are no reverse to reset
 
 		// insertion point for reverse pointers reset
-		if barDB.Lane_BarsDBID.Int64 != 0 {
-			barDB.Lane_BarsDBID.Int64 = 0
-			barDB.Lane_BarsDBID.Valid = true
-
-			// save the reset
-			if q := backRepoBar.db.Save(barDB); q.Error != nil {
-				return q.Error
-			}
-		}
 		// end of insertion point for reverse pointers reset
 	}
 

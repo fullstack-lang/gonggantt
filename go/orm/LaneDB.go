@@ -38,7 +38,7 @@ type LaneAPI struct {
 	models.Lane_WOP
 
 	// encoding of pointers
-	LanePointersEncoding
+	LanePointersEncoding LanePointersEncoding
 }
 
 // LanePointersEncoding encodes pointers to Struct and
@@ -47,19 +47,7 @@ type LanePointersEncoding struct {
 	// insertion for pointer fields encoding declaration
 
 	// field Bars is a slice of pointers to another Struct (optional or 0..1)
-	Bars IntSlice`gorm:"type:TEXT"`
-
-	// Implementation of a reverse ID for field Gantt{}.Lanes []*Lane
-	Gantt_LanesDBID sql.NullInt64
-
-	// implementation of the index of the withing the slice
-	Gantt_LanesDBID_Index sql.NullInt64
-
-	// Implementation of a reverse ID for field Group{}.GroupLanes []*Lane
-	Group_GroupLanesDBID sql.NullInt64
-
-	// implementation of the index of the withing the slice
-	Group_GroupLanesDBID_Index sql.NullInt64
+	Bars IntSlice `gorm:"type:TEXT"`
 }
 
 // LaneDB describes a lane in the database
@@ -229,25 +217,6 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 		laneDB.CopyBasicFieldsFromLane(lane)
 
 		// insertion point for translating pointers encodings into actual pointers
-		// This loop encodes the slice of pointers lane.Bars into the back repo.
-		// Each back repo instance at the end of the association encode the ID of the association start
-		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, barAssocEnd := range lane.Bars {
-
-			// get the back repo instance at the association end
-			barAssocEnd_DB :=
-				backRepo.BackRepoBar.GetBarDBFromBarPtr(barAssocEnd)
-
-			// encode reverse pointer in the association end back repo instance
-			barAssocEnd_DB.Lane_BarsDBID.Int64 = int64(laneDB.ID)
-			barAssocEnd_DB.Lane_BarsDBID.Valid = true
-			barAssocEnd_DB.Lane_BarsDBID_Index.Int64 = int64(idx)
-			barAssocEnd_DB.Lane_BarsDBID_Index.Valid = true
-			if q := backRepoLane.db.Save(barAssocEnd_DB); q.Error != nil {
-				return q.Error
-			}
-		}
-
 		// 1. reset
 		laneDB.LanePointersEncoding.Bars = make([]int, 0)
 		// 2. encode
@@ -370,27 +339,9 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseTwoInstance(backRepo *BackR
 	// it appends the stage instance
 	// 1. reset the slice
 	lane.Bars = lane.Bars[:0]
-	// 2. loop all instances in the type in the association end
-	for _, barDB_AssocEnd := range backRepo.BackRepoBar.Map_BarDBID_BarDB {
-		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if barDB_AssocEnd.Lane_BarsDBID.Int64 == int64(laneDB.ID) {
-			// 4. fetch the associated instance in the stage
-			bar_AssocEnd := backRepo.BackRepoBar.Map_BarDBID_BarPtr[barDB_AssocEnd.ID]
-			// 5. append it the association slice
-			lane.Bars = append(lane.Bars, bar_AssocEnd)
-		}
+	for _, _Barid := range laneDB.LanePointersEncoding.Bars {
+		lane.Bars = append(lane.Bars, backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(_Barid)])
 	}
-
-	// sort the array according to the order
-	sort.Slice(lane.Bars, func(i, j int) bool {
-		barDB_i_ID := backRepo.BackRepoBar.Map_BarPtr_BarDBID[lane.Bars[i]]
-		barDB_j_ID := backRepo.BackRepoBar.Map_BarPtr_BarDBID[lane.Bars[j]]
-
-		barDB_i := backRepo.BackRepoBar.Map_BarDBID_BarDB[barDB_i_ID]
-		barDB_j := backRepo.BackRepoBar.Map_BarDBID_BarDB[barDB_j_ID]
-
-		return barDB_i.Lane_BarsDBID_Index.Int64 < barDB_j.Lane_BarsDBID_Index.Int64
-	})
 
 	return
 }
@@ -632,18 +583,6 @@ func (backRepoLane *BackRepoLaneStruct) RestorePhaseTwo() {
 		_ = laneDB
 
 		// insertion point for reindexing pointers encoding
-		// This reindex lane.Lanes
-		if laneDB.Gantt_LanesDBID.Int64 != 0 {
-			laneDB.Gantt_LanesDBID.Int64 =
-				int64(BackRepoGanttid_atBckpTime_newID[uint(laneDB.Gantt_LanesDBID.Int64)])
-		}
-
-		// This reindex lane.GroupLanes
-		if laneDB.Group_GroupLanesDBID.Int64 != 0 {
-			laneDB.Group_GroupLanesDBID.Int64 =
-				int64(BackRepoGroupid_atBckpTime_newID[uint(laneDB.Group_GroupLanesDBID.Int64)])
-		}
-
 		// update databse with new index encoding
 		query := backRepoLane.db.Model(laneDB).Updates(*laneDB)
 		if query.Error != nil {
@@ -671,24 +610,6 @@ func (backRepoLane *BackRepoLaneStruct) ResetReversePointersInstance(backRepo *B
 		_ = laneDB // to avoid unused variable error if there are no reverse to reset
 
 		// insertion point for reverse pointers reset
-		if laneDB.Gantt_LanesDBID.Int64 != 0 {
-			laneDB.Gantt_LanesDBID.Int64 = 0
-			laneDB.Gantt_LanesDBID.Valid = true
-
-			// save the reset
-			if q := backRepoLane.db.Save(laneDB); q.Error != nil {
-				return q.Error
-			}
-		}
-		if laneDB.Group_GroupLanesDBID.Int64 != 0 {
-			laneDB.Group_GroupLanesDBID.Int64 = 0
-			laneDB.Group_GroupLanesDBID.Valid = true
-
-			// save the reset
-			if q := backRepoLane.db.Save(laneDB); q.Error != nil {
-				return q.Error
-			}
-		}
 		// end of insertion point for reverse pointers reset
 	}
 

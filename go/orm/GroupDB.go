@@ -38,7 +38,7 @@ type GroupAPI struct {
 	models.Group_WOP
 
 	// encoding of pointers
-	GroupPointersEncoding
+	GroupPointersEncoding GroupPointersEncoding
 }
 
 // GroupPointersEncoding encodes pointers to Struct and
@@ -47,13 +47,7 @@ type GroupPointersEncoding struct {
 	// insertion for pointer fields encoding declaration
 
 	// field GroupLanes is a slice of pointers to another Struct (optional or 0..1)
-	GroupLanes IntSlice`gorm:"type:TEXT"`
-
-	// Implementation of a reverse ID for field Gantt{}.Groups []*Group
-	Gantt_GroupsDBID sql.NullInt64
-
-	// implementation of the index of the withing the slice
-	Gantt_GroupsDBID_Index sql.NullInt64
+	GroupLanes IntSlice `gorm:"type:TEXT"`
 }
 
 // GroupDB describes a group in the database
@@ -217,25 +211,6 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwoInstance(backRepo *BackR
 		groupDB.CopyBasicFieldsFromGroup(group)
 
 		// insertion point for translating pointers encodings into actual pointers
-		// This loop encodes the slice of pointers group.GroupLanes into the back repo.
-		// Each back repo instance at the end of the association encode the ID of the association start
-		// into a dedicated field for coding the association. The back repo instance is then saved to the db
-		for idx, laneAssocEnd := range group.GroupLanes {
-
-			// get the back repo instance at the association end
-			laneAssocEnd_DB :=
-				backRepo.BackRepoLane.GetLaneDBFromLanePtr(laneAssocEnd)
-
-			// encode reverse pointer in the association end back repo instance
-			laneAssocEnd_DB.Group_GroupLanesDBID.Int64 = int64(groupDB.ID)
-			laneAssocEnd_DB.Group_GroupLanesDBID.Valid = true
-			laneAssocEnd_DB.Group_GroupLanesDBID_Index.Int64 = int64(idx)
-			laneAssocEnd_DB.Group_GroupLanesDBID_Index.Valid = true
-			if q := backRepoGroup.db.Save(laneAssocEnd_DB); q.Error != nil {
-				return q.Error
-			}
-		}
-
 		// 1. reset
 		groupDB.GroupPointersEncoding.GroupLanes = make([]int, 0)
 		// 2. encode
@@ -358,27 +333,9 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 	// it appends the stage instance
 	// 1. reset the slice
 	group.GroupLanes = group.GroupLanes[:0]
-	// 2. loop all instances in the type in the association end
-	for _, laneDB_AssocEnd := range backRepo.BackRepoLane.Map_LaneDBID_LaneDB {
-		// 3. Does the ID encoding at the end and the ID at the start matches ?
-		if laneDB_AssocEnd.Group_GroupLanesDBID.Int64 == int64(groupDB.ID) {
-			// 4. fetch the associated instance in the stage
-			lane_AssocEnd := backRepo.BackRepoLane.Map_LaneDBID_LanePtr[laneDB_AssocEnd.ID]
-			// 5. append it the association slice
-			group.GroupLanes = append(group.GroupLanes, lane_AssocEnd)
-		}
+	for _, _Laneid := range groupDB.GroupPointersEncoding.GroupLanes {
+		group.GroupLanes = append(group.GroupLanes, backRepo.BackRepoLane.Map_LaneDBID_LanePtr[uint(_Laneid)])
 	}
-
-	// sort the array according to the order
-	sort.Slice(group.GroupLanes, func(i, j int) bool {
-		laneDB_i_ID := backRepo.BackRepoLane.Map_LanePtr_LaneDBID[group.GroupLanes[i]]
-		laneDB_j_ID := backRepo.BackRepoLane.Map_LanePtr_LaneDBID[group.GroupLanes[j]]
-
-		laneDB_i := backRepo.BackRepoLane.Map_LaneDBID_LaneDB[laneDB_i_ID]
-		laneDB_j := backRepo.BackRepoLane.Map_LaneDBID_LaneDB[laneDB_j_ID]
-
-		return laneDB_i.Group_GroupLanesDBID_Index.Int64 < laneDB_j.Group_GroupLanesDBID_Index.Int64
-	})
 
 	return
 }
@@ -608,12 +565,6 @@ func (backRepoGroup *BackRepoGroupStruct) RestorePhaseTwo() {
 		_ = groupDB
 
 		// insertion point for reindexing pointers encoding
-		// This reindex group.Groups
-		if groupDB.Gantt_GroupsDBID.Int64 != 0 {
-			groupDB.Gantt_GroupsDBID.Int64 =
-				int64(BackRepoGanttid_atBckpTime_newID[uint(groupDB.Gantt_GroupsDBID.Int64)])
-		}
-
 		// update databse with new index encoding
 		query := backRepoGroup.db.Model(groupDB).Updates(*groupDB)
 		if query.Error != nil {
@@ -641,15 +592,6 @@ func (backRepoGroup *BackRepoGroupStruct) ResetReversePointersInstance(backRepo 
 		_ = groupDB // to avoid unused variable error if there are no reverse to reset
 
 		// insertion point for reverse pointers reset
-		if groupDB.Gantt_GroupsDBID.Int64 != 0 {
-			groupDB.Gantt_GroupsDBID.Int64 = 0
-			groupDB.Gantt_GroupsDBID.Valid = true
-
-			// save the reset
-			if q := backRepoGroup.db.Save(groupDB); q.Error != nil {
-				return q.Error
-			}
-		}
 		// end of insertion point for reverse pointers reset
 	}
 

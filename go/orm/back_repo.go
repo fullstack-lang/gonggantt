@@ -197,15 +197,6 @@ func (backRepo *BackRepoStruct) Commit(stage *models.StageStruct) {
 	backRepo.BackRepoLaneUse.CommitPhaseOne(stage)
 	backRepo.BackRepoMilestone.CommitPhaseOne(stage)
 
-	// insertion point for per struct back repo for reseting the reverse pointers
-	backRepo.BackRepoArrow.ResetReversePointers(backRepo)
-	backRepo.BackRepoBar.ResetReversePointers(backRepo)
-	backRepo.BackRepoGantt.ResetReversePointers(backRepo)
-	backRepo.BackRepoGroup.ResetReversePointers(backRepo)
-	backRepo.BackRepoLane.ResetReversePointers(backRepo)
-	backRepo.BackRepoLaneUse.ResetReversePointers(backRepo)
-	backRepo.BackRepoMilestone.ResetReversePointers(backRepo)
-
 	// insertion point for per struct back repo phase two commit
 	backRepo.BackRepoArrow.CommitPhaseTwo(backRepo)
 	backRepo.BackRepoBar.CommitPhaseTwo(backRepo)

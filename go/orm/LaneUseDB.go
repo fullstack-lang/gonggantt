@@ -38,7 +38,7 @@ type LaneUseAPI struct {
 	models.LaneUse_WOP
 
 	// encoding of pointers
-	LaneUsePointersEncoding
+	LaneUsePointersEncoding LaneUsePointersEncoding
 }
 
 // LaneUsePointersEncoding encodes pointers to Struct and
@@ -49,12 +49,6 @@ type LaneUsePointersEncoding struct {
 	// field Lane is a pointer to another Struct (optional or 0..1)
 	// This field is generated into another field to enable AS ONE association
 	LaneID sql.NullInt64
-
-	// Implementation of a reverse ID for field Milestone{}.LanesToDisplayMilestoneUse []*LaneUse
-	Milestone_LanesToDisplayMilestoneUseDBID sql.NullInt64
-
-	// implementation of the index of the withing the slice
-	Milestone_LanesToDisplayMilestoneUseDBID_Index sql.NullInt64
 }
 
 // LaneUseDB describes a laneuse in the database
@@ -576,12 +570,6 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseTwo() {
 			laneuseDB.LaneID.Valid = true
 		}
 
-		// This reindex laneuse.LanesToDisplayMilestoneUse
-		if laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 != 0 {
-			laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 =
-				int64(BackRepoMilestoneid_atBckpTime_newID[uint(laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64)])
-		}
-
 		// update databse with new index encoding
 		query := backRepoLaneUse.db.Model(laneuseDB).Updates(*laneuseDB)
 		if query.Error != nil {
@@ -609,15 +597,6 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) ResetReversePointersInstance(backR
 		_ = laneuseDB // to avoid unused variable error if there are no reverse to reset
 
 		// insertion point for reverse pointers reset
-		if laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 != 0 {
-			laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Int64 = 0
-			laneuseDB.Milestone_LanesToDisplayMilestoneUseDBID.Valid = true
-
-			// save the reset
-			if q := backRepoLaneUse.db.Save(laneuseDB); q.Error != nil {
-				return q.Error
-			}
-		}
 		// end of insertion point for reverse pointers reset
 	}
 

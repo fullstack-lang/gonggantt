@@ -38,7 +38,7 @@ type ArrowAPI struct {
 	models.Arrow_WOP
 
 	// encoding of pointers
-	ArrowPointersEncoding
+	ArrowPointersEncoding ArrowPointersEncoding
 }
 
 // ArrowPointersEncoding encodes pointers to Struct and
@@ -53,12 +53,6 @@ type ArrowPointersEncoding struct {
 	// field To is a pointer to another Struct (optional or 0..1)
 	// This field is generated into another field to enable AS ONE association
 	ToID sql.NullInt64
-
-	// Implementation of a reverse ID for field Gantt{}.Arrows []*Arrow
-	Gantt_ArrowsDBID sql.NullInt64
-
-	// implementation of the index of the withing the slice
-	Gantt_ArrowsDBID_Index sql.NullInt64
 }
 
 // ArrowDB describes a arrow in the database
@@ -639,12 +633,6 @@ func (backRepoArrow *BackRepoArrowStruct) RestorePhaseTwo() {
 			arrowDB.ToID.Valid = true
 		}
 
-		// This reindex arrow.Arrows
-		if arrowDB.Gantt_ArrowsDBID.Int64 != 0 {
-			arrowDB.Gantt_ArrowsDBID.Int64 =
-				int64(BackRepoGanttid_atBckpTime_newID[uint(arrowDB.Gantt_ArrowsDBID.Int64)])
-		}
-
 		// update databse with new index encoding
 		query := backRepoArrow.db.Model(arrowDB).Updates(*arrowDB)
 		if query.Error != nil {
@@ -672,15 +660,6 @@ func (backRepoArrow *BackRepoArrowStruct) ResetReversePointersInstance(backRepo 
 		_ = arrowDB // to avoid unused variable error if there are no reverse to reset
 
 		// insertion point for reverse pointers reset
-		if arrowDB.Gantt_ArrowsDBID.Int64 != 0 {
-			arrowDB.Gantt_ArrowsDBID.Int64 = 0
-			arrowDB.Gantt_ArrowsDBID.Valid = true
-
-			// save the reset
-			if q := backRepoArrow.db.Save(arrowDB); q.Error != nil {
-				return q.Error
-			}
-		}
 		// end of insertion point for reverse pointers reset
 	}
 

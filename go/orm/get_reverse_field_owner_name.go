@@ -30,10 +30,8 @@ func GetReverseFieldOwnerName[T models.Gongstruct](
 		case "Gantt":
 			switch reverseField.Fieldname {
 			case "Arrows":
-				if tmp != nil && tmp.Gantt_ArrowsDBID.Int64 != 0 {
-					id := uint(tmp.Gantt_ArrowsDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[id]
-					res = reservePointerTarget.Name
+				if _gantt, ok := stage.Gantt_Arrows_reverseMap[inst]; ok {
+					res = _gantt.Name
 				}
 			}
 		case "Group":
@@ -72,10 +70,8 @@ func GetReverseFieldOwnerName[T models.Gongstruct](
 		case "Lane":
 			switch reverseField.Fieldname {
 			case "Bars":
-				if tmp != nil && tmp.Lane_BarsDBID.Int64 != 0 {
-					id := uint(tmp.Lane_BarsDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoLane.Map_LaneDBID_LanePtr[id]
-					res = reservePointerTarget.Name
+				if _lane, ok := stage.Lane_Bars_reverseMap[inst]; ok {
+					res = _lane.Name
 				}
 			}
 		case "LaneUse":
@@ -132,10 +128,8 @@ func GetReverseFieldOwnerName[T models.Gongstruct](
 		case "Gantt":
 			switch reverseField.Fieldname {
 			case "Groups":
-				if tmp != nil && tmp.Gantt_GroupsDBID.Int64 != 0 {
-					id := uint(tmp.Gantt_GroupsDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[id]
-					res = reservePointerTarget.Name
+				if _gantt, ok := stage.Gantt_Groups_reverseMap[inst]; ok {
+					res = _gantt.Name
 				}
 			}
 		case "Group":
@@ -168,19 +162,15 @@ func GetReverseFieldOwnerName[T models.Gongstruct](
 		case "Gantt":
 			switch reverseField.Fieldname {
 			case "Lanes":
-				if tmp != nil && tmp.Gantt_LanesDBID.Int64 != 0 {
-					id := uint(tmp.Gantt_LanesDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[id]
-					res = reservePointerTarget.Name
+				if _gantt, ok := stage.Gantt_Lanes_reverseMap[inst]; ok {
+					res = _gantt.Name
 				}
 			}
 		case "Group":
 			switch reverseField.Fieldname {
 			case "GroupLanes":
-				if tmp != nil && tmp.Group_GroupLanesDBID.Int64 != 0 {
-					id := uint(tmp.Group_GroupLanesDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr[id]
-					res = reservePointerTarget.Name
+				if _group, ok := stage.Group_GroupLanes_reverseMap[inst]; ok {
+					res = _group.Name
 				}
 			}
 		case "Lane":
@@ -222,10 +212,8 @@ func GetReverseFieldOwnerName[T models.Gongstruct](
 		case "Milestone":
 			switch reverseField.Fieldname {
 			case "LanesToDisplayMilestoneUse":
-				if tmp != nil && tmp.Milestone_LanesToDisplayMilestoneUseDBID.Int64 != 0 {
-					id := uint(tmp.Milestone_LanesToDisplayMilestoneUseDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr[id]
-					res = reservePointerTarget.Name
+				if _milestone, ok := stage.Milestone_LanesToDisplayMilestoneUse_reverseMap[inst]; ok {
+					res = _milestone.Name
 				}
 			}
 		}
@@ -246,10 +234,8 @@ func GetReverseFieldOwnerName[T models.Gongstruct](
 		case "Gantt":
 			switch reverseField.Fieldname {
 			case "Milestones":
-				if tmp != nil && tmp.Gantt_MilestonesDBID.Int64 != 0 {
-					id := uint(tmp.Gantt_MilestonesDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[id]
-					res = reservePointerTarget.Name
+				if _gantt, ok := stage.Gantt_Milestones_reverseMap[inst]; ok {
+					res = _gantt.Name
 				}
 			}
 		case "Group":
@@ -297,11 +283,7 @@ func GetReverseFieldOwner[T models.Gongstruct](
 		case "Gantt":
 			switch reverseField.Fieldname {
 			case "Arrows":
-				if tmp != nil && tmp.Gantt_ArrowsDBID.Int64 != 0 {
-					id := uint(tmp.Gantt_ArrowsDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[id]
-					res = reservePointerTarget
-				}
+				res = stage.Gantt_Arrows_reverseMap[inst]
 			}
 		case "Group":
 			switch reverseField.Fieldname {
@@ -316,7 +298,7 @@ func GetReverseFieldOwner[T models.Gongstruct](
 			switch reverseField.Fieldname {
 			}
 		}
-	
+
 	case *models.Bar:
 		tmp := GetInstanceDBFromInstance[models.Bar, BarDB](
 			stage, backRepo, inst,
@@ -339,11 +321,7 @@ func GetReverseFieldOwner[T models.Gongstruct](
 		case "Lane":
 			switch reverseField.Fieldname {
 			case "Bars":
-				if tmp != nil && tmp.Lane_BarsDBID.Int64 != 0 {
-					id := uint(tmp.Lane_BarsDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoLane.Map_LaneDBID_LanePtr[id]
-					res = reservePointerTarget
-				}
+				res = stage.Lane_Bars_reverseMap[inst]
 			}
 		case "LaneUse":
 			switch reverseField.Fieldname {
@@ -352,7 +330,7 @@ func GetReverseFieldOwner[T models.Gongstruct](
 			switch reverseField.Fieldname {
 			}
 		}
-	
+
 	case *models.Gantt:
 		tmp := GetInstanceDBFromInstance[models.Gantt, GanttDB](
 			stage, backRepo, inst,
@@ -382,7 +360,7 @@ func GetReverseFieldOwner[T models.Gongstruct](
 			switch reverseField.Fieldname {
 			}
 		}
-	
+
 	case *models.Group:
 		tmp := GetInstanceDBFromInstance[models.Group, GroupDB](
 			stage, backRepo, inst,
@@ -399,11 +377,7 @@ func GetReverseFieldOwner[T models.Gongstruct](
 		case "Gantt":
 			switch reverseField.Fieldname {
 			case "Groups":
-				if tmp != nil && tmp.Gantt_GroupsDBID.Int64 != 0 {
-					id := uint(tmp.Gantt_GroupsDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[id]
-					res = reservePointerTarget
-				}
+				res = stage.Gantt_Groups_reverseMap[inst]
 			}
 		case "Group":
 			switch reverseField.Fieldname {
@@ -418,7 +392,7 @@ func GetReverseFieldOwner[T models.Gongstruct](
 			switch reverseField.Fieldname {
 			}
 		}
-	
+
 	case *models.Lane:
 		tmp := GetInstanceDBFromInstance[models.Lane, LaneDB](
 			stage, backRepo, inst,
@@ -435,20 +409,12 @@ func GetReverseFieldOwner[T models.Gongstruct](
 		case "Gantt":
 			switch reverseField.Fieldname {
 			case "Lanes":
-				if tmp != nil && tmp.Gantt_LanesDBID.Int64 != 0 {
-					id := uint(tmp.Gantt_LanesDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[id]
-					res = reservePointerTarget
-				}
+				res = stage.Gantt_Lanes_reverseMap[inst]
 			}
 		case "Group":
 			switch reverseField.Fieldname {
 			case "GroupLanes":
-				if tmp != nil && tmp.Group_GroupLanesDBID.Int64 != 0 {
-					id := uint(tmp.Group_GroupLanesDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr[id]
-					res = reservePointerTarget
-				}
+				res = stage.Group_GroupLanes_reverseMap[inst]
 			}
 		case "Lane":
 			switch reverseField.Fieldname {
@@ -460,7 +426,7 @@ func GetReverseFieldOwner[T models.Gongstruct](
 			switch reverseField.Fieldname {
 			}
 		}
-	
+
 	case *models.LaneUse:
 		tmp := GetInstanceDBFromInstance[models.LaneUse, LaneUseDB](
 			stage, backRepo, inst,
@@ -489,14 +455,10 @@ func GetReverseFieldOwner[T models.Gongstruct](
 		case "Milestone":
 			switch reverseField.Fieldname {
 			case "LanesToDisplayMilestoneUse":
-				if tmp != nil && tmp.Milestone_LanesToDisplayMilestoneUseDBID.Int64 != 0 {
-					id := uint(tmp.Milestone_LanesToDisplayMilestoneUseDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr[id]
-					res = reservePointerTarget
-				}
+				res = stage.Milestone_LanesToDisplayMilestoneUse_reverseMap[inst]
 			}
 		}
-	
+
 	case *models.Milestone:
 		tmp := GetInstanceDBFromInstance[models.Milestone, MilestoneDB](
 			stage, backRepo, inst,
@@ -513,11 +475,7 @@ func GetReverseFieldOwner[T models.Gongstruct](
 		case "Gantt":
 			switch reverseField.Fieldname {
 			case "Milestones":
-				if tmp != nil && tmp.Gantt_MilestonesDBID.Int64 != 0 {
-					id := uint(tmp.Gantt_MilestonesDBID.Int64)
-					reservePointerTarget := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[id]
-					res = reservePointerTarget
-				}
+				res = stage.Gantt_Milestones_reverseMap[inst]
 			}
 		case "Group":
 			switch reverseField.Fieldname {
@@ -532,7 +490,7 @@ func GetReverseFieldOwner[T models.Gongstruct](
 			switch reverseField.Fieldname {
 			}
 		}
-	
+
 	default:
 		_ = inst
 	}
