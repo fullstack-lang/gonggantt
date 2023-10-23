@@ -3,11 +3,11 @@ module github.com/fullstack-lang/gonggantt
 go 1.21.0
 
 require (
-	github.com/fullstack-lang/gong v0.0.0-20231022162241-306ab5475abf
-	github.com/fullstack-lang/gongdoc v0.0.0-20231022162241-cfc5834af904
-	github.com/fullstack-lang/gongsvg v0.0.0-20231022162242-c85beac75561
-	github.com/fullstack-lang/gongtable v0.0.0-20231022162242-cbef0821a190
-	github.com/fullstack-lang/gongtree v0.0.0-20231022162242-056e440b501f
+	github.com/fullstack-lang/gong v0.0.0-20231023031805-6f3b29995761
+	github.com/fullstack-lang/gongdoc v0.0.0-20231023032144-1c3b92fe2275
+	github.com/fullstack-lang/gongsvg v0.0.0-20231023031806-925b6e7ea7fe
+	github.com/fullstack-lang/gongtable v0.0.0-20231023031806-c2ced54560fc
+	github.com/fullstack-lang/gongtree v0.0.0-20231023031806-2beaec84ed97
 	github.com/fullstack-lang/maticons v0.0.0-20230823061653-70c364fbdd00
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/static v0.0.1
@@ -66,7 +66,7 @@ require (
 	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/libc v1.27.0 // indirect
+	modernc.org/libc v1.28.0 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.7.2 // indirect
 	modernc.org/sqlite v1.26.0 // indirect
