@@ -8,11 +8,11 @@ import (
 )
 
 func FillUpFormFromGongstructName(
-	playground *Playground,
+	probe *Probe,
 	gongstructName string,
 	isNewInstance bool,
 ) {
-	formStage := playground.formStage
+	formStage := probe.formStage
 	formStage.Reset()
 	formStage.Commit()
 
@@ -32,77 +32,77 @@ func FillUpFormFromGongstructName(
 			Label: prefix + " Arrow Form",
 			OnSave: __gong__New__ArrowFormCallback(
 				nil,
-				playground,
+				probe,
 			),
 		}).Stage(formStage)
 		arrow := new(models.Arrow)
-		FillUpForm(arrow, formGroup, playground)
+		FillUpForm(arrow, formGroup, probe)
 	case "Bar":
 		formGroup := (&form.FormGroup{
 			Name:  form.FormGroupDefaultName.ToString(),
 			Label: prefix + " Bar Form",
 			OnSave: __gong__New__BarFormCallback(
 				nil,
-				playground,
+				probe,
 			),
 		}).Stage(formStage)
 		bar := new(models.Bar)
-		FillUpForm(bar, formGroup, playground)
+		FillUpForm(bar, formGroup, probe)
 	case "Gantt":
 		formGroup := (&form.FormGroup{
 			Name:  form.FormGroupDefaultName.ToString(),
 			Label: prefix + " Gantt Form",
 			OnSave: __gong__New__GanttFormCallback(
 				nil,
-				playground,
+				probe,
 			),
 		}).Stage(formStage)
 		gantt := new(models.Gantt)
-		FillUpForm(gantt, formGroup, playground)
+		FillUpForm(gantt, formGroup, probe)
 	case "Group":
 		formGroup := (&form.FormGroup{
 			Name:  form.FormGroupDefaultName.ToString(),
 			Label: prefix + " Group Form",
 			OnSave: __gong__New__GroupFormCallback(
 				nil,
-				playground,
+				probe,
 			),
 		}).Stage(formStage)
 		group := new(models.Group)
-		FillUpForm(group, formGroup, playground)
+		FillUpForm(group, formGroup, probe)
 	case "Lane":
 		formGroup := (&form.FormGroup{
 			Name:  form.FormGroupDefaultName.ToString(),
 			Label: prefix + " Lane Form",
 			OnSave: __gong__New__LaneFormCallback(
 				nil,
-				playground,
+				probe,
 			),
 		}).Stage(formStage)
 		lane := new(models.Lane)
-		FillUpForm(lane, formGroup, playground)
+		FillUpForm(lane, formGroup, probe)
 	case "LaneUse":
 		formGroup := (&form.FormGroup{
 			Name:  form.FormGroupDefaultName.ToString(),
 			Label: prefix + " LaneUse Form",
 			OnSave: __gong__New__LaneUseFormCallback(
 				nil,
-				playground,
+				probe,
 			),
 		}).Stage(formStage)
 		laneuse := new(models.LaneUse)
-		FillUpForm(laneuse, formGroup, playground)
+		FillUpForm(laneuse, formGroup, probe)
 	case "Milestone":
 		formGroup := (&form.FormGroup{
 			Name:  form.FormGroupDefaultName.ToString(),
 			Label: prefix + " Milestone Form",
 			OnSave: __gong__New__MilestoneFormCallback(
 				nil,
-				playground,
+				probe,
 			),
 		}).Stage(formStage)
 		milestone := new(models.Milestone)
-		FillUpForm(milestone, formGroup, playground)
+		FillUpForm(milestone, formGroup, probe)
 	}
 	formStage.Commit()
 }

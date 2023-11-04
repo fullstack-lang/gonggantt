@@ -12,17 +12,17 @@ import (
 
 type TreeNodeImplGongstruct struct {
 	gongStruct *gong_models.GongStruct
-	playground *Playground
+	probe *Probe
 }
 
 func NewTreeNodeImplGongstruct(
 	gongStruct *gong_models.GongStruct,
-	playground *Playground,
+	probe *Probe,
 ) (nodeImplGongstruct *TreeNodeImplGongstruct) {
 
 	nodeImplGongstruct = new(TreeNodeImplGongstruct)
 	nodeImplGongstruct.gongStruct = gongStruct
-	nodeImplGongstruct.playground = playground
+	nodeImplGongstruct.probe = probe
 	return
 }
 
@@ -53,25 +53,25 @@ func (nodeImplGongstruct *TreeNodeImplGongstruct) OnAfterUpdate(
 
 	// insertion point
 	if nodeImplGongstruct.gongStruct.GetName() == "Arrow" {
-		fillUpTable[models.Arrow](nodeImplGongstruct.playground)
+		fillUpTable[models.Arrow](nodeImplGongstruct.probe)
 	}
 	if nodeImplGongstruct.gongStruct.GetName() == "Bar" {
-		fillUpTable[models.Bar](nodeImplGongstruct.playground)
+		fillUpTable[models.Bar](nodeImplGongstruct.probe)
 	}
 	if nodeImplGongstruct.gongStruct.GetName() == "Gantt" {
-		fillUpTable[models.Gantt](nodeImplGongstruct.playground)
+		fillUpTable[models.Gantt](nodeImplGongstruct.probe)
 	}
 	if nodeImplGongstruct.gongStruct.GetName() == "Group" {
-		fillUpTable[models.Group](nodeImplGongstruct.playground)
+		fillUpTable[models.Group](nodeImplGongstruct.probe)
 	}
 	if nodeImplGongstruct.gongStruct.GetName() == "Lane" {
-		fillUpTable[models.Lane](nodeImplGongstruct.playground)
+		fillUpTable[models.Lane](nodeImplGongstruct.probe)
 	}
 	if nodeImplGongstruct.gongStruct.GetName() == "LaneUse" {
-		fillUpTable[models.LaneUse](nodeImplGongstruct.playground)
+		fillUpTable[models.LaneUse](nodeImplGongstruct.probe)
 	}
 	if nodeImplGongstruct.gongStruct.GetName() == "Milestone" {
-		fillUpTable[models.Milestone](nodeImplGongstruct.playground)
+		fillUpTable[models.Milestone](nodeImplGongstruct.probe)
 	}
 
 	// set color for node and reset all other nodes color
@@ -81,5 +81,5 @@ func (nodeImplGongstruct *TreeNodeImplGongstruct) OnAfterUpdate(
 	stagedNode.BackgroundColor = "lightgrey"
 	gongtreeStage.Commit()
 
-	nodeImplGongstruct.playground.tableStage.Commit()
+	nodeImplGongstruct.probe.tableStage.Commit()
 }
