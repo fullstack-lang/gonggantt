@@ -11,17 +11,17 @@ import (
 
 func NewCellDeleteIconImpl[T models.Gongstruct](
 	Instance *T,
-	playground *Playground,
+	probe *Probe,
 ) (cellDeleteIconImpl *CellDeleteIconImpl[T]) {
 	cellDeleteIconImpl = new(CellDeleteIconImpl[T])
 	cellDeleteIconImpl.Instance = Instance
-	cellDeleteIconImpl.playground = playground
+	cellDeleteIconImpl.probe = probe
 	return
 }
 
 type CellDeleteIconImpl[T models.Gongstruct] struct {
 	Instance   *T
-	playground *Playground
+	probe *Probe
 }
 
 func (cellDeleteIconImpl *CellDeleteIconImpl[T]) CellIconUpdated(stage *gongtable.StageStruct,
@@ -31,46 +31,46 @@ func (cellDeleteIconImpl *CellDeleteIconImpl[T]) CellIconUpdated(stage *gongtabl
 	switch instancesTyped := any(cellDeleteIconImpl.Instance).(type) {
 	// insertion point
 	case *models.Animate:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Circle:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Ellipse:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Layer:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Line:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Link:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.LinkAnchoredText:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Path:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Point:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Polygone:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Polyline:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Rect:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.RectAnchoredRect:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.RectAnchoredText:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.RectLinkLink:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.SVG:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	case *models.Text:
-		instancesTyped.Unstage(cellDeleteIconImpl.playground.stageOfInterest)
+		instancesTyped.Unstage(cellDeleteIconImpl.probe.stageOfInterest)
 	default:
 		_ = instancesTyped
 	}
-	cellDeleteIconImpl.playground.stageOfInterest.Commit()
+	cellDeleteIconImpl.probe.stageOfInterest.Commit()
 
-	fillUpTable[T](cellDeleteIconImpl.playground)
-	fillUpTree(cellDeleteIconImpl.playground)
-	cellDeleteIconImpl.playground.tableStage.Commit()
+	fillUpTable[T](cellDeleteIconImpl.probe)
+	fillUpTree(cellDeleteIconImpl.probe)
+	cellDeleteIconImpl.probe.tableStage.Commit()
 }
 
