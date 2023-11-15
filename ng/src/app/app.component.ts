@@ -4,6 +4,7 @@ import { Observable, combineLatest, timer } from 'rxjs'
 
 import * as gongdoc from 'gongdoc'
 import * as gonggantt from 'gonggantt'
+import * as gongsvg from 'gongsvg'
 
 import { GongdocModule } from 'gongdoc'
 import { GongdocspecificModule } from 'gongdocspecific'
@@ -32,9 +33,8 @@ export class AppComponent implements OnInit {
     'width': '100%',  // Ensure the div takes the full width of its parent container
   }
 
-  StackName = "gonggantt"
-  GanttStackType = "github.com/fullstack-lang/gonggantt/go/models"
-  SVGStackType = "github.com/fullstack-lang/gongsvg/go/models"
+  GanttStackType = gonggantt.StackType
+  SVGStackType = gongsvg.StackType
 
   GanttStacksNames = gonggantt.GanttStacksNames
 

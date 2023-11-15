@@ -2,26 +2,16 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
-	"os"
 	"strconv"
 
-	gonggantt_go "github.com/fullstack-lang/gonggantt/go"
-	gonggantt_fullstack "github.com/fullstack-lang/gonggantt/go/fullstack"
-	"github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
-	gonggantt_orm "github.com/fullstack-lang/gonggantt/go/orm"
-	gonggantt_probe "github.com/fullstack-lang/gonggantt/go/probe"
+	gonggantt_stack "github.com/fullstack-lang/gonggantt/go/stack"
+
 	gonggantt_static "github.com/fullstack-lang/gonggantt/go/static"
+	gongsvg_stack "github.com/fullstack-lang/gongsvg/go/stack"
 
 	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
-
-	gongsvg_go "github.com/fullstack-lang/gongsvg/go"
-	gongsvg_fullstack "github.com/fullstack-lang/gongsvg/go/fullstack"
-	gongsvg_probe "github.com/fullstack-lang/gongsvg/go/probe"
-
-	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
 
 var (
@@ -36,46 +26,6 @@ var (
 	port = flag.Int("port", 8080, "port server")
 )
 
-// hook marhalling to stage
-type CommitFromFrontOnGanttStage struct {
-	gongsvgStage   *gongsvg_models.StageStruct
-	ganttSVGMapper *gantt2svg.GanttSVGMapper
-}
-
-// BeforeCommit meets the interface for the commit on the gantt stage
-// It performs 2 tasks
-// 1 - update the SVG stack
-// 2 - persists the data to the gantt file
-func (beforeCommitFromFrontOnGanttStage *CommitFromFrontOnGanttStage) BeforeCommit(
-	gongganttStage *gonggantt_models.StageStruct) {
-	file, err := os.Create(fmt.Sprintf("./%s.go", *marshallOnCommit))
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	defer file.Close()
-
-	// update the gantt stage with the back repo data that was updated from the front
-	gongganttStage.Checkout()
-
-	// marshall to the file
-	gongganttStage.Marshall(file, "github.com/fullstack-lang/gonggantt/go/models", "main")
-	beforeCommitFromFrontOnGanttStage.ganttSVGMapper.GenerateSvg(gongganttStage, beforeCommitFromFrontOnGanttStage.gongsvgStage)
-}
-
-type OnAfterRectUpdate struct {
-	gongganttStage   *gonggantt_models.StageStruct
-	ganttToSVGMapper *gantt2svg.GanttSVGMapper
-}
-
-func (OnAfterRectUpdate *OnAfterRectUpdate) OnAfterUpdate(
-	gongsvgStage *gongsvg_models.StageStruct,
-	old *gongsvg_models.Rect,
-	new *gongsvg_models.Rect) {
-
-	log.Println("OnAfterRectUpdate, OnAfterUpdate", old.Name)
-
-}
-
 func main() {
 
 	log.SetPrefix("gonggantt: ")
@@ -87,74 +37,29 @@ func main() {
 	// setup the static file server and get the controller
 	r := gonggantt_static.ServeStaticFiles(*logGINFlag)
 
-	// setup stack
-	var gongganttStage *gonggantt_models.StageStruct
-	gongsvgStage, gongsvgBackRepo := gongsvg_fullstack.NewStackInstance(r, gonggantt_models.SvgStackName.ToString())
+	// setup stackGonggantt
+	stackGonggantt := gonggantt_stack.NewStack(r, gonggantt_models.GanttStackName.ToString(), *unmarshallFromCode, *marshallOnCommit, "", *embeddedDiagrams, true)
+	stackGonggantt.Probe.Refresh()
 
-	var backRepo *gonggantt_orm.BackRepoStruct
+	stacksvg := gongsvg_stack.NewStack(r, gonggantt_models.SvgStackName.ToString(), "", "", "", false, true)
+	stacksvg.Probe.Refresh()
 
-	if *marshallOnCommit != "" {
-		// persistence in a SQLite file on disk in memory
-		gongganttStage, backRepo = gonggantt_fullstack.NewStackInstance(r, models.GanttStackName.ToString())
-	} else {
-		// persistence in a SQLite file on disk
-		gongganttStage, backRepo = gonggantt_fullstack.NewStackInstance(r, models.GanttStackName.ToString(), "./gonggantt.db")
-	}
+	// set up the GanttSVGMapper that will intercept
+	// commits on the gonggantt stage and that will
+	// generate the svg
+	ganttSVGMapper := new(gantt2svg.GanttSVGMapper)
+	ganttSVGMapper.GanttOuputFile = *marshallOnCommit
 
-	if *unmarshallFromCode != "" {
-		gongganttStage.Checkout()
-		gongganttStage.Reset()
-		gongganttStage.Commit()
-		err := gonggantt_models.ParseAstFile(gongganttStage, *unmarshallFromCode)
+	commitOnGanttStage := new(CommitFromFrontOnGanttStage)
+	commitOnGanttStage.gongsvgStage = stacksvg.Stage
+	commitOnGanttStage.ganttSVGMapper = ganttSVGMapper
 
-		// if the application is run with -unmarshallFromCode=xxx.go -marshallOnCommit
-		// xxx.go might be absent the first time. However, this shall not be a show stopper.
-		if err != nil {
-			log.Println("no file to read " + err.Error())
-		}
+	// hook on the commit from front
+	stackGonggantt.Stage.OnInitCommitFromFrontCallback = commitOnGanttStage
+	stackGonggantt.Stage.OnInitCommitFromBackCallback = commitOnGanttStage
 
-		gongganttStage.Commit()
-	} else {
-		// in case the database is used, checkout the content to the stage
-		gongganttStage.Checkout()
-	}
-
-	// hook automatic marshall to go code at every commit
-	if *marshallOnCommit != "" {
-
-		ganttSVGMapper := new(gantt2svg.GanttSVGMapper)
-		ganttSVGMapper.GanttOuputFile = *marshallOnCommit
-
-		commitOnGanttStage := new(CommitFromFrontOnGanttStage)
-		commitOnGanttStage.gongsvgStage = gongsvgStage
-		commitOnGanttStage.ganttSVGMapper = ganttSVGMapper
-
-		// hook on the commit from front
-		gongganttStage.OnInitCommitFromFrontCallback = commitOnGanttStage
-		gongganttStage.OnInitCommitFromBackCallback = commitOnGanttStage
-
-		// onAfterRectUpdate := new(OnAfterRectUpdate)
-		// onAfterRectUpdate.gongganttStage = gongganttStage
-		// onAfterRectUpdate.ganttToSVGMapper = ganttSVGMapper
-
-		// // hook on the commit from front
-		// gongsvgStage.OnAfterRectUpdateCallback = onAfterRectUpdate
-
-		// put the SVG Rect logic on it ()
-		gongsvg_models.SetOrchestratorOnAfterUpdate[gongsvg_models.Rect](gongsvgStage)
-
-		// initial publication
-		ganttSVGMapper.GenerateSvg(gongganttStage, gongsvgStage)
-
-		// to have the probe see the results of the computed duration
-		gongganttStage.Commit()
-	}
-
-	gonggantt_probe.NewProbe(r, gonggantt_go.GoModelsDir, gonggantt_go.GoDiagramsDir,
-		*embeddedDiagrams, models.GanttProbeStacksPrefix.ToString(), gongganttStage, backRepo)
-
-	gongsvg_probe.NewProbe(r, gongsvg_go.GoModelsDir, gongsvg_go.GoDiagramsDir,
-		true, models.SVGProbeStacksPrefix.ToString(), gongsvgStage, gongsvgBackRepo)
+	// initial publication
+	ganttSVGMapper.GenerateSvg(stackGonggantt.Stage, stacksvg.Stage)
 
 	log.Printf("Server ready serve on localhost:" + strconv.Itoa(*port))
 	err := r.Run(":" + strconv.Itoa(*port))
