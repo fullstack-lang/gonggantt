@@ -325,7 +325,13 @@ func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwo(backRepo *BackRepoStr
 func (backRepoGroup *BackRepoGroupStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, groupDB *GroupDB) (Error error) {
 
 	group := backRepoGroup.Map_GroupDBID_GroupPtr[groupDB.ID]
-	_ = group // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
+
+	groupDB.DecodePointers(backRepo, group)
+
+	return
+}
+
+func (groupDB *GroupDB) DecodePointers(backRepo *BackRepoStruct, group *models.Group) {
 
 	// insertion point for checkout of pointer encoding
 	// This loop redeem group.GroupLanes in the stage from the encode in the back repo
@@ -585,7 +591,7 @@ func (backRepoGroup *BackRepoGroupStruct) ResetReversePointers(backRepo *BackRep
 	return
 }
 
-func (backRepoGroup *BackRepoGroupStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.Group) (Error error) {
+func (backRepoGroup *BackRepoGroupStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, group *models.Group) (Error error) {
 
 	// fetch matching groupDB
 	if groupDB, ok := backRepoGroup.Map_GroupDBID_GroupDB[idx]; ok {

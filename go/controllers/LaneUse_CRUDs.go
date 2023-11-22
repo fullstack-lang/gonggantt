@@ -293,6 +293,9 @@ func (controller *Controller) UpdateLaneUse(c *gin.Context) {
 	laneuseNew := new(models.LaneUse)
 	laneuseDB.CopyBasicFieldsToLaneUse(laneuseNew)
 
+	// redeem pointers
+	laneuseDB.DecodePointers(backRepo, laneuseNew)
+
 	// get stage instance from DB instance, and call callback function
 	laneuseOld := backRepo.BackRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB.ID]
 	if laneuseOld != nil {

@@ -510,7 +510,13 @@ func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwo(backRepo *BackRepoStr
 func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, ganttDB *GanttDB) (Error error) {
 
 	gantt := backRepoGantt.Map_GanttDBID_GanttPtr[ganttDB.ID]
-	_ = gantt // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
+
+	ganttDB.DecodePointers(backRepo, gantt)
+
+	return
+}
+
+func (ganttDB *GanttDB) DecodePointers(backRepo *BackRepoStruct, gantt *models.Gantt) {
 
 	// insertion point for checkout of pointer encoding
 	// This loop redeem gantt.Lanes in the stage from the encode in the back repo
@@ -1085,7 +1091,7 @@ func (backRepoGantt *BackRepoGanttStruct) ResetReversePointers(backRepo *BackRep
 	return
 }
 
-func (backRepoGantt *BackRepoGanttStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.Gantt) (Error error) {
+func (backRepoGantt *BackRepoGanttStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, gantt *models.Gantt) (Error error) {
 
 	// fetch matching ganttDB
 	if ganttDB, ok := backRepoGantt.Map_GanttDBID_GanttDB[idx]; ok {

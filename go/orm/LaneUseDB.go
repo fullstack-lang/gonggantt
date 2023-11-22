@@ -328,7 +328,13 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseTwo(backRepo *BackRep
 func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, laneuseDB *LaneUseDB) (Error error) {
 
 	laneuse := backRepoLaneUse.Map_LaneUseDBID_LaneUsePtr[laneuseDB.ID]
-	_ = laneuse // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
+
+	laneuseDB.DecodePointers(backRepo, laneuse)
+
+	return
+}
+
+func (laneuseDB *LaneUseDB) DecodePointers(backRepo *BackRepoStruct, laneuse *models.LaneUse) {
 
 	// insertion point for checkout of pointer encoding
 	// Lane field
@@ -590,7 +596,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) ResetReversePointers(backRepo *Bac
 	return
 }
 
-func (backRepoLaneUse *BackRepoLaneUseStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.LaneUse) (Error error) {
+func (backRepoLaneUse *BackRepoLaneUseStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, laneuse *models.LaneUse) (Error error) {
 
 	// fetch matching laneuseDB
 	if laneuseDB, ok := backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[idx]; ok {

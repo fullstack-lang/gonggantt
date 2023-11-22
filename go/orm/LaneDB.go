@@ -331,7 +331,13 @@ func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseTwo(backRepo *BackRepoStruc
 func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, laneDB *LaneDB) (Error error) {
 
 	lane := backRepoLane.Map_LaneDBID_LanePtr[laneDB.ID]
-	_ = lane // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
+
+	laneDB.DecodePointers(backRepo, lane)
+
+	return
+}
+
+func (laneDB *LaneDB) DecodePointers(backRepo *BackRepoStruct, lane *models.Lane) {
 
 	// insertion point for checkout of pointer encoding
 	// This loop redeem lane.Bars in the stage from the encode in the back repo
@@ -603,7 +609,7 @@ func (backRepoLane *BackRepoLaneStruct) ResetReversePointers(backRepo *BackRepoS
 	return
 }
 
-func (backRepoLane *BackRepoLaneStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.Lane) (Error error) {
+func (backRepoLane *BackRepoLaneStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, lane *models.Lane) (Error error) {
 
 	// fetch matching laneDB
 	if laneDB, ok := backRepoLane.Map_LaneDBID_LaneDB[idx]; ok {

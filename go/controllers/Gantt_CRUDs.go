@@ -293,6 +293,9 @@ func (controller *Controller) UpdateGantt(c *gin.Context) {
 	ganttNew := new(models.Gantt)
 	ganttDB.CopyBasicFieldsToGantt(ganttNew)
 
+	// redeem pointers
+	ganttDB.DecodePointers(backRepo, ganttNew)
+
 	// get stage instance from DB instance, and call callback function
 	ganttOld := backRepo.BackRepoGantt.Map_GanttDBID_GanttPtr[ganttDB.ID]
 	if ganttOld != nil {

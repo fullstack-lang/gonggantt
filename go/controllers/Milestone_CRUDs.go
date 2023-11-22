@@ -293,6 +293,9 @@ func (controller *Controller) UpdateMilestone(c *gin.Context) {
 	milestoneNew := new(models.Milestone)
 	milestoneDB.CopyBasicFieldsToMilestone(milestoneNew)
 
+	// redeem pointers
+	milestoneDB.DecodePointers(backRepo, milestoneNew)
+
 	// get stage instance from DB instance, and call callback function
 	milestoneOld := backRepo.BackRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB.ID]
 	if milestoneOld != nil {

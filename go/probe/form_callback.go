@@ -182,6 +182,10 @@ func (barFormCallback *BarFormCallback) OnSave() {
 		// insertion point per field
 		case "Name":
 			FormDivBasicFieldToField(&(bar_.Name), formDiv)
+		case "Start":
+			FormDivBasicFieldToField(&(bar_.Start), formDiv)
+		case "End":
+			FormDivBasicFieldToField(&(bar_.End), formDiv)
 		case "ComputedDuration":
 			FormDivBasicFieldToField(&(bar_.ComputedDuration), formDiv)
 		case "OptionnalColor":
@@ -306,10 +310,18 @@ func (ganttFormCallback *GanttFormCallback) OnSave() {
 		// insertion point per field
 		case "Name":
 			FormDivBasicFieldToField(&(gantt_.Name), formDiv)
+		case "ComputedStart":
+			FormDivBasicFieldToField(&(gantt_.ComputedStart), formDiv)
+		case "ComputedEnd":
+			FormDivBasicFieldToField(&(gantt_.ComputedEnd), formDiv)
 		case "ComputedDuration":
 			FormDivBasicFieldToField(&(gantt_.ComputedDuration), formDiv)
 		case "UseManualStartAndEndDates":
 			FormDivBasicFieldToField(&(gantt_.UseManualStartAndEndDates), formDiv)
+		case "ManualStart":
+			FormDivBasicFieldToField(&(gantt_.ManualStart), formDiv)
+		case "ManualEnd":
+			FormDivBasicFieldToField(&(gantt_.ManualEnd), formDiv)
 		case "LaneHeight":
 			FormDivBasicFieldToField(&(gantt_.LaneHeight), formDiv)
 		case "RatioBarToLaneHeight":
@@ -798,6 +810,8 @@ func (milestoneFormCallback *MilestoneFormCallback) OnSave() {
 		// insertion point per field
 		case "Name":
 			FormDivBasicFieldToField(&(milestone_.Name), formDiv)
+		case "Date":
+			FormDivBasicFieldToField(&(milestone_.Date), formDiv)
 		case "DisplayVerticalBar":
 			FormDivBasicFieldToField(&(milestone_.DisplayVerticalBar), formDiv)
 		case "Gantt:Milestones":

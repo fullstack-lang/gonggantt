@@ -293,6 +293,9 @@ func (controller *Controller) UpdateGroup(c *gin.Context) {
 	groupNew := new(models.Group)
 	groupDB.CopyBasicFieldsToGroup(groupNew)
 
+	// redeem pointers
+	groupDB.DecodePointers(backRepo, groupNew)
+
 	// get stage instance from DB instance, and call callback function
 	groupOld := backRepo.BackRepoGroup.Map_GroupDBID_GroupPtr[groupDB.ID]
 	if groupOld != nil {

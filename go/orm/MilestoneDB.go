@@ -338,7 +338,13 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwo(backRepo *Bac
 func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, milestoneDB *MilestoneDB) (Error error) {
 
 	milestone := backRepoMilestone.Map_MilestoneDBID_MilestonePtr[milestoneDB.ID]
-	_ = milestone // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
+
+	milestoneDB.DecodePointers(backRepo, milestone)
+
+	return
+}
+
+func (milestoneDB *MilestoneDB) DecodePointers(backRepo *BackRepoStruct, milestone *models.Milestone) {
 
 	// insertion point for checkout of pointer encoding
 	// This loop redeem milestone.LanesToDisplayMilestoneUse in the stage from the encode in the back repo
@@ -622,7 +628,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) ResetReversePointers(backRepo 
 	return
 }
 
-func (backRepoMilestone *BackRepoMilestoneStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.Milestone) (Error error) {
+func (backRepoMilestone *BackRepoMilestoneStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, milestone *models.Milestone) (Error error) {
 
 	// fetch matching milestoneDB
 	if milestoneDB, ok := backRepoMilestone.Map_MilestoneDBID_MilestoneDB[idx]; ok {

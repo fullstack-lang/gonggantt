@@ -293,6 +293,9 @@ func (controller *Controller) UpdateArrow(c *gin.Context) {
 	arrowNew := new(models.Arrow)
 	arrowDB.CopyBasicFieldsToArrow(arrowNew)
 
+	// redeem pointers
+	arrowDB.DecodePointers(backRepo, arrowNew)
+
 	// get stage instance from DB instance, and call callback function
 	arrowOld := backRepo.BackRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB.ID]
 	if arrowOld != nil {

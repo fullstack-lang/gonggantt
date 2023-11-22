@@ -356,7 +356,13 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseTwo(backRepo *BackRepoStr
 func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseTwoInstance(backRepo *BackRepoStruct, arrowDB *ArrowDB) (Error error) {
 
 	arrow := backRepoArrow.Map_ArrowDBID_ArrowPtr[arrowDB.ID]
-	_ = arrow // sometimes, there is no code generated. This lines voids the "unused variable" compilation error
+
+	arrowDB.DecodePointers(backRepo, arrow)
+
+	return
+}
+
+func (arrowDB *ArrowDB) DecodePointers(backRepo *BackRepoStruct, arrow *models.Arrow) {
 
 	// insertion point for checkout of pointer encoding
 	// From field
@@ -653,7 +659,7 @@ func (backRepoArrow *BackRepoArrowStruct) ResetReversePointers(backRepo *BackRep
 	return
 }
 
-func (backRepoArrow *BackRepoArrowStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, astruct *models.Arrow) (Error error) {
+func (backRepoArrow *BackRepoArrowStruct) ResetReversePointersInstance(backRepo *BackRepoStruct, idx uint, arrow *models.Arrow) (Error error) {
 
 	// fetch matching arrowDB
 	if arrowDB, ok := backRepoArrow.Map_ArrowDBID_ArrowDB[idx]; ok {
