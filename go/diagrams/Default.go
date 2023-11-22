@@ -247,7 +247,7 @@ func DefaultInjection(stage *models.StageStruct) {
 	__GongStructShape__000000_Default_Bar.ShowNbInstances = false
 	__GongStructShape__000000_Default_Bar.NbInstances = 0
 	__GongStructShape__000000_Default_Bar.Width = 240.000000
-	__GongStructShape__000000_Default_Bar.Heigth = 93.000000
+	__GongStructShape__000000_Default_Bar.Height = 93.000000
 	__GongStructShape__000000_Default_Bar.IsSelected = false
 
 	// GongStructShape values setup
@@ -260,7 +260,7 @@ func DefaultInjection(stage *models.StageStruct) {
 	__GongStructShape__000001_Default_Gantt.ShowNbInstances = false
 	__GongStructShape__000001_Default_Gantt.NbInstances = 0
 	__GongStructShape__000001_Default_Gantt.Width = 240.000000
-	__GongStructShape__000001_Default_Gantt.Heigth = 63.000000
+	__GongStructShape__000001_Default_Gantt.Height = 63.000000
 	__GongStructShape__000001_Default_Gantt.IsSelected = false
 
 	// GongStructShape values setup
@@ -273,7 +273,7 @@ func DefaultInjection(stage *models.StageStruct) {
 	__GongStructShape__000002_Default_Lane.ShowNbInstances = false
 	__GongStructShape__000002_Default_Lane.NbInstances = 0
 	__GongStructShape__000002_Default_Lane.Width = 240.000000
-	__GongStructShape__000002_Default_Lane.Heigth = 63.000000
+	__GongStructShape__000002_Default_Lane.Height = 63.000000
 	__GongStructShape__000002_Default_Lane.IsSelected = false
 
 	// Link values setup
@@ -349,7 +349,7 @@ A task is displayed as a bar ([models.Bar]) with a start and end date
 	__NoteShape__000000_NoteOnTheModel.X = 340.000000
 	__NoteShape__000000_NoteOnTheModel.Y = 358.000000
 	__NoteShape__000000_NoteOnTheModel.Width = 653.999939
-	__NoteShape__000000_NoteOnTheModel.Heigth = 181.000000
+	__NoteShape__000000_NoteOnTheModel.Height = 181.000000
 	__NoteShape__000000_NoteOnTheModel.Matched = false
 
 	// NoteShapeLink values setup
@@ -422,5 +422,3 @@ A task is displayed as a bar ([models.Bar]) with a start and end date
 	__NoteShape__000000_NoteOnTheModel.NoteShapeLinks = append(__NoteShape__000000_NoteOnTheModel.NoteShapeLinks, __NoteShapeLink__000001_Gantt)
 	__NoteShape__000000_NoteOnTheModel.NoteShapeLinks = append(__NoteShape__000000_NoteOnTheModel.NoteShapeLinks, __NoteShapeLink__000002_Lane)
 }
-
-
