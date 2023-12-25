@@ -230,6 +230,14 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 		for _, laneuseAssocEnd := range milestone.LanesToDisplayMilestoneUse {
 			laneuseAssocEnd_DB :=
 				backRepo.BackRepoLaneUse.GetLaneUseDBFromLaneUsePtr(laneuseAssocEnd)
+			
+			// the stage might be inconsistant, meaning that the laneuseAssocEnd_DB might
+			// be missing from the stage. In this case, the commit operation is robust
+			// An alternative would be to crash here to reveal the missing element.
+			if laneuseAssocEnd_DB == nil {
+				continue
+			}
+			
 			milestoneDB.MilestonePointersEncoding.LanesToDisplayMilestoneUse =
 				append(milestoneDB.MilestonePointersEncoding.LanesToDisplayMilestoneUse, int(laneuseAssocEnd_DB.ID))
 		}

@@ -82,9 +82,9 @@ func gantt1Injection(stage *models.StageStruct) {
 
 	// Bar values setup
 	__Bar__000001_Bar_2.Name = `Bar 2`
-	__Bar__000001_Bar_2.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-05-08 14:08:29.53846152 +0000 UTC")
-	__Bar__000001_Bar_2.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2025-08-11 00:17:43.384615424 +0000 UTC")
-	__Bar__000001_Bar_2.ComputedDuration = 71316553846153904
+	__Bar__000001_Bar_2.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-05-08 14:08:29.538461536 +0000 UTC")
+	__Bar__000001_Bar_2.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2027-07-04 16:23:37.846153888 +0000 UTC")
+	__Bar__000001_Bar_2.ComputedDuration = 131163308307692352
 	__Bar__000001_Bar_2.OptionnalColor = `green`
 	__Bar__000001_Bar_2.OptionnalStroke = ``
 	__Bar__000001_Bar_2.FillOpacity = 0.000000
@@ -94,8 +94,8 @@ func gantt1Injection(stage *models.StageStruct) {
 	// Bar values setup
 	__Bar__000002_Bar_3.Name = `Bar 3`
 	__Bar__000002_Bar_3.Start, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2021-05-27 08:33:58.153846152 +0000 UTC")
-	__Bar__000002_Bar_3.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2025-02-20 12:26:35.076923072 +0000 UTC")
-	__Bar__000002_Bar_3.ComputedDuration = 117949956923076920
+	__Bar__000002_Bar_3.End, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-08-30 21:55:56.3076924 +0000 UTC")
+	__Bar__000002_Bar_3.ComputedDuration = 331109257846153912
 	__Bar__000002_Bar_3.OptionnalColor = ``
 	__Bar__000002_Bar_3.OptionnalStroke = ``
 	__Bar__000002_Bar_3.FillOpacity = 0.000000
@@ -116,8 +116,8 @@ func gantt1Injection(stage *models.StageStruct) {
 	// Gantt values setup
 	__Gantt__000000_Test.Name = `Test`
 	__Gantt__000000_Test.ComputedStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2020-01-01 00:00:00 +0000 UTC")
-	__Gantt__000000_Test.ComputedEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2025-12-31 00:00:00 +0000 UTC")
-	__Gantt__000000_Test.ComputedDuration = 169172263384615423
+	__Gantt__000000_Test.ComputedEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2031-12-31 00:00:00 +0000 UTC")
+	__Gantt__000000_Test.ComputedDuration = 367514496000000063
 	__Gantt__000000_Test.UseManualStartAndEndDates = false
 	__Gantt__000000_Test.ManualStart, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2017-02-12 00:00:00 +0000 UTC")
 	__Gantt__000000_Test.ManualEnd, _ = time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", "2023-02-12 00:00:00 +0000 UTC")

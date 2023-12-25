@@ -6,13 +6,10 @@ import { SelectAreaConfig, SvgEventService, SweepDirection } from '../svg-event.
 
 import * as gongsvg from 'gongsvg'
 import { ShapeMouseEvent } from '../shape.mouse.event';
-import { createPoint } from '../link/draw.segments';
 import { MouseEventService } from '../mouse-event.service';
-import { AngularDragEndEventService } from '../angular-drag-end-event.service';
 import { mouseCoordInComponentRef } from '../mouse.coord.in.component.ref';
 import { IsEditableService } from '../is-editable.service';
 import { RefreshService } from '../refresh.service';
-
 
 @Component({
   selector: 'lib-svg',
@@ -225,11 +222,11 @@ export class SvgComponent implements OnInit, OnDestroy {
       return
     }
 
-    if (this.svg.DrawingState != gongsvg.DrawingState.NOT_DRAWING_LINE) {
+    if (this.svg.DrawingState != gongsvg.DrawingState.NOT_DRAWING_LINK) {
       // console.log("problem with svg, length ", this.svg.DrawingState, " is not ", gongsvg.DrawingState.NOT_DRAWING_LINE)
     }
 
-    this.svg.DrawingState = gongsvg.DrawingState.DRAWING_LINE
+    this.svg.DrawingState = gongsvg.DrawingState.DRAWING_LINK
 
     let rectMap = this.gongsvgFrontRepo!.getMap<gongsvg.RectDB>(gongsvg.RectDB.GONGSTRUCT_NAME)
 
@@ -247,7 +244,7 @@ export class SvgComponent implements OnInit, OnDestroy {
               this.svg = this.gongsvgFrontRepo.getArray<gongsvg.SVGDB>(gongsvg.SVGDB.GONGSTRUCT_NAME)[0]
 
               // back to normal state
-              this.svg.DrawingState = gongsvg.DrawingState.NOT_DRAWING_LINE
+              this.svg.DrawingState = gongsvg.DrawingState.NOT_DRAWING_LINK
               this.svgService.updateSVG(this.svg, this.GONG__StackPath, this.gongsvgFrontRepoService.frontRepo).subscribe()
 
               // set the isEditable

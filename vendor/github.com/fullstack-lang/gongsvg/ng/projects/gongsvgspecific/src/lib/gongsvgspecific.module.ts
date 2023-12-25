@@ -22,6 +22,9 @@ import { GongsvgModule } from 'gongsvg';
 import { SvgComponent } from './svg/svg.component';
 import { LinkComponent } from './link/link.component';
 import { RectLinkLinkComponent } from './rect-link-link/rect-link-link.component';
+import { GongsvgComponent } from './gongsvg/gongsvg.component';
+import { LinkSegmentsPipe } from './link-segments.pipe';
+import { GongsvgDiagrammingComponent } from './gongsvg-diagramming/gongsvg-diagramming';
 
 
 
@@ -39,7 +42,10 @@ import { RectLinkLinkComponent } from './rect-link-link/rect-link-link.component
     PolygoneComponent,
     SvgComponent,
     LinkComponent,
-    RectLinkLinkComponent
+    RectLinkLinkComponent,
+    GongsvgComponent,
+    LinkSegmentsPipe,
+    GongsvgDiagrammingComponent
   ],
   imports: [
     CommonModule,
@@ -52,6 +58,8 @@ import { RectLinkLinkComponent } from './rect-link-link/rect-link-link.component
   exports: [
     GongsvgspecificComponent,
     SvgComponent,
+    GongsvgComponent,
+    GongsvgDiagrammingComponent,
   ]
 })
 export class GongsvgspecificModule { }

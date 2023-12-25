@@ -182,6 +182,16 @@ func fillUpTree(
 
 				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
 			}
+		case "RectAnchoredPath":
+			nodeGongstruct.Name = name
+			set := *models.GetGongstructInstancesSet[models.RectAnchoredPath](probe.stageOfInterest)
+			for _rectanchoredpath := range set {
+				nodeInstance := (&tree.Node{Name: _rectanchoredpath.GetName()}).Stage(probe.treeStage)
+				nodeInstance.IsNodeClickable = true
+				nodeInstance.Impl = NewInstanceNodeCallback(_rectanchoredpath, "RectAnchoredPath", probe)
+
+				nodeGongstruct.Children = append(nodeGongstruct.Children, nodeInstance)
+			}
 		case "RectAnchoredRect":
 			nodeGongstruct.Name = name
 			set := *models.GetGongstructInstancesSet[models.RectAnchoredRect](probe.stageOfInterest)

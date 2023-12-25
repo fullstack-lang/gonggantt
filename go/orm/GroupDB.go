@@ -217,6 +217,14 @@ func (backRepoGroup *BackRepoGroupStruct) CommitPhaseTwoInstance(backRepo *BackR
 		for _, laneAssocEnd := range group.GroupLanes {
 			laneAssocEnd_DB :=
 				backRepo.BackRepoLane.GetLaneDBFromLanePtr(laneAssocEnd)
+			
+			// the stage might be inconsistant, meaning that the laneAssocEnd_DB might
+			// be missing from the stage. In this case, the commit operation is robust
+			// An alternative would be to crash here to reveal the missing element.
+			if laneAssocEnd_DB == nil {
+				continue
+			}
+			
 			groupDB.GroupPointersEncoding.GroupLanes =
 				append(groupDB.GroupPointersEncoding.GroupLanes, int(laneAssocEnd_DB.ID))
 		}

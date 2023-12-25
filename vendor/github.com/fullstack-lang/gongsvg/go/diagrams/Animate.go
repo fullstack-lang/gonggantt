@@ -121,7 +121,7 @@ var map_DocLink_Identifier_Animate map[string]any = map[string]any{
 
 	"ref_models.Cyan": ref_models.Cyan,
 
-	"ref_models.DRAWING_LINE": ref_models.DRAWING_LINE,
+	"ref_models.DRAWING_LINE": ref_models.DRAWING_LINK,
 
 	"ref_models.Darkblue": ref_models.Darkblue,
 
@@ -453,7 +453,7 @@ var map_DocLink_Identifier_Animate map[string]any = map[string]any{
 
 	"ref_models.Moccasin": ref_models.Moccasin,
 
-	"ref_models.NOT_DRAWING_LINE": ref_models.NOT_DRAWING_LINE,
+	"ref_models.NOT_DRAWING_LINE": ref_models.NOT_DRAWING_LINK,
 
 	"ref_models.Navajowhite": ref_models.Navajowhite,
 
@@ -579,23 +579,23 @@ var map_DocLink_Identifier_Animate map[string]any = map[string]any{
 
 	"ref_models.Purple": ref_models.Purple,
 
-	"ref_models.RECT_ANCHOR_BOTTOM": ref_models.RECT_ANCHOR_BOTTOM,
+	"ref_models.RECT_ANCHOR_BOTTOM": ref_models.RECT_BOTTOM,
 
-	"ref_models.RECT_ANCHOR_BOTTOM_LEFT": ref_models.RECT_ANCHOR_BOTTOM_LEFT,
+	"ref_models.RECT_ANCHOR_BOTTOM_LEFT": ref_models.RECT_BOTTOM_LEFT,
 
-	"ref_models.RECT_ANCHOR_BOTTOM_RIGHT": ref_models.RECT_ANCHOR_BOTTOM_RIGHT,
+	"ref_models.RECT_ANCHOR_BOTTOM_RIGHT": ref_models.RECT_BOTTOM_RIGHT,
 
-	"ref_models.RECT_ANCHOR_CENTER": ref_models.RECT_ANCHOR_CENTER,
+	"ref_models.RECT_ANCHOR_CENTER": ref_models.RECT_CENTER,
 
-	"ref_models.RECT_ANCHOR_LEFT": ref_models.RECT_ANCHOR_LEFT,
+	"ref_models.RECT_ANCHOR_LEFT": ref_models.RECT_LEFT,
 
-	"ref_models.RECT_ANCHOR_RIGHT": ref_models.RECT_ANCHOR_RIGHT,
+	"ref_models.RECT_ANCHOR_RIGHT": ref_models.RECT_RIGHT,
 
-	"ref_models.RECT_ANCHOR_TOP": ref_models.RECT_ANCHOR_TOP,
+	"ref_models.RECT_ANCHOR_TOP": ref_models.RECT_TOP,
 
-	"ref_models.RECT_ANCHOR_TOP_LEFT": ref_models.RECT_ANCHOR_TOP_LEFT,
+	"ref_models.RECT_ANCHOR_TOP_LEFT": ref_models.RECT_TOP_LEFT,
 
-	"ref_models.RECT_ANCHOR_TOP_RIGHT": ref_models.RECT_ANCHOR_TOP_RIGHT,
+	"ref_models.RECT_ANCHOR_TOP_RIGHT": ref_models.RECT_TOP_RIGHT,
 
 	"ref_models.Rect": &(ref_models.Rect{}),
 
@@ -1021,7 +1021,7 @@ func AnimateInjection(stage *models.StageStruct) {
 	__GongStructShape__000000_Animate_Animate.ShowNbInstances = false
 	__GongStructShape__000000_Animate_Animate.NbInstances = 0
 	__GongStructShape__000000_Animate_Animate.Width = 240.000000
-	__GongStructShape__000000_Animate_Animate.Heigth = 466.000000
+	__GongStructShape__000000_Animate_Animate.Height = 466.000000
 	__GongStructShape__000000_Animate_Animate.IsSelected = false
 
 	// GongStructShape values setup
@@ -1034,7 +1034,7 @@ func AnimateInjection(stage *models.StageStruct) {
 	__GongStructShape__000001_Animate_Circle.ShowNbInstances = false
 	__GongStructShape__000001_Animate_Circle.NbInstances = 0
 	__GongStructShape__000001_Animate_Circle.Width = 240.000000
-	__GongStructShape__000001_Animate_Circle.Heigth = 63.000000
+	__GongStructShape__000001_Animate_Circle.Height = 63.000000
 	__GongStructShape__000001_Animate_Circle.IsSelected = false
 
 	// GongStructShape values setup
@@ -1047,7 +1047,7 @@ func AnimateInjection(stage *models.StageStruct) {
 	__GongStructShape__000002_Animate_Ellipse.ShowNbInstances = false
 	__GongStructShape__000002_Animate_Ellipse.NbInstances = 0
 	__GongStructShape__000002_Animate_Ellipse.Width = 240.000000
-	__GongStructShape__000002_Animate_Ellipse.Heigth = 63.000000
+	__GongStructShape__000002_Animate_Ellipse.Height = 63.000000
 	__GongStructShape__000002_Animate_Ellipse.IsSelected = false
 
 	// GongStructShape values setup
@@ -1060,7 +1060,7 @@ func AnimateInjection(stage *models.StageStruct) {
 	__GongStructShape__000003_Animate_Line.ShowNbInstances = false
 	__GongStructShape__000003_Animate_Line.NbInstances = 0
 	__GongStructShape__000003_Animate_Line.Width = 240.000000
-	__GongStructShape__000003_Animate_Line.Heigth = 63.000000
+	__GongStructShape__000003_Animate_Line.Height = 63.000000
 	__GongStructShape__000003_Animate_Line.IsSelected = false
 
 	// GongStructShape values setup
@@ -1073,7 +1073,7 @@ func AnimateInjection(stage *models.StageStruct) {
 	__GongStructShape__000004_Animate_Rect.ShowNbInstances = false
 	__GongStructShape__000004_Animate_Rect.NbInstances = 0
 	__GongStructShape__000004_Animate_Rect.Width = 240.000000
-	__GongStructShape__000004_Animate_Rect.Heigth = 78.000000
+	__GongStructShape__000004_Animate_Rect.Height = 78.000000
 	__GongStructShape__000004_Animate_Rect.IsSelected = false
 
 	// GongStructShape values setup
@@ -1086,7 +1086,7 @@ func AnimateInjection(stage *models.StageStruct) {
 	__GongStructShape__000005_Animate_Text.ShowNbInstances = false
 	__GongStructShape__000005_Animate_Text.NbInstances = 0
 	__GongStructShape__000005_Animate_Text.Width = 240.000000
-	__GongStructShape__000005_Animate_Text.Heigth = 63.000000
+	__GongStructShape__000005_Animate_Text.Height = 63.000000
 	__GongStructShape__000005_Animate_Text.IsSelected = false
 
 	// Link values setup
@@ -1304,5 +1304,3 @@ func AnimateInjection(stage *models.StageStruct) {
 	__Link__000003_Animations.Middlevertice = __Vertice__000003_Verticle_in_class_diagram_Animate_in_middle_between_Animate_Rect_and_Animate_Animate
 	__Link__000004_Animations.Middlevertice = __Vertice__000000_Verticle_in_class_diagram_Animate_in_middle_between_Animate_Circle_and_Animate_Animate
 }
-
-

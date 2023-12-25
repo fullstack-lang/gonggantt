@@ -372,6 +372,14 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 		for _, laneAssocEnd := range gantt.Lanes {
 			laneAssocEnd_DB :=
 				backRepo.BackRepoLane.GetLaneDBFromLanePtr(laneAssocEnd)
+			
+			// the stage might be inconsistant, meaning that the laneAssocEnd_DB might
+			// be missing from the stage. In this case, the commit operation is robust
+			// An alternative would be to crash here to reveal the missing element.
+			if laneAssocEnd_DB == nil {
+				continue
+			}
+			
 			ganttDB.GanttPointersEncoding.Lanes =
 				append(ganttDB.GanttPointersEncoding.Lanes, int(laneAssocEnd_DB.ID))
 		}
@@ -382,6 +390,14 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 		for _, milestoneAssocEnd := range gantt.Milestones {
 			milestoneAssocEnd_DB :=
 				backRepo.BackRepoMilestone.GetMilestoneDBFromMilestonePtr(milestoneAssocEnd)
+			
+			// the stage might be inconsistant, meaning that the milestoneAssocEnd_DB might
+			// be missing from the stage. In this case, the commit operation is robust
+			// An alternative would be to crash here to reveal the missing element.
+			if milestoneAssocEnd_DB == nil {
+				continue
+			}
+			
 			ganttDB.GanttPointersEncoding.Milestones =
 				append(ganttDB.GanttPointersEncoding.Milestones, int(milestoneAssocEnd_DB.ID))
 		}
@@ -392,6 +408,14 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 		for _, groupAssocEnd := range gantt.Groups {
 			groupAssocEnd_DB :=
 				backRepo.BackRepoGroup.GetGroupDBFromGroupPtr(groupAssocEnd)
+			
+			// the stage might be inconsistant, meaning that the groupAssocEnd_DB might
+			// be missing from the stage. In this case, the commit operation is robust
+			// An alternative would be to crash here to reveal the missing element.
+			if groupAssocEnd_DB == nil {
+				continue
+			}
+			
 			ganttDB.GanttPointersEncoding.Groups =
 				append(ganttDB.GanttPointersEncoding.Groups, int(groupAssocEnd_DB.ID))
 		}
@@ -402,6 +426,14 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 		for _, arrowAssocEnd := range gantt.Arrows {
 			arrowAssocEnd_DB :=
 				backRepo.BackRepoArrow.GetArrowDBFromArrowPtr(arrowAssocEnd)
+			
+			// the stage might be inconsistant, meaning that the arrowAssocEnd_DB might
+			// be missing from the stage. In this case, the commit operation is robust
+			// An alternative would be to crash here to reveal the missing element.
+			if arrowAssocEnd_DB == nil {
+				continue
+			}
+			
 			ganttDB.GanttPointersEncoding.Arrows =
 				append(ganttDB.GanttPointersEncoding.Arrows, int(arrowAssocEnd_DB.ID))
 		}

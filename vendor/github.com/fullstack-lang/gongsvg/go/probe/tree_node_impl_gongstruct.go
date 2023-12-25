@@ -88,6 +88,9 @@ func (nodeImplGongstruct *TreeNodeImplGongstruct) OnAfterUpdate(
 	if nodeImplGongstruct.gongStruct.GetName() == "Rect" {
 		fillUpTable[models.Rect](nodeImplGongstruct.probe)
 	}
+	if nodeImplGongstruct.gongStruct.GetName() == "RectAnchoredPath" {
+		fillUpTable[models.RectAnchoredPath](nodeImplGongstruct.probe)
+	}
 	if nodeImplGongstruct.gongStruct.GetName() == "RectAnchoredRect" {
 		fillUpTable[models.RectAnchoredRect](nodeImplGongstruct.probe)
 	}

@@ -493,6 +493,11 @@ func (animateFormCallback *AnimateFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		animate_.Unstage(animateFormCallback.probe.stageOfInterest)
+	}
+
 	animateFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Animate](
 		animateFormCallback.probe,
@@ -500,7 +505,7 @@ func (animateFormCallback *AnimateFormCallback) OnSave() {
 	animateFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if animateFormCallback.CreationMode {
+	if animateFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		animateFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -625,6 +630,11 @@ func (circleFormCallback *CircleFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		circle_.Unstage(circleFormCallback.probe.stageOfInterest)
+	}
+
 	circleFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Circle](
 		circleFormCallback.probe,
@@ -632,7 +642,7 @@ func (circleFormCallback *CircleFormCallback) OnSave() {
 	circleFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if circleFormCallback.CreationMode {
+	if circleFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		circleFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -759,6 +769,11 @@ func (ellipseFormCallback *EllipseFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		ellipse_.Unstage(ellipseFormCallback.probe.stageOfInterest)
+	}
+
 	ellipseFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Ellipse](
 		ellipseFormCallback.probe,
@@ -766,7 +781,7 @@ func (ellipseFormCallback *EllipseFormCallback) OnSave() {
 	ellipseFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if ellipseFormCallback.CreationMode {
+	if ellipseFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		ellipseFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -873,6 +888,11 @@ func (layerFormCallback *LayerFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		layer_.Unstage(layerFormCallback.probe.stageOfInterest)
+	}
+
 	layerFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Layer](
 		layerFormCallback.probe,
@@ -880,7 +900,7 @@ func (layerFormCallback *LayerFormCallback) OnSave() {
 	layerFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if layerFormCallback.CreationMode {
+	if layerFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		layerFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -1011,6 +1031,11 @@ func (lineFormCallback *LineFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		line_.Unstage(lineFormCallback.probe.stageOfInterest)
+	}
+
 	lineFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Line](
 		lineFormCallback.probe,
@@ -1018,7 +1043,7 @@ func (lineFormCallback *LineFormCallback) OnSave() {
 	lineFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if lineFormCallback.CreationMode {
+	if lineFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		lineFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -1167,6 +1192,11 @@ func (linkFormCallback *LinkFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		link_.Unstage(linkFormCallback.probe.stageOfInterest)
+	}
+
 	linkFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Link](
 		linkFormCallback.probe,
@@ -1174,7 +1204,7 @@ func (linkFormCallback *LinkFormCallback) OnSave() {
 	linkFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if linkFormCallback.CreationMode {
+	if linkFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		linkFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -1343,6 +1373,11 @@ func (linkanchoredtextFormCallback *LinkAnchoredTextFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		linkanchoredtext_.Unstage(linkanchoredtextFormCallback.probe.stageOfInterest)
+	}
+
 	linkanchoredtextFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.LinkAnchoredText](
 		linkanchoredtextFormCallback.probe,
@@ -1350,7 +1385,7 @@ func (linkanchoredtextFormCallback *LinkAnchoredTextFormCallback) OnSave() {
 	linkanchoredtextFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if linkanchoredtextFormCallback.CreationMode {
+	if linkanchoredtextFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		linkanchoredtextFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -1471,6 +1506,11 @@ func (pathFormCallback *PathFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		path_.Unstage(pathFormCallback.probe.stageOfInterest)
+	}
+
 	pathFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Path](
 		pathFormCallback.probe,
@@ -1478,7 +1518,7 @@ func (pathFormCallback *PathFormCallback) OnSave() {
 	pathFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if pathFormCallback.CreationMode {
+	if pathFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		pathFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -1587,6 +1627,11 @@ func (pointFormCallback *PointFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		point_.Unstage(pointFormCallback.probe.stageOfInterest)
+	}
+
 	pointFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Point](
 		pointFormCallback.probe,
@@ -1594,7 +1639,7 @@ func (pointFormCallback *PointFormCallback) OnSave() {
 	pointFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if pointFormCallback.CreationMode {
+	if pointFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		pointFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -1715,6 +1760,11 @@ func (polygoneFormCallback *PolygoneFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		polygone_.Unstage(polygoneFormCallback.probe.stageOfInterest)
+	}
+
 	polygoneFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Polygone](
 		polygoneFormCallback.probe,
@@ -1722,7 +1772,7 @@ func (polygoneFormCallback *PolygoneFormCallback) OnSave() {
 	polygoneFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if polygoneFormCallback.CreationMode {
+	if polygoneFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		polygoneFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -1843,6 +1893,11 @@ func (polylineFormCallback *PolylineFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		polyline_.Unstage(polylineFormCallback.probe.stageOfInterest)
+	}
+
 	polylineFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Polyline](
 		polylineFormCallback.probe,
@@ -1850,7 +1905,7 @@ func (polylineFormCallback *PolylineFormCallback) OnSave() {
 	polylineFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if polylineFormCallback.CreationMode {
+	if polylineFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		polylineFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -1950,6 +2005,8 @@ func (rectFormCallback *RectFormCallback) OnSave() {
 			FormDivBasicFieldToField(&(rect_.CanHaveTopHandle), formDiv)
 		case "HasTopHandle":
 			FormDivBasicFieldToField(&(rect_.HasTopHandle), formDiv)
+		case "IsScalingProportionally":
+			FormDivBasicFieldToField(&(rect_.IsScalingProportionally), formDiv)
 		case "CanHaveBottomHandle":
 			FormDivBasicFieldToField(&(rect_.CanHaveBottomHandle), formDiv)
 		case "HasBottomHandle":
@@ -2003,6 +2060,11 @@ func (rectFormCallback *RectFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		rect_.Unstage(rectFormCallback.probe.stageOfInterest)
+	}
+
 	rectFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Rect](
 		rectFormCallback.probe,
@@ -2010,7 +2072,7 @@ func (rectFormCallback *RectFormCallback) OnSave() {
 	rectFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if rectFormCallback.CreationMode {
+	if rectFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		rectFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -2025,6 +2087,149 @@ func (rectFormCallback *RectFormCallback) OnSave() {
 	}
 
 	fillUpTree(rectFormCallback.probe)
+}
+func __gong__New__RectAnchoredPathFormCallback(
+	rectanchoredpath *models.RectAnchoredPath,
+	probe *Probe,
+) (rectanchoredpathFormCallback *RectAnchoredPathFormCallback) {
+	rectanchoredpathFormCallback = new(RectAnchoredPathFormCallback)
+	rectanchoredpathFormCallback.probe = probe
+	rectanchoredpathFormCallback.rectanchoredpath = rectanchoredpath
+
+	rectanchoredpathFormCallback.CreationMode = (rectanchoredpath == nil)
+
+	return
+}
+
+type RectAnchoredPathFormCallback struct {
+	rectanchoredpath *models.RectAnchoredPath
+
+	// If the form call is called on the creation of a new instnace
+	CreationMode bool
+
+	probe *Probe
+}
+
+func (rectanchoredpathFormCallback *RectAnchoredPathFormCallback) OnSave() {
+
+	log.Println("RectAnchoredPathFormCallback, OnSave")
+
+	// checkout formStage to have the form group on the stage synchronized with the
+	// back repo (and front repo)
+	rectanchoredpathFormCallback.probe.formStage.Checkout()
+
+	if rectanchoredpathFormCallback.rectanchoredpath == nil {
+		rectanchoredpathFormCallback.rectanchoredpath = new(models.RectAnchoredPath).Stage(rectanchoredpathFormCallback.probe.stageOfInterest)
+	}
+	rectanchoredpath_ := rectanchoredpathFormCallback.rectanchoredpath
+	_ = rectanchoredpath_
+
+	// get the formGroup
+	formGroup := rectanchoredpathFormCallback.probe.formStage.FormGroups_mapString[table.FormGroupDefaultName.ToString()]
+
+	for _, formDiv := range formGroup.FormDivs {
+		switch formDiv.Name {
+		// insertion point per field
+		case "Name":
+			FormDivBasicFieldToField(&(rectanchoredpath_.Name), formDiv)
+		case "Definition":
+			FormDivBasicFieldToField(&(rectanchoredpath_.Definition), formDiv)
+		case "X_Offset":
+			FormDivBasicFieldToField(&(rectanchoredpath_.X_Offset), formDiv)
+		case "Y_Offset":
+			FormDivBasicFieldToField(&(rectanchoredpath_.Y_Offset), formDiv)
+		case "RectAnchorType":
+			FormDivEnumStringFieldToField(&(rectanchoredpath_.RectAnchorType), formDiv)
+		case "ScalePropotionnally":
+			FormDivBasicFieldToField(&(rectanchoredpath_.ScalePropotionnally), formDiv)
+		case "AppliedScaling":
+			FormDivBasicFieldToField(&(rectanchoredpath_.AppliedScaling), formDiv)
+		case "Color":
+			FormDivBasicFieldToField(&(rectanchoredpath_.Color), formDiv)
+		case "FillOpacity":
+			FormDivBasicFieldToField(&(rectanchoredpath_.FillOpacity), formDiv)
+		case "Stroke":
+			FormDivBasicFieldToField(&(rectanchoredpath_.Stroke), formDiv)
+		case "StrokeWidth":
+			FormDivBasicFieldToField(&(rectanchoredpath_.StrokeWidth), formDiv)
+		case "StrokeDashArray":
+			FormDivBasicFieldToField(&(rectanchoredpath_.StrokeDashArray), formDiv)
+		case "StrokeDashArrayWhenSelected":
+			FormDivBasicFieldToField(&(rectanchoredpath_.StrokeDashArrayWhenSelected), formDiv)
+		case "Transform":
+			FormDivBasicFieldToField(&(rectanchoredpath_.Transform), formDiv)
+		case "Rect:RectAnchoredPaths":
+			// we need to retrieve the field owner before the change
+			var pastRectOwner *models.Rect
+			var rf models.ReverseField
+			_ = rf
+			rf.GongstructName = "Rect"
+			rf.Fieldname = "RectAnchoredPaths"
+			reverseFieldOwner := orm.GetReverseFieldOwner(
+				rectanchoredpathFormCallback.probe.stageOfInterest,
+				rectanchoredpathFormCallback.probe.backRepoOfInterest,
+				rectanchoredpath_,
+				&rf)
+
+			if reverseFieldOwner != nil {
+				pastRectOwner = reverseFieldOwner.(*models.Rect)
+			}
+			if formDiv.FormFields[0].FormFieldSelect.Value == nil {
+				if pastRectOwner != nil {
+					idx := slices.Index(pastRectOwner.RectAnchoredPaths, rectanchoredpath_)
+					pastRectOwner.RectAnchoredPaths = slices.Delete(pastRectOwner.RectAnchoredPaths, idx, idx+1)
+				}
+			} else {
+				// we need to retrieve the field owner after the change
+				// parse all astrcut and get the one with the name in the
+				// div
+				for _rect := range *models.GetGongstructInstancesSet[models.Rect](rectanchoredpathFormCallback.probe.stageOfInterest) {
+
+					// the match is base on the name
+					if _rect.GetName() == formDiv.FormFields[0].FormFieldSelect.Value.GetName() {
+						newRectOwner := _rect // we have a match
+						if pastRectOwner != nil {
+							if newRectOwner != pastRectOwner {
+								idx := slices.Index(pastRectOwner.RectAnchoredPaths, rectanchoredpath_)
+								pastRectOwner.RectAnchoredPaths = slices.Delete(pastRectOwner.RectAnchoredPaths, idx, idx+1)
+								newRectOwner.RectAnchoredPaths = append(newRectOwner.RectAnchoredPaths, rectanchoredpath_)
+							}
+						} else {
+							newRectOwner.RectAnchoredPaths = append(newRectOwner.RectAnchoredPaths, rectanchoredpath_)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		rectanchoredpath_.Unstage(rectanchoredpathFormCallback.probe.stageOfInterest)
+	}
+
+	rectanchoredpathFormCallback.probe.stageOfInterest.Commit()
+	fillUpTable[models.RectAnchoredPath](
+		rectanchoredpathFormCallback.probe,
+	)
+	rectanchoredpathFormCallback.probe.tableStage.Commit()
+
+	// display a new form by reset the form stage
+	if rectanchoredpathFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
+		rectanchoredpathFormCallback.probe.formStage.Reset()
+		newFormGroup := (&table.FormGroup{
+			Name: table.FormGroupDefaultName.ToString(),
+			OnSave: __gong__New__RectAnchoredPathFormCallback(
+				nil,
+				rectanchoredpathFormCallback.probe,
+			),
+		}).Stage(rectanchoredpathFormCallback.probe.formStage)
+		rectanchoredpath := new(models.RectAnchoredPath)
+		FillUpForm(rectanchoredpath, newFormGroup, rectanchoredpathFormCallback.probe)
+		rectanchoredpathFormCallback.probe.formStage.Commit()
+	}
+
+	fillUpTree(rectanchoredpathFormCallback.probe)
 }
 func __gong__New__RectAnchoredRectFormCallback(
 	rectanchoredrect *models.RectAnchoredRect,
@@ -2149,6 +2354,11 @@ func (rectanchoredrectFormCallback *RectAnchoredRectFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		rectanchoredrect_.Unstage(rectanchoredrectFormCallback.probe.stageOfInterest)
+	}
+
 	rectanchoredrectFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.RectAnchoredRect](
 		rectanchoredrectFormCallback.probe,
@@ -2156,7 +2366,7 @@ func (rectanchoredrectFormCallback *RectAnchoredRectFormCallback) OnSave() {
 	rectanchoredrectFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if rectanchoredrectFormCallback.CreationMode {
+	if rectanchoredrectFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		rectanchoredrectFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -2289,6 +2499,11 @@ func (rectanchoredtextFormCallback *RectAnchoredTextFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		rectanchoredtext_.Unstage(rectanchoredtextFormCallback.probe.stageOfInterest)
+	}
+
 	rectanchoredtextFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.RectAnchoredText](
 		rectanchoredtextFormCallback.probe,
@@ -2296,7 +2511,7 @@ func (rectanchoredtextFormCallback *RectAnchoredTextFormCallback) OnSave() {
 	rectanchoredtextFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if rectanchoredtextFormCallback.CreationMode {
+	if rectanchoredtextFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		rectanchoredtextFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -2421,6 +2636,11 @@ func (rectlinklinkFormCallback *RectLinkLinkFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		rectlinklink_.Unstage(rectlinklinkFormCallback.probe.stageOfInterest)
+	}
+
 	rectlinklinkFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.RectLinkLink](
 		rectlinklinkFormCallback.probe,
@@ -2428,7 +2648,7 @@ func (rectlinklinkFormCallback *RectLinkLinkFormCallback) OnSave() {
 	rectlinklinkFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if rectlinklinkFormCallback.CreationMode {
+	if rectlinklinkFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		rectlinklinkFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -2499,6 +2719,11 @@ func (svgFormCallback *SVGFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		svg_.Unstage(svgFormCallback.probe.stageOfInterest)
+	}
+
 	svgFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.SVG](
 		svgFormCallback.probe,
@@ -2506,7 +2731,7 @@ func (svgFormCallback *SVGFormCallback) OnSave() {
 	svgFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if svgFormCallback.CreationMode {
+	if svgFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		svgFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),
@@ -2631,6 +2856,11 @@ func (textFormCallback *TextFormCallback) OnSave() {
 		}
 	}
 
+	// manage the suppress operation
+	if formGroup.HasSuppressButtonBeenPressed {
+		text_.Unstage(textFormCallback.probe.stageOfInterest)
+	}
+
 	textFormCallback.probe.stageOfInterest.Commit()
 	fillUpTable[models.Text](
 		textFormCallback.probe,
@@ -2638,7 +2868,7 @@ func (textFormCallback *TextFormCallback) OnSave() {
 	textFormCallback.probe.tableStage.Commit()
 
 	// display a new form by reset the form stage
-	if textFormCallback.CreationMode {
+	if textFormCallback.CreationMode || formGroup.HasSuppressButtonBeenPressed {
 		textFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
 			Name: table.FormGroupDefaultName.ToString(),

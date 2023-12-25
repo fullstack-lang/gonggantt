@@ -8,7 +8,7 @@ import { SelectAreaConfig, SvgEventService, SweepDirection } from '../svg-event.
 import * as gongsvg from 'gongsvg'
 import { Subscription } from 'rxjs';
 import { ShapeMouseEvent } from '../shape.mouse.event';
-import { createPoint } from '../link/draw.segments';
+import { createPoint } from '../draw.segments';
 import { MouseEventService } from '../mouse-event.service';
 import { mouseCoordInComponentRef } from '../mouse.coord.in.component.ref';
 import { IsEditableService } from '../is-editable.service';
@@ -168,53 +168,52 @@ export class RectComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
         })
     )
 
-    this.subscriptions.push(
-      svgEventService.multiShapeSelectEndEvent$.subscribe(
-        (selectAreaConfig: SelectAreaConfig) => {
+    this.subscriptions.push(svgEventService.multiShapeSelectEndEvent$.subscribe(
+      (selectAreaConfig: SelectAreaConfig) => {
 
-          if (this.Rect.IsSelected) {
-            return
-          }
+        if (this.Rect.IsSelected) {
+          return
+        }
 
-          switch (selectAreaConfig.SweepDirection) {
-            case SweepDirection.LEFT_TO_RIGHT:
+        switch (selectAreaConfig.SweepDirection) {
+          case SweepDirection.LEFT_TO_RIGHT:
 
-              // rectangle has to be in boxed in the rect
-              if (
-                this.Rect.X > selectAreaConfig.TopLeft[0] &&
-                this.Rect.X + this.Rect.Width < selectAreaConfig.BottomRigth[0] &&
-                this.Rect.Y > selectAreaConfig.TopLeft[1] &&
-                this.Rect.Y + this.Rect.Height < selectAreaConfig.BottomRigth[1]
-              ) {
-                this.Rect.IsSelected = true
-                this.manageHandles()
-                this.rectService.updateRect(this.Rect, this.GONG__StackPath, this.gongsvgFrontRepoService.frontRepo).subscribe(
-                  _ => {
-                    this.refreshService.emitRefreshRequestEvent(0)
-                  }
-                )
-              }
-              break
-            case SweepDirection.RIGHT_TO_LEFT:
+            // rectangle has to be in boxed in the rect
+            if (
+              this.Rect.X > selectAreaConfig.TopLeft[0] &&
+              this.Rect.X + this.Rect.Width < selectAreaConfig.BottomRigth[0] &&
+              this.Rect.Y > selectAreaConfig.TopLeft[1] &&
+              this.Rect.Y + this.Rect.Height < selectAreaConfig.BottomRigth[1]
+            ) {
+              this.Rect.IsSelected = true
+              this.manageHandles()
+              this.rectService.updateRect(this.Rect, this.GONG__StackPath, this.gongsvgFrontRepoService.frontRepo).subscribe(
+                _ => {
+                  this.refreshService.emitRefreshRequestEvent(0)
+                }
+              )
+            }
+            break
+          case SweepDirection.RIGHT_TO_LEFT:
 
-              // rectangle has to be partialy boxed in the rect
-              if (
-                this.Rect.X < selectAreaConfig.BottomRigth[0] &&
-                this.Rect.X + this.Rect.Width > selectAreaConfig.TopLeft[0] &&
-                this.Rect.Y < selectAreaConfig.BottomRigth[1] &&
-                this.Rect.Y + this.Rect.Height > selectAreaConfig.TopLeft[1]
-              ) {
-                this.Rect.IsSelected = true
-                this.manageHandles()
-                this.rectService.updateRect(this.Rect, this.GONG__StackPath, this.gongsvgFrontRepoService.frontRepo).subscribe(
-                  _ => {
-                    this.refreshService.emitRefreshRequestEvent(0)
-                  }
-                )
-              }
-              break
-          }
-        })
+            // rectangle has to be partialy boxed in the rect
+            if (
+              this.Rect.X < selectAreaConfig.BottomRigth[0] &&
+              this.Rect.X + this.Rect.Width > selectAreaConfig.TopLeft[0] &&
+              this.Rect.Y < selectAreaConfig.BottomRigth[1] &&
+              this.Rect.Y + this.Rect.Height > selectAreaConfig.TopLeft[1]
+            ) {
+              this.Rect.IsSelected = true
+              this.manageHandles()
+              this.rectService.updateRect(this.Rect, this.GONG__StackPath, this.gongsvgFrontRepoService.frontRepo).subscribe(
+                _ => {
+                  this.refreshService.emitRefreshRequestEvent(0)
+                }
+              )
+            }
+            break
+        }
+      })
     )
   }
 
@@ -224,7 +223,7 @@ export class RectComponent implements OnInit, OnDestroy, DoCheck, OnChanges {
   }
 
   ngOnDestroy() {
-    gongsvg.RectAnchorType.RECT_ANCHOR_TOP
+    gongsvg.RectAnchorType.RECT_TOP
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 

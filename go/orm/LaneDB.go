@@ -223,6 +223,14 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 		for _, barAssocEnd := range lane.Bars {
 			barAssocEnd_DB :=
 				backRepo.BackRepoBar.GetBarDBFromBarPtr(barAssocEnd)
+			
+			// the stage might be inconsistant, meaning that the barAssocEnd_DB might
+			// be missing from the stage. In this case, the commit operation is robust
+			// An alternative would be to crash here to reveal the missing element.
+			if barAssocEnd_DB == nil {
+				continue
+			}
+			
 			laneDB.LanePointersEncoding.Bars =
 				append(laneDB.LanePointersEncoding.Bars, int(barAssocEnd_DB.ID))
 		}

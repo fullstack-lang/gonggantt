@@ -3,11 +3,11 @@ module github.com/fullstack-lang/gonggantt
 go 1.21.1
 
 require (
-	github.com/fullstack-lang/gong v0.0.0-20231122071358-627f3a98b9e7
-	github.com/fullstack-lang/gongdoc v0.0.0-20231122073609-8142f91902c7
-	github.com/fullstack-lang/gongsvg v0.0.0-20231122071509-804a48135370
-	github.com/fullstack-lang/gongtable v0.0.0-20231122071510-beece03157f2
-	github.com/fullstack-lang/gongtree v0.0.0-20231122071510-d2ff1e6f72e0
+	github.com/fullstack-lang/gong v0.0.0-20231213090220-3856473bbf07
+	github.com/fullstack-lang/gongdoc v0.0.0-20231225214723-4da84751bd7f
+	github.com/fullstack-lang/gongsvg v0.0.0-20231225211402-afa3d2d6e868
+	github.com/fullstack-lang/gongtable v0.0.0-20231214233720-0cdd8c1bf695
+	github.com/fullstack-lang/gongtree v0.0.0-20231206130925-9ded3e8642ab
 	github.com/fullstack-lang/maticons v0.0.0-20230823061653-70c364fbdd00
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/static v0.0.1
@@ -53,7 +53,6 @@ require (
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/rogpeppe/fastuuid v1.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
-	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06 // indirect
 	github.com/shabbyrobe/xmlwriter v0.0.0-20230525083848-85336ec334fa // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect

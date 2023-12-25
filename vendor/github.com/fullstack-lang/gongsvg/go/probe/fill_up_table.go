@@ -44,6 +44,8 @@ func fillUpTablePointerToGongstruct[T models.PointerToGongstruct](
 		fillUpTable[models.Polyline](probe)
 	case *models.Rect:
 		fillUpTable[models.Rect](probe)
+	case *models.RectAnchoredPath:
+		fillUpTable[models.RectAnchoredPath](probe)
 	case *models.RectAnchoredRect:
 		fillUpTable[models.RectAnchoredRect](probe)
 	case *models.RectAnchoredText:

@@ -121,7 +121,7 @@ var map_DocLink_Identifier_Default map[string]any = map[string]any{
 
 	"ref_models.Cyan": ref_models.Cyan,
 
-	"ref_models.DRAWING_LINE": ref_models.DRAWING_LINE,
+	"ref_models.DRAWING_LINE": ref_models.DRAWING_LINK,
 
 	"ref_models.Darkblue": ref_models.Darkblue,
 
@@ -453,7 +453,7 @@ var map_DocLink_Identifier_Default map[string]any = map[string]any{
 
 	"ref_models.Moccasin": ref_models.Moccasin,
 
-	"ref_models.NOT_DRAWING_LINE": ref_models.NOT_DRAWING_LINE,
+	"ref_models.NOT_DRAWING_LINE": ref_models.NOT_DRAWING_LINK,
 
 	"ref_models.Navajowhite": ref_models.Navajowhite,
 
@@ -579,23 +579,23 @@ var map_DocLink_Identifier_Default map[string]any = map[string]any{
 
 	"ref_models.Purple": ref_models.Purple,
 
-	"ref_models.RECT_ANCHOR_BOTTOM": ref_models.RECT_ANCHOR_BOTTOM,
+	"ref_models.RECT_ANCHOR_BOTTOM": ref_models.RECT_BOTTOM,
 
-	"ref_models.RECT_ANCHOR_BOTTOM_LEFT": ref_models.RECT_ANCHOR_BOTTOM_LEFT,
+	"ref_models.RECT_ANCHOR_BOTTOM_LEFT": ref_models.RECT_BOTTOM_LEFT,
 
-	"ref_models.RECT_ANCHOR_BOTTOM_RIGHT": ref_models.RECT_ANCHOR_BOTTOM_RIGHT,
+	"ref_models.RECT_ANCHOR_BOTTOM_RIGHT": ref_models.RECT_BOTTOM_RIGHT,
 
-	"ref_models.RECT_ANCHOR_CENTER": ref_models.RECT_ANCHOR_CENTER,
+	"ref_models.RECT_ANCHOR_CENTER": ref_models.RECT_CENTER,
 
-	"ref_models.RECT_ANCHOR_LEFT": ref_models.RECT_ANCHOR_LEFT,
+	"ref_models.RECT_ANCHOR_LEFT": ref_models.RECT_LEFT,
 
-	"ref_models.RECT_ANCHOR_RIGHT": ref_models.RECT_ANCHOR_RIGHT,
+	"ref_models.RECT_ANCHOR_RIGHT": ref_models.RECT_RIGHT,
 
-	"ref_models.RECT_ANCHOR_TOP": ref_models.RECT_ANCHOR_TOP,
+	"ref_models.RECT_ANCHOR_TOP": ref_models.RECT_TOP,
 
-	"ref_models.RECT_ANCHOR_TOP_LEFT": ref_models.RECT_ANCHOR_TOP_LEFT,
+	"ref_models.RECT_ANCHOR_TOP_LEFT": ref_models.RECT_TOP_LEFT,
 
-	"ref_models.RECT_ANCHOR_TOP_RIGHT": ref_models.RECT_ANCHOR_TOP_RIGHT,
+	"ref_models.RECT_ANCHOR_TOP_RIGHT": ref_models.RECT_TOP_RIGHT,
 
 	"ref_models.Rect": &(ref_models.Rect{}),
 
@@ -919,5 +919,3 @@ func DefaultInjection(stage *models.StageStruct) {
 
 	// Setup of pointers
 }
-
-

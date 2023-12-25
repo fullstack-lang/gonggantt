@@ -121,7 +121,7 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 
 	"ref_models.Cyan": ref_models.Cyan,
 
-	"ref_models.DRAWING_LINE": ref_models.DRAWING_LINE,
+	"ref_models.DRAWING_LINE": ref_models.DRAWING_LINK,
 
 	"ref_models.Darkblue": ref_models.Darkblue,
 
@@ -453,7 +453,7 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 
 	"ref_models.Moccasin": ref_models.Moccasin,
 
-	"ref_models.NOT_DRAWING_LINE": ref_models.NOT_DRAWING_LINE,
+	"ref_models.NOT_DRAWING_LINE": ref_models.NOT_DRAWING_LINK,
 
 	"ref_models.Navajowhite": ref_models.Navajowhite,
 
@@ -579,23 +579,23 @@ var map_DocLink_Identifier_NewDiagram map[string]any = map[string]any{
 
 	"ref_models.Purple": ref_models.Purple,
 
-	"ref_models.RECT_ANCHOR_BOTTOM": ref_models.RECT_ANCHOR_BOTTOM,
+	"ref_models.RECT_ANCHOR_BOTTOM": ref_models.RECT_BOTTOM,
 
-	"ref_models.RECT_ANCHOR_BOTTOM_LEFT": ref_models.RECT_ANCHOR_BOTTOM_LEFT,
+	"ref_models.RECT_ANCHOR_BOTTOM_LEFT": ref_models.RECT_BOTTOM_LEFT,
 
-	"ref_models.RECT_ANCHOR_BOTTOM_RIGHT": ref_models.RECT_ANCHOR_BOTTOM_RIGHT,
+	"ref_models.RECT_ANCHOR_BOTTOM_RIGHT": ref_models.RECT_BOTTOM_RIGHT,
 
-	"ref_models.RECT_ANCHOR_CENTER": ref_models.RECT_ANCHOR_CENTER,
+	"ref_models.RECT_ANCHOR_CENTER": ref_models.RECT_CENTER,
 
-	"ref_models.RECT_ANCHOR_LEFT": ref_models.RECT_ANCHOR_LEFT,
+	"ref_models.RECT_ANCHOR_LEFT": ref_models.RECT_LEFT,
 
-	"ref_models.RECT_ANCHOR_RIGHT": ref_models.RECT_ANCHOR_RIGHT,
+	"ref_models.RECT_ANCHOR_RIGHT": ref_models.RECT_RIGHT,
 
-	"ref_models.RECT_ANCHOR_TOP": ref_models.RECT_ANCHOR_TOP,
+	"ref_models.RECT_ANCHOR_TOP": ref_models.RECT_TOP,
 
-	"ref_models.RECT_ANCHOR_TOP_LEFT": ref_models.RECT_ANCHOR_TOP_LEFT,
+	"ref_models.RECT_ANCHOR_TOP_LEFT": ref_models.RECT_TOP_LEFT,
 
-	"ref_models.RECT_ANCHOR_TOP_RIGHT": ref_models.RECT_ANCHOR_TOP_RIGHT,
+	"ref_models.RECT_ANCHOR_TOP_RIGHT": ref_models.RECT_TOP_RIGHT,
 
 	"ref_models.Rect": &(ref_models.Rect{}),
 
@@ -1411,7 +1411,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000000_NewDiagram_AnchoredText.ShowNbInstances = true
 	__GongStructShape__000000_NewDiagram_AnchoredText.NbInstances = 0
 	__GongStructShape__000000_NewDiagram_AnchoredText.Width = 240.000000
-	__GongStructShape__000000_NewDiagram_AnchoredText.Heigth = 153.000000
+	__GongStructShape__000000_NewDiagram_AnchoredText.Height = 153.000000
 	__GongStructShape__000000_NewDiagram_AnchoredText.IsSelected = false
 
 	// GongStructShape values setup
@@ -1424,7 +1424,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000001_NewDiagram_Layer.ShowNbInstances = true
 	__GongStructShape__000001_NewDiagram_Layer.NbInstances = 1
 	__GongStructShape__000001_NewDiagram_Layer.Width = 138.000000
-	__GongStructShape__000001_NewDiagram_Layer.Heigth = 605.000000
+	__GongStructShape__000001_NewDiagram_Layer.Height = 605.000000
 	__GongStructShape__000001_NewDiagram_Layer.IsSelected = false
 
 	// GongStructShape values setup
@@ -1437,7 +1437,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000002_NewDiagram_Link.ShowNbInstances = true
 	__GongStructShape__000002_NewDiagram_Link.NbInstances = 0
 	__GongStructShape__000002_NewDiagram_Link.Width = 330.000000
-	__GongStructShape__000002_NewDiagram_Link.Heigth = 198.000000
+	__GongStructShape__000002_NewDiagram_Link.Height = 198.000000
 	__GongStructShape__000002_NewDiagram_Link.IsSelected = false
 
 	// GongStructShape values setup
@@ -1450,7 +1450,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000003_NewDiagram_Rect.ShowNbInstances = true
 	__GongStructShape__000003_NewDiagram_Rect.NbInstances = 5
 	__GongStructShape__000003_NewDiagram_Rect.Width = 316.000000
-	__GongStructShape__000003_NewDiagram_Rect.Heigth = 330.000000
+	__GongStructShape__000003_NewDiagram_Rect.Height = 330.000000
 	__GongStructShape__000003_NewDiagram_Rect.IsSelected = false
 
 	// GongStructShape values setup
@@ -1463,7 +1463,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000004_NewDiagram_RectAnchoredRect.ShowNbInstances = true
 	__GongStructShape__000004_NewDiagram_RectAnchoredRect.NbInstances = 0
 	__GongStructShape__000004_NewDiagram_RectAnchoredRect.Width = 240.000000
-	__GongStructShape__000004_NewDiagram_RectAnchoredRect.Heigth = 63.000000
+	__GongStructShape__000004_NewDiagram_RectAnchoredRect.Height = 63.000000
 	__GongStructShape__000004_NewDiagram_RectAnchoredRect.IsSelected = false
 
 	// GongStructShape values setup
@@ -1476,7 +1476,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000005_NewDiagram_RectAnchoredText.ShowNbInstances = true
 	__GongStructShape__000005_NewDiagram_RectAnchoredText.NbInstances = 0
 	__GongStructShape__000005_NewDiagram_RectAnchoredText.Width = 240.000000
-	__GongStructShape__000005_NewDiagram_RectAnchoredText.Heigth = 63.000000
+	__GongStructShape__000005_NewDiagram_RectAnchoredText.Height = 63.000000
 	__GongStructShape__000005_NewDiagram_RectAnchoredText.IsSelected = false
 
 	// GongStructShape values setup
@@ -1489,7 +1489,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000006_NewDiagram_RectLinkLink.ShowNbInstances = true
 	__GongStructShape__000006_NewDiagram_RectLinkLink.NbInstances = 0
 	__GongStructShape__000006_NewDiagram_RectLinkLink.Width = 240.000000
-	__GongStructShape__000006_NewDiagram_RectLinkLink.Heigth = 78.000000
+	__GongStructShape__000006_NewDiagram_RectLinkLink.Height = 78.000000
 	__GongStructShape__000006_NewDiagram_RectLinkLink.IsSelected = false
 
 	// GongStructShape values setup
@@ -1502,7 +1502,7 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__GongStructShape__000007_NewDiagram_SVG.ShowNbInstances = true
 	__GongStructShape__000007_NewDiagram_SVG.NbInstances = 1
 	__GongStructShape__000007_NewDiagram_SVG.Width = 139.000000
-	__GongStructShape__000007_NewDiagram_SVG.Heigth = 63.000000
+	__GongStructShape__000007_NewDiagram_SVG.Height = 63.000000
 	__GongStructShape__000007_NewDiagram_SVG.IsSelected = false
 
 	// Link values setup
@@ -1996,5 +1996,3 @@ func NewDiagramInjection(stage *models.StageStruct) {
 	__Link__000010_TextAtArrowEnd.Middlevertice = __Vertice__000004_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_AnchoredText
 	__Link__000011_TextAtArrowStart.Middlevertice = __Vertice__000003_Verticle_in_class_diagram_NewDiagram_in_middle_between_NewDiagram_Link_and_NewDiagram_AnchoredText
 }
-
-
