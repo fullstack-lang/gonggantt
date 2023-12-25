@@ -267,7 +267,7 @@ func DefaultInjection(stage *models.StageStruct) {
 	__GongStructShape__000000_Default_Arrow.ShowNbInstances = false
 	__GongStructShape__000000_Default_Arrow.NbInstances = 0
 	__GongStructShape__000000_Default_Arrow.Width = 240.000000
-	__GongStructShape__000000_Default_Arrow.Height = 78.000000
+	__GongStructShape__000000_Default_Arrow.Height = 159.000000
 	__GongStructShape__000000_Default_Arrow.IsSelected = false
 
 	// GongStructShape values setup
@@ -280,7 +280,7 @@ func DefaultInjection(stage *models.StageStruct) {
 	__GongStructShape__000001_Default_Bar.ShowNbInstances = true
 	__GongStructShape__000001_Default_Bar.NbInstances = 4
 	__GongStructShape__000001_Default_Bar.Width = 240.000000
-	__GongStructShape__000001_Default_Bar.Height = 93.000000
+	__GongStructShape__000001_Default_Bar.Height = 161.000000
 	__GongStructShape__000001_Default_Bar.IsSelected = false
 
 	// GongStructShape values setup
@@ -332,7 +332,7 @@ func DefaultInjection(stage *models.StageStruct) {
 	__Link__000000_Bars.StartOrientation = models.ORIENTATION_HORIZONTAL
 	__Link__000000_Bars.StartRatio = 0.500000
 	__Link__000000_Bars.EndOrientation = models.ORIENTATION_HORIZONTAL
-	__Link__000000_Bars.EndRatio = 0.408602
+	__Link__000000_Bars.EndRatio = 0.215591
 	__Link__000000_Bars.CornerOffsetRatio = 1.334444
 
 	// Link values setup
@@ -347,11 +347,11 @@ func DefaultInjection(stage *models.StageStruct) {
 
 	//gong:ident [ref_models.Bar]
 	__Link__000001_From.Fieldtypename = `ref_models.Bar`
-	__Link__000001_From.FieldOffsetX = -50.000000
-	__Link__000001_From.FieldOffsetY = -16.000000
+	__Link__000001_From.FieldOffsetX = 10.000000
+	__Link__000001_From.FieldOffsetY = -19.000000
 	__Link__000001_From.TargetMultiplicity = models.ZERO_ONE
-	__Link__000001_From.TargetMultiplicityOffsetX = -50.000000
-	__Link__000001_From.TargetMultiplicityOffsetY = 16.000000
+	__Link__000001_From.TargetMultiplicityOffsetX = 19.000000
+	__Link__000001_From.TargetMultiplicityOffsetY = 38.000000
 	__Link__000001_From.SourceMultiplicity = models.MANY
 	__Link__000001_From.SourceMultiplicityOffsetX = 10.000000
 	__Link__000001_From.SourceMultiplicityOffsetY = -50.000000
@@ -359,7 +359,7 @@ func DefaultInjection(stage *models.StageStruct) {
 	__Link__000001_From.StartRatio = 0.500000
 	__Link__000001_From.EndOrientation = models.ORIENTATION_HORIZONTAL
 	__Link__000001_From.EndRatio = 0.500000
-	__Link__000001_From.CornerOffsetRatio = 1.301667
+	__Link__000001_From.CornerOffsetRatio = 1.642639
 
 	// Link values setup
 	__Link__000002_Lanes.Name = `Lanes`
