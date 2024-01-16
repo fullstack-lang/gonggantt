@@ -447,6 +447,8 @@ func FillUpForm[T models.Gongstruct](
 		BasicFieldtoForm("Name", instanceWithInferedType.Name, instanceWithInferedType, probe.formStage, formGroup,
 			false, false, 0, false, 0)
 		EnumTypeStringToForm("Type", instanceWithInferedType.Type, instanceWithInferedType, probe.formStage, formGroup)
+		BasicFieldtoForm("IsBezierCurve", instanceWithInferedType.IsBezierCurve, instanceWithInferedType, probe.formStage, formGroup,
+			false, false, 0, false, 0)
 		AssociationFieldToForm("Start", instanceWithInferedType.Start, formGroup, probe)
 		EnumTypeStringToForm("StartAnchorType", instanceWithInferedType.StartAnchorType, instanceWithInferedType, probe.formStage, formGroup)
 		AssociationFieldToForm("End", instanceWithInferedType.End, formGroup, probe)
@@ -515,6 +517,9 @@ func FillUpForm[T models.Gongstruct](
 			false, false, 0, false, 0)
 		BasicFieldtoForm("Content", instanceWithInferedType.Content, instanceWithInferedType, probe.formStage, formGroup,
 			false, false, 0, false, 0)
+		BasicFieldtoForm("AutomaticLayout", instanceWithInferedType.AutomaticLayout, instanceWithInferedType, probe.formStage, formGroup,
+			false, false, 0, false, 0)
+		EnumTypeStringToForm("LinkAnchorType", instanceWithInferedType.LinkAnchorType, instanceWithInferedType, probe.formStage, formGroup)
 		BasicFieldtoForm("X_Offset", instanceWithInferedType.X_Offset, instanceWithInferedType, probe.formStage, formGroup,
 			false, false, 0, false, 0)
 		BasicFieldtoForm("Y_Offset", instanceWithInferedType.Y_Offset, instanceWithInferedType, probe.formStage, formGroup,

@@ -2,7 +2,6 @@ package doc2svg
 
 import (
 	"fmt"
-	"log"
 
 	gongdoc_models "github.com/fullstack-lang/gongdoc/go/models"
 	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
@@ -35,7 +34,7 @@ func (docSVGMapper *DocSVGMapper) GenerateSvg(
 	gongdocStage *gongdoc_models.StageStruct,
 ) {
 
-	log.Println("DocSVGMapper.GenerateSvg")
+	// log.Println("DocSVGMapper.GenerateSvg")
 
 	docSVGMapper.map_GongstructShape_Rect = make(map[*gongdoc_models.GongStructShape]*gongsvg_models.Rect)
 	docSVGMapper.map_GongenumShape_Rect = make(map[*gongdoc_models.GongEnumShape]*gongsvg_models.Rect)
@@ -219,13 +218,16 @@ func (docSVGMapper *DocSVGMapper) GenerateSvg(
 
 			link.CornerOffsetRatio = docLink.CornerOffsetRatio
 
-			link.CornerRadius = 3
+			link.CornerRadius = 8
 
 			link.Start = startRect
 			link.End = endRect
 
 			// add text to the arrow
 			targetMulitplicity := new(gongsvg_models.LinkAnchoredText).Stage(docSVGMapper.gongsvgStage)
+			targetMulitplicity.AutomaticLayout = true
+			targetMulitplicity.LinkAnchorType = gongsvg_models.LINK_RIGHT_OR_BOTTOM
+
 			targetMulitplicity.Impl = NewAnchoredTextImplLinkTargetMultiplicity(docLink, gongdocStage)
 			link.TextAtArrowEnd = append(link.TextAtArrowEnd, targetMulitplicity)
 			targetMulitplicity.Name = docLink.TargetMultiplicity.ToString()
@@ -239,6 +241,9 @@ func (docSVGMapper *DocSVGMapper) GenerateSvg(
 			targetMulitplicity.FontWeight = "normal"
 
 			fieldName := new(gongsvg_models.LinkAnchoredText).Stage(docSVGMapper.gongsvgStage)
+			fieldName.AutomaticLayout = true
+			fieldName.LinkAnchorType = gongsvg_models.LINK_LEFT_OR_TOP
+
 			fieldName.Impl = NewAnchoredTextImplLinkFieldName(docLink, gongdocStage)
 
 			link.TextAtArrowEnd = append(link.TextAtArrowEnd, fieldName)
@@ -255,6 +260,9 @@ func (docSVGMapper *DocSVGMapper) GenerateSvg(
 			// add the callback
 
 			sourceMultiplicity := new(gongsvg_models.LinkAnchoredText).Stage(docSVGMapper.gongsvgStage)
+			sourceMultiplicity.AutomaticLayout = true
+			sourceMultiplicity.LinkAnchorType = gongsvg_models.LINK_RIGHT_OR_BOTTOM
+
 			sourceMultiplicity.Impl = NewAnchoredTextImplLinkSourceMultiplicity(docLink, gongdocStage)
 
 			link.TextAtArrowStart = append(link.TextAtArrowStart, sourceMultiplicity)
