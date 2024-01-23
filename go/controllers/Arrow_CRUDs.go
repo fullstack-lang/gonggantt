@@ -116,6 +116,7 @@ func (controller *Controller) GetArrows(c *gin.Context) {
 func (controller *Controller) PostArrow(c *gin.Context) {
 
 	mutexArrow.Lock()
+	defer mutexArrow.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -173,8 +174,6 @@ func (controller *Controller) PostArrow(c *gin.Context) {
 	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, arrowDB)
-
-	mutexArrow.Unlock()
 }
 
 // GetArrow
@@ -236,6 +235,7 @@ func (controller *Controller) GetArrow(c *gin.Context) {
 func (controller *Controller) UpdateArrow(c *gin.Context) {
 
 	mutexArrow.Lock()
+	defer mutexArrow.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -310,8 +310,6 @@ func (controller *Controller) UpdateArrow(c *gin.Context) {
 
 	// return status OK with the marshalling of the the arrowDB
 	c.JSON(http.StatusOK, arrowDB)
-
-	mutexArrow.Unlock()
 }
 
 // DeleteArrow
@@ -326,6 +324,7 @@ func (controller *Controller) UpdateArrow(c *gin.Context) {
 func (controller *Controller) DeleteArrow(c *gin.Context) {
 
 	mutexArrow.Lock()
+	defer mutexArrow.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -371,6 +370,4 @@ func (controller *Controller) DeleteArrow(c *gin.Context) {
 	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
-
-	mutexArrow.Unlock()
 }

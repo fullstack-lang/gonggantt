@@ -116,6 +116,7 @@ func (controller *Controller) GetGantts(c *gin.Context) {
 func (controller *Controller) PostGantt(c *gin.Context) {
 
 	mutexGantt.Lock()
+	defer mutexGantt.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -173,8 +174,6 @@ func (controller *Controller) PostGantt(c *gin.Context) {
 	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, ganttDB)
-
-	mutexGantt.Unlock()
 }
 
 // GetGantt
@@ -236,6 +235,7 @@ func (controller *Controller) GetGantt(c *gin.Context) {
 func (controller *Controller) UpdateGantt(c *gin.Context) {
 
 	mutexGantt.Lock()
+	defer mutexGantt.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -310,8 +310,6 @@ func (controller *Controller) UpdateGantt(c *gin.Context) {
 
 	// return status OK with the marshalling of the the ganttDB
 	c.JSON(http.StatusOK, ganttDB)
-
-	mutexGantt.Unlock()
 }
 
 // DeleteGantt
@@ -326,6 +324,7 @@ func (controller *Controller) UpdateGantt(c *gin.Context) {
 func (controller *Controller) DeleteGantt(c *gin.Context) {
 
 	mutexGantt.Lock()
+	defer mutexGantt.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -371,6 +370,4 @@ func (controller *Controller) DeleteGantt(c *gin.Context) {
 	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
-
-	mutexGantt.Unlock()
 }

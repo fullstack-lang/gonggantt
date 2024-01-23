@@ -116,6 +116,7 @@ func (controller *Controller) GetGroups(c *gin.Context) {
 func (controller *Controller) PostGroup(c *gin.Context) {
 
 	mutexGroup.Lock()
+	defer mutexGroup.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -173,8 +174,6 @@ func (controller *Controller) PostGroup(c *gin.Context) {
 	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, groupDB)
-
-	mutexGroup.Unlock()
 }
 
 // GetGroup
@@ -236,6 +235,7 @@ func (controller *Controller) GetGroup(c *gin.Context) {
 func (controller *Controller) UpdateGroup(c *gin.Context) {
 
 	mutexGroup.Lock()
+	defer mutexGroup.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -310,8 +310,6 @@ func (controller *Controller) UpdateGroup(c *gin.Context) {
 
 	// return status OK with the marshalling of the the groupDB
 	c.JSON(http.StatusOK, groupDB)
-
-	mutexGroup.Unlock()
 }
 
 // DeleteGroup
@@ -326,6 +324,7 @@ func (controller *Controller) UpdateGroup(c *gin.Context) {
 func (controller *Controller) DeleteGroup(c *gin.Context) {
 
 	mutexGroup.Lock()
+	defer mutexGroup.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -371,6 +370,4 @@ func (controller *Controller) DeleteGroup(c *gin.Context) {
 	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
-
-	mutexGroup.Unlock()
 }

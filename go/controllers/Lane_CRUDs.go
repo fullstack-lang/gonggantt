@@ -116,6 +116,7 @@ func (controller *Controller) GetLanes(c *gin.Context) {
 func (controller *Controller) PostLane(c *gin.Context) {
 
 	mutexLane.Lock()
+	defer mutexLane.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -173,8 +174,6 @@ func (controller *Controller) PostLane(c *gin.Context) {
 	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, laneDB)
-
-	mutexLane.Unlock()
 }
 
 // GetLane
@@ -236,6 +235,7 @@ func (controller *Controller) GetLane(c *gin.Context) {
 func (controller *Controller) UpdateLane(c *gin.Context) {
 
 	mutexLane.Lock()
+	defer mutexLane.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -310,8 +310,6 @@ func (controller *Controller) UpdateLane(c *gin.Context) {
 
 	// return status OK with the marshalling of the the laneDB
 	c.JSON(http.StatusOK, laneDB)
-
-	mutexLane.Unlock()
 }
 
 // DeleteLane
@@ -326,6 +324,7 @@ func (controller *Controller) UpdateLane(c *gin.Context) {
 func (controller *Controller) DeleteLane(c *gin.Context) {
 
 	mutexLane.Lock()
+	defer mutexLane.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -371,6 +370,4 @@ func (controller *Controller) DeleteLane(c *gin.Context) {
 	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
-
-	mutexLane.Unlock()
 }

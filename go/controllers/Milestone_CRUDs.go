@@ -116,6 +116,7 @@ func (controller *Controller) GetMilestones(c *gin.Context) {
 func (controller *Controller) PostMilestone(c *gin.Context) {
 
 	mutexMilestone.Lock()
+	defer mutexMilestone.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -173,8 +174,6 @@ func (controller *Controller) PostMilestone(c *gin.Context) {
 	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, milestoneDB)
-
-	mutexMilestone.Unlock()
 }
 
 // GetMilestone
@@ -236,6 +235,7 @@ func (controller *Controller) GetMilestone(c *gin.Context) {
 func (controller *Controller) UpdateMilestone(c *gin.Context) {
 
 	mutexMilestone.Lock()
+	defer mutexMilestone.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -310,8 +310,6 @@ func (controller *Controller) UpdateMilestone(c *gin.Context) {
 
 	// return status OK with the marshalling of the the milestoneDB
 	c.JSON(http.StatusOK, milestoneDB)
-
-	mutexMilestone.Unlock()
 }
 
 // DeleteMilestone
@@ -326,6 +324,7 @@ func (controller *Controller) UpdateMilestone(c *gin.Context) {
 func (controller *Controller) DeleteMilestone(c *gin.Context) {
 
 	mutexMilestone.Lock()
+	defer mutexMilestone.Unlock()
 
 	values := c.Request.URL.Query()
 	stackPath := ""
@@ -371,6 +370,4 @@ func (controller *Controller) DeleteMilestone(c *gin.Context) {
 	backRepo.IncrementPushFromFrontNb()
 
 	c.JSON(http.StatusOK, gin.H{"data": true})
-
-	mutexMilestone.Unlock()
 }
