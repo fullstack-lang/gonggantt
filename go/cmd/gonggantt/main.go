@@ -41,7 +41,7 @@ func main() {
 	stackGonggantt := gonggantt_stack.NewStack(r, gonggantt_models.GanttStackName.ToString(), *unmarshallFromCode, *marshallOnCommit, "", *embeddedDiagrams, true)
 	stackGonggantt.Probe.Refresh()
 
-	stacksvg := gongsvg_stack.NewStack(r, gonggantt_models.SvgStackName.ToString(), "", "", "", false, true)
+	stacksvg := gongsvg_stack.NewStack(r, gonggantt_models.SvgStackName.ToString(), "", "", "", true, true)
 	stacksvg.Probe.Refresh()
 
 	// set up the GanttSVGMapper that will intercept

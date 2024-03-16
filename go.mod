@@ -3,11 +3,11 @@ module github.com/fullstack-lang/gonggantt
 go 1.21.1
 
 require (
-	github.com/fullstack-lang/gong v0.0.0-20240127175449-d48dac74ff5f
-	github.com/fullstack-lang/gongdoc v0.0.0-20240127175548-e14d21f277fd
-	github.com/fullstack-lang/gongsvg v0.0.0-20240127175549-616185e1147c
-	github.com/fullstack-lang/gongtable v0.0.0-20240127175549-6fea7a8bc9ff
-	github.com/fullstack-lang/gongtree v0.0.0-20240127175549-0b9c685be7d3
+	github.com/fullstack-lang/gong v0.0.0-20240316155513-4de314ca17ae
+	github.com/fullstack-lang/gongdoc v0.0.0-20240316161604-f6bb3217ad91
+	github.com/fullstack-lang/gongsvg v0.0.0-20240316161140-f15a96c64e6a
+	github.com/fullstack-lang/gongtable v0.0.0-20240316155517-b4721ecb3ff2
+	github.com/fullstack-lang/gongtree v0.0.0-20240316155517-8def383372f2
 	github.com/fullstack-lang/maticons v0.0.0-20230823061653-70c364fbdd00
 	github.com/gin-contrib/cors v1.5.0
 	github.com/gin-contrib/static v0.0.1
