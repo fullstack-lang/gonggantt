@@ -38,6 +38,7 @@ type GanttAPI struct {
 	models.Gantt_WOP
 
 	// encoding of pointers
+	// for API, it cannot be embedded
 	GanttPointersEncoding GanttPointersEncoding
 }
 
@@ -146,7 +147,9 @@ type GanttDB struct {
 	// Declation for basic field ganttDB.AlignOnStartEndOnYearStart
 	// provide the sql storage for the boolan
 	AlignOnStartEndOnYearStart_Data sql.NullBool
+	
 	// encoding of pointers
+	// for GORM serialization, it is necessary to embed to Pointer Encoding declaration
 	GanttPointersEncoding
 }
 

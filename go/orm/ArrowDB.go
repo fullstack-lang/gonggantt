@@ -38,6 +38,7 @@ type ArrowAPI struct {
 	models.Arrow_WOP
 
 	// encoding of pointers
+	// for API, it cannot be embedded
 	ArrowPointersEncoding ArrowPointersEncoding
 }
 
@@ -74,7 +75,9 @@ type ArrowDB struct {
 
 	// Declation for basic field arrowDB.OptionnalStroke
 	OptionnalStroke_Data sql.NullString
+	
 	// encoding of pointers
+	// for GORM serialization, it is necessary to embed to Pointer Encoding declaration
 	ArrowPointersEncoding
 }
 

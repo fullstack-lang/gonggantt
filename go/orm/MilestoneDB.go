@@ -38,6 +38,7 @@ type MilestoneAPI struct {
 	models.Milestone_WOP
 
 	// encoding of pointers
+	// for API, it cannot be embedded
 	MilestonePointersEncoding MilestonePointersEncoding
 }
 
@@ -70,7 +71,9 @@ type MilestoneDB struct {
 	// Declation for basic field milestoneDB.DisplayVerticalBar
 	// provide the sql storage for the boolan
 	DisplayVerticalBar_Data sql.NullBool
+	
 	// encoding of pointers
+	// for GORM serialization, it is necessary to embed to Pointer Encoding declaration
 	MilestonePointersEncoding
 }
 

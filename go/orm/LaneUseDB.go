@@ -38,6 +38,7 @@ type LaneUseAPI struct {
 	models.LaneUse_WOP
 
 	// encoding of pointers
+	// for API, it cannot be embedded
 	LaneUsePointersEncoding LaneUsePointersEncoding
 }
 
@@ -64,7 +65,9 @@ type LaneUseDB struct {
 
 	// Declation for basic field laneuseDB.Name
 	Name_Data sql.NullString
+	
 	// encoding of pointers
+	// for GORM serialization, it is necessary to embed to Pointer Encoding declaration
 	LaneUsePointersEncoding
 }
 

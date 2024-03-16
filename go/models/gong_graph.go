@@ -33,58 +33,58 @@ func IsStaged[Type Gongstruct](stage *StageStruct, instance *Type) (ok bool) {
 }
 
 // insertion point for stage per struct
-	func (stage *StageStruct) IsStagedArrow(arrow *Arrow) (ok bool) {
+func (stage *StageStruct) IsStagedArrow(arrow *Arrow) (ok bool) {
 
-		_, ok = stage.Arrows[arrow]
-	
-		return
-	}
+	_, ok = stage.Arrows[arrow]
 
-	func (stage *StageStruct) IsStagedBar(bar *Bar) (ok bool) {
+	return
+}
 
-		_, ok = stage.Bars[bar]
-	
-		return
-	}
+func (stage *StageStruct) IsStagedBar(bar *Bar) (ok bool) {
 
-	func (stage *StageStruct) IsStagedGantt(gantt *Gantt) (ok bool) {
+	_, ok = stage.Bars[bar]
 
-		_, ok = stage.Gantts[gantt]
-	
-		return
-	}
+	return
+}
 
-	func (stage *StageStruct) IsStagedGroup(group *Group) (ok bool) {
+func (stage *StageStruct) IsStagedGantt(gantt *Gantt) (ok bool) {
 
-		_, ok = stage.Groups[group]
-	
-		return
-	}
+	_, ok = stage.Gantts[gantt]
 
-	func (stage *StageStruct) IsStagedLane(lane *Lane) (ok bool) {
+	return
+}
 
-		_, ok = stage.Lanes[lane]
-	
-		return
-	}
+func (stage *StageStruct) IsStagedGroup(group *Group) (ok bool) {
 
-	func (stage *StageStruct) IsStagedLaneUse(laneuse *LaneUse) (ok bool) {
+	_, ok = stage.Groups[group]
 
-		_, ok = stage.LaneUses[laneuse]
-	
-		return
-	}
+	return
+}
 
-	func (stage *StageStruct) IsStagedMilestone(milestone *Milestone) (ok bool) {
+func (stage *StageStruct) IsStagedLane(lane *Lane) (ok bool) {
 
-		_, ok = stage.Milestones[milestone]
-	
-		return
-	}
+	_, ok = stage.Lanes[lane]
+
+	return
+}
+
+func (stage *StageStruct) IsStagedLaneUse(laneuse *LaneUse) (ok bool) {
+
+	_, ok = stage.LaneUses[laneuse]
+
+	return
+}
+
+func (stage *StageStruct) IsStagedMilestone(milestone *Milestone) (ok bool) {
+
+	_, ok = stage.Milestones[milestone]
+
+	return
+}
 
 
 // StageBranch stages instance and apply StageBranch on all gongstruct instances that are
-// referenced by pointers or slices of pointers of the insance
+// referenced by pointers or slices of pointers of the instance
 //
 // the algorithm stops along the course of graph if a vertex is already staged
 func StageBranch[Type Gongstruct](stage *StageStruct, instance *Type) {
@@ -251,6 +251,216 @@ func (stage *StageStruct) StageBranchMilestone(milestone *Milestone) {
 		StageBranch(stage, _laneuse)
 	}
 
+}
+
+
+// CopyBranch stages instance and apply CopyBranch on all gongstruct instances that are
+// referenced by pointers or slices of pointers of the instance
+//
+// the algorithm stops along the course of graph if a vertex is already staged
+func CopyBranch[Type Gongstruct](from *Type) (to *Type) {
+
+	mapOrigCopy := make(map[any]any)
+	_ = mapOrigCopy
+
+	switch fromT := any(from).(type) {
+	// insertion point for stage branch
+	case *Arrow:
+		toT := CopyBranchArrow(mapOrigCopy, fromT)
+		return any(toT).(*Type)
+
+	case *Bar:
+		toT := CopyBranchBar(mapOrigCopy, fromT)
+		return any(toT).(*Type)
+
+	case *Gantt:
+		toT := CopyBranchGantt(mapOrigCopy, fromT)
+		return any(toT).(*Type)
+
+	case *Group:
+		toT := CopyBranchGroup(mapOrigCopy, fromT)
+		return any(toT).(*Type)
+
+	case *Lane:
+		toT := CopyBranchLane(mapOrigCopy, fromT)
+		return any(toT).(*Type)
+
+	case *LaneUse:
+		toT := CopyBranchLaneUse(mapOrigCopy, fromT)
+		return any(toT).(*Type)
+
+	case *Milestone:
+		toT := CopyBranchMilestone(mapOrigCopy, fromT)
+		return any(toT).(*Type)
+
+	default:
+		_ = fromT // to espace compilation issue when model is empty
+	}
+	return
+}
+
+// insertion point for stage branch per struct
+func CopyBranchArrow(mapOrigCopy map[any]any, arrowFrom *Arrow) (arrowTo  *Arrow){
+
+	// arrowFrom has already been copied
+	if _arrowTo, ok := mapOrigCopy[arrowFrom]; ok {
+		arrowTo = _arrowTo.(*Arrow)
+		return
+	}
+
+	arrowTo = new(Arrow)
+	mapOrigCopy[arrowFrom] = arrowTo
+	arrowFrom.CopyBasicFields(arrowTo)
+
+	//insertion point for the staging of instances referenced by pointers
+	if arrowFrom.From != nil {
+		arrowTo.From = CopyBranchBar(mapOrigCopy, arrowFrom.From)
+	}
+	if arrowFrom.To != nil {
+		arrowTo.To = CopyBranchBar(mapOrigCopy, arrowFrom.To)
+	}
+
+	//insertion point for the staging of instances referenced by slice of pointers
+
+	return
+}
+
+func CopyBranchBar(mapOrigCopy map[any]any, barFrom *Bar) (barTo  *Bar){
+
+	// barFrom has already been copied
+	if _barTo, ok := mapOrigCopy[barFrom]; ok {
+		barTo = _barTo.(*Bar)
+		return
+	}
+
+	barTo = new(Bar)
+	mapOrigCopy[barFrom] = barTo
+	barFrom.CopyBasicFields(barTo)
+
+	//insertion point for the staging of instances referenced by pointers
+
+	//insertion point for the staging of instances referenced by slice of pointers
+
+	return
+}
+
+func CopyBranchGantt(mapOrigCopy map[any]any, ganttFrom *Gantt) (ganttTo  *Gantt){
+
+	// ganttFrom has already been copied
+	if _ganttTo, ok := mapOrigCopy[ganttFrom]; ok {
+		ganttTo = _ganttTo.(*Gantt)
+		return
+	}
+
+	ganttTo = new(Gantt)
+	mapOrigCopy[ganttFrom] = ganttTo
+	ganttFrom.CopyBasicFields(ganttTo)
+
+	//insertion point for the staging of instances referenced by pointers
+
+	//insertion point for the staging of instances referenced by slice of pointers
+	for _, _lane := range ganttFrom.Lanes {
+		ganttTo.Lanes = append( ganttTo.Lanes, CopyBranchLane(mapOrigCopy, _lane))
+	}
+	for _, _milestone := range ganttFrom.Milestones {
+		ganttTo.Milestones = append( ganttTo.Milestones, CopyBranchMilestone(mapOrigCopy, _milestone))
+	}
+	for _, _group := range ganttFrom.Groups {
+		ganttTo.Groups = append( ganttTo.Groups, CopyBranchGroup(mapOrigCopy, _group))
+	}
+	for _, _arrow := range ganttFrom.Arrows {
+		ganttTo.Arrows = append( ganttTo.Arrows, CopyBranchArrow(mapOrigCopy, _arrow))
+	}
+
+	return
+}
+
+func CopyBranchGroup(mapOrigCopy map[any]any, groupFrom *Group) (groupTo  *Group){
+
+	// groupFrom has already been copied
+	if _groupTo, ok := mapOrigCopy[groupFrom]; ok {
+		groupTo = _groupTo.(*Group)
+		return
+	}
+
+	groupTo = new(Group)
+	mapOrigCopy[groupFrom] = groupTo
+	groupFrom.CopyBasicFields(groupTo)
+
+	//insertion point for the staging of instances referenced by pointers
+
+	//insertion point for the staging of instances referenced by slice of pointers
+	for _, _lane := range groupFrom.GroupLanes {
+		groupTo.GroupLanes = append( groupTo.GroupLanes, CopyBranchLane(mapOrigCopy, _lane))
+	}
+
+	return
+}
+
+func CopyBranchLane(mapOrigCopy map[any]any, laneFrom *Lane) (laneTo  *Lane){
+
+	// laneFrom has already been copied
+	if _laneTo, ok := mapOrigCopy[laneFrom]; ok {
+		laneTo = _laneTo.(*Lane)
+		return
+	}
+
+	laneTo = new(Lane)
+	mapOrigCopy[laneFrom] = laneTo
+	laneFrom.CopyBasicFields(laneTo)
+
+	//insertion point for the staging of instances referenced by pointers
+
+	//insertion point for the staging of instances referenced by slice of pointers
+	for _, _bar := range laneFrom.Bars {
+		laneTo.Bars = append( laneTo.Bars, CopyBranchBar(mapOrigCopy, _bar))
+	}
+
+	return
+}
+
+func CopyBranchLaneUse(mapOrigCopy map[any]any, laneuseFrom *LaneUse) (laneuseTo  *LaneUse){
+
+	// laneuseFrom has already been copied
+	if _laneuseTo, ok := mapOrigCopy[laneuseFrom]; ok {
+		laneuseTo = _laneuseTo.(*LaneUse)
+		return
+	}
+
+	laneuseTo = new(LaneUse)
+	mapOrigCopy[laneuseFrom] = laneuseTo
+	laneuseFrom.CopyBasicFields(laneuseTo)
+
+	//insertion point for the staging of instances referenced by pointers
+	if laneuseFrom.Lane != nil {
+		laneuseTo.Lane = CopyBranchLane(mapOrigCopy, laneuseFrom.Lane)
+	}
+
+	//insertion point for the staging of instances referenced by slice of pointers
+
+	return
+}
+
+func CopyBranchMilestone(mapOrigCopy map[any]any, milestoneFrom *Milestone) (milestoneTo  *Milestone){
+
+	// milestoneFrom has already been copied
+	if _milestoneTo, ok := mapOrigCopy[milestoneFrom]; ok {
+		milestoneTo = _milestoneTo.(*Milestone)
+		return
+	}
+
+	milestoneTo = new(Milestone)
+	mapOrigCopy[milestoneFrom] = milestoneTo
+	milestoneFrom.CopyBasicFields(milestoneTo)
+
+	//insertion point for the staging of instances referenced by pointers
+
+	//insertion point for the staging of instances referenced by slice of pointers
+	for _, _laneuse := range milestoneFrom.LanesToDisplayMilestoneUse {
+		milestoneTo.LanesToDisplayMilestoneUse = append( milestoneTo.LanesToDisplayMilestoneUse, CopyBranchLaneUse(mapOrigCopy, _laneuse))
+	}
+
+	return
 }
 
 

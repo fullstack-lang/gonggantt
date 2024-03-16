@@ -14,6 +14,13 @@ type Arrow_WOP struct {
 	OptionnalStroke string
 }
 
+func (from *Arrow) CopyBasicFields(to *Arrow) {
+	// insertion point
+	to.Name = from.Name
+	to.OptionnalColor = from.OptionnalColor
+	to.OptionnalStroke = from.OptionnalStroke
+}
+
 type Bar_WOP struct {
 	// insertion point
 	Name string
@@ -25,6 +32,19 @@ type Bar_WOP struct {
 	FillOpacity float64
 	StrokeWidth float64
 	StrokeDashArray string
+}
+
+func (from *Bar) CopyBasicFields(to *Bar) {
+	// insertion point
+	to.Name = from.Name
+	to.Start = from.Start
+	to.End = from.End
+	to.ComputedDuration = from.ComputedDuration
+	to.OptionnalColor = from.OptionnalColor
+	to.OptionnalStroke = from.OptionnalStroke
+	to.FillOpacity = from.FillOpacity
+	to.StrokeWidth = from.StrokeWidth
+	to.StrokeDashArray = from.StrokeDashArray
 }
 
 type Gantt_WOP struct {
@@ -56,9 +76,43 @@ type Gantt_WOP struct {
 	AlignOnStartEndOnYearStart bool
 }
 
+func (from *Gantt) CopyBasicFields(to *Gantt) {
+	// insertion point
+	to.Name = from.Name
+	to.ComputedStart = from.ComputedStart
+	to.ComputedEnd = from.ComputedEnd
+	to.ComputedDuration = from.ComputedDuration
+	to.UseManualStartAndEndDates = from.UseManualStartAndEndDates
+	to.ManualStart = from.ManualStart
+	to.ManualEnd = from.ManualEnd
+	to.LaneHeight = from.LaneHeight
+	to.RatioBarToLaneHeight = from.RatioBarToLaneHeight
+	to.YTopMargin = from.YTopMargin
+	to.XLeftText = from.XLeftText
+	to.TextHeight = from.TextHeight
+	to.XLeftLanes = from.XLeftLanes
+	to.XRightMargin = from.XRightMargin
+	to.ArrowLengthToTheRightOfStartBar = from.ArrowLengthToTheRightOfStartBar
+	to.ArrowTipLenght = from.ArrowTipLenght
+	to.TimeLine_Color = from.TimeLine_Color
+	to.TimeLine_FillOpacity = from.TimeLine_FillOpacity
+	to.TimeLine_Stroke = from.TimeLine_Stroke
+	to.TimeLine_StrokeWidth = from.TimeLine_StrokeWidth
+	to.Group_Stroke = from.Group_Stroke
+	to.Group_StrokeWidth = from.Group_StrokeWidth
+	to.Group_StrokeDashArray = from.Group_StrokeDashArray
+	to.DateYOffset = from.DateYOffset
+	to.AlignOnStartEndOnYearStart = from.AlignOnStartEndOnYearStart
+}
+
 type Group_WOP struct {
 	// insertion point
 	Name string
+}
+
+func (from *Group) CopyBasicFields(to *Group) {
+	// insertion point
+	to.Name = from.Name
 }
 
 type Lane_WOP struct {
@@ -67,9 +121,20 @@ type Lane_WOP struct {
 	Order int
 }
 
+func (from *Lane) CopyBasicFields(to *Lane) {
+	// insertion point
+	to.Name = from.Name
+	to.Order = from.Order
+}
+
 type LaneUse_WOP struct {
 	// insertion point
 	Name string
+}
+
+func (from *LaneUse) CopyBasicFields(to *LaneUse) {
+	// insertion point
+	to.Name = from.Name
 }
 
 type Milestone_WOP struct {
@@ -77,5 +142,12 @@ type Milestone_WOP struct {
 	Name string
 	Date time.Time
 	DisplayVerticalBar bool
+}
+
+func (from *Milestone) CopyBasicFields(to *Milestone) {
+	// insertion point
+	to.Name = from.Name
+	to.Date = from.Date
+	to.DisplayVerticalBar = from.DisplayVerticalBar
 }
 
