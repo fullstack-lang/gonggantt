@@ -8,3 +8,5 @@ go/cmd/gonggantt/gonggantt
 go/cmd/gonggantt/gonggantt.exe
 go/cmd/gonggantt/__debug_bin*.exe
 go/cmd/gonggantt/__debug_bin*
+
+node_modules
