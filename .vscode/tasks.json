@@ -5,7 +5,7 @@
 			"label": "03 - ng serve --host=127.0.0.1",
 			"type": "shell",
 			"options": {
-				"cwd": "ng"
+				"cwd": "ng-github.com-fullstack-lang-gonggantt"
 			},
 			"command": "ng serve --host=127.0.0.1",
 			"group": "build"
@@ -14,7 +14,7 @@
 			"label": "03 - ng serve",
 			"type": "shell",
 			"options": {
-				"cwd": "ng"
+				"cwd": "ng-github.com-fullstack-lang-gonggantt"
 			},
 			"command": "ng serve",
 			"group": "build"
@@ -28,7 +28,8 @@
 			"command": "go",
 			"args": [
 				"run",
-				"main.go"
+				"main.go",
+				"commit_form_front_on_gantt_stage.go"
 			],
 			"group": "build"
 		},
@@ -42,6 +43,7 @@
 			"args": [
 				"run",
 				"main.go",
+				"commit_form_front_on_gantt_stage.go",
 				"-marshallOnCommit=gantt1",
 				"-unmarshallFromCode=gantt1.go",
 			],
@@ -57,6 +59,7 @@
 			"args": [
 				"run",
 				"main.go",
+				"commit_form_front_on_gantt_stage.go",
 				"-marshallOnCommit=simple",
 				"-unmarshallFromCode=simple.go",
 			],
@@ -164,7 +167,7 @@
 			"label": "03 - ng build",
 			"type": "shell",
 			"options": {
-				"cwd": "ng"
+				"cwd": "ng-github.com-fullstack-lang-gonggantt"
 			},
 			"command": "ng build",
 			"group": "build",

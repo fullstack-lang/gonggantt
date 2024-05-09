@@ -9,7 +9,7 @@
             "request": "launch",
             "type": "msedge",
             "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}/ng",
+            "webRoot": "${workspaceFolder}/ng-github.com-fullstack-lang-gonggantt",
         },
         {
             "name": "go server unmarshallFromCode gantt1.go -marshallOnCommit gantt1",
