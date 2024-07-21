@@ -55,10 +55,10 @@ func (controller *Controller) GetMilestones(c *gin.Context) {
 	// source slice
 	var milestoneDBs []orm.MilestoneDB
 
-	values := c.Request.URL.Query()
+	_values := c.Request.URL.Query()
 	stackPath := ""
-	if len(values) == 1 {
-		value := values["GONG__StackPath"]
+	if len(_values) == 1 {
+		value := _values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
 			// log.Println("GetMilestones", "GONG__StackPath", stackPath)
@@ -118,10 +118,10 @@ func (controller *Controller) PostMilestone(c *gin.Context) {
 	mutexMilestone.Lock()
 	defer mutexMilestone.Unlock()
 
-	values := c.Request.URL.Query()
+	_values := c.Request.URL.Query()
 	stackPath := ""
-	if len(values) == 1 {
-		value := values["GONG__StackPath"]
+	if len(_values) == 1 {
+		value := _values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
 			// log.Println("PostMilestones", "GONG__StackPath", stackPath)
@@ -188,10 +188,10 @@ func (controller *Controller) PostMilestone(c *gin.Context) {
 //	200: milestoneDBResponse
 func (controller *Controller) GetMilestone(c *gin.Context) {
 
-	values := c.Request.URL.Query()
+	_values := c.Request.URL.Query()
 	stackPath := ""
-	if len(values) == 1 {
-		value := values["GONG__StackPath"]
+	if len(_values) == 1 {
+		value := _values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
 			// log.Println("GetMilestone", "GONG__StackPath", stackPath)
@@ -237,10 +237,10 @@ func (controller *Controller) UpdateMilestone(c *gin.Context) {
 	mutexMilestone.Lock()
 	defer mutexMilestone.Unlock()
 
-	values := c.Request.URL.Query()
+	_values := c.Request.URL.Query()
 	stackPath := ""
-	if len(values) == 1 {
-		value := values["GONG__StackPath"]
+	if len(_values) == 1 {
+		value := _values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
 			// log.Println("UpdateMilestone", "GONG__StackPath", stackPath)
@@ -326,10 +326,10 @@ func (controller *Controller) DeleteMilestone(c *gin.Context) {
 	mutexMilestone.Lock()
 	defer mutexMilestone.Unlock()
 
-	values := c.Request.URL.Query()
+	_values := c.Request.URL.Query()
 	stackPath := ""
-	if len(values) == 1 {
-		value := values["GONG__StackPath"]
+	if len(_values) == 1 {
+		value := _values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
 			// log.Println("DeleteMilestone", "GONG__StackPath", stackPath)

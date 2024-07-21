@@ -23,40 +23,24 @@ import (
 
 // generated in order to avoid error in the package import
 // if there are no elements in the stage to marshall
-var ___dummy__Stage_{{databaseName}} models.StageStruct
-var ___dummy__Time_{{databaseName}} time.Time
+var _ time.Time
 
 // Injection point for meta package dummy declaration{{ImportPackageDummyDeclaration}}
 
-// currently, DocLink renaming is not enabled in gopls
-// the following map are devised to overcome this limitation
-// those maps and the processing code will be eleminated when
-// DocLink renaming will be enabled in gopls
-// [Corresponding Issue](https://github.com/golang/go/issues/57559)
-//
 // When parsed, those maps will help with the renaming process
-var map_DocLink_Identifier_{{databaseName}} map[string]any = map[string]any{
+var _ map[string]any = map[string]any{
 	// injection point for docLink to identifiers{{EntriesDocLinkStringDocLinkIdentifier}}
 }
 
-// init might be handy if one want to have the data embedded in the binary
-// but it has to properly reference the Injection gateway in the main package
-// func init() {
-// 	_ = __Dummy_time_variable
-// 	InjectionGateway["{{databaseName}}"] = {{databaseName}}Injection
-// }
-
-// {{databaseName}}Injection will stage objects of database "{{databaseName}}"
-func {{databaseName}}Injection(stage *models.StageStruct) {
+// function will stage objects
+func _(stage *models.StageStruct) {
 
 	// Declaration of instances to stage{{Identifiers}}
 
 	// Setup of values{{ValueInitializers}}
 
 	// Setup of pointers{{PointersInitializers}}
-}
-
-`
+}`
 
 const IdentifiersDecls = `
 	{{Identifier}} := (&models.{{GeneratedStructName}}{Name: ` + "`" + `{{GeneratedFieldNameValue}}` + "`" + `}).Stage(stage)`
@@ -107,7 +91,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	decl := ""
 	_ = decl
 	setValueField := ""
-	_ = setValueField 
+	_ = setValueField
 
 	// insertion initialization of objects to stage
 	map_Arrow_Identifiers := make(map[*Arrow]string)
@@ -120,7 +104,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(arrowOrdered[:], func(i, j int) bool {
 		return arrowOrdered[i].Name < arrowOrdered[j].Name
 	})
-	identifiersDecl += "\n\n	// Declarations of staged instances of Arrow"
+	if len(arrowOrdered) > 0 {
+		identifiersDecl += "\n"
+	}
 	for idx, arrow := range arrowOrdered {
 
 		id = generatesIdentifier("Arrow", idx, arrow.Name)
@@ -132,7 +118,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", arrow.Name)
 		identifiersDecl += decl
 
-		initializerStatements += "\n\n	// Arrow values setup"
+		initializerStatements += "\n"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -164,7 +150,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(barOrdered[:], func(i, j int) bool {
 		return barOrdered[i].Name < barOrdered[j].Name
 	})
-	identifiersDecl += "\n\n	// Declarations of staged instances of Bar"
+	if len(barOrdered) > 0 {
+		identifiersDecl += "\n"
+	}
 	for idx, bar := range barOrdered {
 
 		id = generatesIdentifier("Bar", idx, bar.Name)
@@ -176,7 +164,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", bar.Name)
 		identifiersDecl += decl
 
-		initializerStatements += "\n\n	// Bar values setup"
+		initializerStatements += "\n"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -244,7 +232,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(ganttOrdered[:], func(i, j int) bool {
 		return ganttOrdered[i].Name < ganttOrdered[j].Name
 	})
-	identifiersDecl += "\n\n	// Declarations of staged instances of Gantt"
+	if len(ganttOrdered) > 0 {
+		identifiersDecl += "\n"
+	}
 	for idx, gantt := range ganttOrdered {
 
 		id = generatesIdentifier("Gantt", idx, gantt.Name)
@@ -256,7 +246,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", gantt.Name)
 		identifiersDecl += decl
 
-		initializerStatements += "\n\n	// Gantt values setup"
+		initializerStatements += "\n"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -420,7 +410,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(groupOrdered[:], func(i, j int) bool {
 		return groupOrdered[i].Name < groupOrdered[j].Name
 	})
-	identifiersDecl += "\n\n	// Declarations of staged instances of Group"
+	if len(groupOrdered) > 0 {
+		identifiersDecl += "\n"
+	}
 	for idx, group := range groupOrdered {
 
 		id = generatesIdentifier("Group", idx, group.Name)
@@ -432,7 +424,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", group.Name)
 		identifiersDecl += decl
 
-		initializerStatements += "\n\n	// Group values setup"
+		initializerStatements += "\n"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -452,7 +444,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(laneOrdered[:], func(i, j int) bool {
 		return laneOrdered[i].Name < laneOrdered[j].Name
 	})
-	identifiersDecl += "\n\n	// Declarations of staged instances of Lane"
+	if len(laneOrdered) > 0 {
+		identifiersDecl += "\n"
+	}
 	for idx, lane := range laneOrdered {
 
 		id = generatesIdentifier("Lane", idx, lane.Name)
@@ -464,7 +458,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", lane.Name)
 		identifiersDecl += decl
 
-		initializerStatements += "\n\n	// Lane values setup"
+		initializerStatements += "\n"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -490,7 +484,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(laneuseOrdered[:], func(i, j int) bool {
 		return laneuseOrdered[i].Name < laneuseOrdered[j].Name
 	})
-	identifiersDecl += "\n\n	// Declarations of staged instances of LaneUse"
+	if len(laneuseOrdered) > 0 {
+		identifiersDecl += "\n"
+	}
 	for idx, laneuse := range laneuseOrdered {
 
 		id = generatesIdentifier("LaneUse", idx, laneuse.Name)
@@ -502,7 +498,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", laneuse.Name)
 		identifiersDecl += decl
 
-		initializerStatements += "\n\n	// LaneUse values setup"
+		initializerStatements += "\n"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -522,7 +518,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	sort.Slice(milestoneOrdered[:], func(i, j int) bool {
 		return milestoneOrdered[i].Name < milestoneOrdered[j].Name
 	})
-	identifiersDecl += "\n\n	// Declarations of staged instances of Milestone"
+	if len(milestoneOrdered) > 0 {
+		identifiersDecl += "\n"
+	}
 	for idx, milestone := range milestoneOrdered {
 
 		id = generatesIdentifier("Milestone", idx, milestone.Name)
@@ -534,7 +532,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		decl = strings.ReplaceAll(decl, "{{GeneratedFieldNameValue}}", milestone.Name)
 		identifiersDecl += decl
 
-		initializerStatements += "\n\n	// Milestone values setup"
+		initializerStatements += "\n"
 		// Initialisation of values
 		setValueField = StringInitStatement
 		setValueField = strings.ReplaceAll(setValueField, "{{Identifier}}", id)
@@ -716,9 +714,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 			fmt.Sprintf("\n\t%s %s", stage.MetaPackageImportAlias, stage.MetaPackageImportPath))
 
 		res = strings.ReplaceAll(res, "{{ImportPackageDummyDeclaration}}",
-			fmt.Sprintf("\nvar ___dummy__%s_%s %s.StageStruct",
-				stage.MetaPackageImportAlias,
-				strings.ReplaceAll(filepath.Base(name), ".go", ""),
+			fmt.Sprintf("\nvar _ %s.StageStruct",
 				stage.MetaPackageImportAlias))
 
 		var entries string
@@ -757,7 +753,7 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 			}
 		}
 
-		res = strings.ReplaceAll(res, "{{EntriesDocLinkStringDocLinkIdentifier}}", entries)
+		// res = strings.ReplaceAll(res, "{{EntriesDocLinkStringDocLinkIdentifier}}", entries)
 	}
 
 	fmt.Fprintln(file, res)

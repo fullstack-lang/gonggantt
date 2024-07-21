@@ -55,10 +55,10 @@ func (controller *Controller) GetLaneUses(c *gin.Context) {
 	// source slice
 	var laneuseDBs []orm.LaneUseDB
 
-	values := c.Request.URL.Query()
+	_values := c.Request.URL.Query()
 	stackPath := ""
-	if len(values) == 1 {
-		value := values["GONG__StackPath"]
+	if len(_values) == 1 {
+		value := _values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
 			// log.Println("GetLaneUses", "GONG__StackPath", stackPath)
@@ -118,10 +118,10 @@ func (controller *Controller) PostLaneUse(c *gin.Context) {
 	mutexLaneUse.Lock()
 	defer mutexLaneUse.Unlock()
 
-	values := c.Request.URL.Query()
+	_values := c.Request.URL.Query()
 	stackPath := ""
-	if len(values) == 1 {
-		value := values["GONG__StackPath"]
+	if len(_values) == 1 {
+		value := _values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
 			// log.Println("PostLaneUses", "GONG__StackPath", stackPath)
@@ -188,10 +188,10 @@ func (controller *Controller) PostLaneUse(c *gin.Context) {
 //	200: laneuseDBResponse
 func (controller *Controller) GetLaneUse(c *gin.Context) {
 
-	values := c.Request.URL.Query()
+	_values := c.Request.URL.Query()
 	stackPath := ""
-	if len(values) == 1 {
-		value := values["GONG__StackPath"]
+	if len(_values) == 1 {
+		value := _values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
 			// log.Println("GetLaneUse", "GONG__StackPath", stackPath)
@@ -237,10 +237,10 @@ func (controller *Controller) UpdateLaneUse(c *gin.Context) {
 	mutexLaneUse.Lock()
 	defer mutexLaneUse.Unlock()
 
-	values := c.Request.URL.Query()
+	_values := c.Request.URL.Query()
 	stackPath := ""
-	if len(values) == 1 {
-		value := values["GONG__StackPath"]
+	if len(_values) == 1 {
+		value := _values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
 			// log.Println("UpdateLaneUse", "GONG__StackPath", stackPath)
@@ -326,10 +326,10 @@ func (controller *Controller) DeleteLaneUse(c *gin.Context) {
 	mutexLaneUse.Lock()
 	defer mutexLaneUse.Unlock()
 
-	values := c.Request.URL.Query()
+	_values := c.Request.URL.Query()
 	stackPath := ""
-	if len(values) == 1 {
-		value := values["GONG__StackPath"]
+	if len(_values) == 1 {
+		value := _values["GONG__StackPath"]
 		if len(value) == 1 {
 			stackPath = value[0]
 			// log.Println("DeleteLaneUse", "GONG__StackPath", stackPath)
