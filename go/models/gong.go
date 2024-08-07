@@ -53,7 +53,6 @@ type StageStruct struct {
 	Arrows_mapString map[string]*Arrow
 
 	// insertion point for slice of pointers maps
-
 	OnAfterArrowCreateCallback OnAfterCreateInterface[Arrow]
 	OnAfterArrowUpdateCallback OnAfterUpdateInterface[Arrow]
 	OnAfterArrowDeleteCallback OnAfterDeleteInterface[Arrow]
@@ -63,7 +62,6 @@ type StageStruct struct {
 	Bars_mapString map[string]*Bar
 
 	// insertion point for slice of pointers maps
-
 	OnAfterBarCreateCallback OnAfterCreateInterface[Bar]
 	OnAfterBarUpdateCallback OnAfterUpdateInterface[Bar]
 	OnAfterBarDeleteCallback OnAfterDeleteInterface[Bar]
@@ -74,8 +72,11 @@ type StageStruct struct {
 
 	// insertion point for slice of pointers maps
 	Gantt_Lanes_reverseMap map[*Lane]*Gantt
+
 	Gantt_Milestones_reverseMap map[*Milestone]*Gantt
+
 	Gantt_Groups_reverseMap map[*Group]*Gantt
+
 	Gantt_Arrows_reverseMap map[*Arrow]*Gantt
 
 	OnAfterGanttCreateCallback OnAfterCreateInterface[Gantt]
@@ -109,7 +110,6 @@ type StageStruct struct {
 	LaneUses_mapString map[string]*LaneUse
 
 	// insertion point for slice of pointers maps
-
 	OnAfterLaneUseCreateCallback OnAfterCreateInterface[LaneUse]
 	OnAfterLaneUseUpdateCallback OnAfterUpdateInterface[LaneUse]
 	OnAfterLaneUseDeleteCallback OnAfterDeleteInterface[LaneUse]
@@ -780,8 +780,7 @@ func (stage *StageStruct) Unstage() { // insertion point for array nil
 // - navigation between staged instances by going backward association links between gongstruct
 // - full refactoring of Gongstruct identifiers / fields
 type Gongstruct interface {
-	// insertion point for generic types
-	Arrow | Bar | Gantt | Group | Lane | LaneUse | Milestone
+
 }
 
 type GongtructBasicField interface {
@@ -793,11 +792,10 @@ type GongtructBasicField interface {
 // - navigation between staged instances by going backward association links between gongstruct
 // - full refactoring of Gongstruct identifiers / fields
 type PointerToGongstruct interface {
-	// insertion point for generic types
-	*Arrow | *Bar | *Gantt | *Group | *Lane | *LaneUse | *Milestone
 	GetName() string
 	CommitVoid(*StageStruct)
 	UnstageVoid(stage *StageStruct)
+	comparable
 }
 
 func CompareGongstructByName[T PointerToGongstruct](a, b T) int {
@@ -821,29 +819,11 @@ func GetGongstrucsSorted[T PointerToGongstruct](stage *StageStruct) (sortedSlice
 }
 
 type GongstructSet interface {
-	map[any]any |
-		// insertion point for generic types
-		map[*Arrow]any |
-		map[*Bar]any |
-		map[*Gantt]any |
-		map[*Group]any |
-		map[*Lane]any |
-		map[*LaneUse]any |
-		map[*Milestone]any |
-		map[*any]any // because go does not support an extra "|" at the end of type specifications
+	map[any]any
 }
 
 type GongstructMapString interface {
-	map[any]any |
-		// insertion point for generic types
-		map[string]*Arrow |
-		map[string]*Bar |
-		map[string]*Gantt |
-		map[string]*Group |
-		map[string]*Lane |
-		map[string]*LaneUse |
-		map[string]*Milestone |
-		map[*any]any // because go does not support an extra "|" at the end of type specifications
+	map[any]any
 }
 
 // GongGetSet returns the set staged GongstructType instances
