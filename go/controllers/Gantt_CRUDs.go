@@ -70,12 +70,12 @@ func (controller *Controller) GetGantts(c *gin.Context) {
 	}
 	db := backRepo.BackRepoGantt.GetDB()
 
-	query := db.Find(&ganttDBs)
-	if query.Error != nil {
+	_, err := db.Find(&ganttDBs)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -151,12 +151,12 @@ func (controller *Controller) PostGantt(c *gin.Context) {
 	ganttDB.GanttPointersEncoding = input.GanttPointersEncoding
 	ganttDB.CopyBasicFieldsFromGantt_WOP(&input.Gantt_WOP)
 
-	query := db.Create(&ganttDB)
-	if query.Error != nil {
+	_, err = db.Create(&ganttDB)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -205,7 +205,7 @@ func (controller *Controller) GetGantt(c *gin.Context) {
 
 	// Get ganttDB in DB
 	var ganttDB orm.GanttDB
-	if err := db.First(&ganttDB, c.Param("id")).Error; err != nil {
+	if _, err := db.First(&ganttDB, c.Param("id")); err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -264,13 +264,13 @@ func (controller *Controller) UpdateGantt(c *gin.Context) {
 	var ganttDB orm.GanttDB
 
 	// fetch the gantt
-	query := db.First(&ganttDB, c.Param("id"))
+	_, err := db.First(&ganttDB, c.Param("id"))
 
-	if query.Error != nil {
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -279,12 +279,13 @@ func (controller *Controller) UpdateGantt(c *gin.Context) {
 	ganttDB.CopyBasicFieldsFromGantt_WOP(&input.Gantt_WOP)
 	ganttDB.GanttPointersEncoding = input.GanttPointersEncoding
 
-	query = db.Model(&ganttDB).Updates(ganttDB)
-	if query.Error != nil {
+	db, _ = db.Model(&ganttDB)
+	_, err = db.Updates(ganttDB)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -343,7 +344,7 @@ func (controller *Controller) DeleteGantt(c *gin.Context) {
 
 	// Get model if exist
 	var ganttDB orm.GanttDB
-	if err := db.First(&ganttDB, c.Param("id")).Error; err != nil {
+	if _, err := db.First(&ganttDB, c.Param("id")); err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -353,7 +354,8 @@ func (controller *Controller) DeleteGantt(c *gin.Context) {
 	}
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
-	db.Unscoped().Delete(&ganttDB)
+	db.Unscoped()
+	db.Delete(&ganttDB)
 
 	// get an instance (not staged) from DB instance, and call callback function
 	ganttDeleted := new(models.Gantt)

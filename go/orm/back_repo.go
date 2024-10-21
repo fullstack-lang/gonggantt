@@ -11,12 +11,9 @@ import (
 	"sync"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
+	"github.com/fullstack-lang/gonggantt/go/orm/dbgorm"
 
 	"github.com/tealeg/xlsx/v3"
-
-	"github.com/glebarez/sqlite"
-	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 )
 
 // BackRepoStruct supports callback functions
@@ -49,33 +46,7 @@ type BackRepoStruct struct {
 
 func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepoStruct) {
 
-	// adjust naming strategy to the stack
-	gormConfig := &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			TablePrefix: "github_com_fullstack_lang_gong_test_go_", // table name prefix
-		},
-	}
-	db, err := gorm.Open(sqlite.Open(filename), gormConfig)
-
-	// since testsim is a multi threaded application. It is important to set up
-	// only one open connexion at a time
-	dbDB_inMemory, err := db.DB()
-	if err != nil {
-		panic("cannot access DB of db" + err.Error())
-	}
-	// it is mandatory to allow parallel access, otherwise, bizarre errors occurs
-	dbDB_inMemory.SetMaxOpenConns(1)
-
-	if err != nil {
-		panic("Failed to connect to database!")
-	}
-
-	// adjust naming strategy to the stack
-	db.Config.NamingStrategy = &schema.NamingStrategy{
-		TablePrefix: "github_com_fullstack_lang_gong_test_go_", // table name prefix
-	}
-
-	err = db.AutoMigrate( // insertion point for reference to structs
+	dbWrapper := dbgorm.NewDBWrapper(filename, "github_com_fullstack_lang_gonggantt_go",
 		&ArrowDB{},
 		&BarDB{},
 		&GanttDB{},
@@ -85,11 +56,6 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		&MilestoneDB{},
 	)
 
-	if err != nil {
-		msg := err.Error()
-		panic("problem with migration " + msg + " on package github.com/fullstack-lang/gong/test/go")
-	}
-
 	backRepo = new(BackRepoStruct)
 
 	// insertion point for per struct back repo declarations
@@ -98,7 +64,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_ArrowDBID_ArrowDB:  make(map[uint]*ArrowDB, 0),
 		Map_ArrowPtr_ArrowDBID: make(map[*models.Arrow]uint, 0),
 
-		db:    db,
+		db:    dbWrapper,
 		stage: stage,
 	}
 	backRepo.BackRepoBar = BackRepoBarStruct{
@@ -106,7 +72,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_BarDBID_BarDB:  make(map[uint]*BarDB, 0),
 		Map_BarPtr_BarDBID: make(map[*models.Bar]uint, 0),
 
-		db:    db,
+		db:    dbWrapper,
 		stage: stage,
 	}
 	backRepo.BackRepoGantt = BackRepoGanttStruct{
@@ -114,7 +80,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_GanttDBID_GanttDB:  make(map[uint]*GanttDB, 0),
 		Map_GanttPtr_GanttDBID: make(map[*models.Gantt]uint, 0),
 
-		db:    db,
+		db:    dbWrapper,
 		stage: stage,
 	}
 	backRepo.BackRepoGroup = BackRepoGroupStruct{
@@ -122,7 +88,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_GroupDBID_GroupDB:  make(map[uint]*GroupDB, 0),
 		Map_GroupPtr_GroupDBID: make(map[*models.Group]uint, 0),
 
-		db:    db,
+		db:    dbWrapper,
 		stage: stage,
 	}
 	backRepo.BackRepoLane = BackRepoLaneStruct{
@@ -130,7 +96,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_LaneDBID_LaneDB:  make(map[uint]*LaneDB, 0),
 		Map_LanePtr_LaneDBID: make(map[*models.Lane]uint, 0),
 
-		db:    db,
+		db:    dbWrapper,
 		stage: stage,
 	}
 	backRepo.BackRepoLaneUse = BackRepoLaneUseStruct{
@@ -138,7 +104,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_LaneUseDBID_LaneUseDB:  make(map[uint]*LaneUseDB, 0),
 		Map_LaneUsePtr_LaneUseDBID: make(map[*models.LaneUse]uint, 0),
 
-		db:    db,
+		db:    dbWrapper,
 		stage: stage,
 	}
 	backRepo.BackRepoMilestone = BackRepoMilestoneStruct{
@@ -146,7 +112,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_MilestoneDBID_MilestoneDB:  make(map[uint]*MilestoneDB, 0),
 		Map_MilestonePtr_MilestoneDBID: make(map[*models.Milestone]uint, 0),
 
-		db:    db,
+		db:    dbWrapper,
 		stage: stage,
 	}
 
@@ -179,7 +145,7 @@ func (backRepo *BackRepoStruct) IncrementCommitFromBackNb() uint {
 	backRepo.CommitFromBackNb = backRepo.CommitFromBackNb + 1
 
 	backRepo.broadcastNbCommitToBack()
-	
+
 	return backRepo.CommitFromBackNb
 }
 

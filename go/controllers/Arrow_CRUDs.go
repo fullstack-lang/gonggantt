@@ -70,12 +70,12 @@ func (controller *Controller) GetArrows(c *gin.Context) {
 	}
 	db := backRepo.BackRepoArrow.GetDB()
 
-	query := db.Find(&arrowDBs)
-	if query.Error != nil {
+	_, err := db.Find(&arrowDBs)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -151,12 +151,12 @@ func (controller *Controller) PostArrow(c *gin.Context) {
 	arrowDB.ArrowPointersEncoding = input.ArrowPointersEncoding
 	arrowDB.CopyBasicFieldsFromArrow_WOP(&input.Arrow_WOP)
 
-	query := db.Create(&arrowDB)
-	if query.Error != nil {
+	_, err = db.Create(&arrowDB)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -205,7 +205,7 @@ func (controller *Controller) GetArrow(c *gin.Context) {
 
 	// Get arrowDB in DB
 	var arrowDB orm.ArrowDB
-	if err := db.First(&arrowDB, c.Param("id")).Error; err != nil {
+	if _, err := db.First(&arrowDB, c.Param("id")); err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -264,13 +264,13 @@ func (controller *Controller) UpdateArrow(c *gin.Context) {
 	var arrowDB orm.ArrowDB
 
 	// fetch the arrow
-	query := db.First(&arrowDB, c.Param("id"))
+	_, err := db.First(&arrowDB, c.Param("id"))
 
-	if query.Error != nil {
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -279,12 +279,13 @@ func (controller *Controller) UpdateArrow(c *gin.Context) {
 	arrowDB.CopyBasicFieldsFromArrow_WOP(&input.Arrow_WOP)
 	arrowDB.ArrowPointersEncoding = input.ArrowPointersEncoding
 
-	query = db.Model(&arrowDB).Updates(arrowDB)
-	if query.Error != nil {
+	db, _ = db.Model(&arrowDB)
+	_, err = db.Updates(arrowDB)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -343,7 +344,7 @@ func (controller *Controller) DeleteArrow(c *gin.Context) {
 
 	// Get model if exist
 	var arrowDB orm.ArrowDB
-	if err := db.First(&arrowDB, c.Param("id")).Error; err != nil {
+	if _, err := db.First(&arrowDB, c.Param("id")); err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -353,7 +354,8 @@ func (controller *Controller) DeleteArrow(c *gin.Context) {
 	}
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
-	db.Unscoped().Delete(&arrowDB)
+	db.Unscoped()
+	db.Delete(&arrowDB)
 
 	// get an instance (not staged) from DB instance, and call callback function
 	arrowDeleted := new(models.Arrow)

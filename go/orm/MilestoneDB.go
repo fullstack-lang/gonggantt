@@ -17,6 +17,7 @@ import (
 
 	"github.com/tealeg/xlsx/v3"
 
+	"github.com/fullstack-lang/gonggantt/go/db"
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
@@ -71,7 +72,7 @@ type MilestoneDB struct {
 	// Declation for basic field milestoneDB.DisplayVerticalBar
 	// provide the sql storage for the boolan
 	DisplayVerticalBar_Data sql.NullBool
-	
+
 	// encoding of pointers
 	// for GORM serialization, it is necessary to embed to Pointer Encoding declaration
 	MilestonePointersEncoding
@@ -120,7 +121,7 @@ type BackRepoMilestoneStruct struct {
 	// stores Milestone according to their gorm ID
 	Map_MilestoneDBID_MilestonePtr map[uint]*models.Milestone
 
-	db *gorm.DB
+	db db.DBInterface
 
 	stage *models.StageStruct
 }
@@ -130,7 +131,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) GetStage() (stage *models.Stag
 	return
 }
 
-func (backRepoMilestone *BackRepoMilestoneStruct) GetDB() *gorm.DB {
+func (backRepoMilestone *BackRepoMilestoneStruct) GetDB() db.DBInterface {
 	return backRepoMilestone.db
 }
 
@@ -167,9 +168,10 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitDeleteInstance(id uint) 
 
 	// milestone is not staged anymore, remove milestoneDB
 	milestoneDB := backRepoMilestone.Map_MilestoneDBID_MilestoneDB[id]
-	query := backRepoMilestone.db.Unscoped().Delete(&milestoneDB)
-	if query.Error != nil {
-		log.Fatal(query.Error)
+	db, _ := backRepoMilestone.db.Unscoped()
+	_, err := db.Delete(&milestoneDB)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// update stores
@@ -193,9 +195,9 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseOneInstance(milesto
 	var milestoneDB MilestoneDB
 	milestoneDB.CopyBasicFieldsFromMilestone(milestone)
 
-	query := backRepoMilestone.db.Create(&milestoneDB)
-	if query.Error != nil {
-		log.Fatal(query.Error)
+	_, err := backRepoMilestone.db.Create(&milestoneDB)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// update stores
@@ -245,9 +247,9 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 				append(milestoneDB.MilestonePointersEncoding.LanesToDisplayMilestoneUse, int(laneuseAssocEnd_DB.ID))
 		}
 
-		query := backRepoMilestone.db.Save(&milestoneDB)
-		if query.Error != nil {
-			log.Fatalln(query.Error)
+		_, err := backRepoMilestone.db.Save(&milestoneDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 
 	} else {
@@ -266,9 +268,9 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 func (backRepoMilestone *BackRepoMilestoneStruct) CheckoutPhaseOne() (Error error) {
 
 	milestoneDBArray := make([]MilestoneDB, 0)
-	query := backRepoMilestone.db.Find(&milestoneDBArray)
-	if query.Error != nil {
-		return query.Error
+	_, err := backRepoMilestone.db.Find(&milestoneDBArray)
+	if err != nil {
+		return err
 	}
 
 	// list of instances to be removed
@@ -388,7 +390,7 @@ func (backRepo *BackRepoStruct) CheckoutMilestone(milestone *models.Milestone) {
 			var milestoneDB MilestoneDB
 			milestoneDB.ID = id
 
-			if err := backRepo.BackRepoMilestone.db.First(&milestoneDB, id).Error; err != nil {
+			if _, err := backRepo.BackRepoMilestone.db.First(&milestoneDB, id); err != nil {
 				log.Fatalln("CheckoutMilestone : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoMilestone.CheckoutPhaseOneInstance(&milestoneDB)
@@ -559,9 +561,9 @@ func (backRepoMilestone *BackRepoMilestoneStruct) rowVisitorMilestone(row *xlsx.
 
 		milestoneDB_ID_atBackupTime := milestoneDB.ID
 		milestoneDB.ID = 0
-		query := backRepoMilestone.db.Create(milestoneDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		_, err := backRepoMilestone.db.Create(milestoneDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 		backRepoMilestone.Map_MilestoneDBID_MilestoneDB[milestoneDB.ID] = milestoneDB
 		BackRepoMilestoneid_atBckpTime_newID[milestoneDB_ID_atBackupTime] = milestoneDB.ID
@@ -596,9 +598,9 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseOne(dirPath string
 
 		milestoneDB_ID_atBackupTime := milestoneDB.ID
 		milestoneDB.ID = 0
-		query := backRepoMilestone.db.Create(milestoneDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		_, err := backRepoMilestone.db.Create(milestoneDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 		backRepoMilestone.Map_MilestoneDBID_MilestoneDB[milestoneDB.ID] = milestoneDB
 		BackRepoMilestoneid_atBckpTime_newID[milestoneDB_ID_atBackupTime] = milestoneDB.ID
@@ -620,9 +622,10 @@ func (backRepoMilestone *BackRepoMilestoneStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// update databse with new index encoding
-		query := backRepoMilestone.db.Model(milestoneDB).Updates(*milestoneDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		db, _ := backRepoMilestone.db.Model(milestoneDB)
+		_, err := db.Updates(*milestoneDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 

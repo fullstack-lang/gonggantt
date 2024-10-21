@@ -70,12 +70,12 @@ func (controller *Controller) GetGroups(c *gin.Context) {
 	}
 	db := backRepo.BackRepoGroup.GetDB()
 
-	query := db.Find(&groupDBs)
-	if query.Error != nil {
+	_, err := db.Find(&groupDBs)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -151,12 +151,12 @@ func (controller *Controller) PostGroup(c *gin.Context) {
 	groupDB.GroupPointersEncoding = input.GroupPointersEncoding
 	groupDB.CopyBasicFieldsFromGroup_WOP(&input.Group_WOP)
 
-	query := db.Create(&groupDB)
-	if query.Error != nil {
+	_, err = db.Create(&groupDB)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -205,7 +205,7 @@ func (controller *Controller) GetGroup(c *gin.Context) {
 
 	// Get groupDB in DB
 	var groupDB orm.GroupDB
-	if err := db.First(&groupDB, c.Param("id")).Error; err != nil {
+	if _, err := db.First(&groupDB, c.Param("id")); err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -264,13 +264,13 @@ func (controller *Controller) UpdateGroup(c *gin.Context) {
 	var groupDB orm.GroupDB
 
 	// fetch the group
-	query := db.First(&groupDB, c.Param("id"))
+	_, err := db.First(&groupDB, c.Param("id"))
 
-	if query.Error != nil {
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -279,12 +279,13 @@ func (controller *Controller) UpdateGroup(c *gin.Context) {
 	groupDB.CopyBasicFieldsFromGroup_WOP(&input.Group_WOP)
 	groupDB.GroupPointersEncoding = input.GroupPointersEncoding
 
-	query = db.Model(&groupDB).Updates(groupDB)
-	if query.Error != nil {
+	db, _ = db.Model(&groupDB)
+	_, err = db.Updates(groupDB)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -343,7 +344,7 @@ func (controller *Controller) DeleteGroup(c *gin.Context) {
 
 	// Get model if exist
 	var groupDB orm.GroupDB
-	if err := db.First(&groupDB, c.Param("id")).Error; err != nil {
+	if _, err := db.First(&groupDB, c.Param("id")); err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -353,7 +354,8 @@ func (controller *Controller) DeleteGroup(c *gin.Context) {
 	}
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
-	db.Unscoped().Delete(&groupDB)
+	db.Unscoped()
+	db.Delete(&groupDB)
 
 	// get an instance (not staged) from DB instance, and call callback function
 	groupDeleted := new(models.Group)

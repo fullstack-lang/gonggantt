@@ -70,12 +70,12 @@ func (controller *Controller) GetLaneUses(c *gin.Context) {
 	}
 	db := backRepo.BackRepoLaneUse.GetDB()
 
-	query := db.Find(&laneuseDBs)
-	if query.Error != nil {
+	_, err := db.Find(&laneuseDBs)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -151,12 +151,12 @@ func (controller *Controller) PostLaneUse(c *gin.Context) {
 	laneuseDB.LaneUsePointersEncoding = input.LaneUsePointersEncoding
 	laneuseDB.CopyBasicFieldsFromLaneUse_WOP(&input.LaneUse_WOP)
 
-	query := db.Create(&laneuseDB)
-	if query.Error != nil {
+	_, err = db.Create(&laneuseDB)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -205,7 +205,7 @@ func (controller *Controller) GetLaneUse(c *gin.Context) {
 
 	// Get laneuseDB in DB
 	var laneuseDB orm.LaneUseDB
-	if err := db.First(&laneuseDB, c.Param("id")).Error; err != nil {
+	if _, err := db.First(&laneuseDB, c.Param("id")); err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -264,13 +264,13 @@ func (controller *Controller) UpdateLaneUse(c *gin.Context) {
 	var laneuseDB orm.LaneUseDB
 
 	// fetch the laneuse
-	query := db.First(&laneuseDB, c.Param("id"))
+	_, err := db.First(&laneuseDB, c.Param("id"))
 
-	if query.Error != nil {
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -279,12 +279,13 @@ func (controller *Controller) UpdateLaneUse(c *gin.Context) {
 	laneuseDB.CopyBasicFieldsFromLaneUse_WOP(&input.LaneUse_WOP)
 	laneuseDB.LaneUsePointersEncoding = input.LaneUsePointersEncoding
 
-	query = db.Model(&laneuseDB).Updates(laneuseDB)
-	if query.Error != nil {
+	db, _ = db.Model(&laneuseDB)
+	_, err = db.Updates(laneuseDB)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -343,7 +344,7 @@ func (controller *Controller) DeleteLaneUse(c *gin.Context) {
 
 	// Get model if exist
 	var laneuseDB orm.LaneUseDB
-	if err := db.First(&laneuseDB, c.Param("id")).Error; err != nil {
+	if _, err := db.First(&laneuseDB, c.Param("id")); err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -353,7 +354,8 @@ func (controller *Controller) DeleteLaneUse(c *gin.Context) {
 	}
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
-	db.Unscoped().Delete(&laneuseDB)
+	db.Unscoped()
+	db.Delete(&laneuseDB)
 
 	// get an instance (not staged) from DB instance, and call callback function
 	laneuseDeleted := new(models.LaneUse)

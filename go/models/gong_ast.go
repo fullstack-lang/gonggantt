@@ -494,31 +494,45 @@ func UnmarshallGongstructStaging(stage *StageStruct, cmap *ast.CommentMap, assig
 									switch gongstructName {
 									// insertion point for identifiers
 									case "Arrow":
-										instanceArrow := (&Arrow{Name: instanceName}).Stage(stage)
+										instanceArrow := new(Arrow)
+										instanceArrow.Name = instanceName
+										instanceArrow.Stage(stage)
 										instance = any(instanceArrow)
 										__gong__map_Arrow[identifier] = instanceArrow
 									case "Bar":
-										instanceBar := (&Bar{Name: instanceName}).Stage(stage)
+										instanceBar := new(Bar)
+										instanceBar.Name = instanceName
+										instanceBar.Stage(stage)
 										instance = any(instanceBar)
 										__gong__map_Bar[identifier] = instanceBar
 									case "Gantt":
-										instanceGantt := (&Gantt{Name: instanceName}).Stage(stage)
+										instanceGantt := new(Gantt)
+										instanceGantt.Name = instanceName
+										instanceGantt.Stage(stage)
 										instance = any(instanceGantt)
 										__gong__map_Gantt[identifier] = instanceGantt
 									case "Group":
-										instanceGroup := (&Group{Name: instanceName}).Stage(stage)
+										instanceGroup := new(Group)
+										instanceGroup.Name = instanceName
+										instanceGroup.Stage(stage)
 										instance = any(instanceGroup)
 										__gong__map_Group[identifier] = instanceGroup
 									case "Lane":
-										instanceLane := (&Lane{Name: instanceName}).Stage(stage)
+										instanceLane := new(Lane)
+										instanceLane.Name = instanceName
+										instanceLane.Stage(stage)
 										instance = any(instanceLane)
 										__gong__map_Lane[identifier] = instanceLane
 									case "LaneUse":
-										instanceLaneUse := (&LaneUse{Name: instanceName}).Stage(stage)
+										instanceLaneUse := new(LaneUse)
+										instanceLaneUse.Name = instanceName
+										instanceLaneUse.Stage(stage)
 										instance = any(instanceLaneUse)
 										__gong__map_LaneUse[identifier] = instanceLaneUse
 									case "Milestone":
-										instanceMilestone := (&Milestone{Name: instanceName}).Stage(stage)
+										instanceMilestone := new(Milestone)
+										instanceMilestone.Name = instanceName
+										instanceMilestone.Stage(stage)
 										instance = any(instanceMilestone)
 										__gong__map_Milestone[identifier] = instanceMilestone
 									}

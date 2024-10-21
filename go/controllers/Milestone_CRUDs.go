@@ -70,12 +70,12 @@ func (controller *Controller) GetMilestones(c *gin.Context) {
 	}
 	db := backRepo.BackRepoMilestone.GetDB()
 
-	query := db.Find(&milestoneDBs)
-	if query.Error != nil {
+	_, err := db.Find(&milestoneDBs)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -151,12 +151,12 @@ func (controller *Controller) PostMilestone(c *gin.Context) {
 	milestoneDB.MilestonePointersEncoding = input.MilestonePointersEncoding
 	milestoneDB.CopyBasicFieldsFromMilestone_WOP(&input.Milestone_WOP)
 
-	query := db.Create(&milestoneDB)
-	if query.Error != nil {
+	_, err = db.Create(&milestoneDB)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -205,7 +205,7 @@ func (controller *Controller) GetMilestone(c *gin.Context) {
 
 	// Get milestoneDB in DB
 	var milestoneDB orm.MilestoneDB
-	if err := db.First(&milestoneDB, c.Param("id")).Error; err != nil {
+	if _, err := db.First(&milestoneDB, c.Param("id")); err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -264,13 +264,13 @@ func (controller *Controller) UpdateMilestone(c *gin.Context) {
 	var milestoneDB orm.MilestoneDB
 
 	// fetch the milestone
-	query := db.First(&milestoneDB, c.Param("id"))
+	_, err := db.First(&milestoneDB, c.Param("id"))
 
-	if query.Error != nil {
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -279,12 +279,13 @@ func (controller *Controller) UpdateMilestone(c *gin.Context) {
 	milestoneDB.CopyBasicFieldsFromMilestone_WOP(&input.Milestone_WOP)
 	milestoneDB.MilestonePointersEncoding = input.MilestonePointersEncoding
 
-	query = db.Model(&milestoneDB).Updates(milestoneDB)
-	if query.Error != nil {
+	db, _ = db.Model(&milestoneDB)
+	_, err = db.Updates(milestoneDB)
+	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
-		returnError.Body.Message = query.Error.Error()
-		log.Println(query.Error.Error())
+		returnError.Body.Message = err.Error()
+		log.Println(err.Error())
 		c.JSON(http.StatusBadRequest, returnError.Body)
 		return
 	}
@@ -343,7 +344,7 @@ func (controller *Controller) DeleteMilestone(c *gin.Context) {
 
 	// Get model if exist
 	var milestoneDB orm.MilestoneDB
-	if err := db.First(&milestoneDB, c.Param("id")).Error; err != nil {
+	if _, err := db.First(&milestoneDB, c.Param("id")); err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
 		returnError.Body.Message = err.Error()
@@ -353,7 +354,8 @@ func (controller *Controller) DeleteMilestone(c *gin.Context) {
 	}
 
 	// with gorm.Model field, default delete is a soft delete. Unscoped() force delete
-	db.Unscoped().Delete(&milestoneDB)
+	db.Unscoped()
+	db.Delete(&milestoneDB)
 
 	// get an instance (not staged) from DB instance, and call callback function
 	milestoneDeleted := new(models.Milestone)

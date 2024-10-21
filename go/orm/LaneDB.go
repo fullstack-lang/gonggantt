@@ -17,6 +17,7 @@ import (
 
 	"github.com/tealeg/xlsx/v3"
 
+	"github.com/fullstack-lang/gonggantt/go/db"
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
@@ -67,7 +68,7 @@ type LaneDB struct {
 
 	// Declation for basic field laneDB.Order
 	Order_Data sql.NullInt64
-	
+
 	// encoding of pointers
 	// for GORM serialization, it is necessary to embed to Pointer Encoding declaration
 	LanePointersEncoding
@@ -113,7 +114,7 @@ type BackRepoLaneStruct struct {
 	// stores Lane according to their gorm ID
 	Map_LaneDBID_LanePtr map[uint]*models.Lane
 
-	db *gorm.DB
+	db db.DBInterface
 
 	stage *models.StageStruct
 }
@@ -123,7 +124,7 @@ func (backRepoLane *BackRepoLaneStruct) GetStage() (stage *models.StageStruct) {
 	return
 }
 
-func (backRepoLane *BackRepoLaneStruct) GetDB() *gorm.DB {
+func (backRepoLane *BackRepoLaneStruct) GetDB() db.DBInterface {
 	return backRepoLane.db
 }
 
@@ -160,9 +161,10 @@ func (backRepoLane *BackRepoLaneStruct) CommitDeleteInstance(id uint) (Error err
 
 	// lane is not staged anymore, remove laneDB
 	laneDB := backRepoLane.Map_LaneDBID_LaneDB[id]
-	query := backRepoLane.db.Unscoped().Delete(&laneDB)
-	if query.Error != nil {
-		log.Fatal(query.Error)
+	db, _ := backRepoLane.db.Unscoped()
+	_, err := db.Delete(&laneDB)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// update stores
@@ -186,9 +188,9 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseOneInstance(lane *models.Lane
 	var laneDB LaneDB
 	laneDB.CopyBasicFieldsFromLane(lane)
 
-	query := backRepoLane.db.Create(&laneDB)
-	if query.Error != nil {
-		log.Fatal(query.Error)
+	_, err := backRepoLane.db.Create(&laneDB)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// update stores
@@ -238,9 +240,9 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 				append(laneDB.LanePointersEncoding.Bars, int(barAssocEnd_DB.ID))
 		}
 
-		query := backRepoLane.db.Save(&laneDB)
-		if query.Error != nil {
-			log.Fatalln(query.Error)
+		_, err := backRepoLane.db.Save(&laneDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 
 	} else {
@@ -259,9 +261,9 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 func (backRepoLane *BackRepoLaneStruct) CheckoutPhaseOne() (Error error) {
 
 	laneDBArray := make([]LaneDB, 0)
-	query := backRepoLane.db.Find(&laneDBArray)
-	if query.Error != nil {
-		return query.Error
+	_, err := backRepoLane.db.Find(&laneDBArray)
+	if err != nil {
+		return err
 	}
 
 	// list of instances to be removed
@@ -381,7 +383,7 @@ func (backRepo *BackRepoStruct) CheckoutLane(lane *models.Lane) {
 			var laneDB LaneDB
 			laneDB.ID = id
 
-			if err := backRepo.BackRepoLane.db.First(&laneDB, id).Error; err != nil {
+			if _, err := backRepo.BackRepoLane.db.First(&laneDB, id); err != nil {
 				log.Fatalln("CheckoutLane : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoLane.CheckoutPhaseOneInstance(&laneDB)
@@ -540,9 +542,9 @@ func (backRepoLane *BackRepoLaneStruct) rowVisitorLane(row *xlsx.Row) error {
 
 		laneDB_ID_atBackupTime := laneDB.ID
 		laneDB.ID = 0
-		query := backRepoLane.db.Create(laneDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		_, err := backRepoLane.db.Create(laneDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 		backRepoLane.Map_LaneDBID_LaneDB[laneDB.ID] = laneDB
 		BackRepoLaneid_atBckpTime_newID[laneDB_ID_atBackupTime] = laneDB.ID
@@ -577,9 +579,9 @@ func (backRepoLane *BackRepoLaneStruct) RestorePhaseOne(dirPath string) {
 
 		laneDB_ID_atBackupTime := laneDB.ID
 		laneDB.ID = 0
-		query := backRepoLane.db.Create(laneDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		_, err := backRepoLane.db.Create(laneDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 		backRepoLane.Map_LaneDBID_LaneDB[laneDB.ID] = laneDB
 		BackRepoLaneid_atBckpTime_newID[laneDB_ID_atBackupTime] = laneDB.ID
@@ -601,9 +603,10 @@ func (backRepoLane *BackRepoLaneStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// update databse with new index encoding
-		query := backRepoLane.db.Model(laneDB).Updates(*laneDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		db, _ := backRepoLane.db.Model(laneDB)
+		_, err := db.Updates(*laneDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 

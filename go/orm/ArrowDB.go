@@ -17,6 +17,7 @@ import (
 
 	"github.com/tealeg/xlsx/v3"
 
+	"github.com/fullstack-lang/gonggantt/go/db"
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
@@ -75,7 +76,7 @@ type ArrowDB struct {
 
 	// Declation for basic field arrowDB.OptionnalStroke
 	OptionnalStroke_Data sql.NullString
-	
+
 	// encoding of pointers
 	// for GORM serialization, it is necessary to embed to Pointer Encoding declaration
 	ArrowPointersEncoding
@@ -124,7 +125,7 @@ type BackRepoArrowStruct struct {
 	// stores Arrow according to their gorm ID
 	Map_ArrowDBID_ArrowPtr map[uint]*models.Arrow
 
-	db *gorm.DB
+	db db.DBInterface
 
 	stage *models.StageStruct
 }
@@ -134,7 +135,7 @@ func (backRepoArrow *BackRepoArrowStruct) GetStage() (stage *models.StageStruct)
 	return
 }
 
-func (backRepoArrow *BackRepoArrowStruct) GetDB() *gorm.DB {
+func (backRepoArrow *BackRepoArrowStruct) GetDB() db.DBInterface {
 	return backRepoArrow.db
 }
 
@@ -171,9 +172,10 @@ func (backRepoArrow *BackRepoArrowStruct) CommitDeleteInstance(id uint) (Error e
 
 	// arrow is not staged anymore, remove arrowDB
 	arrowDB := backRepoArrow.Map_ArrowDBID_ArrowDB[id]
-	query := backRepoArrow.db.Unscoped().Delete(&arrowDB)
-	if query.Error != nil {
-		log.Fatal(query.Error)
+	db, _ := backRepoArrow.db.Unscoped()
+	_, err := db.Delete(&arrowDB)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// update stores
@@ -197,9 +199,9 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseOneInstance(arrow *models.A
 	var arrowDB ArrowDB
 	arrowDB.CopyBasicFieldsFromArrow(arrow)
 
-	query := backRepoArrow.db.Create(&arrowDB)
-	if query.Error != nil {
-		log.Fatal(query.Error)
+	_, err := backRepoArrow.db.Create(&arrowDB)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// update stores
@@ -255,9 +257,9 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackR
 			arrowDB.ToID.Valid = true
 		}
 
-		query := backRepoArrow.db.Save(&arrowDB)
-		if query.Error != nil {
-			log.Fatalln(query.Error)
+		_, err := backRepoArrow.db.Save(&arrowDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 
 	} else {
@@ -276,9 +278,9 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackR
 func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseOne() (Error error) {
 
 	arrowDBArray := make([]ArrowDB, 0)
-	query := backRepoArrow.db.Find(&arrowDBArray)
-	if query.Error != nil {
-		return query.Error
+	_, err := backRepoArrow.db.Find(&arrowDBArray)
+	if err != nil {
+		return err
 	}
 
 	// list of instances to be removed
@@ -399,7 +401,7 @@ func (backRepo *BackRepoStruct) CheckoutArrow(arrow *models.Arrow) {
 			var arrowDB ArrowDB
 			arrowDB.ID = id
 
-			if err := backRepo.BackRepoArrow.db.First(&arrowDB, id).Error; err != nil {
+			if _, err := backRepo.BackRepoArrow.db.First(&arrowDB, id); err != nil {
 				log.Fatalln("CheckoutArrow : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoArrow.CheckoutPhaseOneInstance(&arrowDB)
@@ -570,9 +572,9 @@ func (backRepoArrow *BackRepoArrowStruct) rowVisitorArrow(row *xlsx.Row) error {
 
 		arrowDB_ID_atBackupTime := arrowDB.ID
 		arrowDB.ID = 0
-		query := backRepoArrow.db.Create(arrowDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		_, err := backRepoArrow.db.Create(arrowDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 		backRepoArrow.Map_ArrowDBID_ArrowDB[arrowDB.ID] = arrowDB
 		BackRepoArrowid_atBckpTime_newID[arrowDB_ID_atBackupTime] = arrowDB.ID
@@ -607,9 +609,9 @@ func (backRepoArrow *BackRepoArrowStruct) RestorePhaseOne(dirPath string) {
 
 		arrowDB_ID_atBackupTime := arrowDB.ID
 		arrowDB.ID = 0
-		query := backRepoArrow.db.Create(arrowDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		_, err := backRepoArrow.db.Create(arrowDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 		backRepoArrow.Map_ArrowDBID_ArrowDB[arrowDB.ID] = arrowDB
 		BackRepoArrowid_atBckpTime_newID[arrowDB_ID_atBackupTime] = arrowDB.ID
@@ -643,9 +645,10 @@ func (backRepoArrow *BackRepoArrowStruct) RestorePhaseTwo() {
 		}
 
 		// update databse with new index encoding
-		query := backRepoArrow.db.Model(arrowDB).Updates(*arrowDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		db, _ := backRepoArrow.db.Model(arrowDB)
+		_, err := db.Updates(*arrowDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 

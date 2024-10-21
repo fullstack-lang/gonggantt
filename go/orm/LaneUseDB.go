@@ -17,6 +17,7 @@ import (
 
 	"github.com/tealeg/xlsx/v3"
 
+	"github.com/fullstack-lang/gonggantt/go/db"
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
@@ -65,7 +66,7 @@ type LaneUseDB struct {
 
 	// Declation for basic field laneuseDB.Name
 	Name_Data sql.NullString
-	
+
 	// encoding of pointers
 	// for GORM serialization, it is necessary to embed to Pointer Encoding declaration
 	LaneUsePointersEncoding
@@ -108,7 +109,7 @@ type BackRepoLaneUseStruct struct {
 	// stores LaneUse according to their gorm ID
 	Map_LaneUseDBID_LaneUsePtr map[uint]*models.LaneUse
 
-	db *gorm.DB
+	db db.DBInterface
 
 	stage *models.StageStruct
 }
@@ -118,7 +119,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) GetStage() (stage *models.StageStr
 	return
 }
 
-func (backRepoLaneUse *BackRepoLaneUseStruct) GetDB() *gorm.DB {
+func (backRepoLaneUse *BackRepoLaneUseStruct) GetDB() db.DBInterface {
 	return backRepoLaneUse.db
 }
 
@@ -155,9 +156,10 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitDeleteInstance(id uint) (Err
 
 	// laneuse is not staged anymore, remove laneuseDB
 	laneuseDB := backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[id]
-	query := backRepoLaneUse.db.Unscoped().Delete(&laneuseDB)
-	if query.Error != nil {
-		log.Fatal(query.Error)
+	db, _ := backRepoLaneUse.db.Unscoped()
+	_, err := db.Delete(&laneuseDB)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// update stores
@@ -181,9 +183,9 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseOneInstance(laneuse *mo
 	var laneuseDB LaneUseDB
 	laneuseDB.CopyBasicFieldsFromLaneUse(laneuse)
 
-	query := backRepoLaneUse.db.Create(&laneuseDB)
-	if query.Error != nil {
-		log.Fatal(query.Error)
+	_, err := backRepoLaneUse.db.Create(&laneuseDB)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// update stores
@@ -227,9 +229,9 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseTwoInstance(backRepo *B
 			laneuseDB.LaneID.Valid = true
 		}
 
-		query := backRepoLaneUse.db.Save(&laneuseDB)
-		if query.Error != nil {
-			log.Fatalln(query.Error)
+		_, err := backRepoLaneUse.db.Save(&laneuseDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 
 	} else {
@@ -248,9 +250,9 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseTwoInstance(backRepo *B
 func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseOne() (Error error) {
 
 	laneuseDBArray := make([]LaneUseDB, 0)
-	query := backRepoLaneUse.db.Find(&laneuseDBArray)
-	if query.Error != nil {
-		return query.Error
+	_, err := backRepoLaneUse.db.Find(&laneuseDBArray)
+	if err != nil {
+		return err
 	}
 
 	// list of instances to be removed
@@ -366,7 +368,7 @@ func (backRepo *BackRepoStruct) CheckoutLaneUse(laneuse *models.LaneUse) {
 			var laneuseDB LaneUseDB
 			laneuseDB.ID = id
 
-			if err := backRepo.BackRepoLaneUse.db.First(&laneuseDB, id).Error; err != nil {
+			if _, err := backRepo.BackRepoLaneUse.db.First(&laneuseDB, id); err != nil {
 				log.Fatalln("CheckoutLaneUse : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoLaneUse.CheckoutPhaseOneInstance(&laneuseDB)
@@ -513,9 +515,9 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) rowVisitorLaneUse(row *xlsx.Row) e
 
 		laneuseDB_ID_atBackupTime := laneuseDB.ID
 		laneuseDB.ID = 0
-		query := backRepoLaneUse.db.Create(laneuseDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		_, err := backRepoLaneUse.db.Create(laneuseDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 		backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB.ID] = laneuseDB
 		BackRepoLaneUseid_atBckpTime_newID[laneuseDB_ID_atBackupTime] = laneuseDB.ID
@@ -550,9 +552,9 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseOne(dirPath string) {
 
 		laneuseDB_ID_atBackupTime := laneuseDB.ID
 		laneuseDB.ID = 0
-		query := backRepoLaneUse.db.Create(laneuseDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		_, err := backRepoLaneUse.db.Create(laneuseDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 		backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[laneuseDB.ID] = laneuseDB
 		BackRepoLaneUseid_atBckpTime_newID[laneuseDB_ID_atBackupTime] = laneuseDB.ID
@@ -580,9 +582,10 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) RestorePhaseTwo() {
 		}
 
 		// update databse with new index encoding
-		query := backRepoLaneUse.db.Model(laneuseDB).Updates(*laneuseDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		db, _ := backRepoLaneUse.db.Model(laneuseDB)
+		_, err := db.Updates(*laneuseDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 

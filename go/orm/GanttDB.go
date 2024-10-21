@@ -17,6 +17,7 @@ import (
 
 	"github.com/tealeg/xlsx/v3"
 
+	"github.com/fullstack-lang/gonggantt/go/db"
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
 
@@ -147,7 +148,7 @@ type GanttDB struct {
 	// Declation for basic field ganttDB.AlignOnStartEndOnYearStart
 	// provide the sql storage for the boolan
 	AlignOnStartEndOnYearStart_Data sql.NullBool
-	
+
 	// encoding of pointers
 	// for GORM serialization, it is necessary to embed to Pointer Encoding declaration
 	GanttPointersEncoding
@@ -262,7 +263,7 @@ type BackRepoGanttStruct struct {
 	// stores Gantt according to their gorm ID
 	Map_GanttDBID_GanttPtr map[uint]*models.Gantt
 
-	db *gorm.DB
+	db db.DBInterface
 
 	stage *models.StageStruct
 }
@@ -272,7 +273,7 @@ func (backRepoGantt *BackRepoGanttStruct) GetStage() (stage *models.StageStruct)
 	return
 }
 
-func (backRepoGantt *BackRepoGanttStruct) GetDB() *gorm.DB {
+func (backRepoGantt *BackRepoGanttStruct) GetDB() db.DBInterface {
 	return backRepoGantt.db
 }
 
@@ -309,9 +310,10 @@ func (backRepoGantt *BackRepoGanttStruct) CommitDeleteInstance(id uint) (Error e
 
 	// gantt is not staged anymore, remove ganttDB
 	ganttDB := backRepoGantt.Map_GanttDBID_GanttDB[id]
-	query := backRepoGantt.db.Unscoped().Delete(&ganttDB)
-	if query.Error != nil {
-		log.Fatal(query.Error)
+	db, _ := backRepoGantt.db.Unscoped()
+	_, err := db.Delete(&ganttDB)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// update stores
@@ -335,9 +337,9 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseOneInstance(gantt *models.G
 	var ganttDB GanttDB
 	ganttDB.CopyBasicFieldsFromGantt(gantt)
 
-	query := backRepoGantt.db.Create(&ganttDB)
-	if query.Error != nil {
-		log.Fatal(query.Error)
+	_, err := backRepoGantt.db.Create(&ganttDB)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// update stores
@@ -441,9 +443,9 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 				append(ganttDB.GanttPointersEncoding.Arrows, int(arrowAssocEnd_DB.ID))
 		}
 
-		query := backRepoGantt.db.Save(&ganttDB)
-		if query.Error != nil {
-			log.Fatalln(query.Error)
+		_, err := backRepoGantt.db.Save(&ganttDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 
 	} else {
@@ -462,9 +464,9 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 func (backRepoGantt *BackRepoGanttStruct) CheckoutPhaseOne() (Error error) {
 
 	ganttDBArray := make([]GanttDB, 0)
-	query := backRepoGantt.db.Find(&ganttDBArray)
-	if query.Error != nil {
-		return query.Error
+	_, err := backRepoGantt.db.Find(&ganttDBArray)
+	if err != nil {
+		return err
 	}
 
 	// list of instances to be removed
@@ -611,7 +613,7 @@ func (backRepo *BackRepoStruct) CheckoutGantt(gantt *models.Gantt) {
 			var ganttDB GanttDB
 			ganttDB.ID = id
 
-			if err := backRepo.BackRepoGantt.db.First(&ganttDB, id).Error; err != nil {
+			if _, err := backRepo.BackRepoGantt.db.First(&ganttDB, id); err != nil {
 				log.Fatalln("CheckoutGantt : Problem with getting object with id:", id)
 			}
 			backRepo.BackRepoGantt.CheckoutPhaseOneInstance(&ganttDB)
@@ -1046,9 +1048,9 @@ func (backRepoGantt *BackRepoGanttStruct) rowVisitorGantt(row *xlsx.Row) error {
 
 		ganttDB_ID_atBackupTime := ganttDB.ID
 		ganttDB.ID = 0
-		query := backRepoGantt.db.Create(ganttDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		_, err := backRepoGantt.db.Create(ganttDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 		backRepoGantt.Map_GanttDBID_GanttDB[ganttDB.ID] = ganttDB
 		BackRepoGanttid_atBckpTime_newID[ganttDB_ID_atBackupTime] = ganttDB.ID
@@ -1083,9 +1085,9 @@ func (backRepoGantt *BackRepoGanttStruct) RestorePhaseOne(dirPath string) {
 
 		ganttDB_ID_atBackupTime := ganttDB.ID
 		ganttDB.ID = 0
-		query := backRepoGantt.db.Create(ganttDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		_, err := backRepoGantt.db.Create(ganttDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 		backRepoGantt.Map_GanttDBID_GanttDB[ganttDB.ID] = ganttDB
 		BackRepoGanttid_atBckpTime_newID[ganttDB_ID_atBackupTime] = ganttDB.ID
@@ -1107,9 +1109,10 @@ func (backRepoGantt *BackRepoGanttStruct) RestorePhaseTwo() {
 
 		// insertion point for reindexing pointers encoding
 		// update databse with new index encoding
-		query := backRepoGantt.db.Model(ganttDB).Updates(*ganttDB)
-		if query.Error != nil {
-			log.Fatal(query.Error)
+		db, _ := backRepoGantt.db.Model(ganttDB)
+		_, err := db.Updates(*ganttDB)
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 
