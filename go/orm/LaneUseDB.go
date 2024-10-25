@@ -157,7 +157,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitDeleteInstance(id uint) (Err
 	// laneuse is not staged anymore, remove laneuseDB
 	laneuseDB := backRepoLaneUse.Map_LaneUseDBID_LaneUseDB[id]
 	db, _ := backRepoLaneUse.db.Unscoped()
-	_, err := db.Delete(&laneuseDB)
+	_, err := db.Delete(laneuseDB)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -229,7 +229,7 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseTwoInstance(backRepo *B
 			laneuseDB.LaneID.Valid = true
 		}
 
-		_, err := backRepoLaneUse.db.Save(&laneuseDB)
+		_, err := backRepoLaneUse.db.Save(laneuseDB)
 		if err != nil {
 			log.Fatal(err)
 		}

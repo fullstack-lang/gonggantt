@@ -173,7 +173,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitDeleteInstance(id uint) (Error e
 	// arrow is not staged anymore, remove arrowDB
 	arrowDB := backRepoArrow.Map_ArrowDBID_ArrowDB[id]
 	db, _ := backRepoArrow.db.Unscoped()
-	_, err := db.Delete(&arrowDB)
+	_, err := db.Delete(arrowDB)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -257,7 +257,7 @@ func (backRepoArrow *BackRepoArrowStruct) CommitPhaseTwoInstance(backRepo *BackR
 			arrowDB.ToID.Valid = true
 		}
 
-		_, err := backRepoArrow.db.Save(&arrowDB)
+		_, err := backRepoArrow.db.Save(arrowDB)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -311,7 +311,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitDeleteInstance(id uint) (Error e
 	// gantt is not staged anymore, remove ganttDB
 	ganttDB := backRepoGantt.Map_GanttDBID_GanttDB[id]
 	db, _ := backRepoGantt.db.Unscoped()
-	_, err := db.Delete(&ganttDB)
+	_, err := db.Delete(ganttDB)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -443,7 +443,7 @@ func (backRepoGantt *BackRepoGanttStruct) CommitPhaseTwoInstance(backRepo *BackR
 				append(ganttDB.GanttPointersEncoding.Arrows, int(arrowAssocEnd_DB.ID))
 		}
 
-		_, err := backRepoGantt.db.Save(&ganttDB)
+		_, err := backRepoGantt.db.Save(ganttDB)
 		if err != nil {
 			log.Fatal(err)
 		}

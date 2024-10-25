@@ -169,7 +169,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitDeleteInstance(id uint) 
 	// milestone is not staged anymore, remove milestoneDB
 	milestoneDB := backRepoMilestone.Map_MilestoneDBID_MilestoneDB[id]
 	db, _ := backRepoMilestone.db.Unscoped()
-	_, err := db.Delete(&milestoneDB)
+	_, err := db.Delete(milestoneDB)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -247,7 +247,7 @@ func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseTwoInstance(backRep
 				append(milestoneDB.MilestonePointersEncoding.LanesToDisplayMilestoneUse, int(laneuseAssocEnd_DB.ID))
 		}
 
-		_, err := backRepoMilestone.db.Save(&milestoneDB)
+		_, err := backRepoMilestone.db.Save(milestoneDB)
 		if err != nil {
 			log.Fatal(err)
 		}

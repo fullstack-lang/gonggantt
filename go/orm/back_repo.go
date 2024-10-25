@@ -10,8 +10,12 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/fullstack-lang/gonggantt/go/db"
 	"github.com/fullstack-lang/gonggantt/go/models"
+
+	/* THIS IS REMOVED BY GONG COMPILER IF TARGET IS gorm
 	"github.com/fullstack-lang/gonggantt/go/orm/dbgorm"
+	THIS IS REMOVED BY GONG COMPILER IF TARGET IS gorm */
 
 	"github.com/tealeg/xlsx/v3"
 )
@@ -46,7 +50,12 @@ type BackRepoStruct struct {
 
 func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepoStruct) {
 
-	dbWrapper := dbgorm.NewDBWrapper(filename, "github_com_fullstack_lang_gonggantt_go",
+	var db db.DBInterface
+
+	db = NewDBLite()
+
+	/* THIS IS REMOVED BY GONG COMPILER IF TARGET IS gorm
+	db = dbgorm.NewDBWrapper(filename, "github_com_fullstack_lang_gonggantt_go",
 		&ArrowDB{},
 		&BarDB{},
 		&GanttDB{},
@@ -55,6 +64,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		&LaneUseDB{},
 		&MilestoneDB{},
 	)
+	THIS IS REMOVED BY GONG COMPILER IF TARGET IS gorm */
 
 	backRepo = new(BackRepoStruct)
 
@@ -64,7 +74,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_ArrowDBID_ArrowDB:  make(map[uint]*ArrowDB, 0),
 		Map_ArrowPtr_ArrowDBID: make(map[*models.Arrow]uint, 0),
 
-		db:    dbWrapper,
+		db:    db,
 		stage: stage,
 	}
 	backRepo.BackRepoBar = BackRepoBarStruct{
@@ -72,7 +82,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_BarDBID_BarDB:  make(map[uint]*BarDB, 0),
 		Map_BarPtr_BarDBID: make(map[*models.Bar]uint, 0),
 
-		db:    dbWrapper,
+		db:    db,
 		stage: stage,
 	}
 	backRepo.BackRepoGantt = BackRepoGanttStruct{
@@ -80,7 +90,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_GanttDBID_GanttDB:  make(map[uint]*GanttDB, 0),
 		Map_GanttPtr_GanttDBID: make(map[*models.Gantt]uint, 0),
 
-		db:    dbWrapper,
+		db:    db,
 		stage: stage,
 	}
 	backRepo.BackRepoGroup = BackRepoGroupStruct{
@@ -88,7 +98,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_GroupDBID_GroupDB:  make(map[uint]*GroupDB, 0),
 		Map_GroupPtr_GroupDBID: make(map[*models.Group]uint, 0),
 
-		db:    dbWrapper,
+		db:    db,
 		stage: stage,
 	}
 	backRepo.BackRepoLane = BackRepoLaneStruct{
@@ -96,7 +106,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_LaneDBID_LaneDB:  make(map[uint]*LaneDB, 0),
 		Map_LanePtr_LaneDBID: make(map[*models.Lane]uint, 0),
 
-		db:    dbWrapper,
+		db:    db,
 		stage: stage,
 	}
 	backRepo.BackRepoLaneUse = BackRepoLaneUseStruct{
@@ -104,7 +114,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_LaneUseDBID_LaneUseDB:  make(map[uint]*LaneUseDB, 0),
 		Map_LaneUsePtr_LaneUseDBID: make(map[*models.LaneUse]uint, 0),
 
-		db:    dbWrapper,
+		db:    db,
 		stage: stage,
 	}
 	backRepo.BackRepoMilestone = BackRepoMilestoneStruct{
@@ -112,7 +122,7 @@ func NewBackRepo(stage *models.StageStruct, filename string) (backRepo *BackRepo
 		Map_MilestoneDBID_MilestoneDB:  make(map[uint]*MilestoneDB, 0),
 		Map_MilestonePtr_MilestoneDBID: make(map[*models.Milestone]uint, 0),
 
-		db:    dbWrapper,
+		db:    db,
 		stage: stage,
 	}
 

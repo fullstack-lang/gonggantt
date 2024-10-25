@@ -162,7 +162,7 @@ func (backRepoLane *BackRepoLaneStruct) CommitDeleteInstance(id uint) (Error err
 	// lane is not staged anymore, remove laneDB
 	laneDB := backRepoLane.Map_LaneDBID_LaneDB[id]
 	db, _ := backRepoLane.db.Unscoped()
-	_, err := db.Delete(&laneDB)
+	_, err := db.Delete(laneDB)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -240,7 +240,7 @@ func (backRepoLane *BackRepoLaneStruct) CommitPhaseTwoInstance(backRepo *BackRep
 				append(laneDB.LanePointersEncoding.Bars, int(barAssocEnd_DB.ID))
 		}
 
-		_, err := backRepoLane.db.Save(&laneDB)
+		_, err := backRepoLane.db.Save(laneDB)
 		if err != nil {
 			log.Fatal(err)
 		}
