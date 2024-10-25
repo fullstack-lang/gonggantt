@@ -280,7 +280,7 @@ func (controller *Controller) UpdateMilestone(c *gin.Context) {
 	milestoneDB.MilestonePointersEncoding = input.MilestonePointersEncoding
 
 	db, _ = db.Model(&milestoneDB)
-	_, err = db.Updates(milestoneDB)
+	_, err = db.Updates(&milestoneDB)
 	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest

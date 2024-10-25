@@ -280,7 +280,7 @@ func (controller *Controller) UpdateGantt(c *gin.Context) {
 	ganttDB.GanttPointersEncoding = input.GanttPointersEncoding
 
 	db, _ = db.Model(&ganttDB)
-	_, err = db.Updates(ganttDB)
+	_, err = db.Updates(&ganttDB)
 	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest

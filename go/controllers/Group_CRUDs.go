@@ -280,7 +280,7 @@ func (controller *Controller) UpdateGroup(c *gin.Context) {
 	groupDB.GroupPointersEncoding = input.GroupPointersEncoding
 
 	db, _ = db.Model(&groupDB)
-	_, err = db.Updates(groupDB)
+	_, err = db.Updates(&groupDB)
 	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest

@@ -280,7 +280,7 @@ func (controller *Controller) UpdateArrow(c *gin.Context) {
 	arrowDB.ArrowPointersEncoding = input.ArrowPointersEncoding
 
 	db, _ = db.Model(&arrowDB)
-	_, err = db.Updates(arrowDB)
+	_, err = db.Updates(&arrowDB)
 	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest

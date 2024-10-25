@@ -280,7 +280,7 @@ func (controller *Controller) UpdateLane(c *gin.Context) {
 	laneDB.LanePointersEncoding = input.LanePointersEncoding
 
 	db, _ = db.Model(&laneDB)
-	_, err = db.Updates(laneDB)
+	_, err = db.Updates(&laneDB)
 	if err != nil {
 		var returnError GenericError
 		returnError.Body.Code = http.StatusBadRequest
