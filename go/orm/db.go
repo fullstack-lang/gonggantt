@@ -210,43 +210,43 @@ func (db *DBLite) Updates(instanceDB any) (db.DBInterface, error) {
 		if existing, ok := db.arrowDBs[v.ID]; ok {
 			*existing = *v
 		} else {
-			return nil, errors.New("github.com/fullstack-lang/gonggantt/go, record not found")
+			return nil, errors.New("db Arrow github.com/fullstack-lang/gonggantt/go, record not found")
 		}
 	case *BarDB:
 		if existing, ok := db.barDBs[v.ID]; ok {
 			*existing = *v
 		} else {
-			return nil, errors.New("github.com/fullstack-lang/gonggantt/go, record not found")
+			return nil, errors.New("db Bar github.com/fullstack-lang/gonggantt/go, record not found")
 		}
 	case *GanttDB:
 		if existing, ok := db.ganttDBs[v.ID]; ok {
 			*existing = *v
 		} else {
-			return nil, errors.New("github.com/fullstack-lang/gonggantt/go, record not found")
+			return nil, errors.New("db Gantt github.com/fullstack-lang/gonggantt/go, record not found")
 		}
 	case *GroupDB:
 		if existing, ok := db.groupDBs[v.ID]; ok {
 			*existing = *v
 		} else {
-			return nil, errors.New("github.com/fullstack-lang/gonggantt/go, record not found")
+			return nil, errors.New("db Group github.com/fullstack-lang/gonggantt/go, record not found")
 		}
 	case *LaneDB:
 		if existing, ok := db.laneDBs[v.ID]; ok {
 			*existing = *v
 		} else {
-			return nil, errors.New("github.com/fullstack-lang/gonggantt/go, record not found")
+			return nil, errors.New("db Lane github.com/fullstack-lang/gonggantt/go, record not found")
 		}
 	case *LaneUseDB:
 		if existing, ok := db.laneuseDBs[v.ID]; ok {
 			*existing = *v
 		} else {
-			return nil, errors.New("github.com/fullstack-lang/gonggantt/go, record not found")
+			return nil, errors.New("db LaneUse github.com/fullstack-lang/gonggantt/go, record not found")
 		}
 	case *MilestoneDB:
 		if existing, ok := db.milestoneDBs[v.ID]; ok {
 			*existing = *v
 		} else {
-			return nil, errors.New("github.com/fullstack-lang/gonggantt/go, record not found")
+			return nil, errors.New("db Milestone github.com/fullstack-lang/gonggantt/go, record not found")
 		}
 	default:
 		return nil, errors.New("github.com/fullstack-lang/gonggantt/go, unsupported type in Updates")
@@ -263,50 +263,50 @@ func (db *DBLite) Find(instanceDBs any) (db.DBInterface, error) {
 	switch ptr := instanceDBs.(type) {
 	// insertion point find
 	case *[]ArrowDB:
-        *ptr = make([]ArrowDB, 0, len(db.arrowDBs))
-        for _, v := range db.arrowDBs {
-            *ptr = append(*ptr, *v)
-        }
-        return db, nil
+		*ptr = make([]ArrowDB, 0, len(db.arrowDBs))
+		for _, v := range db.arrowDBs {
+			*ptr = append(*ptr, *v)
+		}
+		return db, nil
 	case *[]BarDB:
-        *ptr = make([]BarDB, 0, len(db.barDBs))
-        for _, v := range db.barDBs {
-            *ptr = append(*ptr, *v)
-        }
-        return db, nil
+		*ptr = make([]BarDB, 0, len(db.barDBs))
+		for _, v := range db.barDBs {
+			*ptr = append(*ptr, *v)
+		}
+		return db, nil
 	case *[]GanttDB:
-        *ptr = make([]GanttDB, 0, len(db.ganttDBs))
-        for _, v := range db.ganttDBs {
-            *ptr = append(*ptr, *v)
-        }
-        return db, nil
+		*ptr = make([]GanttDB, 0, len(db.ganttDBs))
+		for _, v := range db.ganttDBs {
+			*ptr = append(*ptr, *v)
+		}
+		return db, nil
 	case *[]GroupDB:
-        *ptr = make([]GroupDB, 0, len(db.groupDBs))
-        for _, v := range db.groupDBs {
-            *ptr = append(*ptr, *v)
-        }
-        return db, nil
+		*ptr = make([]GroupDB, 0, len(db.groupDBs))
+		for _, v := range db.groupDBs {
+			*ptr = append(*ptr, *v)
+		}
+		return db, nil
 	case *[]LaneDB:
-        *ptr = make([]LaneDB, 0, len(db.laneDBs))
-        for _, v := range db.laneDBs {
-            *ptr = append(*ptr, *v)
-        }
-        return db, nil
+		*ptr = make([]LaneDB, 0, len(db.laneDBs))
+		for _, v := range db.laneDBs {
+			*ptr = append(*ptr, *v)
+		}
+		return db, nil
 	case *[]LaneUseDB:
-        *ptr = make([]LaneUseDB, 0, len(db.laneuseDBs))
-        for _, v := range db.laneuseDBs {
-            *ptr = append(*ptr, *v)
-        }
-        return db, nil
+		*ptr = make([]LaneUseDB, 0, len(db.laneuseDBs))
+		for _, v := range db.laneuseDBs {
+			*ptr = append(*ptr, *v)
+		}
+		return db, nil
 	case *[]MilestoneDB:
-        *ptr = make([]MilestoneDB, 0, len(db.milestoneDBs))
-        for _, v := range db.milestoneDBs {
-            *ptr = append(*ptr, *v)
-        }
-        return db, nil
-    default:
-        return nil, errors.New("github.com/fullstack-lang/gonggantt/go, Find: unsupported type")
-    }
+		*ptr = make([]MilestoneDB, 0, len(db.milestoneDBs))
+		for _, v := range db.milestoneDBs {
+			*ptr = append(*ptr, *v)
+		}
+		return db, nil
+	default:
+		return nil, errors.New("github.com/fullstack-lang/gonggantt/go, Find: unsupported type")
+	}
 }
 
 // First retrieves the first record of a type from the database
@@ -334,59 +334,73 @@ func (db *DBLite) First(instanceDB any, conds ...any) (db.DBInterface, error) {
 	case *ArrowDB:
 		tmp, ok := db.arrowDBs[uint(i)]
 
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("db.First Arrow Unkown entry %d", i))
+		}
+
 		arrowDB, _ := instanceDB.(*ArrowDB)
 		*arrowDB = *tmp
-		if !ok {
-			return nil, errors.New(fmt.Sprintf("Unkown entry %d", i))
-		}
+		
 	case *BarDB:
 		tmp, ok := db.barDBs[uint(i)]
 
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("db.First Bar Unkown entry %d", i))
+		}
+
 		barDB, _ := instanceDB.(*BarDB)
 		*barDB = *tmp
-		if !ok {
-			return nil, errors.New(fmt.Sprintf("Unkown entry %d", i))
-		}
+		
 	case *GanttDB:
 		tmp, ok := db.ganttDBs[uint(i)]
 
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("db.First Gantt Unkown entry %d", i))
+		}
+
 		ganttDB, _ := instanceDB.(*GanttDB)
 		*ganttDB = *tmp
-		if !ok {
-			return nil, errors.New(fmt.Sprintf("Unkown entry %d", i))
-		}
+		
 	case *GroupDB:
 		tmp, ok := db.groupDBs[uint(i)]
 
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("db.First Group Unkown entry %d", i))
+		}
+
 		groupDB, _ := instanceDB.(*GroupDB)
 		*groupDB = *tmp
-		if !ok {
-			return nil, errors.New(fmt.Sprintf("Unkown entry %d", i))
-		}
+		
 	case *LaneDB:
 		tmp, ok := db.laneDBs[uint(i)]
 
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("db.First Lane Unkown entry %d", i))
+		}
+
 		laneDB, _ := instanceDB.(*LaneDB)
 		*laneDB = *tmp
-		if !ok {
-			return nil, errors.New(fmt.Sprintf("Unkown entry %d", i))
-		}
+		
 	case *LaneUseDB:
 		tmp, ok := db.laneuseDBs[uint(i)]
 
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("db.First LaneUse Unkown entry %d", i))
+		}
+
 		laneuseDB, _ := instanceDB.(*LaneUseDB)
 		*laneuseDB = *tmp
-		if !ok {
-			return nil, errors.New(fmt.Sprintf("Unkown entry %d", i))
-		}
+		
 	case *MilestoneDB:
 		tmp, ok := db.milestoneDBs[uint(i)]
 
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("db.First Milestone Unkown entry %d", i))
+		}
+
 		milestoneDB, _ := instanceDB.(*MilestoneDB)
 		*milestoneDB = *tmp
-		if !ok {
-			return nil, errors.New(fmt.Sprintf("Unkown entry %d", i))
-		}
+		
 	default:
 		return nil, errors.New("github.com/fullstack-lang/gonggantt/go, Unkown type")
 	}
