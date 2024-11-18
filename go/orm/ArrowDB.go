@@ -370,16 +370,44 @@ func (backRepoArrow *BackRepoArrowStruct) CheckoutPhaseTwoInstance(backRepo *Bac
 func (arrowDB *ArrowDB) DecodePointers(backRepo *BackRepoStruct, arrow *models.Arrow) {
 
 	// insertion point for checkout of pointer encoding
-	// From field
-	arrow.From = nil
-	if arrowDB.FromID.Int64 != 0 {
-		arrow.From = backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(arrowDB.FromID.Int64)]
+	// From field	
+	{
+		id := arrowDB.FromID.Int64
+		if id != 0 {
+			tmp, ok := backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(id)]
+
+			if !ok {
+				log.Fatalln("DecodePointers: arrow.From, unknown pointer id", id)
+			}
+
+			// updates only if field has changed
+			if arrow.From == nil || arrow.From != tmp {
+				arrow.From = tmp
+			}
+		} else {
+			arrow.From = nil
+		}
 	}
-	// To field
-	arrow.To = nil
-	if arrowDB.ToID.Int64 != 0 {
-		arrow.To = backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(arrowDB.ToID.Int64)]
+	
+	// To field	
+	{
+		id := arrowDB.ToID.Int64
+		if id != 0 {
+			tmp, ok := backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(id)]
+
+			if !ok {
+				log.Fatalln("DecodePointers: arrow.To, unknown pointer id", id)
+			}
+
+			// updates only if field has changed
+			if arrow.To == nil || arrow.To != tmp {
+				arrow.To = tmp
+			}
+		} else {
+			arrow.To = nil
+		}
 	}
+	
 	return
 }
 

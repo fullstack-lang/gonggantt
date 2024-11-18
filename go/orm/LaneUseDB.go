@@ -342,11 +342,25 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) CheckoutPhaseTwoInstance(backRepo 
 func (laneuseDB *LaneUseDB) DecodePointers(backRepo *BackRepoStruct, laneuse *models.LaneUse) {
 
 	// insertion point for checkout of pointer encoding
-	// Lane field
-	laneuse.Lane = nil
-	if laneuseDB.LaneID.Int64 != 0 {
-		laneuse.Lane = backRepo.BackRepoLane.Map_LaneDBID_LanePtr[uint(laneuseDB.LaneID.Int64)]
+	// Lane field	
+	{
+		id := laneuseDB.LaneID.Int64
+		if id != 0 {
+			tmp, ok := backRepo.BackRepoLane.Map_LaneDBID_LanePtr[uint(id)]
+
+			if !ok {
+				log.Fatalln("DecodePointers: laneuse.Lane, unknown pointer id", id)
+			}
+
+			// updates only if field has changed
+			if laneuse.Lane == nil || laneuse.Lane != tmp {
+				laneuse.Lane = tmp
+			}
+		} else {
+			laneuse.Lane = nil
+		}
 	}
+	
 	return
 }
 
