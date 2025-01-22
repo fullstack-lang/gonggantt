@@ -348,13 +348,15 @@ func (laneuseDB *LaneUseDB) DecodePointers(backRepo *BackRepoStruct, laneuse *mo
 		if id != 0 {
 			tmp, ok := backRepo.BackRepoLane.Map_LaneDBID_LanePtr[uint(id)]
 
+			// if the pointer id is unknown, it is not a problem, maybe the target was removed from the front
 			if !ok {
-				log.Fatalln("DecodePointers: laneuse.Lane, unknown pointer id", id)
-			}
-
-			// updates only if field has changed
-			if laneuse.Lane == nil || laneuse.Lane != tmp {
-				laneuse.Lane = tmp
+				log.Println("DecodePointers: laneuse.Lane, unknown pointer id", id)
+				laneuse.Lane = nil
+			} else {
+				// updates only if field has changed
+				if laneuse.Lane == nil || laneuse.Lane != tmp {
+					laneuse.Lane = tmp
+				}
 			}
 		} else {
 			laneuse.Lane = nil

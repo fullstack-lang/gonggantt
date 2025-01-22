@@ -376,13 +376,15 @@ func (arrowDB *ArrowDB) DecodePointers(backRepo *BackRepoStruct, arrow *models.A
 		if id != 0 {
 			tmp, ok := backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(id)]
 
+			// if the pointer id is unknown, it is not a problem, maybe the target was removed from the front
 			if !ok {
-				log.Fatalln("DecodePointers: arrow.From, unknown pointer id", id)
-			}
-
-			// updates only if field has changed
-			if arrow.From == nil || arrow.From != tmp {
-				arrow.From = tmp
+				log.Println("DecodePointers: arrow.From, unknown pointer id", id)
+				arrow.From = nil
+			} else {
+				// updates only if field has changed
+				if arrow.From == nil || arrow.From != tmp {
+					arrow.From = tmp
+				}
 			}
 		} else {
 			arrow.From = nil
@@ -395,13 +397,15 @@ func (arrowDB *ArrowDB) DecodePointers(backRepo *BackRepoStruct, arrow *models.A
 		if id != 0 {
 			tmp, ok := backRepo.BackRepoBar.Map_BarDBID_BarPtr[uint(id)]
 
+			// if the pointer id is unknown, it is not a problem, maybe the target was removed from the front
 			if !ok {
-				log.Fatalln("DecodePointers: arrow.To, unknown pointer id", id)
-			}
-
-			// updates only if field has changed
-			if arrow.To == nil || arrow.To != tmp {
-				arrow.To = tmp
+				log.Println("DecodePointers: arrow.To, unknown pointer id", id)
+				arrow.To = nil
+			} else {
+				// updates only if field has changed
+				if arrow.To == nil || arrow.To != tmp {
+					arrow.To = tmp
+				}
 			}
 		} else {
 			arrow.To = nil
