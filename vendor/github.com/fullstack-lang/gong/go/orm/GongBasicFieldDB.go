@@ -198,7 +198,17 @@ func (backRepoGongBasicField *BackRepoGongBasicFieldStruct) GetGongBasicFieldDBF
 // Phase One is the creation of instance in the database if it is not yet done to get the unique ID for each staged instance
 func (backRepoGongBasicField *BackRepoGongBasicFieldStruct) CommitPhaseOne(stage *models.StageStruct) (Error error) {
 
+	var gongbasicfields []*models.GongBasicField
 	for gongbasicfield := range stage.GongBasicFields {
+		gongbasicfields = append(gongbasicfields, gongbasicfield)
+	}
+
+	// Sort by the order stored in Map_Staged_Order.
+	sort.Slice(gongbasicfields, func(i, j int) bool {
+		return stage.Map_Staged_Order[gongbasicfields[i]] < stage.Map_Staged_Order[gongbasicfields[j]]
+	})
+
+	for _, gongbasicfield := range gongbasicfields {
 		backRepoGongBasicField.CommitPhaseOneInstance(gongbasicfield)
 	}
 
@@ -406,11 +416,27 @@ func (backRepoGongBasicField *BackRepoGongBasicFieldStruct) CheckoutPhaseTwoInst
 func (gongbasicfieldDB *GongBasicFieldDB) DecodePointers(backRepo *BackRepoStruct, gongbasicfield *models.GongBasicField) {
 
 	// insertion point for checkout of pointer encoding
-	// GongEnum field
-	gongbasicfield.GongEnum = nil
-	if gongbasicfieldDB.GongEnumID.Int64 != 0 {
-		gongbasicfield.GongEnum = backRepo.BackRepoGongEnum.Map_GongEnumDBID_GongEnumPtr[uint(gongbasicfieldDB.GongEnumID.Int64)]
+	// GongEnum field	
+	{
+		id := gongbasicfieldDB.GongEnumID.Int64
+		if id != 0 {
+			tmp, ok := backRepo.BackRepoGongEnum.Map_GongEnumDBID_GongEnumPtr[uint(id)]
+
+			// if the pointer id is unknown, it is not a problem, maybe the target was removed from the front
+			if !ok {
+				log.Println("DecodePointers: gongbasicfield.GongEnum, unknown pointer id", id)
+				gongbasicfield.GongEnum = nil
+			} else {
+				// updates only if field has changed
+				if gongbasicfield.GongEnum == nil || gongbasicfield.GongEnum != tmp {
+					gongbasicfield.GongEnum = tmp
+				}
+			}
+		} else {
+			gongbasicfield.GongEnum = nil
+		}
 	}
+	
 	return
 }
 

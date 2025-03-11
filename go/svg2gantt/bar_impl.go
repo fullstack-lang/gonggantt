@@ -3,8 +3,8 @@ package svg2gantt
 import (
 	"log"
 
+	gongsvg_models "github.com/fullstack-lang/gong/lib/svg/go/models"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
-	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
 
 type BarImpl struct {

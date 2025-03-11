@@ -167,7 +167,8 @@ func (controller *Controller) onWebSocketRequestForBackRepoContent(c *gin.Contex
 
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	updateCommitBackRepoNbChannel := backRepo.SubscribeToCommitNb(ctx)
 
@@ -186,6 +187,7 @@ func (controller *Controller) onWebSocketRequestForBackRepoContent(c *gin.Contex
 
 	backRepoData := new(orm.BackRepoData)
 	orm.CopyBackRepoToBackRepoData(backRepo, backRepoData)
+	backRepoData.GONG__Index = index
 
 	err = wsConnection.WriteJSON(backRepoData)
 	if err != nil {
@@ -207,6 +209,7 @@ func (controller *Controller) onWebSocketRequestForBackRepoContent(c *gin.Contex
 
 				backRepoData := new(orm.BackRepoData)
 				orm.CopyBackRepoToBackRepoData(backRepo, backRepoData)
+				backRepoData.GONG__Index = index
 
 				// Set write deadline to prevent blocking indefinitely
 				wsConnection.SetWriteDeadline(time.Now().Add(10 * time.Second))
@@ -240,7 +243,8 @@ func (controller *Controller) GetLastCommitFromBackNb(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	res := backRepo.GetLastCommitFromBackNb()
 
@@ -260,7 +264,8 @@ func (controller *Controller) GetLastPushFromFrontNb(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	res := backRepo.GetLastPushFromFrontNb()
 

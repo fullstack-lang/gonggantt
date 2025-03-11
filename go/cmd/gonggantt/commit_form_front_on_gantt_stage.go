@@ -9,7 +9,7 @@ import (
 
 	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 
-	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
+	gongsvg_models "github.com/fullstack-lang/gong/lib/svg/go/models"
 )
 
 // hook marhalling to stage

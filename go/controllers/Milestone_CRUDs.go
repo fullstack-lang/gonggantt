@@ -66,7 +66,8 @@ func (controller *Controller) GetMilestones(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoMilestone.GetDB()
 
@@ -129,7 +130,8 @@ func (controller *Controller) PostMilestone(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoMilestone.GetDB()
 
@@ -199,7 +201,8 @@ func (controller *Controller) GetMilestone(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoMilestone.GetDB()
 
@@ -248,7 +251,8 @@ func (controller *Controller) UpdateMilestone(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoMilestone.GetDB()
 
@@ -338,7 +342,8 @@ func (controller *Controller) DeleteMilestone(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoMilestone.GetDB()
 

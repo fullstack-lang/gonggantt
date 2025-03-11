@@ -6,7 +6,7 @@ import (
 	"slices"
 	"time"
 
-	table "github.com/fullstack-lang/gongtable/go/models"
+	table "github.com/fullstack-lang/gong/lib/table/go/models"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
 	"github.com/fullstack-lang/gonggantt/go/orm"
@@ -131,7 +131,7 @@ func (arrowFormCallback *ArrowFormCallback) OnSave() {
 	if arrowFormCallback.CreationMode || arrowFormCallback.formGroup.HasSuppressButtonBeenPressed {
 		arrowFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
-			Name: table.FormGroupDefaultName.ToString(),
+			Name: FormName,
 		}).Stage(arrowFormCallback.probe.formStage)
 		newFormGroup.OnSave = __gong__New__ArrowFormCallback(
 			nil,
@@ -266,7 +266,7 @@ func (barFormCallback *BarFormCallback) OnSave() {
 	if barFormCallback.CreationMode || barFormCallback.formGroup.HasSuppressButtonBeenPressed {
 		barFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
-			Name: table.FormGroupDefaultName.ToString(),
+			Name: FormName,
 		}).Stage(barFormCallback.probe.formStage)
 		newFormGroup.OnSave = __gong__New__BarFormCallback(
 			nil,
@@ -391,7 +391,7 @@ func (ganttFormCallback *GanttFormCallback) OnSave() {
 	if ganttFormCallback.CreationMode || ganttFormCallback.formGroup.HasSuppressButtonBeenPressed {
 		ganttFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
-			Name: table.FormGroupDefaultName.ToString(),
+			Name: FormName,
 		}).Stage(ganttFormCallback.probe.formStage)
 		newFormGroup.OnSave = __gong__New__GanttFormCallback(
 			nil,
@@ -510,7 +510,7 @@ func (groupFormCallback *GroupFormCallback) OnSave() {
 	if groupFormCallback.CreationMode || groupFormCallback.formGroup.HasSuppressButtonBeenPressed {
 		groupFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
-			Name: table.FormGroupDefaultName.ToString(),
+			Name: FormName,
 		}).Stage(groupFormCallback.probe.formStage)
 		newFormGroup.OnSave = __gong__New__GroupFormCallback(
 			nil,
@@ -673,7 +673,7 @@ func (laneFormCallback *LaneFormCallback) OnSave() {
 	if laneFormCallback.CreationMode || laneFormCallback.formGroup.HasSuppressButtonBeenPressed {
 		laneFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
-			Name: table.FormGroupDefaultName.ToString(),
+			Name: FormName,
 		}).Stage(laneFormCallback.probe.formStage)
 		newFormGroup.OnSave = __gong__New__LaneFormCallback(
 			nil,
@@ -794,7 +794,7 @@ func (laneuseFormCallback *LaneUseFormCallback) OnSave() {
 	if laneuseFormCallback.CreationMode || laneuseFormCallback.formGroup.HasSuppressButtonBeenPressed {
 		laneuseFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
-			Name: table.FormGroupDefaultName.ToString(),
+			Name: FormName,
 		}).Stage(laneuseFormCallback.probe.formStage)
 		newFormGroup.OnSave = __gong__New__LaneUseFormCallback(
 			nil,
@@ -917,7 +917,7 @@ func (milestoneFormCallback *MilestoneFormCallback) OnSave() {
 	if milestoneFormCallback.CreationMode || milestoneFormCallback.formGroup.HasSuppressButtonBeenPressed {
 		milestoneFormCallback.probe.formStage.Reset()
 		newFormGroup := (&table.FormGroup{
-			Name: table.FormGroupDefaultName.ToString(),
+			Name: FormName,
 		}).Stage(milestoneFormCallback.probe.formStage)
 		newFormGroup.OnSave = __gong__New__MilestoneFormCallback(
 			nil,

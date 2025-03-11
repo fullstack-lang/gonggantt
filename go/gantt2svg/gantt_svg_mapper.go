@@ -3,7 +3,7 @@ package gantt2svg
 import (
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 
-	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
+	gongsvg_models "github.com/fullstack-lang/gong/lib/svg/go/models"
 )
 
 // type of the singloton for interception of gantt commit in order to generate

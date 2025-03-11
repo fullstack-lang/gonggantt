@@ -134,7 +134,17 @@ func (backRepoLaneUse *BackRepoLaneUseStruct) GetLaneUseDBFromLaneUsePtr(laneuse
 // Phase One is the creation of instance in the database if it is not yet done to get the unique ID for each staged instance
 func (backRepoLaneUse *BackRepoLaneUseStruct) CommitPhaseOne(stage *models.StageStruct) (Error error) {
 
+	var laneuses []*models.LaneUse
 	for laneuse := range stage.LaneUses {
+		laneuses = append(laneuses, laneuse)
+	}
+
+	// Sort by the order stored in Map_Staged_Order.
+	sort.Slice(laneuses, func(i, j int) bool {
+		return stage.Map_Staged_Order[laneuses[i]] < stage.Map_Staged_Order[laneuses[j]]
+	})
+
+	for _, laneuse := range laneuses {
 		backRepoLaneUse.CommitPhaseOneInstance(laneuse)
 	}
 

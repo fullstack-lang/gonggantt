@@ -146,6 +146,11 @@ type StageStruct struct {
 	// map to enable docLink renaming when an identifier is renamed
 	Map_DocLink_Renaming map[string]GONG__Identifier
 	// the to be removed stops here
+	
+	// store the stage order of each instance in order to
+	// preserve this order when serializing them
+	Order            uint
+	Map_Staged_Order map[any]uint
 }
 
 func (stage *StageStruct) GetType() string {
@@ -242,6 +247,8 @@ func NewStage(path string) (stage *StageStruct) {
 		// to be removed after fix of [issue](https://github.com/golang/go/issues/57559)
 		Map_DocLink_Renaming: make(map[string]GONG__Identifier),
 		// the to be removed stops here
+
+		Map_Staged_Order: make(map[any]uint),
 	}
 
 	return
@@ -325,7 +332,12 @@ func (stage *StageStruct) RestoreXL(dirPath string) {
 // insertion point for cumulative sub template with model space calls
 // Stage puts arrow to the model stage
 func (arrow *Arrow) Stage(stage *StageStruct) *Arrow {
-	stage.Arrows[arrow] = __member
+
+	if _, ok := stage.Arrows[arrow]; !ok {
+		stage.Arrows[arrow] = __member
+		stage.Map_Staged_Order[arrow] = stage.Order
+		stage.Order++
+	}
 	stage.Arrows_mapString[arrow.Name] = arrow
 
 	return arrow
@@ -375,7 +387,12 @@ func (arrow *Arrow) GetName() (res string) {
 
 // Stage puts bar to the model stage
 func (bar *Bar) Stage(stage *StageStruct) *Bar {
-	stage.Bars[bar] = __member
+
+	if _, ok := stage.Bars[bar]; !ok {
+		stage.Bars[bar] = __member
+		stage.Map_Staged_Order[bar] = stage.Order
+		stage.Order++
+	}
 	stage.Bars_mapString[bar.Name] = bar
 
 	return bar
@@ -425,7 +442,12 @@ func (bar *Bar) GetName() (res string) {
 
 // Stage puts gantt to the model stage
 func (gantt *Gantt) Stage(stage *StageStruct) *Gantt {
-	stage.Gantts[gantt] = __member
+
+	if _, ok := stage.Gantts[gantt]; !ok {
+		stage.Gantts[gantt] = __member
+		stage.Map_Staged_Order[gantt] = stage.Order
+		stage.Order++
+	}
 	stage.Gantts_mapString[gantt.Name] = gantt
 
 	return gantt
@@ -475,7 +497,12 @@ func (gantt *Gantt) GetName() (res string) {
 
 // Stage puts group to the model stage
 func (group *Group) Stage(stage *StageStruct) *Group {
-	stage.Groups[group] = __member
+
+	if _, ok := stage.Groups[group]; !ok {
+		stage.Groups[group] = __member
+		stage.Map_Staged_Order[group] = stage.Order
+		stage.Order++
+	}
 	stage.Groups_mapString[group.Name] = group
 
 	return group
@@ -525,7 +552,12 @@ func (group *Group) GetName() (res string) {
 
 // Stage puts lane to the model stage
 func (lane *Lane) Stage(stage *StageStruct) *Lane {
-	stage.Lanes[lane] = __member
+
+	if _, ok := stage.Lanes[lane]; !ok {
+		stage.Lanes[lane] = __member
+		stage.Map_Staged_Order[lane] = stage.Order
+		stage.Order++
+	}
 	stage.Lanes_mapString[lane.Name] = lane
 
 	return lane
@@ -575,7 +607,12 @@ func (lane *Lane) GetName() (res string) {
 
 // Stage puts laneuse to the model stage
 func (laneuse *LaneUse) Stage(stage *StageStruct) *LaneUse {
-	stage.LaneUses[laneuse] = __member
+
+	if _, ok := stage.LaneUses[laneuse]; !ok {
+		stage.LaneUses[laneuse] = __member
+		stage.Map_Staged_Order[laneuse] = stage.Order
+		stage.Order++
+	}
 	stage.LaneUses_mapString[laneuse.Name] = laneuse
 
 	return laneuse
@@ -625,7 +662,12 @@ func (laneuse *LaneUse) GetName() (res string) {
 
 // Stage puts milestone to the model stage
 func (milestone *Milestone) Stage(stage *StageStruct) *Milestone {
-	stage.Milestones[milestone] = __member
+
+	if _, ok := stage.Milestones[milestone]; !ok {
+		stage.Milestones[milestone] = __member
+		stage.Map_Staged_Order[milestone] = stage.Order
+		stage.Order++
+	}
 	stage.Milestones_mapString[milestone.Name] = milestone
 
 	return milestone
@@ -1392,10 +1434,10 @@ func GetFieldsFromPointer[Type PointerToGongstruct]() (res []string) {
 type GongFieldValueType string
 
 const (
-	GongFieldValueTypeInt     GongFieldValueType = "GongFieldValueTypeInt"
-	GongFieldValueTypeFloat   GongFieldValueType = "GongFieldValueTypeFloat"
-	GongFieldValueTypeBool    GongFieldValueType = "GongFieldValueTypeBool"
-	GongFieldValueTypeOthers  GongFieldValueType = "GongFieldValueTypeOthers"
+	GongFieldValueTypeInt    GongFieldValueType = "GongFieldValueTypeInt"
+	GongFieldValueTypeFloat  GongFieldValueType = "GongFieldValueTypeFloat"
+	GongFieldValueTypeBool   GongFieldValueType = "GongFieldValueTypeBool"
+	GongFieldValueTypeOthers GongFieldValueType = "GongFieldValueTypeOthers"
 )
 
 type GongFieldValue struct {

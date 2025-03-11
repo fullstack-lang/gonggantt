@@ -2,7 +2,7 @@
 package probe
 
 import (
-	form "github.com/fullstack-lang/gongtable/go/models"
+	form "github.com/fullstack-lang/gong/lib/table/go/models"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
@@ -14,7 +14,6 @@ func FillUpFormFromGongstructName(
 ) {
 	formStage := probe.formStage
 	formStage.Reset()
-	formStage.Commit()
 
 	var prefix string
 
@@ -28,7 +27,7 @@ func FillUpFormFromGongstructName(
 	// insertion point
 	case "Arrow":
 		formGroup := (&form.FormGroup{
-			Name:  form.FormGroupDefaultName.ToString(),
+			Name:  FormName,
 			Label: prefix + "Arrow Form",
 		}).Stage(formStage)
 		formGroup.OnSave = __gong__New__ArrowFormCallback(
@@ -41,7 +40,7 @@ func FillUpFormFromGongstructName(
 		FillUpForm(arrow, formGroup, probe)
 	case "Bar":
 		formGroup := (&form.FormGroup{
-			Name:  form.FormGroupDefaultName.ToString(),
+			Name:  FormName,
 			Label: prefix + "Bar Form",
 		}).Stage(formStage)
 		formGroup.OnSave = __gong__New__BarFormCallback(
@@ -54,7 +53,7 @@ func FillUpFormFromGongstructName(
 		FillUpForm(bar, formGroup, probe)
 	case "Gantt":
 		formGroup := (&form.FormGroup{
-			Name:  form.FormGroupDefaultName.ToString(),
+			Name:  FormName,
 			Label: prefix + "Gantt Form",
 		}).Stage(formStage)
 		formGroup.OnSave = __gong__New__GanttFormCallback(
@@ -67,7 +66,7 @@ func FillUpFormFromGongstructName(
 		FillUpForm(gantt, formGroup, probe)
 	case "Group":
 		formGroup := (&form.FormGroup{
-			Name:  form.FormGroupDefaultName.ToString(),
+			Name:  FormName,
 			Label: prefix + "Group Form",
 		}).Stage(formStage)
 		formGroup.OnSave = __gong__New__GroupFormCallback(
@@ -80,7 +79,7 @@ func FillUpFormFromGongstructName(
 		FillUpForm(group, formGroup, probe)
 	case "Lane":
 		formGroup := (&form.FormGroup{
-			Name:  form.FormGroupDefaultName.ToString(),
+			Name:  FormName,
 			Label: prefix + "Lane Form",
 		}).Stage(formStage)
 		formGroup.OnSave = __gong__New__LaneFormCallback(
@@ -93,7 +92,7 @@ func FillUpFormFromGongstructName(
 		FillUpForm(lane, formGroup, probe)
 	case "LaneUse":
 		formGroup := (&form.FormGroup{
-			Name:  form.FormGroupDefaultName.ToString(),
+			Name:  FormName,
 			Label: prefix + "LaneUse Form",
 		}).Stage(formStage)
 		formGroup.OnSave = __gong__New__LaneUseFormCallback(
@@ -106,7 +105,7 @@ func FillUpFormFromGongstructName(
 		FillUpForm(laneuse, formGroup, probe)
 	case "Milestone":
 		formGroup := (&form.FormGroup{
-			Name:  form.FormGroupDefaultName.ToString(),
+			Name:  FormName,
 			Label: prefix + "Milestone Form",
 		}).Stage(formStage)
 		formGroup.OnSave = __gong__New__MilestoneFormCallback(

@@ -66,7 +66,8 @@ func (controller *Controller) GetLanes(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoLane.GetDB()
 
@@ -129,7 +130,8 @@ func (controller *Controller) PostLane(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoLane.GetDB()
 
@@ -199,7 +201,8 @@ func (controller *Controller) GetLane(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoLane.GetDB()
 
@@ -248,7 +251,8 @@ func (controller *Controller) UpdateLane(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoLane.GetDB()
 
@@ -338,7 +342,8 @@ func (controller *Controller) DeleteLane(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoLane.GetDB()
 

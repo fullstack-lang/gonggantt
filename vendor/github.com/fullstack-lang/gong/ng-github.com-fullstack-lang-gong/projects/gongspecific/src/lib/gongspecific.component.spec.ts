@@ -11,7 +11,7 @@ describe('GongspecificComponent', () => {
       imports: [GongspecificComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(GongspecificComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -150,7 +150,17 @@ func (backRepoArrow *BackRepoArrowStruct) GetArrowDBFromArrowPtr(arrow *models.A
 // Phase One is the creation of instance in the database if it is not yet done to get the unique ID for each staged instance
 func (backRepoArrow *BackRepoArrowStruct) CommitPhaseOne(stage *models.StageStruct) (Error error) {
 
+	var arrows []*models.Arrow
 	for arrow := range stage.Arrows {
+		arrows = append(arrows, arrow)
+	}
+
+	// Sort by the order stored in Map_Staged_Order.
+	sort.Slice(arrows, func(i, j int) bool {
+		return stage.Map_Staged_Order[arrows[i]] < stage.Map_Staged_Order[arrows[j]]
+	})
+
+	for _, arrow := range arrows {
 		backRepoArrow.CommitPhaseOneInstance(arrow)
 	}
 

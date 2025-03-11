@@ -288,7 +288,17 @@ func (backRepoGantt *BackRepoGanttStruct) GetGanttDBFromGanttPtr(gantt *models.G
 // Phase One is the creation of instance in the database if it is not yet done to get the unique ID for each staged instance
 func (backRepoGantt *BackRepoGanttStruct) CommitPhaseOne(stage *models.StageStruct) (Error error) {
 
+	var gantts []*models.Gantt
 	for gantt := range stage.Gantts {
+		gantts = append(gantts, gantt)
+	}
+
+	// Sort by the order stored in Map_Staged_Order.
+	sort.Slice(gantts, func(i, j int) bool {
+		return stage.Map_Staged_Order[gantts[i]] < stage.Map_Staged_Order[gantts[j]]
+	})
+
+	for _, gantt := range gantts {
 		backRepoGantt.CommitPhaseOneInstance(gantt)
 	}
 

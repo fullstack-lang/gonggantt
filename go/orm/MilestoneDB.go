@@ -146,7 +146,17 @@ func (backRepoMilestone *BackRepoMilestoneStruct) GetMilestoneDBFromMilestonePtr
 // Phase One is the creation of instance in the database if it is not yet done to get the unique ID for each staged instance
 func (backRepoMilestone *BackRepoMilestoneStruct) CommitPhaseOne(stage *models.StageStruct) (Error error) {
 
+	var milestones []*models.Milestone
 	for milestone := range stage.Milestones {
+		milestones = append(milestones, milestone)
+	}
+
+	// Sort by the order stored in Map_Staged_Order.
+	sort.Slice(milestones, func(i, j int) bool {
+		return stage.Map_Staged_Order[milestones[i]] < stage.Map_Staged_Order[milestones[j]]
+	})
+
+	for _, milestone := range milestones {
 		backRepoMilestone.CommitPhaseOneInstance(milestone)
 	}
 

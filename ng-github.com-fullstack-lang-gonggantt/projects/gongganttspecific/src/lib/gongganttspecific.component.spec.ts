@@ -8,7 +8,7 @@ describe('GongganttspecificComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GongganttspecificComponent ]
+      imports: [GongganttspecificComponent]
     })
     .compileComponents();
 

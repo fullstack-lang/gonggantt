@@ -197,11 +197,13 @@ func (controller *Controller) onWebSocketRequestForBackRepoContent(c *gin.Contex
 	log.Printf("Stack github.com/fullstack-lang/gong/go: stack path: '%s', new ws index %d",
 		stackPath, controller.listenerIndex,
 	)
+	index := controller.listenerIndex
 	controller.listenerIndex++
 
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gong/go, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gong/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	updateCommitBackRepoNbChannel := backRepo.SubscribeToCommitNb(ctx)
 
@@ -220,6 +222,7 @@ func (controller *Controller) onWebSocketRequestForBackRepoContent(c *gin.Contex
 
 	backRepoData := new(orm.BackRepoData)
 	orm.CopyBackRepoToBackRepoData(backRepo, backRepoData)
+	backRepoData.GONG__Index = index
 
 	err = wsConnection.WriteJSON(backRepoData)
 	if err != nil {
@@ -228,7 +231,7 @@ func (controller *Controller) onWebSocketRequestForBackRepoContent(c *gin.Contex
 		fmt.Println(err)
 		return
 	} else {
-		log.Println(time.Now().Format(time.RFC3339Nano), "github.com/fullstack-lang/gong/go: 1st sent backRepoData of stack:", stackPath)
+		log.Println(time.Now().Format("2006-01-02 15:04:05.000000"), "github.com/fullstack-lang/gong/go: 1st sent backRepoData of stack:", stackPath, "index", index)
 	}
 	for {
 		select {
@@ -241,6 +244,7 @@ func (controller *Controller) onWebSocketRequestForBackRepoContent(c *gin.Contex
 
 				backRepoData := new(orm.BackRepoData)
 				orm.CopyBackRepoToBackRepoData(backRepo, backRepoData)
+				backRepoData.GONG__Index = index
 
 				// Set write deadline to prevent blocking indefinitely
 				wsConnection.SetWriteDeadline(time.Now().Add(10 * time.Second))
@@ -254,7 +258,7 @@ func (controller *Controller) onWebSocketRequestForBackRepoContent(c *gin.Contex
 					cancel() // Cancel the context
 					return
 				} else {
-					log.Println(time.Now().Format(time.RFC3339Nano), "github.com/fullstack-lang/gong/go: sent backRepoData of stack:", stackPath)
+					log.Println(time.Now().Format("2006-01-02 15:04:05.000000"), "github.com/fullstack-lang/gong/go: sent backRepoData of stack:", stackPath, "index", index)
 				}
 			}
 		}
@@ -274,7 +278,8 @@ func (controller *Controller) GetLastCommitFromBackNb(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gong/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gong/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	res := backRepo.GetLastCommitFromBackNb()
 
@@ -294,7 +299,8 @@ func (controller *Controller) GetLastPushFromFrontNb(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gong/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gong/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	res := backRepo.GetLastPushFromFrontNb()
 

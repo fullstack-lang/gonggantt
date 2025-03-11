@@ -66,7 +66,8 @@ func (controller *Controller) GetGantts(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoGantt.GetDB()
 
@@ -129,7 +130,8 @@ func (controller *Controller) PostGantt(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoGantt.GetDB()
 
@@ -199,7 +201,8 @@ func (controller *Controller) GetGantt(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoGantt.GetDB()
 
@@ -248,7 +251,8 @@ func (controller *Controller) UpdateGantt(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoGantt.GetDB()
 
@@ -338,7 +342,8 @@ func (controller *Controller) DeleteGantt(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoGantt.GetDB()
 

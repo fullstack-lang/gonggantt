@@ -6,7 +6,7 @@ import (
 	"log"
 	"sort"
 
-	gongtable "github.com/fullstack-lang/gongtable/go/models"
+	gongtable "github.com/fullstack-lang/gong/lib/table/go/models"
 
 	"github.com/fullstack-lang/maticons/maticons"
 
@@ -39,15 +39,16 @@ func fillUpTablePointerToGongstruct[T models.PointerToGongstruct](
 	}
 }
 
+const TableName = "Table"
+
 func fillUpTable[T models.Gongstruct](
 	probe *Probe,
 ) {
 
 	probe.tableStage.Reset()
-	probe.tableStage.Commit()
 
 	table := new(gongtable.Table).Stage(probe.tableStage)
-	table.Name = "Table"
+	table.Name = TableName
 	table.HasColumnSorting = true
 	table.HasFiltering = true
 	table.HasPaginator = true

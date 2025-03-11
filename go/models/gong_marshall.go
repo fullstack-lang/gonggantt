@@ -25,7 +25,7 @@ import (
 // if there are no elements in the stage to marshall
 var _ time.Time
 
-// Injection point for meta package dummy declaration{{ImportPackageDummyDeclaration}}
+// _ point for meta package dummy declaration{{ImportPackageDummyDeclaration}}
 
 // When parsed, those maps will help with the renaming process
 var _ map[string]any = map[string]any{
@@ -102,7 +102,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		arrowOrdered = append(arrowOrdered, arrow)
 	}
 	sort.Slice(arrowOrdered[:], func(i, j int) bool {
-		return arrowOrdered[i].Name < arrowOrdered[j].Name
+		arrowi := arrowOrdered[i]
+		arrowj := arrowOrdered[j]
+		arrowi_order, oki := stage.Map_Staged_Order[arrowi]
+		arrowj_order, okj := stage.Map_Staged_Order[arrowj]
+		if !oki || !okj {
+			log.Fatalln("unknown pointers")
+		}
+		return arrowi_order < arrowj_order
 	})
 	if len(arrowOrdered) > 0 {
 		identifiersDecl += "\n"
@@ -148,7 +155,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		barOrdered = append(barOrdered, bar)
 	}
 	sort.Slice(barOrdered[:], func(i, j int) bool {
-		return barOrdered[i].Name < barOrdered[j].Name
+		bari := barOrdered[i]
+		barj := barOrdered[j]
+		bari_order, oki := stage.Map_Staged_Order[bari]
+		barj_order, okj := stage.Map_Staged_Order[barj]
+		if !oki || !okj {
+			log.Fatalln("unknown pointers")
+		}
+		return bari_order < barj_order
 	})
 	if len(barOrdered) > 0 {
 		identifiersDecl += "\n"
@@ -230,7 +244,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		ganttOrdered = append(ganttOrdered, gantt)
 	}
 	sort.Slice(ganttOrdered[:], func(i, j int) bool {
-		return ganttOrdered[i].Name < ganttOrdered[j].Name
+		gantti := ganttOrdered[i]
+		ganttj := ganttOrdered[j]
+		gantti_order, oki := stage.Map_Staged_Order[gantti]
+		ganttj_order, okj := stage.Map_Staged_Order[ganttj]
+		if !oki || !okj {
+			log.Fatalln("unknown pointers")
+		}
+		return gantti_order < ganttj_order
 	})
 	if len(ganttOrdered) > 0 {
 		identifiersDecl += "\n"
@@ -408,7 +429,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		groupOrdered = append(groupOrdered, group)
 	}
 	sort.Slice(groupOrdered[:], func(i, j int) bool {
-		return groupOrdered[i].Name < groupOrdered[j].Name
+		groupi := groupOrdered[i]
+		groupj := groupOrdered[j]
+		groupi_order, oki := stage.Map_Staged_Order[groupi]
+		groupj_order, okj := stage.Map_Staged_Order[groupj]
+		if !oki || !okj {
+			log.Fatalln("unknown pointers")
+		}
+		return groupi_order < groupj_order
 	})
 	if len(groupOrdered) > 0 {
 		identifiersDecl += "\n"
@@ -442,7 +470,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		laneOrdered = append(laneOrdered, lane)
 	}
 	sort.Slice(laneOrdered[:], func(i, j int) bool {
-		return laneOrdered[i].Name < laneOrdered[j].Name
+		lanei := laneOrdered[i]
+		lanej := laneOrdered[j]
+		lanei_order, oki := stage.Map_Staged_Order[lanei]
+		lanej_order, okj := stage.Map_Staged_Order[lanej]
+		if !oki || !okj {
+			log.Fatalln("unknown pointers")
+		}
+		return lanei_order < lanej_order
 	})
 	if len(laneOrdered) > 0 {
 		identifiersDecl += "\n"
@@ -482,7 +517,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		laneuseOrdered = append(laneuseOrdered, laneuse)
 	}
 	sort.Slice(laneuseOrdered[:], func(i, j int) bool {
-		return laneuseOrdered[i].Name < laneuseOrdered[j].Name
+		laneusei := laneuseOrdered[i]
+		laneusej := laneuseOrdered[j]
+		laneusei_order, oki := stage.Map_Staged_Order[laneusei]
+		laneusej_order, okj := stage.Map_Staged_Order[laneusej]
+		if !oki || !okj {
+			log.Fatalln("unknown pointers")
+		}
+		return laneusei_order < laneusej_order
 	})
 	if len(laneuseOrdered) > 0 {
 		identifiersDecl += "\n"
@@ -516,7 +558,14 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		milestoneOrdered = append(milestoneOrdered, milestone)
 	}
 	sort.Slice(milestoneOrdered[:], func(i, j int) bool {
-		return milestoneOrdered[i].Name < milestoneOrdered[j].Name
+		milestonei := milestoneOrdered[i]
+		milestonej := milestoneOrdered[j]
+		milestonei_order, oki := stage.Map_Staged_Order[milestonei]
+		milestonej_order, okj := stage.Map_Staged_Order[milestonej]
+		if !oki || !okj {
+			log.Fatalln("unknown pointers")
+		}
+		return milestonei_order < milestonej_order
 	})
 	if len(milestoneOrdered) > 0 {
 		identifiersDecl += "\n"
@@ -555,6 +604,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 	}
 
 	// insertion initialization of objects to stage
+	if len(arrowOrdered) > 0 {
+		pointersInitializesStatements += "\n\t// setup of Arrow instances pointers"
+	}
 	for idx, arrow := range arrowOrdered {
 		var setPointerField string
 		_ = setPointerField
@@ -581,6 +633,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
+	if len(barOrdered) > 0 {
+		pointersInitializesStatements += "\n\t// setup of Bar instances pointers"
+	}
 	for idx, bar := range barOrdered {
 		var setPointerField string
 		_ = setPointerField
@@ -591,6 +646,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 		// Initialisation of values
 	}
 
+	if len(ganttOrdered) > 0 {
+		pointersInitializesStatements += "\n\t// setup of Gantt instances pointers"
+	}
 	for idx, gantt := range ganttOrdered {
 		var setPointerField string
 		_ = setPointerField
@@ -633,6 +691,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
+	if len(groupOrdered) > 0 {
+		pointersInitializesStatements += "\n\t// setup of Group instances pointers"
+	}
 	for idx, group := range groupOrdered {
 		var setPointerField string
 		_ = setPointerField
@@ -651,6 +712,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
+	if len(laneOrdered) > 0 {
+		pointersInitializesStatements += "\n\t// setup of Lane instances pointers"
+	}
 	for idx, lane := range laneOrdered {
 		var setPointerField string
 		_ = setPointerField
@@ -669,6 +733,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
+	if len(laneuseOrdered) > 0 {
+		pointersInitializesStatements += "\n\t// setup of LaneUse instances pointers"
+	}
 	for idx, laneuse := range laneuseOrdered {
 		var setPointerField string
 		_ = setPointerField
@@ -687,6 +754,9 @@ func (stage *StageStruct) Marshall(file *os.File, modelsPackageName, packageName
 
 	}
 
+	if len(milestoneOrdered) > 0 {
+		pointersInitializesStatements += "\n\t// setup of Milestone instances pointers"
+	}
 	for idx, milestone := range milestoneOrdered {
 		var setPointerField string
 		_ = setPointerField

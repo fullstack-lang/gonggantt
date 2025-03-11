@@ -66,7 +66,8 @@ func (controller *Controller) GetArrows(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoArrow.GetDB()
 
@@ -129,7 +130,8 @@ func (controller *Controller) PostArrow(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoArrow.GetDB()
 
@@ -199,7 +201,8 @@ func (controller *Controller) GetArrow(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoArrow.GetDB()
 
@@ -248,7 +251,8 @@ func (controller *Controller) UpdateArrow(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoArrow.GetDB()
 
@@ -338,7 +342,8 @@ func (controller *Controller) DeleteArrow(c *gin.Context) {
 	}
 	backRepo := controller.Map_BackRepos[stackPath]
 	if backRepo == nil {
-		log.Panic("Stack github.com/fullstack-lang/gonggantt/go/models, Unkown stack", stackPath)
+		message := "Stack github.com/fullstack-lang/gonggantt/go, Unkown stack: \"" + stackPath + "\""
+		log.Panic(message)
 	}
 	db := backRepo.BackRepoArrow.GetDB()
 

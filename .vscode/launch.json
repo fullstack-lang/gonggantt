@@ -19,9 +19,9 @@
             "program": "${workspaceFolder}/go/cmd/gonggantt",
             "args": [
                 "-marshallOnCommit",
-                "gantt1",
+                "data/gantt1",
                 "-unmarshallFromCode",
-                "gantt1.go",
+                "data/gantt1.go",
             ]
         },
         {
@@ -32,9 +32,9 @@
             "program": "${workspaceFolder}/go/cmd/gonggantt",
             "args": [
                 "-marshallOnCommit",
-                "migration",
+                "data/migration",
                 "-unmarshallFromCode",
-                "migration.go",
+                "data/migration.go",
             ]
         },
         {
@@ -45,9 +45,9 @@
             "program": "${workspaceFolder}/go/cmd/gonggantt",
             "args": [
                 "-marshallOnCommit",
-                "simple",
+                "data/simple",
                 "-unmarshallFromCode",
-                "simple.go",
+                "data/simple.go",
             ]
         },
     ]

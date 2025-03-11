@@ -3,7 +3,7 @@ package gantt2svg
 import (
 	"fmt"
 
-	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
+	gongsvg_models "github.com/fullstack-lang/gong/lib/svg/go/models"
 )
 
 // appends 5 lines to the SVG

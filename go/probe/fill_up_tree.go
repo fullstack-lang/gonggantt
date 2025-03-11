@@ -5,13 +5,15 @@ import (
 	"sort"
 	"strings"
 
-	gongtree_buttons "github.com/fullstack-lang/gongtree/go/buttons"
-	tree "github.com/fullstack-lang/gongtree/go/models"
+	gongtree_buttons "github.com/fullstack-lang/gong/lib/tree/go/buttons"
+	tree "github.com/fullstack-lang/gong/lib/tree/go/models"
 
 	gong_models "github.com/fullstack-lang/gong/go/models"
 
 	"github.com/fullstack-lang/gonggantt/go/models"
 )
+
+const SideBarTreeName = "gong"
 
 func fillUpTree(
 	probe *Probe,
@@ -33,7 +35,7 @@ func fillUpTree(
 	probe.treeStage.Reset()
 
 	// create tree
-	sidebar := (&tree.Tree{Name: "gong"}).Stage(probe.treeStage)
+	sidebar := (&tree.Tree{Name: SideBarTreeName}).Stage(probe.treeStage)
 
 	// collect all gong struct to construe the true
 	setOfGongStructs := *gong_models.GetGongstructInstancesSet[gong_models.GongStruct](probe.gongStage)

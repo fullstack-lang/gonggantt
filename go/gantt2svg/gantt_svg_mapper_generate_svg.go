@@ -7,9 +7,9 @@ import (
 	"sort"
 	"time"
 
+	gongsvg_models "github.com/fullstack-lang/gong/lib/svg/go/models"
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	"github.com/fullstack-lang/gonggantt/go/svg2gantt"
-	gongsvg_models "github.com/fullstack-lang/gongsvg/go/models"
 )
 
 func (ganttSVGMapper *GanttSVGMapper) GenerateSvg(

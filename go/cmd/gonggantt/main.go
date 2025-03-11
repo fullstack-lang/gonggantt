@@ -8,8 +8,8 @@ import (
 	gonggantt_models "github.com/fullstack-lang/gonggantt/go/models"
 	gonggantt_stack "github.com/fullstack-lang/gonggantt/go/stack"
 
+	gongsvg_stack "github.com/fullstack-lang/gong/lib/svg/go/stack"
 	gonggantt_static "github.com/fullstack-lang/gonggantt/go/static"
-	gongsvg_stack "github.com/fullstack-lang/gongsvg/go/stack"
 
 	"github.com/fullstack-lang/gonggantt/go/gantt2svg"
 )

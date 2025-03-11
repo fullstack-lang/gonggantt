@@ -178,7 +178,17 @@ func (backRepoBar *BackRepoBarStruct) GetBarDBFromBarPtr(bar *models.Bar) (barDB
 // Phase One is the creation of instance in the database if it is not yet done to get the unique ID for each staged instance
 func (backRepoBar *BackRepoBarStruct) CommitPhaseOne(stage *models.StageStruct) (Error error) {
 
+	var bars []*models.Bar
 	for bar := range stage.Bars {
+		bars = append(bars, bar)
+	}
+
+	// Sort by the order stored in Map_Staged_Order.
+	sort.Slice(bars, func(i, j int) bool {
+		return stage.Map_Staged_Order[bars[i]] < stage.Map_Staged_Order[bars[j]]
+	})
+
+	for _, bar := range bars {
 		backRepoBar.CommitPhaseOneInstance(bar)
 	}
 

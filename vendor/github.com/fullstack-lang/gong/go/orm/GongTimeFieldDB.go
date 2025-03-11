@@ -69,6 +69,9 @@ type GongTimeFieldDB struct {
 	// Declation for basic field gongtimefieldDB.CompositeStructName
 	CompositeStructName_Data sql.NullString
 
+	// Declation for basic field gongtimefieldDB.BespokeTimeFormat
+	BespokeTimeFormat_Data sql.NullString
+
 	// encoding of pointers
 	// for GORM serialization, it is necessary to embed to Pointer Encoding declaration
 	GongTimeFieldPointersEncoding
@@ -96,6 +99,8 @@ type GongTimeFieldWOP struct {
 	Index int `xlsx:"2"`
 
 	CompositeStructName string `xlsx:"3"`
+
+	BespokeTimeFormat string `xlsx:"4"`
 	// insertion for WOP pointer fields
 }
 
@@ -105,6 +110,7 @@ var GongTimeField_Fields = []string{
 	"Name",
 	"Index",
 	"CompositeStructName",
+	"BespokeTimeFormat",
 }
 
 type BackRepoGongTimeFieldStruct struct {
@@ -142,7 +148,17 @@ func (backRepoGongTimeField *BackRepoGongTimeFieldStruct) GetGongTimeFieldDBFrom
 // Phase One is the creation of instance in the database if it is not yet done to get the unique ID for each staged instance
 func (backRepoGongTimeField *BackRepoGongTimeFieldStruct) CommitPhaseOne(stage *models.StageStruct) (Error error) {
 
+	var gongtimefields []*models.GongTimeField
 	for gongtimefield := range stage.GongTimeFields {
+		gongtimefields = append(gongtimefields, gongtimefield)
+	}
+
+	// Sort by the order stored in Map_Staged_Order.
+	sort.Slice(gongtimefields, func(i, j int) bool {
+		return stage.Map_Staged_Order[gongtimefields[i]] < stage.Map_Staged_Order[gongtimefields[j]]
+	})
+
+	for _, gongtimefield := range gongtimefields {
 		backRepoGongTimeField.CommitPhaseOneInstance(gongtimefield)
 	}
 
@@ -380,6 +396,9 @@ func (gongtimefieldDB *GongTimeFieldDB) CopyBasicFieldsFromGongTimeField(gongtim
 
 	gongtimefieldDB.CompositeStructName_Data.String = gongtimefield.CompositeStructName
 	gongtimefieldDB.CompositeStructName_Data.Valid = true
+
+	gongtimefieldDB.BespokeTimeFormat_Data.String = gongtimefield.BespokeTimeFormat
+	gongtimefieldDB.BespokeTimeFormat_Data.Valid = true
 }
 
 // CopyBasicFieldsFromGongTimeField_WOP
@@ -394,6 +413,9 @@ func (gongtimefieldDB *GongTimeFieldDB) CopyBasicFieldsFromGongTimeField_WOP(gon
 
 	gongtimefieldDB.CompositeStructName_Data.String = gongtimefield.CompositeStructName
 	gongtimefieldDB.CompositeStructName_Data.Valid = true
+
+	gongtimefieldDB.BespokeTimeFormat_Data.String = gongtimefield.BespokeTimeFormat
+	gongtimefieldDB.BespokeTimeFormat_Data.Valid = true
 }
 
 // CopyBasicFieldsFromGongTimeFieldWOP
@@ -408,6 +430,9 @@ func (gongtimefieldDB *GongTimeFieldDB) CopyBasicFieldsFromGongTimeFieldWOP(gong
 
 	gongtimefieldDB.CompositeStructName_Data.String = gongtimefield.CompositeStructName
 	gongtimefieldDB.CompositeStructName_Data.Valid = true
+
+	gongtimefieldDB.BespokeTimeFormat_Data.String = gongtimefield.BespokeTimeFormat
+	gongtimefieldDB.BespokeTimeFormat_Data.Valid = true
 }
 
 // CopyBasicFieldsToGongTimeField
@@ -416,6 +441,7 @@ func (gongtimefieldDB *GongTimeFieldDB) CopyBasicFieldsToGongTimeField(gongtimef
 	gongtimefield.Name = gongtimefieldDB.Name_Data.String
 	gongtimefield.Index = int(gongtimefieldDB.Index_Data.Int64)
 	gongtimefield.CompositeStructName = gongtimefieldDB.CompositeStructName_Data.String
+	gongtimefield.BespokeTimeFormat = gongtimefieldDB.BespokeTimeFormat_Data.String
 }
 
 // CopyBasicFieldsToGongTimeField_WOP
@@ -424,6 +450,7 @@ func (gongtimefieldDB *GongTimeFieldDB) CopyBasicFieldsToGongTimeField_WOP(gongt
 	gongtimefield.Name = gongtimefieldDB.Name_Data.String
 	gongtimefield.Index = int(gongtimefieldDB.Index_Data.Int64)
 	gongtimefield.CompositeStructName = gongtimefieldDB.CompositeStructName_Data.String
+	gongtimefield.BespokeTimeFormat = gongtimefieldDB.BespokeTimeFormat_Data.String
 }
 
 // CopyBasicFieldsToGongTimeFieldWOP
@@ -433,6 +460,7 @@ func (gongtimefieldDB *GongTimeFieldDB) CopyBasicFieldsToGongTimeFieldWOP(gongti
 	gongtimefield.Name = gongtimefieldDB.Name_Data.String
 	gongtimefield.Index = int(gongtimefieldDB.Index_Data.Int64)
 	gongtimefield.CompositeStructName = gongtimefieldDB.CompositeStructName_Data.String
+	gongtimefield.BespokeTimeFormat = gongtimefieldDB.BespokeTimeFormat_Data.String
 }
 
 // Backup generates a json file from a slice of all GongTimeFieldDB instances in the backrepo
